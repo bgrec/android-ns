@@ -66,6 +66,7 @@ class CustomersMasterDataViewModel(
      * Factory for [CustomersMasterDataViewModel] that takes [CustomersMasterDataRepository] as a dependency
      */
 
+    /*
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -76,7 +77,7 @@ class CustomersMasterDataViewModel(
             }
         }
     }
-
+*/
 }
 
 

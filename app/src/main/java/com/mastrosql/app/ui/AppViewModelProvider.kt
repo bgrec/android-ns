@@ -7,12 +7,14 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
-import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
+import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
-
+import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
+import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
+import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
 
 /**
- * Provides Factory to create instance of ViewModel for the entire Inventory app
+ * Provides Factory to create instance of ViewModel for the entire Mastro Android app
  */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -36,16 +38,21 @@ object AppViewModelProvider {
             )
         }
 
-        // Initializer for HomeViewModel
+        // Initializer for ItemsViewModel
         initializer {
             ItemsViewModel(mastroAndroidApplication().container.itemsRepository)
+        }
+
+        initializer {
+            val customersMasterDataRepository = mastroAndroidApplication().container.customersMasterDataRepository
+            CustomersMasterDataViewModel(customersMasterDataRepository = customersMasterDataRepository)
         }
     }
 }
 
 /**
  * Extension function to queries for [Application] object and returns an instance of
- * [InventoryApplication].
+ * [MastroAndroidApplication].
  */
 fun CreationExtras.mastroAndroidApplication(): MastroAndroidApplication =
     (this[AndroidViewModelFactory.APPLICATION_KEY] as MastroAndroidApplication)

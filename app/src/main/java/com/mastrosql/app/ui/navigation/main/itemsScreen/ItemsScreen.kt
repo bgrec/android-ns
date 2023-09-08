@@ -37,6 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
+import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Metadata
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -80,7 +83,7 @@ fun ItemsScreen(
             }
         },
     ) { innerPadding ->
-        HomeBody(
+        ItemsBody(
             itemList = homeUiState.itemList,
             onItemClick = navigateToItemUpdate,
             modifier = modifier
@@ -91,7 +94,7 @@ fun ItemsScreen(
 }
 
 @Composable
-private fun HomeBody(
+private fun ItemsBody(
     itemList: List<Item>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
 ) {
     Column(
@@ -143,7 +146,7 @@ private fun InventoryItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = item.name,
+                    text = item.description,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
@@ -153,7 +156,8 @@ private fun InventoryItem(
                 )
             }
             Text(
-                text = stringResource(R.string.in_stock, item.quantity),
+                //text = stringResource(R.string.in_stock, item.quantity),
+                text = stringResource(R.string.in_stock, item.cost),
                 style = MaterialTheme.typography.titleMedium
             )
         }
@@ -163,9 +167,20 @@ private fun InventoryItem(
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyPreview() {
-    InventoryTheme {
-        HomeBody(listOf(
-            Item(1, "Game", 100.0, 20), Item(2, "Pen", 200.0, 30), Item(3, "TV", 300.0, 50)
+    MastroAndroidTheme {
+        ItemsBody(listOf(
+            Item(1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
+                "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
+                "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
+                Metadata("1")),
+            Item(2, "Pen", "sku", "des", 200.0, "vat", "unit", "dep",
+                "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
+                "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
+                Metadata("2")),
+            Item(3, "TV", "sku", "des", 300.0, "vat", "unit", "dep",
+                "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
+                "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
+                Metadata("3"))
         ), onItemClick = {})
     }
 }
@@ -173,17 +188,20 @@ fun HomeBodyPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyEmptyListPreview() {
-    InventoryTheme {
-        HomeBody(listOf(), onItemClick = {})
+    MastroAndroidTheme {
+        ItemsBody(listOf(), onItemClick = {})
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun InventoryItemPreview() {
-    InventoryTheme {
+    MastroAndroidTheme {
         InventoryItem(
-            Item(1, "Game", 100.0, 20),
+            Item(1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
+                "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
+                "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
+                Metadata("1"))
         )
     }
 }

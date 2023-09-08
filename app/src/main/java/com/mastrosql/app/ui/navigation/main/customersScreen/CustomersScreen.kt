@@ -69,7 +69,9 @@ fun CustomersScreen(
     when (customersUiState) {
         is CustomersUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
-            drawerState = drawerState, navController = navController
+            drawerState = drawerState,
+            navController = navController,
+            loading = true
         )
 
         is CustomersUiState.Success -> CustomersResultScreen(

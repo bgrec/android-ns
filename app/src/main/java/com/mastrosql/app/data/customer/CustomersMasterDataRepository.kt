@@ -19,6 +19,7 @@ class NetworkCustomersMasterDataRepository(
     private val mastroAndroidApiService: MastroAndroidApiService
 ) : CustomersMasterDataRepository {
     /** Fetches list of CustomersMasterData from mastroAndroidApi*/
-    override suspend fun getCustomersMasterData(): CustomersMasterDataResponse = mastroAndroidApiService.getCustomersMasterData()
-            //List<CustomerMasterData> = mastroAndroidApiService.getCustomersMasterData()
+    override suspend fun getCustomersMasterData(): CustomersMasterDataResponse =
+        mastroAndroidApiService.getCustomersMasterData()
+    //List<CustomerMasterData> = mastroAndroidApiService.getCustomersMasterData()
 }

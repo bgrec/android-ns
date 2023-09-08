@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.Metadata
 
 @Composable
 fun CustomerCard(

@@ -40,7 +40,7 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
-            description.isNotBlank() && sku.isNotBlank() //&& quantity.isNotBlank()
+            description.isNotBlank() && price.isNotBlank() //&& quantity.isNotBlank()
         }
     }
 }

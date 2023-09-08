@@ -4,11 +4,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
 /**
  * Entity data class represents a single row in the database.
  */
 @Entity(tableName = "items")
+@Serializable
 data class Item(
     @PrimaryKey(autoGenerate = true)
     @SerializedName("CORTO") val id: Int = 0,
@@ -44,12 +46,12 @@ data class Item(
     @TypeConverters(MetadataTypeConverter::class)
     @SerializedName("_metadata") val metadata: Metadata
 )
-
+@Serializable
 data class Metadata(
     @SerializedName("etag")
     val etag: String
 )
-
+@Serializable
 data class ItemsResonseList(
     @SerializedName("items")
     val items: List<Item>

@@ -2,6 +2,7 @@ package com.mastrosql.app.fake
 
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.Metadata
 
 object FakeDataSource {
 
