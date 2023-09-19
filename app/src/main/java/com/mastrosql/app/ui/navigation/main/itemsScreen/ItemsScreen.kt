@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.itemsScreen
 
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,13 +40,13 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Metadata
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
-object HomeDestination : NavigationDestination {
+object ItemsDestination : NavigationDestination {
     override val route = "home"
     override val titleRes = R.string.app_name
 }
 
 /**
- * Entry route for Home screen
+ * Entry route for Items screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -58,14 +57,14 @@ fun ItemsScreen(
     modifier: Modifier = Modifier,
     viewModel: ItemsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val homeUiState by viewModel.itemsUiState.collectAsState()
+    val itemsUiState by viewModel.itemsUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ItemsTopAppBar(
-                title = stringResource(HomeDestination.titleRes),
+                title = stringResource(ItemsDestination.titleRes),
                 canNavigateBack = false,
                 scrollBehavior = scrollBehavior
             )
@@ -84,7 +83,7 @@ fun ItemsScreen(
         },
     ) { innerPadding ->
         ItemsBody(
-            itemList = homeUiState.itemList,
+            itemList = itemsUiState.itemList,
             onItemClick = navigateToItemUpdate,
             modifier = modifier
                 .padding(innerPadding)
@@ -95,7 +94,9 @@ fun ItemsScreen(
 
 @Composable
 private fun ItemsBody(
-    itemList: List<Item>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>,
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -166,28 +167,34 @@ private fun InventoryItem(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeBodyPreview() {
+fun ItemsBodyPreview() {
     MastroAndroidTheme {
         ItemsBody(listOf(
-            Item(1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
+            Item(
+                1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
                 "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
                 "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
-                Metadata("1")),
-            Item(2, "Pen", "sku", "des", 200.0, "vat", "unit", "dep",
+                Metadata("1")
+            ),
+            Item(
+                2, "Pen", "sku", "des", 200.0, "vat", "unit", "dep",
                 "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
                 "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
-                Metadata("2")),
-            Item(3, "TV", "sku", "des", 300.0, "vat", "unit", "dep",
+                Metadata("2")
+            ),
+            Item(
+                3, "TV", "sku", "des", 300.0, "vat", "unit", "dep",
                 "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
                 "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
-                Metadata("3"))
+                Metadata("3")
+            )
         ), onItemClick = {})
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeBodyEmptyListPreview() {
+fun ItemsBodyEmptyListPreview() {
     MastroAndroidTheme {
         ItemsBody(listOf(), onItemClick = {})
     }
@@ -198,10 +205,12 @@ fun HomeBodyEmptyListPreview() {
 fun InventoryItemPreview() {
     MastroAndroidTheme {
         InventoryItem(
-            Item(1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
+            Item(
+                1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
                 "cat", "fam", "subfam", 30.00, "gr", "8", "13", "alt1",
                 "alt2", "alt3", "alt4", "5", "6", "7", "8", "9", "10",
-                Metadata("1"))
+                Metadata("1")
+            )
         )
     }
 }

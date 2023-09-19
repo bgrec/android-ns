@@ -2,6 +2,7 @@ package com.mastrosql.app.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -48,7 +49,7 @@ private val lightColorScheme = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
-private val DarkColorScheme = darkColorScheme(
+private val darkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     primaryContainer = md_theme_dark_primaryContainer,
@@ -93,12 +94,13 @@ fun MastroAndroidTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
+        darkTheme -> darkColorScheme
         else -> lightColorScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
+            /*setUpEdgeToEdge(view, darkTheme)*/
             val window = (view.context as Activity).window
             if (darkTheme) {
                 window.statusBarColor = colorScheme.primary.toArgb()
@@ -116,4 +118,25 @@ fun MastroAndroidTheme(
         typography = Typography,
         content = content
     )
+}
+
+
+/**
+ * Sets up edge-to-edge for the window of this [view]. The system icon colors are set to either
+ * light or dark depending on whether the [darkTheme] is enabled or not.
+ */
+private fun setUpEdgeToEdge(view: View, darkTheme: Boolean) {
+    val window = (view.context as Activity).window
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+    window.statusBarColor = Color.Transparent.toArgb()
+    val navigationBarColor = when {
+        Build.VERSION.SDK_INT >= 29 -> Color.Transparent.toArgb()
+        Build.VERSION.SDK_INT >= 26 -> Color(0xFF, 0xFF, 0xFF, 0x63).toArgb()
+        // Min sdk version for this app is 24, this block is for SDK versions 24 and 25
+        else -> Color(0x00, 0x00, 0x00, 0x50).toArgb()
+    }
+    window.navigationBarColor = navigationBarColor
+    val controller = WindowCompat.getInsetsController(window, view)
+    controller.isAppearanceLightStatusBars = !darkTheme
+    controller.isAppearanceLightNavigationBars = !darkTheme
 }

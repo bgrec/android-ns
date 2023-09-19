@@ -12,15 +12,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.data.datasource.DataSourceTest
+import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.components.appbar.AppBar
-import com.mastrosql.app.ui.components.customer.CustomersList
-import com.mastrosql.app.ui.components.customer.SearchView
+import com.mastrosql.app.ui.navigation.main.customersScreen.customerComponents.CustomersList
+import com.mastrosql.app.ui.navigation.main.customersScreen.customerComponents.SearchView
 
 /*
 *  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -55,16 +56,14 @@ fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = 
 *
 * */
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomersScreen(
-    customersUiState: CustomersUiState,
-    retryAction: () -> Unit = { },
     drawerState: DrawerState,
-    navController: NavController
+    navController: NavController,
+    viewModel: CustomersMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val customersUiState = viewModel.customersUiState
     val modifier = Modifier.fillMaxSize()
     when (customersUiState) {
         is CustomersUiState.Loading -> LoadingScreen(
@@ -82,7 +81,8 @@ fun CustomersScreen(
         )
 
         is CustomersUiState.Error -> ErrorScreen(
-            retryAction,
+            customersUiState.exception,
+            viewModel::getCustomersMasterData,
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
             navController = navController
@@ -136,7 +136,7 @@ fun CustomersResultScreen(
     Scaffold(
         topBar = { AppBar(
             drawerState = drawerState,
-            title = R.string.customers ) }
+            title = R.string.drawer_customers ) }
     ) { it ->
         Column(
             modifier = Modifier
@@ -165,7 +165,6 @@ fun CustomersResultScreen(
 fun CustomersScreenPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
     CustomersScreen(
-        customersUiState = CustomersUiState.Success(DataSourceTest().loadCustomers()),
         drawerState = DrawerState(DrawerValue.Closed),
         navController = NavController(LocalContext.current)
     )

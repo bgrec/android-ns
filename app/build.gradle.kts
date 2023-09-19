@@ -115,6 +115,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
 
     // Compose
@@ -122,6 +123,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
+
+    //Paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     //Retrofit
     implementation(libs.retrofit)
@@ -141,6 +146,10 @@ dependencies {
 
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization)
+
+    //DataStore
+    implementation(libs.androidx.datastore.preferences)
+    
 
     // Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

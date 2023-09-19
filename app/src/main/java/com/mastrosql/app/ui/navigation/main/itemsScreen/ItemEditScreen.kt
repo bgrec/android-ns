@@ -57,7 +57,7 @@ fun ItemEditScreen(
         )
     }
 }
-
+//TODO check the use of Divider() composable
 @Preview(showBackground = true)
 @Composable
 fun ItemEditScreenPreview() {
@@ -65,3 +65,15 @@ fun ItemEditScreenPreview() {
         ItemEditScreen(navigateBack = { /*Do nothing*/ }, onNavigateUp = { /*Do nothing*/ })
     }
 }
+/*
+Text(
+                    text = SimpleDateFormat("h:mm a", Locale.getDefault())
+                        .format(Date(schedule.arrivalTimeInMillis.toLong() * 1000)),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = dimensionResource(R.dimen.font_large).value.sp,
+                        fontWeight = FontWeight(600)
+                    ),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(2f)
+                )
+ */

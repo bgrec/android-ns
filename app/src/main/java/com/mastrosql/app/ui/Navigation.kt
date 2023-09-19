@@ -15,7 +15,7 @@
  */
 
 package com.mastrosql.app.ui
-
+/*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,3 +34,4 @@ fun MainNavigation() {
         // TODO: Add more destinations
     }
 }
+*/

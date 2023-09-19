@@ -12,10 +12,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerContent
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
+import com.mastrosql.app.ui.navigation.intro.IntroViewModel
+import com.mastrosql.app.ui.navigation.intro.introGraph
 
 
 @Composable
@@ -30,7 +30,7 @@ fun MainCompose(
             AppDrawerContent(
                 drawerState = drawerState,
                 menuItems = DrawerParams.drawerButtons,
-                defaultPick = MainNavOption.HomeScreen
+                defaultPick = MainNavOption.LoginScreen
             ) { onUserPickedOption ->
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
@@ -46,6 +46,12 @@ fun MainCompose(
                     }
 
                     MainNavOption.CustomersScreen -> {
+                        navController.navigate(onUserPickedOption.name) {
+                            popUpTo(NavRoutes.MainRoute.name)
+                        }
+                    }
+
+                    MainNavOption.ItemsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
                         }
@@ -94,7 +100,7 @@ object DrawerParams {
         AppDrawerItemInfo(
             MainNavOption.LoginScreen,
             R.string.drawer_login,
-            R.drawable.ic_home,
+            android.R.drawable.ic_lock_idle_lock,
             R.string.drawer_login_description
         ),
         AppDrawerItemInfo(
@@ -105,8 +111,14 @@ object DrawerParams {
         ),
         AppDrawerItemInfo(
             MainNavOption.CustomersScreen,
-            R.string.drawer_home,
-            R.drawable.ic_home,
+            R.string.drawer_customers,
+            android.R.drawable.ic_menu_myplaces,
+            R.string.drawer_home_description
+        ),
+        AppDrawerItemInfo(
+            MainNavOption.ItemsScreen,
+            R.string.items,
+            android.R.drawable.ic_menu_agenda,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(

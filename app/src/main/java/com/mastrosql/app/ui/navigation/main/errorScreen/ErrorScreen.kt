@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.R.string.retry
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import java.lang.Exception
 
 /**
  * The home screen displaying error message with re-attempt button.
@@ -28,6 +29,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun ErrorScreen(
+    exception: Exception,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
@@ -42,6 +44,7 @@ fun ErrorScreen(
             painter = painterResource(id = R.drawable.ic_connection_error), contentDescription = ""
         )
         Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
+        Text(text = exception.message.toString(), modifier = Modifier.padding(16.dp))
         Button(onClick = retryAction) {
             Text(stringResource(retry))
         }
@@ -56,6 +59,6 @@ fun ErrorScreenPreview() {
     val navController = NavController(LocalContext.current)
 
     MastroAndroidTheme {
-        ErrorScreen(retryAction = {},modifier, drawerState, navController)
+        ErrorScreen(exception = Exception("errore"), retryAction = {},modifier, drawerState, navController)
     }
 }

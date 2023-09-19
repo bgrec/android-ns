@@ -29,7 +29,7 @@ class ItemDetailsViewModel(
         itemsRepository.getItemStream(itemId)
             .filterNotNull()
             .map {
-                //TO-DO check this
+                //TODO check this
                 //ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
                 ItemDetailsUiState(outOfStock = it.cost <= 0, itemDetails = it.toItemDetails())
             }.stateIn(
@@ -47,7 +47,7 @@ class ItemDetailsViewModel(
             /*if (currentItem.quantity > 0) {
                 itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
             }*/
-            //TO-DO check this
+            //TODO check this
             if (currentItem.cost > 0) {
                 itemsRepository.updateItem(currentItem.copy(cost = currentItem.cost - 1))
             }

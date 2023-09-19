@@ -12,8 +12,11 @@ class MastroAndroidApplication : Application() {
      * AppContainer instance used by the rest of classes to obtain dependencies
      * */
     lateinit var container: AppContainer
+    //lateinit var userPreferencesRepository: UserPreferencesRepository
+
     override fun onCreate() {
         super.onCreate()
         container = DefaultAppContainer(this)
+        //userPreferencesRepository = UserPreferencesRepository(dataStore)
     }
 }

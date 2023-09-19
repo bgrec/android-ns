@@ -21,21 +21,36 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataDao
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemoteKeys
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
-import com.mastrosql.app.ui.navigation.main.itemsScreen.model.MetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
+import java.util.concurrent.TimeUnit
 
 
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [Item::class, MastroDb::class], version = 1, exportSchema = false)
-@TypeConverters(MetadataTypeConverter::class)
+@Database(entities = [Item::class, CustomerMasterData::class, CustomersRemoteKeys::class], version = 1, exportSchema = false)
+@TypeConverters(
+    ItemMetadataTypeConverter::class,
+    CustomerMetadataTypeConverter::class,
+    CustomerLinksTypeConverter::class
+)
+
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun mastroDbDao(): MastroDbDao
+    //abstract fun mastroDbDao(): MastroDbDao
 
     abstract fun itemDao(): ItemDao
+    abstract fun customersMasterDataDao(): CustomersMasterDataDao
+    abstract fun customersRemoteKeysDao(): CustomersRemoteKeysDao
+    //abstract fun lastUpdated(): TimeUnit
 
     companion object {
         @Volatile
@@ -58,3 +73,25 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+
+/*
+* fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(
+                    context,
+                    AppDatabase::class.java,
+                    "app_database"
+                )
+                    .createFromAsset("database/bus_schedule.db")
+                    // Wipes and rebuilds instead of migrating if no Migration object.
+                    // Migration is not part of this codelab.
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also {
+                        INSTANCE = it
+                    }
+            }
+        }
+    }
+*
+* */

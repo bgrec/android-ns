@@ -43,7 +43,7 @@ data class Item(
     @SerializedName("codAlt9") val eanAlt9: String?,
     @SerializedName("codAlt10") val eanAlt10: String?,
 
-    @TypeConverters(MetadataTypeConverter::class)
+    @TypeConverters(ItemMetadataTypeConverter::class)
     @SerializedName("_metadata") val metadata: Metadata
 )
 @Serializable
@@ -52,7 +52,20 @@ data class Metadata(
     val etag: String
 )
 @Serializable
-data class ItemsResonseList(
+data class ItemsResponseList(
     @SerializedName("items")
     val items: List<Item>
 )
+/**
+ * @Entity(tableName = "Schedule")
+ * data class BusSchedule(
+ *     @PrimaryKey
+ *     val id: Int,
+ *     @NonNull
+ *     @ColumnInfo(name = "stop_name")
+ *     val stopName: String,
+ *     @NonNull
+ *     @ColumnInfo(name = "arrival_time")
+ *     val arrivalTimeInMillis: Int
+ * )
+ */

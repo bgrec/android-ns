@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 class ItemsViewModel(itemsRepository: ItemsRepository) : ViewModel() {
 
     /**
-     * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
+     * Holds items ui state. The list of items are retrieved from [ItemsRepository] and mapped to
      * [ItemsUiState]
      */
     val itemsUiState: StateFlow<ItemsUiState> =

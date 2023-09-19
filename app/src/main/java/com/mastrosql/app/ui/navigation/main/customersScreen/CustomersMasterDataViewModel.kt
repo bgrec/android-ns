@@ -20,7 +20,7 @@ import java.io.IOException
 
 sealed interface CustomersUiState {
     data class Success(val customersMasterDataList: List<CustomerMasterData>) : CustomersUiState
-    object Error : CustomersUiState
+    data class Error(val exception: Exception) : CustomersUiState
     object Loading : CustomersUiState
 }
 
@@ -42,7 +42,7 @@ class CustomersMasterDataViewModel(
 
     /**
      * Gets Customers Master Data information from the MastroAndroid API Retrofit service and updates the
-     * [CustomersMasterData] [List] [MutableList].
+     * [CustomerMasterData] [List] [MutableList].
      */
     fun getCustomersMasterData() {
         viewModelScope.launch {
@@ -50,14 +50,16 @@ class CustomersMasterDataViewModel(
             customersUiState =
                 try {
                     val customerMasterDataListResult = customersMasterDataRepository.getCustomersMasterData().items
+
                     val trimmedCustomerList = customerMasterDataListResult.map { it.trimAllStrings() }
                     CustomersUiState.Success(trimmedCustomerList)
                 } catch (e: IOException) {
-                    Log.i("Customers 3", e.toString())
-                    CustomersUiState.Error
+                    CustomersUiState.Error(e)
                 } catch (e: HttpException) {
-                    Log.i("Customers 4", e.toString())
-                    CustomersUiState.Error
+                    CustomersUiState.Error(e)
+                }
+                catch (e: Exception) {
+                    CustomersUiState.Error(e)
                 }
         }
     }

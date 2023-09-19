@@ -1,5 +1,9 @@
 package com.mastrosql.app.ui.navigation.main.customersScreen.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -12,8 +16,10 @@ import kotlinx.serialization.Serializable
  * For JSON Kotlin Serialization use @SerialName( value = "DESCRI")
  */
 
+@Entity(tableName = "customers")
 @Serializable
 data class CustomerMasterData(
+    @PrimaryKey(autoGenerate = true)
     @SerializedName(value = "CODI") val id: Int,
     @SerializedName("DESCRI") val businessName: String,
     @SerializedName("VIA") val street: String,
@@ -23,9 +29,16 @@ data class CustomerMasterData(
     @SerializedName("PROV") val province: String,
     @SerializedName("NAZIONE") val nation: String,
     @SerializedName("DESC2") val businessName2: String,
+
+    @TypeConverters(CustomerLinksTypeConverter::class)
     @SerializedName("links") val links: List<Link>,
+
     @SerializedName("codFis") val taxId: String,
-    @SerializedName("_metadata") val metadata: Metadata
+
+    @TypeConverters(CustomerMetadataTypeConverter::class)
+    @SerializedName("_metadata") val metadata: Metadata,
+
+    @ColumnInfo(name = "last_updated") val lastUpdated: Long // Timestamp
 ) {
     fun trimAllStrings(): CustomerMasterData {
         return CustomerMasterData(
@@ -40,29 +53,30 @@ data class CustomerMasterData(
             businessName2 = businessName2.trim(),
             links = links,
             taxId = taxId.trim(),
-            metadata = metadata
+            metadata = metadata,
+            lastUpdated = lastUpdated
         )
     }
 }
 
-    @Serializable
-    data class Link(
-        @SerializedName("rel") val rel: String,
-        @SerializedName("href") val href: String
-    )
+@Serializable
+data class Link(
+    @SerializedName("rel") val rel: String,
+    @SerializedName("href") val href: String
+)
 
-    @Serializable
-    data class Metadata(
-        @SerializedName("etag") val etag: String
-    )
+@Serializable
+data class Metadata(
+    @SerializedName("etag") val etag: String
+)
 
-    @Serializable
-    data class CustomersMasterDataResponse(
-        val items: List<CustomerMasterData>,
-        val limit: Int,
-        val offset: Int,
-        val hasMore: Boolean,
-        val count: Int,
-        val links: List<Link>
-    )
+@Serializable
+data class CustomersMasterDataResponse(
+    val items: List<CustomerMasterData>,
+    val limit: Int,
+    val offset: Int,
+    val hasMore: Boolean,
+    val count: Int,
+    val links: List<Link>
+)
 

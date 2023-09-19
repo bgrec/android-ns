@@ -40,12 +40,19 @@ object AppViewModelProvider {
 
         // Initializer for ItemsViewModel
         initializer {
-            ItemsViewModel(mastroAndroidApplication().container.itemsRepository)
+            ItemsViewModel(
+                mastroAndroidApplication().container.itemsRepository)
+        }
+
+        // Initializer for CustomersMasterDataViewModel
+        initializer {
+            CustomersMasterDataViewModel(
+                mastroAndroidApplication().container.customersMasterDataRepository)
         }
 
         initializer {
-            val customersMasterDataRepository = mastroAndroidApplication().container.customersMasterDataRepository
-            CustomersMasterDataViewModel(customersMasterDataRepository = customersMasterDataRepository)
+            UserPreferencesViewModel(
+                mastroAndroidApplication().container.userPreferencesRepository)
         }
     }
 }

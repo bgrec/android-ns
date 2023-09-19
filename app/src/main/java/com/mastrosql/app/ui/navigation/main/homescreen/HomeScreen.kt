@@ -26,8 +26,8 @@ import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.cartScreen.CartViewModel
 import com.mastrosql.app.data.datasource.DataSourceTest
 import com.mastrosql.app.ui.components.bottombar.BottomBar
-import com.mastrosql.app.ui.components.item.ItemsList
-import com.mastrosql.app.ui.components.item.ItemsSearchSuggestionList
+import com.mastrosql.app.ui.navigation.main.itemsScreen.itemComponents.ItemsList
+import com.mastrosql.app.ui.navigation.main.itemsScreen.itemComponents.ItemsSearchSuggestionList
 
 
 @OptIn(ExperimentalMaterial3Api::class)

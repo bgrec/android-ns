@@ -24,7 +24,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
-import com.mastrosql.app.data.di.fakeMastroDbs
+import com.mastrosql.app.data.local.di.fakeMastroDbs
 
 @HiltAndroidTest
 class NavigationTest {

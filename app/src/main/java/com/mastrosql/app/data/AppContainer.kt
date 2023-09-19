@@ -1,11 +1,15 @@
 package com.mastrosql.app.data
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.mastrosql.app.data.customer.CustomersMasterDataRepository
 import com.mastrosql.app.data.customer.NetworkCustomersMasterDataRepository
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
+import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,6 +32,7 @@ import javax.net.ssl.X509TrustManager
 interface AppContainer {
     val customersMasterDataRepository: CustomersMasterDataRepository
     val itemsRepository: ItemsRepository
+    val userPreferencesRepository: UserPreferencesRepository
 }
 
 /**
@@ -36,13 +41,19 @@ interface AppContainer {
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
 
+private const val LAYOUT_PREFERENCE_NAME = "layout_preferences"
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = LAYOUT_PREFERENCE_NAME
+)
+
+
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
     /**
      * Base URL for the MastroAndroid API
      */
 
-    private val BASE_URL = "https://192.168.0.121:8443/apiv1/lm/"
+    private val BASE_URL = "https://192.168.0.118:8443/apiv1/lm/"
     //"https://android-kotlin-fun-mars-server.appspot.com/"
 
 
@@ -120,5 +131,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val itemsRepository: ItemsRepository by lazy {
         OfflineItemsRepository(AppDatabase.getDatabase(context).itemDao())
     }
+
+    override val userPreferencesRepository: UserPreferencesRepository by lazy {
+        UserPreferencesRepository(dataStore = context.dataStore)
+    }
+
 
 }
