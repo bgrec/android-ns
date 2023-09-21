@@ -38,7 +38,9 @@ data class CustomerMasterData(
     @TypeConverters(CustomerMetadataTypeConverter::class)
     @SerializedName("_metadata") val metadata: Metadata,
 
-    @ColumnInfo(name = "last_updated") val lastUpdated: Long // Timestamp
+    @ColumnInfo(name = "page") var page: Int,
+    @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
+
 ) {
     fun trimAllStrings(): CustomerMasterData {
         return CustomerMasterData(
@@ -54,6 +56,7 @@ data class CustomerMasterData(
             links = links,
             taxId = taxId.trim(),
             metadata = metadata,
+            page = page,
             lastUpdated = lastUpdated
         )
     }
@@ -79,4 +82,3 @@ data class CustomersMasterDataResponse(
     val count: Int,
     val links: List<Link>
 )
-

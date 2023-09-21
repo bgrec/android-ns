@@ -5,39 +5,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.mastrosql.app.MastroAndroidApplication
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.data.customer.CustomersMasterDataRepository
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-
 sealed interface CustomersUiState {
-    data class Success(val customersMasterDataList: List<CustomerMasterData>) : CustomersUiState
+    data class Success(
+        val customersMasterDataList: List<CustomerMasterData>
+    ) : CustomersUiState
+
     data class Error(val exception: Exception) : CustomersUiState
-    object Loading : CustomersUiState
+    data object Loading : CustomersUiState
 }
 
-class CustomersMasterDataViewModel(
-    private val customersMasterDataRepository: CustomersMasterDataRepository
-) : ViewModel() {
+/**
+ * Factory for [CustomersMasterDataViewModel] that takes [CustomersMasterDataRepository] as a dependency
+ */
 
-    /** The mutable State that stores the status of the most recent request */
+class CustomersMasterDataViewModel(
+    private val customersMasterDataRepository: CustomersMasterDataRepository,
+) : ViewModel() {
 
     var customersUiState: CustomersUiState by mutableStateOf(CustomersUiState.Loading)
         private set
 
-    /**
-     * Call getCustomersMasterData() on init so we can display status immediately.
-     */
     init {
         getCustomersMasterData()
+        //getPagedCustomerMasterData()
+        Log.i("CustomersModel", "CustomersMasterDataViewModel created!")
     }
 
     /**
@@ -49,37 +47,19 @@ class CustomersMasterDataViewModel(
             customersUiState = CustomersUiState.Loading
             customersUiState =
                 try {
-                    val customerMasterDataListResult = customersMasterDataRepository.getCustomersMasterData().items
+                    val customerMasterDataListResult =
+                        customersMasterDataRepository.getCustomersMasterData().items
 
-                    val trimmedCustomerList = customerMasterDataListResult.map { it.trimAllStrings() }
+                    val trimmedCustomerList =
+                        customerMasterDataListResult.map { it.trimAllStrings() }
                     CustomersUiState.Success(trimmedCustomerList)
                 } catch (e: IOException) {
                     CustomersUiState.Error(e)
                 } catch (e: HttpException) {
                     CustomersUiState.Error(e)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     CustomersUiState.Error(e)
                 }
         }
     }
-
-    /**
-     * Factory for [CustomersMasterDataViewModel] that takes [CustomersMasterDataRepository] as a dependency
-     */
-
-    /*
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as MastroAndroidApplication)
-                val customersMasterDataRepository =
-                    application.container.customersMasterDataRepository
-                CustomersMasterDataViewModel(customersMasterDataRepository = customersMasterDataRepository)
-            }
-        }
-    }
-*/
 }
-
-

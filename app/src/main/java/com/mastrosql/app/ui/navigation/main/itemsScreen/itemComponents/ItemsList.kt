@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -26,7 +27,7 @@ fun ItemsList(
 ) {
     LazyColumn(modifier = modifier) {
         items(itemsList) { item ->
-            val quantityState = rememberSaveable { mutableStateOf(0.00) }
+            val quantityState = rememberSaveable { mutableDoubleStateOf(0.00) }
             ItemCard(
                 itemTest = item,
                 orderQuantity = quantityState.value,

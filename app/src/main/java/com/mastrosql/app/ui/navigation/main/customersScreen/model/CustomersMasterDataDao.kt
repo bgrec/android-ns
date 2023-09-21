@@ -7,15 +7,18 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * The Data Access Object for the [CustomerMasterData] class.
+ * Defines the SQL queries that Room knows how to do with our [CustomerMasterData] class.
+ */
 
 @Dao
 interface CustomersMasterDataDao {
-    // Specify the conflict strategy as IGNORE, when the user tries to add an
-    // existing Item into the database Room ignores the conflict.
+    /** Specify the conflict strategy as IGNORE, when the user tries to add an
+    * existing row into the database Room ignores the conflict.
+    */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(customerMasterData: CustomerMasterData)
 
@@ -28,16 +31,25 @@ interface CustomersMasterDataDao {
     @Delete
     suspend fun delete(customerMasterData: CustomerMasterData)
 
-    @Query("SELECT * from customers WHERE id = :id")
-    fun getCustomerMasterData(id: Int): Flow<CustomerMasterData>
+    @Query("DELETE FROM customers")
+    suspend fun deleteAll()
 
-    @Query("SELECT * from customers ORDER BY businessName ASC")
-    fun getAllCustomers(): Flow<List<CustomerMasterData>>
+    /*@Query("SELECT * from customers WHERE id = :id")
+    fun getCustomerMasterDataById(id: Int): Flow<CustomerMasterData>*/
+
+    /*@Query("SELECT * from customers ORDER BY id ASC")
+    fun getAllCustomers(): Flow<List<CustomerMasterData>>*/
 
     @Query("SELECT * FROM customers WHERE businessName LIKE :query")
-    fun pagingSource(query: String): PagingSource<Int, CustomerMasterData>
+    fun getCustomersByBusinessName(query: String): Flow<CustomerMasterData>
 
-    @Query("DELETE FROM customers")
-    suspend fun clearAll()
+    @Query("SELECT MAX(last_updated) FROM customers AS last_updated")
+    suspend fun lastUpdated() : Long
+
+    @Query("SELECT * FROM customers")
+    fun getPagedCustomers(): PagingSource<Int, CustomerMasterData>
+
+    @Query("SELECT * FROM customers")
+    fun getCustomersMasterDataList(): List<CustomerMasterData>
 
 }

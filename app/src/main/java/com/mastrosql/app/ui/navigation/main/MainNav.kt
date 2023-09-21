@@ -8,6 +8,7 @@ import androidx.navigation.compose.navigation
 import com.mastrosql.app.ui.navigation.intro.composables.AboutScreen
 import com.mastrosql.app.ui.navigation.main.cartScreen.CartScreen
 import com.mastrosql.app.ui.navigation.main.cartScreen.CartViewModel
+import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersPagedScreen
 import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
@@ -28,18 +29,11 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         }
         composable(MainNavOption.CustomersScreen.name) {
 
-            /* ok funziona
-            val customersMasterDataViewModel: CustomersMasterDataViewModel =
-        
-                viewModel(factory = AppViewModelProvider.Factory)
-            CustomersScreen(
-                customersUiState = customersMasterDataViewModel.customersUiState,
-                retryAction = customersMasterDataViewModel::getCustomersMasterData,
-                drawerState,
-                navController
-            )
-            */
-            CustomersScreen(drawerState, navController)
+            CustomersScreen(drawerState = drawerState, navController = navController)
+        }
+        composable(MainNavOption.CustomersPagedScreen.name) {
+
+            CustomersPagedScreen(drawerState = drawerState, navController = navController)
         }
         composable(MainNavOption.ItemsScreen.name) {
             ItemsComposable()
@@ -60,6 +54,7 @@ enum class MainNavOption {
     LoginScreen,
     HomeScreen,
     CustomersScreen,
+    CustomersPagedScreen,
     ItemsScreen,
     AboutScreen,
     SettingsScreen,

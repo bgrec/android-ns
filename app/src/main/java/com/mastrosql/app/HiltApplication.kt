@@ -5,26 +5,9 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
-import com.mastrosql.app.data.AppContainer
-import com.mastrosql.app.data.DefaultAppContainer
 import dagger.hilt.android.HiltAndroidApp
-
+/*
 @HiltAndroidApp
-//MastroAndroidApplication is the entry point for the app. It initializes the dependency graph and sets up the app-level components.
-class MastroAndroidApplication : Application() {
-    /**
-     * AppContainer instance used by the rest of classes to obtain dependencies
-     * */
-    lateinit var container: AppContainer
-    //lateinit var userPreferencesRepository: UserPreferencesRepository
-
-    override fun onCreate() {
-        super.onCreate()
-        container = DefaultAppContainer(this)
-        //userPreferencesRepository = UserPreferencesRepository(dataStore)
-    }
-}
-
 class HiltApplication: Application(), ImageLoaderFactory {
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
@@ -44,3 +27,5 @@ class HiltApplication: Application(), ImageLoaderFactory {
     }
 
 }
+
+*/

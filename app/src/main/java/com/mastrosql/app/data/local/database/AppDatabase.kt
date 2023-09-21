@@ -30,7 +30,6 @@ import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemot
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -50,13 +49,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun customersMasterDataDao(): CustomersMasterDataDao
     abstract fun customersRemoteKeysDao(): CustomersRemoteKeysDao
-    //abstract fun lastUpdated(): TimeUnit
 
     companion object {
         @Volatile
         private var Instance: AppDatabase? = null
 
-        fun getDatabase(context: Context): AppDatabase {
+        fun getInstance(context: Context): AppDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, AppDatabase::class.java, "app_database")

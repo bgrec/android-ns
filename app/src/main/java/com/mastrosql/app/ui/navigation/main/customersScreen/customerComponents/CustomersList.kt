@@ -75,6 +75,7 @@ fun ItemsListPreview() {
                     emptyList(),
                     "taxId",
                     Metadata("etag"),
+                    0,
                     0L
                 ),
                 CustomerMasterData(
@@ -89,6 +90,7 @@ fun ItemsListPreview() {
                     emptyList(),
                     "taxId",
                     Metadata("etag"),
+                    0,
                     0L
                 )
             ),

@@ -239,6 +239,7 @@ fun CustomerCardPreview() {
                 emptyList(),
                 "taxId",
                 Metadata("etag"),
+                0,
                 0L
             ), modifier = Modifier, navController = NavController(LocalContext.current)
         )

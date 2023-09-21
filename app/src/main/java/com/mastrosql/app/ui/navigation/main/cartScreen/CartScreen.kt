@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,7 +44,7 @@ fun CartScreen(
     val viewModel = CartViewModel()
     val cartItems by viewModel.cartItems.collectAsState()
 
-    var expandedListIndex by remember { mutableStateOf(-1) }
+    var expandedListIndex by remember { mutableIntStateOf(-1) }
     // val cartViewModel = viewModel<CartViewModel>()
 
     Scaffold(

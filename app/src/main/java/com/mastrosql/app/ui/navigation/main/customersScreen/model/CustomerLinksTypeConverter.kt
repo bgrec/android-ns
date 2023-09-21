@@ -4,6 +4,9 @@ import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * Type converter for links list
+ */
 class CustomerLinksTypeConverter {
     private val json = Json { ignoreUnknownKeys = true }
 

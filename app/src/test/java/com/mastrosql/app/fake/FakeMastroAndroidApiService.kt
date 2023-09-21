@@ -19,7 +19,7 @@ import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMaste
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 
 class FakeMastroAndroidApiService : MastroAndroidApiService {
-    override suspend fun getCustomersMasterData(): CustomersMasterDataResponse {
+    override suspend fun getAllCustomersMasterData(): CustomersMasterDataResponse {
         return FakeDataSource.customersMasterDataResponse
     }
 

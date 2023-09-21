@@ -15,13 +15,99 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
-import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.customersScreen.customerComponents.CustomersList
 import com.mastrosql.app.ui.navigation.main.customersScreen.customerComponents.SearchView
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
+import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomersScreen(
+    drawerState: DrawerState,
+    navController: NavController,
+    viewModel: CustomersMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val customersUiState = viewModel.customersUiState
+    val modifier = Modifier.fillMaxSize()
+
+    when (customersUiState) {
+        is CustomersUiState.Loading -> LoadingScreen(
+            modifier = modifier.fillMaxSize(),
+            drawerState = drawerState,
+            navController = navController,
+            loading = true
+        )
+
+        is CustomersUiState.Success -> CustomersResultScreen(
+            customersUiState.customersMasterDataList,
+            modifier = modifier.fillMaxWidth(),
+            drawerState = drawerState,
+            navController = navController
+        )
+
+        is CustomersUiState.Error -> ErrorScreen(
+            customersUiState.exception,
+            viewModel::getCustomersMasterData,
+            modifier = modifier.fillMaxSize(),
+            drawerState = drawerState,
+            navController = navController
+        )
+    }
+
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun CustomersResultScreen(
+    customerMasterDataList: List<CustomerMasterData>,
+    modifier: Modifier = Modifier,
+    drawerState: DrawerState,
+    navController: NavController
+) {
+    Scaffold(topBar = {
+        AppBar(
+            drawerState = drawerState, title = R.string.drawer_customers
+        )
+    }) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            // verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val textState = remember { mutableStateOf(TextFieldValue("")) }
+            SearchView(state = textState)
+            CustomersList(
+                customerMasterDataList = customerMasterDataList,
+                state = textState,
+                modifier = Modifier.padding(4.dp),
+                navController = navController
+            )
+        }
+
+    }
+}
+
+
+@Preview
+@Composable
+fun CustomersScreenPreview() {
+    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
+    CustomersScreen(
+        drawerState = DrawerState(DrawerValue.Closed),
+        navController = NavController(LocalContext.current)
+    )
+}
+
+@Preview
+@Composable
+fun SearchBarPreview() {
+    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
+}
 
 /*
 *  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -56,41 +142,6 @@ fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = 
 *
 * */
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomersScreen(
-    drawerState: DrawerState,
-    navController: NavController,
-    viewModel: CustomersMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
-) {
-    val customersUiState = viewModel.customersUiState
-    val modifier = Modifier.fillMaxSize()
-    when (customersUiState) {
-        is CustomersUiState.Loading -> LoadingScreen(
-            modifier = modifier.fillMaxSize(),
-            drawerState = drawerState,
-            navController = navController,
-            loading = true
-        )
-
-        is CustomersUiState.Success -> CustomersResultScreen(
-            customersUiState.customersMasterDataList,
-            modifier = modifier.fillMaxWidth(),
-            drawerState = drawerState,
-            navController = navController
-        )
-
-        is CustomersUiState.Error -> ErrorScreen(
-            customersUiState.exception,
-            viewModel::getCustomersMasterData,
-            modifier = modifier.fillMaxSize(),
-            drawerState = drawerState,
-            navController = navController
-        )
-    }
-
-}
-
 
 /**
  * Versione con SearchBar diversa
@@ -124,54 +175,3 @@ fun CustomersScreen(
  *     }
  * }
  */
-
-@ExperimentalMaterial3Api
-@Composable
-fun CustomersResultScreen(
-    customerMasterDataList: List<CustomerMasterData>,
-    modifier: Modifier = Modifier,
-    drawerState: DrawerState,
-    navController: NavController
-) {
-    Scaffold(
-        topBar = { AppBar(
-            drawerState = drawerState,
-            title = R.string.drawer_customers ) }
-    ) { it ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-               // verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-        )
-        {
-            val textState = remember { mutableStateOf(TextFieldValue("")) }
-            SearchView(state = textState)
-            CustomersList(
-                customerMasterDataList = customerMasterDataList,
-                state = textState,
-                modifier = Modifier.padding(4.dp),
-                navController = navController
-            )
-        }
-
-    }
-}
-
-
-@Preview
-@Composable
-fun CustomersScreenPreview() {
-    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-    CustomersScreen(
-        drawerState = DrawerState(DrawerValue.Closed),
-        navController = NavController(LocalContext.current)
-    )
-}
-
-@Preview
-@Composable
-fun SearchBarPreview() {
-    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-}

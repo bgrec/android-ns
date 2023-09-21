@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 /**
- * A public interface that exposes the [getCustomersMasterData] method
+ * A public interface that exposes the [getAllCustomersMasterData] method
  */
 
 interface MastroAndroidApiService {
@@ -16,9 +16,25 @@ interface MastroAndroidApiService {
      * HTTP method
      */
 
-    @GET("customersMasterData")
-    suspend fun getCustomersMasterData(): CustomersMasterDataResponse
+    /**
+     * suspend fun getAllCustomersMasterData(): CustomersMasterDataResponse
+     * without parameters takes the default values of mysql offset and limit
+     */
 
+    @GET("customersMasterData")
+    suspend fun getAllCustomersMasterData(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1000000
+    ): CustomersMasterDataResponse
+
+    /**
+     * Query parameters are added to the URL after a question mark. They are separated from the URL
+     * by a "&" character. The query parameters are indicated by the @Query annotation.
+     * The @Query annotation has a parameter that is the query parameter name and a second parameter
+     * that is the value of that query parameter.
+     */
+
+    // @GET("movie/popular?api_key=${MOVIE_API_KEY}&language=en-US")
     @GET("customersMasterData")
     suspend fun getCustomersMasterDataPage(
         @Query("offset") offset: Int,

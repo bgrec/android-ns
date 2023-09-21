@@ -58,7 +58,7 @@ class DataSourceTest {
         return filterItems(loadItems(), query)
     }
 
-    fun loadCustomers(): List<CustomerMasterData> {
+    private fun loadCustomers(): List<CustomerMasterData> {
         return listOf<CustomerMasterData>(
             /* CustomerMasterData(1, "description1"),
              CustomerMasterData(2, "description2"),
@@ -109,7 +109,7 @@ class DataSourceTest {
     ): List<CustomerMasterData> {
         // Filter the list
         //return list.filter { it.description?.contains(query, ignoreCase = true) ?: false }
-        return list.filter { it.businessName?.contains(query, ignoreCase = true) ?: false }
+        return list.filter { it.businessName.contains(query, ignoreCase = true) }
     }
 
     fun loadFilteredClientsByDescription(query: String): List<CustomerMasterData> {

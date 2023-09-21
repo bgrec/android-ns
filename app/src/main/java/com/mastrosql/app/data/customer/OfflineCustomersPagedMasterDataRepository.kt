@@ -4,7 +4,7 @@ import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
 
-class OfflineCustomersMasterDataRepository(private val customerMasterDataDao: CustomersMasterDataDao) :
+class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDao: CustomersMasterDataDao) :
     CustomersMasterDataRepository {
 
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse {

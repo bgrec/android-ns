@@ -51,6 +51,12 @@ fun MainCompose(
                         }
                     }
 
+                    MainNavOption.CustomersPagedScreen -> {
+                        navController.navigate(onUserPickedOption.name) {
+                            popUpTo(NavRoutes.MainRoute.name)
+                        }
+                    }
+
                     MainNavOption.ItemsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
@@ -111,6 +117,12 @@ object DrawerParams {
         ),
         AppDrawerItemInfo(
             MainNavOption.CustomersScreen,
+            R.string.drawer_customers,
+            android.R.drawable.ic_menu_myplaces,
+            R.string.drawer_home_description
+        ),
+        AppDrawerItemInfo(
+            MainNavOption.CustomersPagedScreen,
             R.string.drawer_customers,
             android.R.drawable.ic_menu_myplaces,
             R.string.drawer_home_description

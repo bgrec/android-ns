@@ -7,10 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.item.ItemsRepository
-import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetails
-import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemUiState
-import com.mastrosql.app.ui.navigation.main.itemsScreen.toItem
-import com.mastrosql.app.ui.navigation.main.itemsScreen.toItemUiState
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

@@ -5,7 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.mastrosql.app.data.customer.CustomersMasterDataRepository
+import com.mastrosql.app.data.customer.CustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customer.NetworkCustomersMasterDataRepository
+import com.mastrosql.app.data.customer.NetworkDbCustomersPagedMasterDataRepository
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
@@ -33,6 +35,7 @@ interface AppContainer {
     val customersMasterDataRepository: CustomersMasterDataRepository
     val itemsRepository: ItemsRepository
     val userPreferencesRepository: UserPreferencesRepository
+    val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository
 }
 
 /**
@@ -46,15 +49,15 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = LAYOUT_PREFERENCE_NAME
 )
 
+/**
+ * Base URL for the MastroAndroid API
+ */
+
+private const val BASE_URL = "https://192.168.0.118:8443/apiv1/lm/"
+//"https://android-kotlin-fun-mars-server.appspot.com/"
+
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
-
-    /**
-     * Base URL for the MastroAndroid API
-     */
-
-    private val BASE_URL = "https://192.168.0.118:8443/apiv1/lm/"
-    //"https://android-kotlin-fun-mars-server.appspot.com/"
 
 
     // Custom TrustManager for testing purposes (not recommended for production)
@@ -123,18 +126,24 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     /**
+     * DI implementation for Customer Master Data repository
+     */
+    override val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository by lazy {
+        NetworkDbCustomersPagedMasterDataRepository(retrofitService)
+
+    }
+
+    /**
      * [AppContainer] implementation that provides instance of [OfflineItemsRepository]
      */
     /**
      * Implementation for [ItemsRepository]
      */
     override val itemsRepository: ItemsRepository by lazy {
-        OfflineItemsRepository(AppDatabase.getDatabase(context).itemDao())
+        OfflineItemsRepository(AppDatabase.getInstance(context).itemDao())
     }
 
     override val userPreferencesRepository: UserPreferencesRepository by lazy {
         UserPreferencesRepository(dataStore = context.dataStore)
     }
-
-
 }
