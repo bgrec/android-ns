@@ -43,3 +43,5 @@ interface MastroAndroidApiService {
 }
 
 
+// @Header("Authorization") authorization:String,
+// @Header("Client-Id") clientId:String,

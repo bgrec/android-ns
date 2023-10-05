@@ -46,7 +46,6 @@ fun CustomersPagedScreen(
             Log.i("CustomersMasterDat", "CustomersMasterDataViewModel created!")
             CustomersPagedList(
                 customers = customers,
-                state = textState,
                 modifier = Modifier,
                 navController = navController,
                 drawerState = drawerState

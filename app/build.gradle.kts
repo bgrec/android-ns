@@ -125,6 +125,9 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.work.runtime.ktx)
+    //implementation(libs.androidx.compose.material.pullrefresh)
+
 
     //Paging
     implementation(libs.androidx.paging.runtime)
@@ -156,6 +159,9 @@ dependencies {
     //Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
+
+    //Accompanist
+    implementation(libs.accompanist.permissions)
     
 
     // Instrumented tests
@@ -174,6 +180,8 @@ dependencies {
     testImplementation(libs.androidx.test.runner)
     //testImplementation(libs.androidx.test.rules)
     testImplementation(libs.androidx.test.espresso.core)
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.hilt.android.testing)
 
 
 

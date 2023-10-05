@@ -3,7 +3,7 @@ androidGradlePlugin = "8.1.1"
 androidxCore = "1.12.0"
 androidxLifecycle = "2.6.2"
 androidxActivity = "1.7.2"
-androidxComposeBom = "2023.09.00"
+androidxComposeBom = "2023.09.01"
 androidxComposeCompiler = "1.5.3"
 androidxHilt = "1.0.0"
 androidxNavigation = "2.7.3"
@@ -30,6 +30,13 @@ pagingVersion = "3.2.1"
 coilVersion = "2.4.0"
 leakcanaryVersion = "2.9.1"
 composeUi = "1.5.1"
+workManagerVersion = "2.8.1"
+accompanist = "0.32.0"
+
+# Each release outlines what version of the Compose UI libraries it depends on. We are currently releasing multiple versions of Accompanist for the different versions of Compose:
+#https://github.com/google/accompanist
+#Ensure you are using the Accompanist version that matches with your Compose UI version: If you upgrade Accompanist, it will upgrade your Compose libraries version via transitive dependencies.
+
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -41,7 +48,7 @@ androidx-compose-material = { group = "androidx.compose.material", name = "mater
 
 androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-extended" , version.ref = "materialIconsCore" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
-androidx-compose-material-pullrefresh = { group = "androidx.compose.material", name = "pullrefresh"}
+#androidx-compose-material-pullrefresh = { group = "androidx.compose.material.pullrefresh", name = ""}
 
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "composeUi" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview"}
@@ -61,6 +68,13 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "androidxRoom" }
 
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
+androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "workManagerVersion" }
+androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "workManagerVersion" }
+
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+
+
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTest" }
 androidx-test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "androidxTest" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestExt" }
@@ -73,6 +87,7 @@ android-test-core = { module = "androidx.test:core", version.ref = "androidxTest
 android-test-ext-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "androidxTestExt" }
 android-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 android-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "expressoCoreVersion" }
+
 
 
 
