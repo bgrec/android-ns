@@ -22,20 +22,18 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-
 /**
  * Dependency Injection container at the application level.
- */
-
-/**
- * App container for Dependency injection.
+ *  App container for Dependency injection.
  */
 
 interface AppContainer {
+
     val customersMasterDataRepository: CustomersMasterDataRepository
     val itemsRepository: ItemsRepository
     val userPreferencesRepository: UserPreferencesRepository
     val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository
+
 }
 
 /**
@@ -121,7 +119,11 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
      * DI implementation for Customer Master Data repository
      */
     override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
-        NetworkCustomersMasterDataRepository(retrofitService, AppDatabase.getInstance(context).customersMasterDataDao())
+        NetworkCustomersMasterDataRepository(
+            retrofitService,
+            AppDatabase.getInstance(context).customersMasterDataDao(),
+            context
+        )
 
     }
 

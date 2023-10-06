@@ -9,7 +9,6 @@ import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.local.database.AppDatabase
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemoteKeys
-import kotlinx.coroutines.delay
 import retrofit2.HttpException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -97,7 +96,8 @@ class CustomersRemoteMediator(
 
                 val prevKey =
                     if (loadKey >= CUSTOMERS_DEFAULT_LIMIT) loadKey - CUSTOMERS_DEFAULT_LIMIT else null
-                val nextKey = if (endOfPaginationReached) null else loadKey + CUSTOMERS_DEFAULT_LIMIT
+                val nextKey =
+                    if (endOfPaginationReached) null else loadKey + CUSTOMERS_DEFAULT_LIMIT
                 val remoteKeys = customers.map {
                     CustomersRemoteKeys(
                         customerId = it.id,

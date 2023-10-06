@@ -10,12 +10,10 @@ import kotlinx.coroutines.flow.Flow
  * Repository that fetch customers data list from MastroAndroid API.
  */
 
-interface CustomersMasterDataRepository  : DataSyncOperations<CustomerMasterData> {
+interface CustomersMasterDataRepository : DataSyncOperations<CustomerMasterData> {
 
-    //val outputWorkInfo: Flow<WorkInfo>
+    val outputWorkInfo: Flow<WorkInfo>
     suspend fun getCustomersMasterData(): CustomersMasterDataResponse
     suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
-
-
 
 }

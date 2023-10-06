@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDao: CustomersMasterDataDao) :
     CustomersMasterDataRepository {
 
-    /*override val outputWorkInfo: Flow<WorkInfo>
-        get() = TODO("Not yet implemented")*/
+    override val outputWorkInfo: Flow<WorkInfo>
+        get() = TODO("Not yet implemented")
 
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse {
         TODO("Not yet implemented")

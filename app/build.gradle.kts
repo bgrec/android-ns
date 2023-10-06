@@ -126,6 +126,8 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.work.runtime)
+
     //implementation(libs.androidx.compose.material.pullrefresh)
 
 
@@ -166,9 +168,13 @@ dependencies {
 
     // Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.squareup.leakcanary.android)
+
+    //WorkManager testing
+    androidTestImplementation(libs.androidx.work.testing)
 
     // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit)

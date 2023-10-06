@@ -9,7 +9,7 @@ import retrofit2.HttpException
 
 private const val TAG = "SyncDataWorker"
 
-class SyncDataWorker<T>(
+class DataSyncWorker<T>(
     appContext: Context,
     workerParams: WorkerParameters,
     private val dataSyncOperations: DataSyncOperations<T>

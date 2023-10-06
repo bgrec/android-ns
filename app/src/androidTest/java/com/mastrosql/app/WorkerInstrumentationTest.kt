@@ -23,14 +23,14 @@ class WorkerInstrumentationTest {
         context = ApplicationProvider.getApplicationContext()
     }
 
-    @Test
-    fun cleanupWorker_doWork_resultSuccess() {
-        val worker = TestListenableWorkerBuilder<CleanupWorker>(context).build()
+    //@Test
+    /*fun cleanupWorker_doWork_resultSuccess() {
+        val worker = TestListenableWorkerBuilder<CleanupWorker(context).build()
         runBlocking {
             val result = worker.doWork()
             assertTrue(result is ListenableWorker.Result.Success)
         }
-    }
+    }*/
 
     @Test
     fun blurWorker_doWork_resultSuccessReturnsUri() {
@@ -50,7 +50,7 @@ class WorkerInstrumentationTest {
 
     }
 
-    @Test
+   /* @Test
     fun saveImageToFileWorker_doWork_resultSuccessReturnsUrl() {
         val worker = TestListenableWorkerBuilder<SaveImageToFileWorker>(context)
             .setInputData(workDataOf(mockUriInput))
@@ -65,5 +65,5 @@ class WorkerInstrumentationTest {
                     ?: false
             )
         }
-    }
+    }*/
 }

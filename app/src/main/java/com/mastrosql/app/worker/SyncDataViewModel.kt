@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.stateIn
 
 class SyncDataViewModel(private val customersRepository: CustomersMasterDataRepository) :
     ViewModel() {
-/*
+
+    //Whether the work is BLOCKED, CANCELLED, ENQUEUED, FAILED, RUNNING or SUCCEEDED.
+
     val syncDataUiState: StateFlow<SyncDataUiState> = customersRepository.outputWorkInfo
         .map { info ->
             //val outputImageUri = info.outputData.getString(KEY_IMAGE_URI)
@@ -19,9 +21,11 @@ class SyncDataViewModel(private val customersRepository: CustomersMasterDataRepo
                 info.state.isFinished /*&& !outputImageUri.isNullOrEmpty()*/ -> {
                     SyncDataUiState.Complete(outputMessage = "done")
                 }
+
                 info.state == WorkInfo.State.CANCELLED -> {
                     SyncDataUiState.Default
                 }
+
                 else -> SyncDataUiState.Loading
             }
         }.stateIn(
@@ -29,12 +33,13 @@ class SyncDataViewModel(private val customersRepository: CustomersMasterDataRepo
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SyncDataUiState.Default
         )
+
     /*val syncDataWorker = SyncDataWorker(
         appContext = applicationContext,
         workerParams = workerParams,
         dataSyncOperations = customersRepository
     )*/
-*/
+
     fun syncData() {
         // customersRepository.applyBlur(blurLevel)
     }

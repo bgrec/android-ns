@@ -1,6 +1,6 @@
 package com.mastrosql.app.data.customer
 
-import android.app.Application
+import android.content.Context
 import androidx.lifecycle.asFlow
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -14,7 +14,7 @@ import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.worker.CleanupWorker
-import com.mastrosql.app.worker.SyncDataWorker
+import com.mastrosql.app.worker.DataSyncWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -24,17 +24,17 @@ import kotlinx.coroutines.flow.mapNotNull
 
 class NetworkCustomersMasterDataRepository(
     private val mastroAndroidApiService: MastroAndroidApiService,
-    private val customerMasterDataDao: CustomersMasterDataDao
+    private val customerMasterDataDao: CustomersMasterDataDao,
+    context: Context
 ) : CustomersMasterDataRepository {
 
-    // set context as application context from parameter passed or from application context
-    //private val workManager = WorkManager.getInstance(Application().applicationContext)
+    // set context as application context from parameter passed
+    private val workManager = WorkManager.getInstance(context)
 
-   /* override val outputWorkInfo: Flow<WorkInfo> =
+    override val outputWorkInfo: Flow<WorkInfo> =
         workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
             if (it.isNotEmpty()) it.first() else null
-        }*/
-     //override val outputWorkInfo: Flow<WorkInfo> = TODO()
+        }
 
     /**
      * Fetches list of CustomersMasterData from mastroAndroidApi
@@ -60,8 +60,9 @@ class NetworkCustomersMasterDataRepository(
         customerMasterDataDao.deleteAll()
     }
 
-    /*fun syncData() {
+    fun syncData() {
         // Add WorkRequest to Cleanup temporary images
+        //beginWork not unique
         var continuation = workManager
             .beginUniqueWork(
                 "IMAGE_MANIPULATION_WORK_NAME",
@@ -75,7 +76,7 @@ class NetworkCustomersMasterDataRepository(
             .build()
 
         // Add WorkRequest to blur the image
-        val syncDataBuilder = OneTimeWorkRequestBuilder<SyncDataWorker<CustomerMasterData>>()
+        val syncDataBuilder = OneTimeWorkRequestBuilder<DataSyncWorker<CustomerMasterData>>()
 
         // Input the Uri for the blur operation along with the blur level
         //syncDataBuilder.setInputData(createInputDataForWorkRequest(blurLevel, imageUri))
@@ -84,20 +85,20 @@ class NetworkCustomersMasterDataRepository(
 
         continuation = continuation.then(syncDataBuilder.build())
 
-       /*
-        // Add WorkRequest to save the image to the filesystem
+        /*
+         // Add WorkRequest to save the image to the filesystem
 
-        val save = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
-            .addTag(TAG_OUTPUT)
-            .build()
-        continuation = continuation.then(save)
-        */
+         val save = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
+             .addTag(TAG_OUTPUT)
+             .build()
+         continuation = continuation.then(save)
+         */
 
         // Actually start the work
         continuation.enqueue()
 
 
-    }*/
+    }
 
 }
 /*
