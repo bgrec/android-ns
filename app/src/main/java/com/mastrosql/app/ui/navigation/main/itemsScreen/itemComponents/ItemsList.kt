@@ -30,9 +30,9 @@ fun ItemsList(
             val quantityState = rememberSaveable { mutableDoubleStateOf(0.00) }
             ItemCard(
                 itemTest = item,
-                orderQuantity = quantityState.value,
+                orderQuantity = quantityState.doubleValue,
                 onQuantityChange = { newQuantity ->
-                    quantityState.value = newQuantity
+                    quantityState.doubleValue = newQuantity
                 },
 
                 modifier =

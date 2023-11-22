@@ -1,4 +1,4 @@
-package com.mastrosql.app.data.customer
+package com.mastrosql.app.data.customers.paged
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType

@@ -9,20 +9,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.mastrosql.app.ui.navigation.main.MainCompose
+import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.worker.CleanupWorker
+import com.mastrosql.app.worker.DataSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 
 // Constants
@@ -44,11 +48,50 @@ class MainActivity : ComponentActivity() {
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
+        /*
+        //scheduling the workmanager to run every 15 minutes
+        val workManager = WorkManager.getInstance(applicationContext)
+
+        // Create the constraints for low battery and network connectivity
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            //.setRequiresBatteryNotLow(true)
+            .build()
+
+        // Create a one-time work request for CleanupWorker
+        val cleanupRequest = OneTimeWorkRequest.from(CleanupWorker::class.java)
+            //OneTimeWorkRequestBuilder<CleanupWorker<CustomerMasterData>>()
+            //.setConstraints(constraints) // You can set constraints if needed
+            //.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            //.build()
+
+        // Create a periodic work request for DataSyncWorker
+        val syncRequest = PeriodicWorkRequestBuilder<DataSyncWorker<CustomerMasterData>>(
+            repeatInterval = 2, // Time in minutes
+            repeatIntervalTimeUnit = TimeUnit.MINUTES
+        )
+            .setConstraints(constraints)
+            //.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .build()
+
+        // Enqueue CleanupWorker as one-time work
+        workManager.beginUniqueWork(
+            "CleanUp Work",
+            ExistingWorkPolicy.REPLACE,
+            cleanupRequest
+        ).enqueue()
+
+        // Enqueue DataSyncWorker as a separate periodic work
+        workManager.enqueueUniquePeriodicWork(
+            "Sync Work",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            syncRequest
+        )
+*/
 
         // Create the placeholder account
         mAccount = createSyncAccount()
@@ -60,49 +103,51 @@ class MainActivity : ComponentActivity() {
                     //modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                   /* val multiplePermissionsState = rememberMultiplePermissionsState(
-                        listOf(
-                            android.Manifest.permission.POST_NOTIFICATIONS,
-                            android.Manifest.permission.INTERNET,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION
-                        )
-                    )
-
-                    if (multiplePermissionsState.allPermissionsGranted) {
-                        Text("All permissions granted")
-                    } else {
-                        val allPermissionsRevoked =
-                            multiplePermissionsState.permissions.size ==
-                                    multiplePermissionsState.revokedPermissions.size
-                        val textToShow = if (!allPermissionsRevoked) {
-                            // If not all the permissions are revoked, it's because the user accepted the COARSE
-                            // location permission, but not the FINE one.
-                            "Yay! Thanks for letting me access your approximate location. " +
-                                    "But you know what would be great? If you allow me to know where you " +
-                                    "exactly are. Thank you!"
-                        } else if (multiplePermissionsState.shouldShowRationale) {
-                            // Both location permissions have been denied
-                            "Getting your exact location is important for this app. " +
-                                    "Please grant us fine location. Thank you :D"
-                        } else {
-                            // First time the user sees this feature or the user doesn't want to be asked again
-                            "This feature requires location permission"
-                        }
-
-                        val buttonText = if (!allPermissionsRevoked) {
-                            "Allow precise location"
-                        } else {
-                            "Request permissions"
-                        }
-
-                        Text(text = textToShow)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { multiplePermissionsState.launchMultiplePermissionRequest() }) {
-                            Text(buttonText)
-                        }
-                    }*/
                     MainCompose()
+
+                    /* val multiplePermissionsState = rememberMultiplePermissionsState(
+                         listOf(
+                             android.Manifest.permission.POST_NOTIFICATIONS,
+                             android.Manifest.permission.INTERNET,
+                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                             android.Manifest.permission.ACCESS_FINE_LOCATION
+                         )
+                     )
+
+                     if (multiplePermissionsState.allPermissionsGranted) {
+                         Text("All permissions granted")
+                     } else {
+                         val allPermissionsRevoked =
+                             multiplePermissionsState.permissions.size ==
+                                     multiplePermissionsState.revokedPermissions.size
+                         val textToShow = if (!allPermissionsRevoked) {
+                             // If not all the permissions are revoked, it's because the user accepted the COARSE
+                             // location permission, but not the FINE one.
+                             "Yay! Thanks for letting me access your approximate location. " +
+                                     "But you know what would be great? If you allow me to know where you " +
+                                     "exactly are. Thank you!"
+                         } else if (multiplePermissionsState.shouldShowRationale) {
+                             // Both location permissions have been denied
+                             "Getting your exact location is important for this app. " +
+                                     "Please grant us fine location. Thank you :D"
+                         } else {
+                             // First time the user sees this feature or the user doesn't want to be asked again
+                             "This feature requires location permission"
+                         }
+
+                         val buttonText = if (!allPermissionsRevoked) {
+                             "Allow precise location"
+                         } else {
+                             "Request permissions"
+                         }
+
+                         Text(text = textToShow)
+                         Spacer(modifier = Modifier.height(8.dp))
+                         Button(onClick = { multiplePermissionsState.launchMultiplePermissionRequest() }) {
+                             Text(buttonText)
+                         }
+                     }*/
+
                 }
 
             }

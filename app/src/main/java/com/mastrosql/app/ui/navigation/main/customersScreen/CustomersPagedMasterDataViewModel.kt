@@ -7,8 +7,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.mastrosql.app.data.customer.CustomersPagedMasterDataRepository
-import com.mastrosql.app.data.customer.CustomersRemoteMediator
+import com.mastrosql.app.data.customers.paged.CustomersPagedMasterDataRepository
+import com.mastrosql.app.data.customers.paged.CustomersRemoteMediator
 import com.mastrosql.app.data.local.database.AppDatabase
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import kotlinx.coroutines.flow.Flow

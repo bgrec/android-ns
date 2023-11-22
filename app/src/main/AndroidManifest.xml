@@ -44,7 +44,8 @@
 
         <service
             android:name="com.mastrosql.app.syncadapter.AuthenticatorService"
-            android:exported="true">
+            android:exported="true"
+            android:permission="TODO">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
@@ -64,12 +65,22 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
-       <!--
-       <provider
-            android:name="androidx.work.impl.WorkManagerInitializer"
-            android:authorities="${applicationId}.workmanager-init"
-            tools:node="remove" />
-            -->
+
+        <!-- to remove the workmanager auto init -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+
+        </provider>
+        <!-- to this -->
+
 
     </application>
 

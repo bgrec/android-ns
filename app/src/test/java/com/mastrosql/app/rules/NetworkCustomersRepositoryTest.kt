@@ -15,7 +15,7 @@
  */
 package com.mastrosql.app.rules
 
-import com.mastrosql.app.data.customer.NetworkCustomersMasterDataRepository
+import com.mastrosql.app.data.customers.NetworkCustomersMasterDataRepository
 import com.mastrosql.app.fake.FakeDataSource
 import com.mastrosql.app.fake.FakeMastroAndroidApiService
 import kotlinx.coroutines.test.runTest

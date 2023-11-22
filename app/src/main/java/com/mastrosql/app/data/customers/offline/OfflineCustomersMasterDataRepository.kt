@@ -1,12 +1,13 @@
-package com.mastrosql.app.data.customer
+package com.mastrosql.app.data.customers.offline
 
 import androidx.work.WorkInfo
+import com.mastrosql.app.data.customers.CustomersMasterDataRepository
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
 import kotlinx.coroutines.flow.Flow
 
-class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDao: CustomersMasterDataDao) :
+class OfflineCustomersMasterDataRepository(private val customerMasterDataDao: CustomersMasterDataDao) :
     CustomersMasterDataRepository {
 
     override val outputWorkInfo: Flow<WorkInfo>
@@ -35,4 +36,5 @@ class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDa
     fun getCustomersMasterDataList(): List<CustomerMasterData> {
         return customerMasterDataDao.getCustomersMasterDataList()
     }
+
 }

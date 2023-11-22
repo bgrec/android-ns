@@ -1,4 +1,4 @@
-package com.mastrosql.app.data.customer
+package com.mastrosql.app.data.customers
 
 import androidx.work.WorkInfo
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData

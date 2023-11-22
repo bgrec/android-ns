@@ -1,3 +1,5 @@
+@file:Suppress("EmptyMethod")
+
 package com.mastrosql.app.ui.navigation.main.customersScreen
 
 import android.util.Log
@@ -6,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mastrosql.app.data.customer.CustomersMasterDataRepository
+import com.mastrosql.app.data.customers.CustomersMasterDataRepository
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import kotlinx.coroutines.launch
 import retrofit2.HttpException

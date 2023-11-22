@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.mastrosql.app.data.customer.CustomersMasterDataRepository
-import com.mastrosql.app.data.customer.CustomersPagedMasterDataRepository
-import com.mastrosql.app.data.customer.NetworkCustomersMasterDataRepository
-import com.mastrosql.app.data.customer.NetworkDbCustomersPagedMasterDataRepository
+import com.mastrosql.app.data.customers.CustomersMasterDataRepository
+import com.mastrosql.app.data.customers.paged.CustomersPagedMasterDataRepository
+import com.mastrosql.app.data.customers.paged.NetworkDbCustomersPagedMasterDataRepository
+import com.mastrosql.app.data.customers.workmanager.WorkManagerCustomersMasterDataRepository
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
@@ -30,9 +30,10 @@ import javax.net.ssl.X509TrustManager
 interface AppContainer {
 
     val customersMasterDataRepository: CustomersMasterDataRepository
+    val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository
+    val customerMasterDataWorkManagerRepository: CustomersMasterDataRepository
     val itemsRepository: ItemsRepository
     val userPreferencesRepository: UserPreferencesRepository
-    val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository
 
 }
 
@@ -51,7 +52,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  * Base URL for the MastroAndroid API
  */
 
-private const val BASE_URL = "https://192.168.0.118:8443/apiv1/lm/"
+private const val BASE_URL = "https://192.168.0.125:8444/apiv1/lm/"
 //"https://android-kotlin-fun-mars-server.appspot.com/"
 
 
@@ -119,12 +120,13 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
      * DI implementation for Customer Master Data repository
      */
     override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
-        NetworkCustomersMasterDataRepository(
-            retrofitService,
-            AppDatabase.getInstance(context).customersMasterDataDao(),
-            context
-        )
-
+        //ok working
+        /*NetworkCustomersMasterDataRepository(
+                retrofitService,
+                AppDatabase.getInstance(context).customersMasterDataDao(),
+                context
+            )*/
+        WorkManagerCustomersMasterDataRepository(retrofitService, context)
     }
 
     /**
@@ -148,6 +150,12 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val userPreferencesRepository: UserPreferencesRepository by lazy {
         UserPreferencesRepository(dataStore = context.dataStore)
     }
+
+    override val customerMasterDataWorkManagerRepository: CustomersMasterDataRepository by lazy {
+        WorkManagerCustomersMasterDataRepository(retrofitService, context)
+    }
+
+
 }
 /*class ImgurApi private constructor() {
 

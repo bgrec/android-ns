@@ -43,6 +43,5 @@ class DataSyncWorker<T>(
 
     }
 
-
     //val customersRepository = NetworkCustomersMasterDataRepository()
 }

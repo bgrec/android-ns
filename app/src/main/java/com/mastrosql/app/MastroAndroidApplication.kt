@@ -2,13 +2,14 @@ package com.mastrosql.app
 
 import android.app.Application
 import androidx.work.Configuration
+import androidx.work.WorkManager
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.mastrosql.app.data.AppContainer
 import com.mastrosql.app.data.DefaultAppContainer
-import com.squareup.leakcanary.core.BuildConfig
+import com.mastrosql.app.worker.WorkerFactory
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -17,7 +18,7 @@ class MastroAndroidApplication : Application() {
     /**
      * AppContainer instance used by the rest of classes to obtain dependencies
      * */
-    lateinit var container: AppContainer
+    lateinit var appContainer: AppContainer
 
     /*override fun getWorkManagerConfiguration(): Configuration {
         return if (BuildConfig.DEBUG) {
@@ -31,16 +32,29 @@ class MastroAndroidApplication : Application() {
         }
     }*/
 
-
-
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer(this)
+
+        // Initialize your AppContainer
+        appContainer = DefaultAppContainer(this)
         //userPreferencesRepository = UserPreferencesRepository(dataStore)
+
+        // Initialize CMDWorkerFactory with AppContainer
+        val workerFactory = WorkerFactory(appContainer)
+
+        // Configure WorkManager with WorkerFactory
+        val configuration = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.DEBUG)
+            .setWorkerFactory(workerFactory)
+            .build()
+
+        // Initialize WorkManager
+        WorkManager.initialize(this, configuration)
+
     }
 }
 
-class HiltApplication: Application(), ImageLoaderFactory {
+class HiltApplication : Application(), ImageLoaderFactory {
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .crossfade(true)
@@ -57,5 +71,4 @@ class HiltApplication: Application(), ImageLoaderFactory {
             }
             .build()
     }
-
 }

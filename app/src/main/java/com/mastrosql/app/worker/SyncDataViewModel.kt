@@ -3,7 +3,7 @@ package com.mastrosql.app.worker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
-import com.mastrosql.app.data.customer.CustomersMasterDataRepository
+import com.mastrosql.app.data.customers.CustomersMasterDataRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map

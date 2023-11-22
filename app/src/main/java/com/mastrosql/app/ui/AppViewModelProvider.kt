@@ -27,47 +27,47 @@ object AppViewModelProvider {
         initializer {
             ItemEditViewModel(
                 this.createSavedStateHandle(),
-                mastroAndroidApplication().container.itemsRepository
+                mastroAndroidApplication().appContainer.itemsRepository
             )
         }
         // Initializer for ItemEntryViewModel
         initializer {
-            ItemEntryViewModel(mastroAndroidApplication().container.itemsRepository)
+            ItemEntryViewModel(mastroAndroidApplication().appContainer.itemsRepository)
         }
 
         // Initializer for ItemDetailsViewModel
         initializer {
             ItemDetailsViewModel(
                 this.createSavedStateHandle(),
-                mastroAndroidApplication().container.itemsRepository
+                mastroAndroidApplication().appContainer.itemsRepository
             )
         }
 
         // Initializer for ItemsViewModel
         initializer {
             ItemsViewModel(
-                mastroAndroidApplication().container.itemsRepository
+                mastroAndroidApplication().appContainer.itemsRepository
             )
         }
 
         // Initializer for CustomersMasterDataViewModel
         initializer {
             CustomersMasterDataViewModel(
-                mastroAndroidApplication().container.customersMasterDataRepository
+                mastroAndroidApplication().appContainer.customersMasterDataRepository
             )
         }
 
         // Initializer for CustomersPagedMasterDataViewModel
         initializer {
             CustomersPagedMasterDataViewModel(
-                mastroAndroidApplication().container.customersPagedMasterDataRepository,
+                mastroAndroidApplication().appContainer.customersPagedMasterDataRepository,
                 AppDatabase.getInstance(mastroAndroidApplication())
             )
         }
 
         initializer {
             UserPreferencesViewModel(
-                mastroAndroidApplication().container.userPreferencesRepository
+                mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }
     }

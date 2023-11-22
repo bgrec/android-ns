@@ -1,4 +1,4 @@
-package com.mastrosql.app.data.customer
+package com.mastrosql.app.data.customers.paged
 
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
