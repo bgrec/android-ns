@@ -22,11 +22,11 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.mastrosql.app.data.local.UserPreferencesKeys.SEARCH_VALUE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import javax.inject.Inject
 
 // Define your data class
 data class UserPreferences(
@@ -36,17 +36,22 @@ data class UserPreferences(
 // Define your preference keys
 object UserPreferencesKeys {
     val SEARCH_VALUE = stringPreferencesKey("search_value")
+    val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
+    val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
 }
 
 
 /*
  * Concrete class implementation to access data store
  */
-class UserPreferencesRepository(
+class UserPreferencesRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
     private companion object {
         val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
+        val SEARCH_VALUE = stringPreferencesKey("search_value")
+        val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
+
         const val TAG = "UserPreferencesRepo"
     }
 
@@ -63,9 +68,28 @@ class UserPreferencesRepository(
             preferences[IS_LINEAR_LAYOUT] ?: true
         }
 
+    val isOnboardingCompleted: Flow<Boolean> = dataStore.data
+        .catch {
+            if (it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map { preferences ->
+            preferences[IS_ONBOARDED] ?: false
+        }
+
     suspend fun saveLayoutPreference(isLinearLayout: Boolean) {
         dataStore.edit { preferences ->
             preferences[IS_LINEAR_LAYOUT] = isLinearLayout
+        }
+    }
+
+    suspend fun saveOnBoardingCompleted(isOnboarded: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[IS_ONBOARDED] = isOnboarded
         }
     }
 

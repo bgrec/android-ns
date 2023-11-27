@@ -8,12 +8,15 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersMasterDataViewModel
-import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersPagedMasterDataViewModel
+import com.mastrosql.app.ui.navigation.intro.IntroViewModel
+import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
+import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
+import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Mastro Android app
@@ -66,7 +69,27 @@ object AppViewModelProvider {
         }
 
         initializer {
+            ArticlesViewModel(
+                mastroAndroidApplication().appContainer.articlesRepository
+            )
+        }
+
+        initializer {
+            OrdersViewModel(
+                mastroAndroidApplication().appContainer.ordersRepository
+            )
+        }
+
+        initializer {
             UserPreferencesViewModel(
+                mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
+        }
+
+
+
+        initializer {
+            IntroViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }

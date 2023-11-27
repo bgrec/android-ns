@@ -34,9 +34,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.navigation.main.MainNavOption
 
 
 @Composable

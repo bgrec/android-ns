@@ -1,15 +1,12 @@
 package com.mastrosql.app
 
 import android.app.Application
-import androidx.work.Configuration
-import androidx.work.WorkManager
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.mastrosql.app.data.AppContainer
 import com.mastrosql.app.data.DefaultAppContainer
-import com.mastrosql.app.worker.WorkerFactory
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -39,6 +36,7 @@ class MastroAndroidApplication : Application() {
         appContainer = DefaultAppContainer(this)
         //userPreferencesRepository = UserPreferencesRepository(dataStore)
 
+        /* not used for now, modify the Manifest file to use this custom initializer
         // Initialize CMDWorkerFactory with AppContainer
         val workerFactory = WorkerFactory(appContainer)
 
@@ -50,6 +48,8 @@ class MastroAndroidApplication : Application() {
 
         // Initialize WorkManager
         WorkManager.initialize(this, configuration)
+
+         */
 
     }
 }

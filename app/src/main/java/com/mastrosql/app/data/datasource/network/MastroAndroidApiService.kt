@@ -1,7 +1,9 @@
 package com.mastrosql.app.data.datasource.network
 
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -21,7 +23,13 @@ interface MastroAndroidApiService {
      * without parameters takes the default values of mysql offset and limit
      */
 
-    @GET("customersMasterData")
+    /*@GET("customersMasterData")
+    suspend fun getAllCustomersMasterData(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1000000
+    ): CustomersMasterDataResponse*/
+
+    @GET("clientsview")
     suspend fun getAllCustomersMasterData(
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1000000
@@ -35,11 +43,23 @@ interface MastroAndroidApiService {
      */
 
     // @GET("movie/popular?api_key=${MOVIE_API_KEY}&language=en-US")
-    @GET("customersMasterData")
+    @GET("clientsview")
     suspend fun getCustomersMasterDataPage(
         @Query("offset") offset: Int,
         @Query("limit") pageSize: Int
     ): CustomersMasterDataResponse
+
+    @GET("articlesview")
+    suspend fun getAllArticles(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1000000
+    ): ArticlesResponse
+
+    @GET("ordersview")
+    suspend fun getAllOrders(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1000000
+    ): OrdersResponse
 }
 
 

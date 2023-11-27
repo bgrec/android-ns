@@ -26,7 +26,7 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "com.mastrosql.app.HiltTestRunner"
         vectorDrawables {
@@ -157,6 +157,7 @@ dependencies {
 
     //DataStore
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
 
     //Coil
     implementation(libs.coil)
@@ -189,8 +190,6 @@ dependencies {
     testImplementation(libs.androidx.work.testing)
     testImplementation(libs.hilt.android.testing)
 
-
-
     // Instrumented tests: jUnit rules and runners
 
     androidTestImplementation(libs.androidx.test.core)
@@ -200,8 +199,6 @@ dependencies {
     //androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
-
-
 
 
     // Coil

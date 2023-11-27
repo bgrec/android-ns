@@ -11,7 +11,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun MotivationScreen(navController: NavController) = IntroCompose(
     navController = navController,
-    text = "Motivation"
+    text = "Gestione ordini e magazzino"
 ) {
     navController.navigate(IntroNavOption.RecommendationScreen.name)
 }

@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.mastrosql.app.data.articles.ArticlesRepository
+import com.mastrosql.app.data.articles.NetworkArticlesRepository
 import com.mastrosql.app.data.customers.CustomersMasterDataRepository
+import com.mastrosql.app.data.customers.NetworkCustomersMasterDataRepository
 import com.mastrosql.app.data.customers.paged.CustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customers.paged.NetworkDbCustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customers.workmanager.WorkManagerCustomersMasterDataRepository
@@ -13,6 +16,8 @@ import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
+import com.mastrosql.app.data.orders.NetworkOrdersRepository
+import com.mastrosql.app.data.orders.OrdersRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -33,6 +38,8 @@ interface AppContainer {
     val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository
     val customerMasterDataWorkManagerRepository: CustomersMasterDataRepository
     val itemsRepository: ItemsRepository
+    val articlesRepository: ArticlesRepository
+    val ordersRepository: OrdersRepository
     val userPreferencesRepository: UserPreferencesRepository
 
 }
@@ -43,7 +50,7 @@ interface AppContainer {
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
 
-private const val LAYOUT_PREFERENCE_NAME = "layout_preferences"
+private const val LAYOUT_PREFERENCE_NAME = "mastroandroid_preferences"
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = LAYOUT_PREFERENCE_NAME
 )
@@ -52,7 +59,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  * Base URL for the MastroAndroid API
  */
 
-private const val BASE_URL = "https://192.168.0.125:8444/apiv1/lm/"
+private const val BASE_URL = "https://192.168.0.125:8444/android/mastrosql_ditta1/"
 //"https://android-kotlin-fun-mars-server.appspot.com/"
 
 
@@ -120,13 +127,14 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
      * DI implementation for Customer Master Data repository
      */
     override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
-        //ok working
-        /*NetworkCustomersMasterDataRepository(
-                retrofitService,
-                AppDatabase.getInstance(context).customersMasterDataDao(),
-                context
-            )*/
-        WorkManagerCustomersMasterDataRepository(retrofitService, context)
+
+        NetworkCustomersMasterDataRepository(
+            retrofitService,
+            AppDatabase.getInstance(context).customersMasterDataDao(),
+            context
+        )
+        // trying with the worker version
+        //WorkManagerCustomersMasterDataRepository(retrofitService, context)
     }
 
     /**
@@ -145,6 +153,24 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
      */
     override val itemsRepository: ItemsRepository by lazy {
         OfflineItemsRepository(AppDatabase.getInstance(context).itemDao())
+    }
+
+    override val articlesRepository: ArticlesRepository by lazy {
+        NetworkArticlesRepository(
+            retrofitService,
+            AppDatabase.getInstance(context).articlesDao(),
+            context
+        )
+        //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
+    }
+
+    override val ordersRepository: OrdersRepository by lazy {
+        NetworkOrdersRepository(
+            retrofitService,
+            AppDatabase.getInstance(context).ordersDao(),
+            context
+        )
+        //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
     }
 
     override val userPreferencesRepository: UserPreferencesRepository by lazy {

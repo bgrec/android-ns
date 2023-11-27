@@ -7,8 +7,8 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemoteKeys
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemoteKeys
 import retrofit2.HttpException
 import java.io.IOException
 import java.util.concurrent.TimeUnit

@@ -1,8 +1,8 @@
 package com.mastrosql.app.fake
 
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.Metadata
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 
 object FakeDataSource {
 
