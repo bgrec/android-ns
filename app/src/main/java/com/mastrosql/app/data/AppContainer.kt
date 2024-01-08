@@ -59,7 +59,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  * Base URL for the MastroAndroid API
  */
 
-private const val BASE_URL = "https://192.168.0.125:8444/android/mastrosql_ditta1/"
+private const val BASE_URL = "https://192.168.0.126:8444/android/mastrosql_ditta1/"
 //"https://android-kotlin-fun-mars-server.appspot.com/"
 
 

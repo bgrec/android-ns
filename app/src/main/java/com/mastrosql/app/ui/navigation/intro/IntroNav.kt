@@ -15,11 +15,11 @@ import com.mastrosql.app.ui.navigation.main.NavRoutes
 
 fun NavGraphBuilder.introGraph(navController: NavController) {
     navigation(
-        startDestination = IntroNavOption.WelcomeScreen.name,
+        startDestination = IntroNavOption.AboutScreen.name,
         route = NavRoutes.IntroRoute.name
     ) {
         composable(IntroNavOption.AboutScreen.name) {
-            AboutScreen(LocalContext.current)
+            AboutScreen(navController, LocalContext.current)
         }
         composable(IntroNavOption.WelcomeScreen.name) {
             WelcomeScreen(navController)

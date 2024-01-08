@@ -25,10 +25,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.BackButton
 import com.mastrosql.app.ui.previews.AllScreenPreview
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.squareup.leakcanary.core.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,33 +46,6 @@ fun AboutScreen( navController: NavController = rememberNavController(), context
             }*/
         })
     }) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
-                .padding(it),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-            AppButton(
-                modifier = Modifier.padding(bottom = 30.dp),
-                text = buttonText,
-                onClick = onNext
-            )
-        }
-    }
-
-
-
-    Scaffold {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -92,6 +67,12 @@ fun AboutScreen( navController: NavController = rememberNavController(), context
             val buildDate = getBuildDate(context)
             Text(text = "Build Date: $buildDate")
 
+            //Get build configuration
+            val buildConfig = "Build Config: ${BuildConfig.BUILD_TYPE}"
+            Text(text = buildConfig)
+
+            
+
             // Get device information
             val deviceInfo = "Device: ${Build.MANUFACTURER} ${Build.MODEL}"
             Text(text = deviceInfo)
@@ -105,14 +86,13 @@ fun AboutScreen( navController: NavController = rememberNavController(), context
             Spacer(modifier = Modifier.weight(1f))
             AppButton(
                 modifier = Modifier.padding(bottom = 30.dp),
-                text = "Next",
+                text = R.string.next ,
                 onClick =
                 {
                     navController.navigate(com.mastrosql.app.ui.navigation.intro.IntroNavOption.WelcomeScreen.name)
                 }
             )
         }
-
     }
 }
 
@@ -162,8 +142,9 @@ private fun getBuildDate(context: Context): String {
 @Composable
 fun AboutScreenPreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val navController = rememberNavController()
     val context = LocalContext.current
     MastroAndroidTheme {
-        AboutScreen(context)
+        AboutScreen(navController, context)
     }
 }
