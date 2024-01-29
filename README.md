@@ -1,2 +1,2 @@
 # mastrosql-android
-Mastro Android Application
+Mastro Android Application - simple
