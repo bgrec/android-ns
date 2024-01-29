@@ -1,10 +1,10 @@
 [versions]
 androidGradlePlugin = "8.2.2"
 androidxCore = "1.12.0"
-androidxLifecycle = "2.6.2"
+androidxLifecycle = "2.7.0"
 androidxActivity = "1.8.2"
-androidxComposeBom = "2023.10.01"
-androidxComposeCompiler = "1.5.7"
+androidxComposeBom = "2024.01.00"
+androidxComposeCompiler = "1.5.8"
 androidxHilt = "1.1.0"
 androidxNavigation = "2.7.6"
 androidxRoom = "2.6.1"
@@ -14,14 +14,14 @@ androidxTestRunner = "1.5.2"
 androidxTestRules = "1.5.0"
 expressoCoreVersion = "3.5.1"
 androidxTestOrchestrator = "1.4.2"
-dataStore = "1.1.0-alpha07"
+dataStore = "1.1.0-beta01"
 coroutines = "1.7.3"
 hilt = "2.48"
 junit = "4.13.2"
-kotlin = "1.9.21"
-ksp = "1.9.20-1.0.14"
-materialIconsExtended = "1.5.4"
-materialIconsCore = "1.5.4"
+kotlin = "1.9.22"
+ksp = "1.9.22-1.0.17"
+materialIconsExtended = "1.6.0"
+materialIconsCore = "1.6.0"
 retrofit = "2.9.0"
 serializationConverter = "1.0.0"
 kotlinxSerialization = "1.5.1"
@@ -32,6 +32,9 @@ leakcanaryVersion = "2.9.1"
 workManagerVersion = "2.9.0"
 composeUi = "1.5.4"
 accompanist = "0.32.0"
+googleServices = "4.4.0"
+firebaseBOM = "32.7.1"
+appDistribution = "4.0.1"
 
 # composeUi version dictates the version of the accompanist libraries you should use (see below)
 #Important for Accompanist
@@ -123,6 +126,11 @@ androidx-compose-animation = { module = "androidx.compose.animation:animation" }
 coil = { module = "io.coil-kt:coil", version.ref = "coilVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilVersion" }
 
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBOM" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-app-distribution= { module = "com.google.firebase:firebase-appdistribution-gradle", version.ref = "appDistribution" }
+
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
@@ -132,5 +140,9 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 retrofit-gson = { id = "com.squareup.retrofit2", version.ref = "retrofit" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+
+#firebase-app-distribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }
+
 
 #implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-coroutines-adapter:0.9.2'
