@@ -129,7 +129,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     MastroAndroidTheme {
-        com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.orderdetailscomponents.SearchView(
+        SearchView(
             textState
         )
     }

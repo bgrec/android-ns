@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.mastrosql.app.data.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Metadata
-import com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import java.text.NumberFormat
 
 /**
