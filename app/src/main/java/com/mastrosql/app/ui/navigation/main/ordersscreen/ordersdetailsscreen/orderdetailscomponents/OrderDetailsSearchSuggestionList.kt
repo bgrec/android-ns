@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -15,9 +15,9 @@ import java.util.Locale
  * For JSON Kotlin Serialization use @SerialName( value = "DESCRI")
  */
 
-@Entity(tableName = "orderdetail")
+@Entity(tableName = "order_details")
 @Serializable
-data class OrderDetail(
+data class OrderDetailsItem(
 
     @PrimaryKey(autoGenerate = false)
     @SerializedName("NUMEPRO") val id: Int,
@@ -33,8 +33,8 @@ data class OrderDetail(
     @SerializedName("QUAN_T") val tmpQuantity: Double,
     @SerializedName("RESO") val returnedQuantity: Double,
     @SerializedName("PESO") val weight: Double,
-    @SerializedName("COSTO") val cost: Double,
-    @SerializedName("VEND") val price: Double,
+    @SerializedName("COSTO") val cost: String,
+    @SerializedName("VEND") val price: String,
     @SerializedName("IVA") val vat: String,
     @SerializedName("IVA_PERC") val vatValue: Double,
     @SerializedName("SCON") val discount: Double,
@@ -50,9 +50,8 @@ data class OrderDetail(
     @SerializedName("LOTTO") val batch: String,
     @SerializedName("DATA_SCA") val expirationDate: String,
 
-
-    @TypeConverters(OrderDetailMetadataTypeConverter::class)
-    @SerializedName("_metadata") val metadata: Metadata,
+    @TypeConverters(OrderDetailsMetadataTypeConverter::class)
+    @SerializedName("_metadata") val metadata: Metadata?,
 
     @TypeConverters(OrderDetailLinksTypeConverter::class)
     @SerializedName("links") val links: List<Link>,
@@ -60,11 +59,9 @@ data class OrderDetail(
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
 ) {
-        val expirationDate2: Date?
+    val expirationDate2: Date?
         get() = SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(expirationDate)
-    }
-
-
+}
 
 @Serializable
 data class Metadata(
@@ -81,12 +78,12 @@ data class Link(
 @Serializable
 data class OrderDetailsResponseList(
     @SerializedName("items")
-    val items: List<OrderDetail>
+    val items: List<OrderDetailsItem>
 )
 
 @Serializable
-data class OrderDetailResponse(
-    val items: List<OrderDetail>,
+data class OrderDetailsResponse(
+    val items: List<OrderDetailsItem>,
     val limit: Int,
     val offset: Int,
     val hasMore: Boolean,

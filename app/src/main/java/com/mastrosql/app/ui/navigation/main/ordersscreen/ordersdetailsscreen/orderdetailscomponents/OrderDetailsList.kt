@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,21 +8,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.Metadata
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.model.OrderDetailsItem
 
 @Composable
 fun OrderDetailList(
-    orderDetailList: List<OrderDetail>,
+    orderDetailList: List<OrderDetailsItem>,
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
     navController: NavController
@@ -33,7 +27,7 @@ fun OrderDetailList(
         //.focusable()
     )
     {
-        val filteredList: List<OrderDetail>
+        val filteredList: List<OrderDetailsItem>
         val searchedText = state.value.text
 
         filteredList = if (searchedText.isEmpty()) {
@@ -60,14 +54,14 @@ fun OrderDetailList(
         }
     }
 }
-
+/*
 @Preview
 @Composable
 fun ItemsListPreview() {
     MastroAndroidTheme {
         OrderDetailList(
             orderDetailList = listOf(
-                OrderDetail(
+                OrderDetailsItem(
                     id = 1,
                     orderId = 1,
                     orderRow = 1,
@@ -81,8 +75,8 @@ fun ItemsListPreview() {
                     tmpQuantity = 1.0,
                     returnedQuantity = 1.0,
                     weight = 1.0,
-                    cost = 1.0,
-                    price = 1.0,
+                    cost = "1.0",
+                    price = "1.0",
                     vat = "vat",
                     vatValue = 1.0,
                     discount = 1.0,
@@ -105,7 +99,7 @@ fun ItemsListPreview() {
                     page = 0,
                     lastUpdated = System.currentTimeMillis()
                 ),
-                OrderDetail(
+                OrderDetailsItem(
                     id = 1,
                     orderId = 1,
                     orderRow = 1,
@@ -137,7 +131,7 @@ fun ItemsListPreview() {
                     expirationDate = "2023-01-01",
                     links = listOf(),
 
-                    metadata = com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.Metadata(
+                    metadata = com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.model.Metadata(
                         etag = "etag"
                     ),
                     page = 0,
@@ -150,3 +144,4 @@ fun ItemsListPreview() {
         )
     }
 }
+*/

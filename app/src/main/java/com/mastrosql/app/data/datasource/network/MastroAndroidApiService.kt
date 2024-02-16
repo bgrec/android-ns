@@ -3,8 +3,7 @@ package com.mastrosql.app.data.datasource.network
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -64,10 +63,10 @@ interface MastroAndroidApiService {
     ): OrdersResponse
 
     @GET("rigOrdc")
-    fun getAllOrderDetail(
+    fun getAllOrderDetails(
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1000000
-    ): OrderDetailResponse
+    ): OrderDetailsResponse
 
 }
 

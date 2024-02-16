@@ -1,13 +1,7 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,23 +17,30 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
+import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents.OrderDetailList
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents.SearchView
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.SearchView
 
+object OrderDetailsDestination : NavigationDestination {
+    override val route = "order_details"
+    override val titleRes = R.string.app_name
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrdersScreen(
+fun OrderDetailsScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateBack: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrderDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val ordersUiState = viewModel.orderDetailUiState
+    val orderDetailUiState = viewModel.orderDetailUiState
     val modifier = Modifier.fillMaxSize()
 
-    when (ordersUiState) {
+    when (orderDetailUiState) {
         is OrderDetailUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
@@ -47,15 +48,15 @@ fun OrdersScreen(
             loading = true
         )
 
-        is OrderDetailUiState.Success -> OrdersResultScreen(
-            ordersUiState.orderDetailList,
+        is OrderDetailUiState.Success -> OrderDetailResultScreen(
+            orderDetailUiState.orderDetailList,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
             navController = navController
         )
 
         is OrderDetailUiState.Error -> ErrorScreen(
-            ordersUiState.exception,
+            orderDetailUiState.exception,
             viewModel::getOrders,
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
@@ -67,8 +68,8 @@ fun OrdersScreen(
 
 @ExperimentalMaterial3Api
 @Composable
-fun OrdersResultScreen(
-    ordersList: List<OrderDetail>,
+fun OrderDetailResultScreen(
+    orderDetailList: List<OrderDetailsItem>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController
@@ -88,7 +89,7 @@ fun OrdersResultScreen(
             val textState = remember { mutableStateOf(TextFieldValue("")) }
             SearchView(state = textState)
             OrderDetailList(
-                orderDetailList = ordersList,
+                orderDetailList = orderDetailList,
                 state = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController
@@ -103,9 +104,11 @@ fun OrdersResultScreen(
 @Composable
 fun OrdersScreenPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-    OrdersScreen(
+    OrderDetailsScreen(
         drawerState = DrawerState(DrawerValue.Closed),
-        navController = NavController(LocalContext.current)
+        navController = NavController(LocalContext.current),
+        navigateToItemEntry = {},
+        navigateBack = {}
     )
 }
 

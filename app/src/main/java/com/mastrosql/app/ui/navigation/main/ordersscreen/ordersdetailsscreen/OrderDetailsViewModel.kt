@@ -1,12 +1,12 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mastrosql.app.data.orderdetail.OrderDetailRepository
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
+import com.mastrosql.app.data.orderdetails.OrderDetailsRepository
+import com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -14,7 +14,7 @@ import java.io.IOException
 
 sealed interface OrderDetailUiState {
     data class Success(
-        val orderDetailList: List<OrderDetail>
+        val orderDetailList: List<OrderDetailsItem>
     ) : OrderDetailUiState
 
     data class Error(val exception: Exception) : OrderDetailUiState
@@ -22,11 +22,11 @@ sealed interface OrderDetailUiState {
 }
 
 /**
- * Factory for [OrderDetailViewModel] that takes [OrderDetailRepository] as a dependency
+ * Factory for [OrderDetailViewModel] that takes [OrderDetailsRepository] as a dependency
  */
 
 class OrderDetailViewModel(
-    private val orderDetailRepository: OrderDetailRepository,
+    private val orderDetailRepository: OrderDetailsRepository,
 ) : ViewModel() {
 
     var orderDetailUiState: OrderDetailUiState by mutableStateOf(OrderDetailUiState.Loading)

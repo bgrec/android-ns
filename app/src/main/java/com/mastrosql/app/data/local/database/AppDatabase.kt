@@ -36,18 +36,18 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemot
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailDao
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailLinksTypeConverter
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailMetadataTypeConverter
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailRemoteKeys
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailRemoteKeysDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderLinksTypeConverter
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderMetadataTypeConverter
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeys
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeys
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeysDao
 
 
 /**
@@ -64,8 +64,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeysD
         CustomerMasterData::class,
         Order::class,
         OrdersRemoteKeys::class,
-        OrderDetail::class,
-        OrderDetailRemoteKeys::class
+        OrderDetailsItem::class,
+        OrderDetailsRemoteKeys::class
     ],
     version = 1, exportSchema = false
 )
@@ -77,7 +77,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeysD
     ArticleLinksTypeConverter::class,
     OrderMetadataTypeConverter::class,
     OrderLinksTypeConverter::class,
-    OrderDetailMetadataTypeConverter::class,
+    OrderDetailsMetadataTypeConverter::class,
     OrderDetailLinksTypeConverter::class,
 )
 
@@ -92,8 +92,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesRemoteKeysDao(): ArticlesRemoteKeysDao
     abstract fun ordersDao(): OrdersDao
     abstract fun ordersRemoteKeysDao(): OrdersRemoteKeysDao
-    abstract fun orderDetailDao(): OrderDetailDao
-    abstract fun orderDetailRemoteKeysDao(): OrderDetailRemoteKeysDao
+    abstract fun orderDetailDao(): OrderDetailsDao
+    abstract fun orderDetailRemoteKeysDao(): OrderDetailsRemoteKeysDao
 
 
     companion object {

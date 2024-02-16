@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -32,13 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.Metadata
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
+import com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.model.Metadata
+import com.mastrosql.app.ui.navigation.main.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun OrderDetailCard(
-    orderDetail: OrderDetail, modifier: Modifier, navController: NavController
+    orderDetail: OrderDetailsItem, modifier: Modifier, navController: NavController
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -82,7 +82,7 @@ fun OrderDetailCard(
                             description = orderDetail.description,
                             vat = orderDetail.vat,
                             measureUnit = orderDetail.measureUnit,
-                            price = orderDetail.price,
+                            price = orderDetail.price.toDouble(),
                         )
                     }
                 }
@@ -218,12 +218,12 @@ fun OrderDetailInfo(
 }
 
 
-@Preview
+/*@Preview
 @Composable
 fun OrderDetailCardPreview() {
     MastroAndroidTheme {
         OrderDetailCard(
-            orderDetail = OrderDetail(
+            orderDetail = OrderDetailsItem(
                 id = 1,
                 orderId = 1,
                 orderRow = 1,
@@ -237,8 +237,8 @@ fun OrderDetailCardPreview() {
                 tmpQuantity = 1.0,
                 returnedQuantity = 1.0,
                 weight = 1.0,
-                cost = 1.0,
-                price = 1.0,
+                cost = "1.0",
+                price = "1.0",
                 vat = "vat",
                 vatValue = 1.0,
                 discount = 1.0,
@@ -254,17 +254,17 @@ fun OrderDetailCardPreview() {
                 batch = "batch",
                 expirationDate = "2023-01-01",
                 links = listOf(),
-
                 metadata = Metadata(
                     etag = "etag"
                 ),
+
                 page = 0,
                 lastUpdated = System.currentTimeMillis()
             ), modifier = Modifier, navController = NavController(LocalContext.current)
         )
     }
 
-}
+}*/
 
 @Preview
 @Composable

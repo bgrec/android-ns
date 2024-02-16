@@ -1,0 +1,74 @@
+package com.mastrosql.app.ui.navigation.main.ordersscreen
+
+
+import androidx.compose.material3.DrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
+
+
+/**
+ * Provides Navigation graph for the items application.
+ */
+
+
+@Composable
+fun OrdersNavHost(
+    drawerState: DrawerState,
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+) {
+    NavHost(
+        navController = navController,
+        startDestination = OrdersDestination.route,
+        modifier = modifier
+    ) {
+        composable(route = OrdersDestination.route) {
+            OrdersScreen(
+                //navigateToOrderEntry = { navController.navigate(OrderEntryDestination.route) },
+                navigateToOrderDetails = {
+                    navController.navigate("${OrderDetailsDestination.route}/${it}")
+                },
+                navController = navController,
+                drawerState = drawerState
+
+            )
+        }
+        /*composable(route = OrderEntryDestination.route) {
+            OrderEntryScreen(
+                navigateBack = { navController.popBackStack() },
+                onNavigateUp = { navController.navigateUp() }
+            )
+        }
+        composable(
+            route = OrderDetailDestination.routeWithArgs,
+            arguments = listOf(navArgument(OrderDetailDestination.rowIdArg) {
+                type = NavType.IntType
+            })
+        ) {
+            OrderDetailScreen(
+                navigateToEditItem = { navController.navigate("${OrderEditDestination.route}/$it") },
+                navigateBack = { navController.navigateUp() }
+            )
+        }
+        composable(
+            route = OrderEditDestination.routeWithArgs,
+            arguments = listOf(navArgument(OrderEditDestination.itemIdArg) {
+                type = NavType.IntType
+            })
+        ) {
+            OrderEditScreen(
+                navigateBack = { navController.popBackStack() },
+                onNavigateUp = { navController.navigateUp() }
+            )
+        }*/
+    }
+}
+
+
+

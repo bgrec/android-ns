@@ -23,14 +23,20 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
+import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents.SearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchView
 
+object OrdersDestination : NavigationDestination {
+    override val route = "orders"
+    override val titleRes = R.string.orders
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
+    navigateToOrderDetails: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -60,6 +66,8 @@ fun OrdersScreen(
             drawerState = drawerState,
             navController = navController
         )
+
+        else -> {}
     }
 
 }
@@ -97,7 +105,7 @@ fun OrdersResultScreen(
     }
 }
 
-
+/*
 @Preview
 @Composable
 fun OrdersScreenPreview() {
@@ -107,7 +115,7 @@ fun OrdersScreenPreview() {
         navController = NavController(LocalContext.current)
     )
 }
-
+*/
 @Preview
 @Composable
 fun SearchBarPreview() {
