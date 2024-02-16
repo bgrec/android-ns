@@ -52,7 +52,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
         //enabled = isEditing,
         placeholder = {
             Text(
-                text = stringResource(id = R.string.article_description),
+                text = stringResource(R.string.orders_description),
                 modifier = Modifier.padding(2.dp)
             )
         },
@@ -129,6 +129,8 @@ fun SearchView(state: MutableState<TextFieldValue>) {
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     MastroAndroidTheme {
-        SearchView(textState)
+        com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents.SearchView(
+            textState
+        )
     }
 }

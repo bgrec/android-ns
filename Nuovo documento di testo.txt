@@ -1,0 +1,13 @@
+
+Waiting for authentication...
+
++  Success! Use this token to login on a CI server:
+
+1//09KVyBi55TORjCgYIARAAGAkSNwF-L9IrFstDHTx6khWnl2jwjKoBOmuvzS4vkiySluUqQ5Sny1DUpFWWBRKwjkr6VkxTD0zB2js
+
+Example: firebase deploy --token "$FIREBASE_TOKEN"
+
+
+id dev 1:420662124721:android:9ea8abc04ae7950651c290
+id 1:420662124721:android:d72e279c4b39221851c290
+id staging 1:420662124721:android:a99303c52f65395951c290

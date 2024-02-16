@@ -3,7 +3,7 @@ androidGradlePlugin = "8.2.2"
 androidxCore = "1.12.0"
 androidxLifecycle = "2.7.0"
 androidxActivity = "1.8.2"
-androidxComposeBom = "2024.01.00"
+androidxComposeBom = "2024.02.00"
 androidxComposeCompiler = "1.5.8"
 androidxHilt = "1.1.0"
 androidxNavigation = "2.7.6"
@@ -16,7 +16,7 @@ expressoCoreVersion = "3.5.1"
 androidxTestOrchestrator = "1.4.2"
 dataStore = "1.1.0-beta01"
 coroutines = "1.7.3"
-hilt = "2.48"
+hilt = "2.50"
 junit = "4.13.2"
 kotlin = "1.9.22"
 ksp = "1.9.22-1.0.17"
@@ -24,17 +24,18 @@ materialIconsExtended = "1.6.0"
 materialIconsCore = "1.6.0"
 retrofit = "2.9.0"
 serializationConverter = "1.0.0"
-kotlinxSerialization = "1.5.1"
-okhttp3 = "4.11.0"
+kotlinxSerialization = "1.6.2"
+okhttp3 = "4.12.0"
 pagingVersion = "3.2.1"
-coilVersion = "2.4.0"
-leakcanaryVersion = "2.9.1"
+coilVersion = "2.5.0"
+leakcanaryVersion = "2.13"
 workManagerVersion = "2.9.0"
-composeUi = "1.5.4"
-accompanist = "0.32.0"
+composeUi = "1.6.0"
+accompanist = "0.34.0"
 googleServices = "4.4.0"
 firebaseBOM = "32.7.1"
 appDistribution = "4.0.1"
+material3 = "1.2.0"
 
 # composeUi version dictates the version of the accompanist libraries you should use (see below)
 #Important for Accompanist
@@ -46,12 +47,12 @@ appDistribution = "4.0.1"
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
-androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "androidxComposeCompiler" }
+#androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "androidxComposeCompiler" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3"}
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-material = { group = "androidx.compose.material", name = "material" }
 
-androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-extended" , version.ref = "materialIconsCore" }
+#androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-extended" , version.ref = "materialIconsCore" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 #androidx-compose-material-pullrefresh = { group = "androidx.compose.material.pullrefresh", name = ""}
 
@@ -85,35 +86,35 @@ androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "a
 androidx-test-ext-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "expressoCoreVersion" }
-android-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidxTestOrchestrator" }
-android-test-rules = { module = "androidx.test:rules", version.ref = "androidxTestRules" }
-android-test-core = { module = "androidx.test:core", version.ref = "androidxTest" }
-android-test-ext-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "androidxTestExt" }
-android-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
-android-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "expressoCoreVersion" }
+#android-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidxTestOrchestrator" }
+#android-test-rules = { module = "androidx.test:rules", version.ref = "androidxTestRules" }
+#android-test-core = { module = "androidx.test:core", version.ref = "androidxTest" }
+#android-test-ext-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "androidxTestExt" }
+#android-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
+#android-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "expressoCoreVersion" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-hilt-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
+#hilt-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
+#retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 #retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 #retrofit-jackson = { module = "com.squareup.retrofit2:converter-jackson", version.ref = "retrofit" }
-retrofit-kotlinx-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "serializationConverter" }
+#retrofit-kotlinx-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "serializationConverter" }
 
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 jakewharton-retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "serializationConverter" }
 squareup-okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3" }
 squareup-okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3" }
 squareup-leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryVersion" }
-androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
+#androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingVersion" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingVersion" }
@@ -133,13 +134,13 @@ firebase-app-distribution= { module = "com.google.firebase:firebase-appdistribut
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+#android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-retrofit-gson = { id = "com.squareup.retrofit2", version.ref = "retrofit" }
+#retrofit-gson = { id = "com.squareup.retrofit2", version.ref = "retrofit" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
 #firebase-app-distribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }

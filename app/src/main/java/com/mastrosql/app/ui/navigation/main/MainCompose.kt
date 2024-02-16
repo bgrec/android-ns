@@ -158,12 +158,20 @@ object DrawerParams {
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
+            MainNavOption.OrdersScreen,
+            R.string.items,
+            android.R.drawable.ic_menu_agenda,
+            R.string.drawer_home_description
+        ),
+        AppDrawerItemInfo(
             MainNavOption.SettingsScreen,
             R.string.drawer_settings,
             R.drawable.ic_settings,
             R.string.drawer_settings_description
         ),
-        /*AppDrawerItemInfo(
+        //TODO: Remove AboutScreen because it was moved to the intro navigation graph
+        /*
+        AppDrawerItemInfo(
             MainNavOption.AboutScreen,
             R.string.drawer_about,
             R.drawable.ic_info,

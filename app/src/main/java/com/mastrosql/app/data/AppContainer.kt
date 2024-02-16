@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.mastrosql.app.BuildConfig
 import com.mastrosql.app.data.articles.ArticlesRepository
 import com.mastrosql.app.data.articles.NetworkArticlesRepository
 import com.mastrosql.app.data.customers.CustomersMasterDataRepository
@@ -16,6 +17,8 @@ import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
+import com.mastrosql.app.data.orderdetail.NetworkOrderDetailRepository
+import com.mastrosql.app.data.orderdetail.OrderDetailRepository
 import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import okhttp3.OkHttpClient
@@ -27,9 +30,12 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
+
 /**
  * Dependency Injection container at the application level.
- *  App container for Dependency injection.
+ * This is used to provide a central location for the storage and retrieval of objects.
+ *
+ * *  App container for Dependency injection.
  */
 
 interface AppContainer {
@@ -40,6 +46,7 @@ interface AppContainer {
     val itemsRepository: ItemsRepository
     val articlesRepository: ArticlesRepository
     val ordersRepository: OrdersRepository
+    val orderDetailRepository: OrderDetailRepository
     val userPreferencesRepository: UserPreferencesRepository
 
 }
@@ -51,6 +58,7 @@ interface AppContainer {
  */
 
 private const val LAYOUT_PREFERENCE_NAME = "mastroandroid_preferences"
+
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = LAYOUT_PREFERENCE_NAME
 )
@@ -59,11 +67,36 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  * Base URL for the MastroAndroid API
  */
 
-private const val BASE_URL = "https://192.168.0.126:8444/backend/lmnew/"
-//"https://android-kotlin-fun-mars-server.appspot.com/"
-
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
+
+    private val baseUrl = if (isDevBuild()) {
+        // Use predefined BASE_URL for dev builds
+        BuildConfig.API_URL
+    } else {
+        // Read BASE_URL from datastore for other builds
+        readBaseUrlFromDataStore(context)
+    }
+
+//private const val BASE_URL = "https://192.168.0.126:8446/mastrosql/lmNew/"
+//"https://android-kotlin-fun-mars-server.appspot.com/"
+
+    // Function to check if the build is .dev
+    private fun isDevBuild(): Boolean {
+        return BuildConfig.BUILD_TYPE == "debug"
+    }
+
+    // Function to read BASE_URL from datastore
+    private fun readBaseUrlFromDataStore(context: Context): String {
+        // Implement logic to read BASE_URL from datastore
+        // For example:
+        // val dataStore: DataStore<Preferences> = context.createDataStore(name = "settings")
+        // val baseUrl = dataStore.data.map { preferences ->
+        //     preferences[BASE_URL_KEY] ?: DEFAULT_BASE_URL
+        // }.first()
+        // return baseUrl
+        return "https://example.com/" // Dummy value, replace with actual logic
+    }
 
 
     // Custom TrustManager for testing purposes (not recommended for production)
@@ -105,7 +138,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     private val retrofit: Retrofit = Retrofit.Builder()
         // .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(BASE_URL)
+        .baseUrl(baseUrl)
         .client(
             OkHttpClient.Builder()
                 .sslSocketFactory(sslSocketFactory, trustAllCertificates[0] as X509TrustManager)
@@ -168,6 +201,15 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         NetworkOrdersRepository(
             retrofitService,
             AppDatabase.getInstance(context).ordersDao(),
+            context
+        )
+        //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
+    }
+
+    override val orderDetailRepository: OrderDetailRepository by lazy {
+        NetworkOrderDetailRepository(
+            retrofitService,
+            AppDatabase.getInstance(context).orderDetailDao(),
             context
         )
         //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())

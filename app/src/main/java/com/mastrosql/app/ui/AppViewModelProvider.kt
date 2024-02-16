@@ -16,6 +16,7 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.OrderDetailViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 
 /**
@@ -77,6 +78,12 @@ object AppViewModelProvider {
         initializer {
             OrdersViewModel(
                 mastroAndroidApplication().appContainer.ordersRepository
+            )
+        }
+
+        initializer {
+            OrderDetailViewModel(
+                mastroAndroidApplication().appContainer.orderDetailRepository
             )
         }
 

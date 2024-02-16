@@ -36,6 +36,12 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemot
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailDao
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailRemoteKeys
+import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetailRemoteKeysDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderLinksTypeConverter
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderMetadataTypeConverter
@@ -57,8 +63,9 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeysD
         CustomersRemoteKeys::class,
         CustomerMasterData::class,
         Order::class,
-        OrdersRemoteKeys::class
-
+        OrdersRemoteKeys::class,
+        OrderDetail::class,
+        OrderDetailRemoteKeys::class
     ],
     version = 1, exportSchema = false
 )
@@ -69,7 +76,9 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeysD
     ArticleMetadataTypeConverter::class,
     ArticleLinksTypeConverter::class,
     OrderMetadataTypeConverter::class,
-    OrderLinksTypeConverter::class
+    OrderLinksTypeConverter::class,
+    OrderDetailMetadataTypeConverter::class,
+    OrderDetailLinksTypeConverter::class,
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -83,9 +92,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesRemoteKeysDao(): ArticlesRemoteKeysDao
     abstract fun ordersDao(): OrdersDao
     abstract fun ordersRemoteKeysDao(): OrdersRemoteKeysDao
-
-
-
+    abstract fun orderDetailDao(): OrderDetailDao
+    abstract fun orderDetailRemoteKeysDao(): OrderDetailRemoteKeysDao
 
 
     companion object {

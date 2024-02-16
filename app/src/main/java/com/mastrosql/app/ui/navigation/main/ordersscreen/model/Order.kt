@@ -59,7 +59,7 @@ data class Order(
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
 ) {
-        val insertDate2: Date
+        val insertDate2: Date?
         get() = SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(insertDate)
     }
 

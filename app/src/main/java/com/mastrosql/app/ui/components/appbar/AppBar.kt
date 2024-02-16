@@ -26,7 +26,7 @@ fun AppBar(
         // or TopAppBar
         title = {
             Text(
-                text = title?.let { stringResource(id = it) } ?: stringResource(id =R.string.app_name),
+                text = title?.let { stringResource(id = it) } ?: stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.titleMedium
             )
         },

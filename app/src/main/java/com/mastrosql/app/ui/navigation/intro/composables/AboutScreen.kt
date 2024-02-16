@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,22 +20,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.mastrosql.app.BuildConfig
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.AppButton
-import com.mastrosql.app.ui.components.BackButton
 import com.mastrosql.app.ui.previews.AllScreenPreview
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import com.squareup.leakcanary.core.BuildConfig
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen( navController: NavController = rememberNavController(), context: Context) {
+fun AboutScreen(navController: NavController = rememberNavController(), context: Context) {
     Scaffold(topBar = {
         TopAppBar(title = {}, navigationIcon = {
             /*if (showBackButton) {
@@ -71,7 +69,6 @@ fun AboutScreen( navController: NavController = rememberNavController(), context
             val buildConfig = "Build Config: ${BuildConfig.BUILD_TYPE}"
             Text(text = buildConfig)
 
-            
 
             // Get device information
             val deviceInfo = "Device: ${Build.MANUFACTURER} ${Build.MODEL}"
@@ -86,7 +83,7 @@ fun AboutScreen( navController: NavController = rememberNavController(), context
             Spacer(modifier = Modifier.weight(1f))
             AppButton(
                 modifier = Modifier.padding(bottom = 30.dp),
-                text = R.string.next ,
+                text = R.string.next,
                 onClick =
                 {
                     navController.navigate(com.mastrosql.app.ui.navigation.intro.IntroNavOption.WelcomeScreen.name)

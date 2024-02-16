@@ -100,4 +100,5 @@
     <string name="orders">Ordini</string>
     <string name="drawer_orders">Ordini</string>
     <string name="login">Login</string>
+    <string name="orders_description">Descrizione ordine</string>
 </resources>

@@ -63,7 +63,9 @@ android {
                 when (key) {
                     "APPNAME" -> resValue("string", "app_name", value.toString())
                     "APPLICATION_ID_SUFFIX" -> applicationIdSuffix = value.toString()
+                    "API_URL" -> buildConfigField("String", key.toString(), value as String)
                     else -> buildConfigField("String", key.toString(), value as String)
+
                 }
             }
         }
@@ -85,6 +87,7 @@ android {
                 when (key) {
                     "APPNAME" -> resValue("string", "app_name", value.toString())
                     "APPLICATION_ID_SUFFIX" -> applicationIdSuffix = value.toString()
+                    "API_URL" -> buildConfigField("String", key.toString(), value as String)
                     else -> buildConfigField("String", key.toString(), value as String)
                 }
             }
@@ -102,6 +105,7 @@ android {
                 when (key) {
                     "APPNAME" -> resValue("string", "app_name", value.toString())
                     "APPLICATION_ID_SUFFIX" -> applicationIdSuffix = value.toString()
+                    "API_URL" -> buildConfigField("String", key.toString(), value as String)
                     else -> buildConfigField("String", key.toString(), value as String)
                 }
             }
