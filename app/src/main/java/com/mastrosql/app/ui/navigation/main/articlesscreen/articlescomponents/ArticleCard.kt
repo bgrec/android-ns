@@ -3,13 +3,18 @@ package com.mastrosql.app.ui.navigation.main.articlesscreen.articlescomponents
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -26,15 +31,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
-import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Metadata
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import java.nio.file.WatchEvent
 
 @Composable
 fun ArticleCard(
@@ -75,15 +80,14 @@ fun ArticleCard(
                 ) {
                     ArticleDescriptionAndId(
                         id = article.id,
+                        sku = article.sku,
                         description = article.description
                     )
                     if (expanded) {
                         ArticleInfo(
-                            id = article.id,
-                            sku = article.sku,
+                            department = article.department,
+                            family = article.family,
                             vendorSku = article.vendorSku,
-                            description = article.description,
-                            vat = article.vat,
                             measureUnit = article.measureUnit,
                             price = article.price
                         )
@@ -138,10 +142,10 @@ private fun ArticleNewOrderButton(
         onClick = onClick
     ) {
         Icon(
-            Icons.Default.ShoppingCart,
+            Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(R.string.new_order),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.size(40.dp)
         )
     }
 }
@@ -156,16 +160,41 @@ private fun ArticleNewOrderButton(
 
 @Composable
 fun ArticleDescriptionAndId(
-    id: Int, description: String?, modifier: Modifier = Modifier
+    id: Int, sku: String?, description: String?, modifier: Modifier = Modifier
 ) {
     Column {
-        Text(
-            text = stringResource(R.string.article_id, id),
-            style = MaterialTheme.typography.bodySmall,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.article_id),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Text(
+                text = id.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Spacer(modifier = Modifier.width(40.dp))
+
+            Text(
+                text = stringResource(R.string.article_sku),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = sku?.take(20) ?: "",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Text(
             text = description?.take(50) ?: "",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             modifier = modifier.padding(top = 4.dp)
         )
     }
@@ -173,48 +202,97 @@ fun ArticleDescriptionAndId(
 
 /**
  * Composable that displays a article info
- * @param id is the Int that represents the article id
- * @param sku is the String that represents the article sku
+ * @param department is the Int that represents the article department
+ * @param family is the String that represents the article family
  */
 @Composable
 fun ArticleInfo(
-    id: Int,
-    sku: String?,
-    vendorSku: String?,
-    description: String?,
-    vat: String?,
-    measureUnit: String?,
+    department: String,
+    family: String,
+    vendorSku: String,
+    measureUnit: String,
     price: Double,
     modifier: Modifier = Modifier
 
 ) {
     Column(
-        modifier = modifier.padding(
-            top = 4.dp
-        )
+        modifier = modifier
+            .padding(top = 4.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = description ?: "", style = MaterialTheme.typography.bodySmall
-            )
-        }
+
 
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$id $sku $measureUnit $price",
+                text = stringResource(R.string.article_department),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = department,
+                fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall
             )
         }
-
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.vat, vat ?: ""),
+                text = stringResource(R.string.article_family),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = family,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.article_vendorSku),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = vendorSku,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.article_measureUnit),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = measureUnit,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.article_price),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = price.toString(),
+                fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -222,48 +300,46 @@ fun ArticleInfo(
 }
 
 
-@Preview
-@Composable
-fun ArticleCardPreview() {
-    MastroAndroidTheme {
-        ArticleCard(
-            article = Article(
-                id = 1,
-                sku = "sku",
-                vendorSku = "vendorSku",
-                description = "description",
-                cost = 1.0,
-                vat = "vat",
-                measureUnit = "measureUnit",
-                department = "department",
-                subDepartment = "subDepartment",
-                family = "family",
-                subFamily = "subFamily",
-                price = 1.0,
-                group = "group",
-                ean8 = "ean8",
-                ean13 = "ean13",
-                eanAlt = "eanAlt",
-                links = emptyList(),
-                metadata = Metadata("etag"),
-                page = 0,
-                lastUpdated = System.currentTimeMillis()
-            ), modifier = Modifier, navController = NavController(LocalContext.current)
-        )
-    }
-
-}
+//@Preview
+//@Composable
+//fun ArticleCardPreview() {
+//    MastroAndroidTheme {
+//        ArticleCard(
+//            article = Article(
+//                id = 1,
+//                sku = "sku",
+//                vendorSku = "vendorSku",
+//                description = "description",
+//                cost = 1.0,
+//                vat = "vat",
+//                measureUnit = "measureUnit",
+//                department = "department",
+//                subDepartment = "subDepartment",
+//                family = "family",
+//                subFamily = "subFamily",
+//                price = 1.0,
+//                group = "group",
+//                ean8 = "ean8",
+//                ean13 = "ean13",
+//                eanAlt = "eanAlt",
+//                links = emptyList(),
+//                metadata = Metadata("etag"),
+//                page = 0,
+//                lastUpdated = System.currentTimeMillis()
+//            ), modifier = Modifier, navController = NavController(LocalContext.current)
+//        )
+//    }
+//
+//}
 
 @Preview
 @Composable
 fun ArticleInfoPreview() {
     MastroAndroidTheme {
         ArticleInfo(
-            id = 1,
-            sku = "sku",
+            department = "department",
+            family = "sku",
             vendorSku = "vendorSku",
-            description = "description",
-            vat = "vat",
             measureUnit = "measureUnit",
             price = 1.0,
             modifier = Modifier
