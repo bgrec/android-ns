@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,21 +30,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import java.nio.file.WatchEvent
 
 @Composable
 fun ArticleCard(
     article: Article, modifier: Modifier, navController: NavController
 ) {
+    var showToast by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
+
+    if (showToast) {
+        ShowToast(context, "Impossibile modificare articolo")
+        // Reset the showToast value after showing the toast
+        showToast = false
+    }
+
     Card(
         modifier = modifier.padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -100,7 +109,8 @@ fun ArticleCard(
 
                 ) {
                     ArticleNewOrderButton(
-                        onClick = { //TO-DO
+                        onClick = {
+                            showToast = true
                         },
                     )
                 }
