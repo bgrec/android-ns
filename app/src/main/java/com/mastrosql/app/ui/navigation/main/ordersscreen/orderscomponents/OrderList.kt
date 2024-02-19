@@ -25,8 +25,10 @@ fun OrdersList(
     ordersList: List<Order>,
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
-    navController: NavController
-) {
+    navController: NavController,
+    navigateToOrderDetails: (Int) -> Unit,
+
+    ) {
     LazyColumn(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -55,7 +57,9 @@ fun OrdersList(
                     .padding(4.dp)
                     .fillMaxWidth(),
                 //.focusable(),
-                navController = navController
+                navController = navController,
+                navigateToOrderDetails = navigateToOrderDetails
+
             )
         }
     }
@@ -63,7 +67,7 @@ fun OrdersList(
 
 @Preview
 @Composable
-fun ItemsListPreview() {
+fun OrdersListPreview() {
     MastroAndroidTheme {
         OrdersList(
             ordersList = listOf(
@@ -143,7 +147,8 @@ fun ItemsListPreview() {
             ),
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
-            navController = NavController(LocalContext.current)
+            navController = NavController(LocalContext.current),
+            navigateToOrderDetails = {}
         )
     }
 }

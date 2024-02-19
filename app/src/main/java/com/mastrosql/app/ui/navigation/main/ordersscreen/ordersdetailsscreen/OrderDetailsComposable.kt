@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.itemsScreen
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
@@ -17,28 +17,30 @@ import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 
 /**
- * Top level composable that represents screens for the application.
+ * Top level composable that represents screens for the order details.
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ItemsComposable(navController: NavHostController = rememberNavController()) {
-    ItemsNavHost(navController = navController)
+fun OrderDetailsComposable(navController: NavHostController = rememberNavController()) {
+    OrderDetailsNavHost(navController = navController)
 }
 
 /**
  * App bar to display title and conditionally display the back navigation.
  */
 
+// TODO: Add the OrderDetailsTopAppBar composable here from file
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemsTopAppBar(
+fun OrderDetailsTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navigateUp: () -> Unit = {}
 ) {
-    CenterAlignedTopAppBar(title = { Text(title) },
+    CenterAlignedTopAppBar(
+        title = { Text(title) },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         navigationIcon = {
@@ -50,5 +52,6 @@ fun ItemsTopAppBar(
                     )
                 }
             }
-        })
+        }
+    )
 }

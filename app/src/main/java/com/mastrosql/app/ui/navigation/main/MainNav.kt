@@ -14,7 +14,7 @@ import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.NewHomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersComposable
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
@@ -42,7 +42,8 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
             ArticlesScreen(drawerState = drawerState, navController = navController)
         }
         composable(MainNavOption.OrdersScreen.name) {
-            OrdersScreen(drawerState = drawerState, navController = navController)
+            //OrdersScreen(drawerState = drawerState, navController = navController)
+            OrdersComposable(drawerState = drawerState)
         }
         composable(MainNavOption.ItemsScreen.name) {
             ItemsComposable()

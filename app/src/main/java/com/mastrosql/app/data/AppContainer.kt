@@ -17,8 +17,8 @@ import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.data.orderdetail.NetworkOrderDetailRepository
-import com.mastrosql.app.data.orderdetail.OrderDetailRepository
+import com.mastrosql.app.data.orderdetails.NetworkOrderDetailsRepository
+import com.mastrosql.app.data.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import okhttp3.OkHttpClient
@@ -46,7 +46,7 @@ interface AppContainer {
     val itemsRepository: ItemsRepository
     val articlesRepository: ArticlesRepository
     val ordersRepository: OrdersRepository
-    val orderDetailRepository: OrderDetailRepository
+    val orderDetailsRepository: OrderDetailsRepository
     val userPreferencesRepository: UserPreferencesRepository
 
 }
@@ -206,10 +206,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
     }
 
-    override val orderDetailRepository: OrderDetailRepository by lazy {
-        NetworkOrderDetailRepository(
+    override val orderDetailsRepository: OrderDetailsRepository by lazy {
+        NetworkOrderDetailsRepository(
             retrofitService,
-            AppDatabase.getInstance(context).orderDetailDao(),
+            AppDatabase.getInstance(context).orderDetailsDao(),
             context
         )
         //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())

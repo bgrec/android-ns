@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString

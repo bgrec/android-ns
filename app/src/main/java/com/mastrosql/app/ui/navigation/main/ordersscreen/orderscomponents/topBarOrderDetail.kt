@@ -16,7 +16,7 @@ fun TopBarArticles() {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.orders),
+                text = stringResource(R.string.clients_orders_bar_title),
                 style = MaterialTheme.typography.titleMedium,
                 //color = colorResource(id = R.color.white)
             )

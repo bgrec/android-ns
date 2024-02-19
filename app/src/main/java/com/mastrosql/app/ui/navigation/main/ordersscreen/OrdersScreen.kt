@@ -1,19 +1,19 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen
+package com.mastrosql.app.ui.navigation.main.ordersscreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,46 +21,55 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model.OrderDetail
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents.OrderDetailList
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.orderdetailcomponents.SearchView
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchView
 
+object OrdersResultDestination : NavigationDestination {
+    override val route = "orders_list"
+    override val titleRes = R.string.clients_orders_bar_title
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
+    navigateToOrderDetails: (Int) -> Unit,
     drawerState: DrawerState,
     navController: NavController,
-    viewModel: OrderDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val ordersUiState = viewModel.orderDetailUiState
+    val ordersUiState = viewModel.ordersUiState
     val modifier = Modifier.fillMaxSize()
 
     when (ordersUiState) {
-        is OrderDetailUiState.Loading -> LoadingScreen(
+        is OrdersUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
             navController = navController,
             loading = true
         )
 
-        is OrderDetailUiState.Success -> OrdersResultScreen(
-            ordersUiState.orderDetailList,
+        is OrdersUiState.Success -> OrdersResultScreen(
+            navigateToOrderDetails = navigateToOrderDetails,
+            ordersUiState.ordersList,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
             navController = navController
         )
 
-        is OrderDetailUiState.Error -> ErrorScreen(
+        is OrdersUiState.Error -> ErrorScreen(
             ordersUiState.exception,
             viewModel::getOrders,
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
             navController = navController
         )
+
+        else -> {}
     }
 
 }
@@ -68,14 +77,23 @@ fun OrdersScreen(
 @ExperimentalMaterial3Api
 @Composable
 fun OrdersResultScreen(
-    ordersList: List<OrderDetail>,
+    navigateToOrderDetails: (Int) -> Unit,
+    ordersList: List<Order>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController
 ) {
+    //val itemsUiState by viewModel.itemsUiState.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(topBar = {
-        AppBar(
+        /*AppBar(
             drawerState = drawerState, title = R.string.drawer_orders,
+        )*/
+        OrdersTopAppBar(
+            title = stringResource(OrdersResultDestination.titleRes),
+            canNavigateBack = false,
+            scrollBehavior = scrollBehavior
         )
     }) {
         Column(
@@ -87,18 +105,19 @@ fun OrdersResultScreen(
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
             SearchView(state = textState)
-            OrderDetailList(
-                orderDetailList = ordersList,
+            OrdersList(
+                ordersList = ordersList,
                 state = textState,
                 modifier = Modifier.padding(4.dp),
-                navController = navController
+                navController = navController,
+                navigateToOrderDetails = navigateToOrderDetails
             )
         }
 
     }
 }
 
-
+/*
 @Preview
 @Composable
 fun OrdersScreenPreview() {
@@ -108,7 +127,7 @@ fun OrdersScreenPreview() {
         navController = NavController(LocalContext.current)
     )
 }
-
+*/
 @Preview
 @Composable
 fun SearchBarPreview() {

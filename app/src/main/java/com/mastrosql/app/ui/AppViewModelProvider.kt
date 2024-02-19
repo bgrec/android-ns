@@ -16,8 +16,8 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
-import com.mastrosql.app.ui.navigation.main.ordersdetailscreen.OrderDetailViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Mastro Android app
@@ -82,8 +82,8 @@ object AppViewModelProvider {
         }
 
         initializer {
-            OrderDetailViewModel(
-                mastroAndroidApplication().appContainer.orderDetailRepository
+            OrderDetailsViewModel(
+                mastroAndroidApplication().appContainer.orderDetailsRepository
             )
         }
 

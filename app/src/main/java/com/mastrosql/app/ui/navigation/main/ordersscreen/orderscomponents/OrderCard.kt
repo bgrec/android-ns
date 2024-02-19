@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,13 +34,19 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun OrderCard(
-    order: Order, modifier: Modifier, navController: NavController
+    order: Order,
+    modifier: Modifier,
+    navController: NavController,
+    navigateToOrderDetails: (Int) -> Unit
+
 ) {
     var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = modifier.padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -93,9 +98,12 @@ fun OrderCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    OrderNewOrderButton(
-                        onClick = { //TO-DO
-                        },
+                    OrderDetailsEditButton(
+                        orderId = order.id,
+                        onClick = {orderId ->
+                                  navController.navigate(OrderDetailsDestination.route )
+                            //orderId -> navigateToOrderDetails(orderId)
+                                  },
                     )
                 }
             }
@@ -114,7 +122,9 @@ fun OrderCard(
 
 @Composable
 private fun OrderExpandButton(
-    expanded: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -129,11 +139,16 @@ private fun OrderExpandButton(
 }
 
 @Composable
-private fun OrderNewOrderButton(
-    onClick: () -> Unit, modifier: Modifier = Modifier
-) {
+private fun OrderDetailsEditButton(
+    orderId: Int,
+    onClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+
+    ) {
     IconButton(
-        onClick = onClick
+        onClick = {
+            onClick(orderId)
+        }
     ) {
         Icon(
             Icons.Default.Edit,
@@ -247,7 +262,7 @@ fun OrderCardPreview() {
                 port = "port",
                 date = "2023-01-01",
                 notes = "notes",
-                deliveryDate ="2023-01-0",
+                deliveryDate = "2023-01-0",
                 deliveryDeadline = true,
                 deliveryType = 1,
                 deliveryState = 1,
@@ -259,7 +274,9 @@ fun OrderCardPreview() {
                 metadata = Metadata("etag"),
                 page = 0,
                 lastUpdated = System.currentTimeMillis()
-            ), modifier = Modifier, navController = NavController(LocalContext.current)
+            ), modifier = Modifier,
+            navController = NavController(LocalContext.current),
+            {}
         )
     }
 

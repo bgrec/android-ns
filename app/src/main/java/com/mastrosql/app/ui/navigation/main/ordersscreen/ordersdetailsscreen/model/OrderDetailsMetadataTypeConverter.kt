@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersdetailscreen.model
+package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString
@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 /**
  * Type converter for [Metadata] class.
  */
-class OrderDetailMetadataTypeConverter {
+class OrderDetailsMetadataTypeConverter {
     private val json = Json { ignoreUnknownKeys = true }
 
     @TypeConverter
