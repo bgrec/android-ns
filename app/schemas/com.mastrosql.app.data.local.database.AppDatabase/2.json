@@ -1,0 +1,460 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "f136dd3ce1c957efd7c9620309002e50",
+    "entities": [
+      {
+        "tableName": "items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sku` TEXT NOT NULL, `vendorSku` TEXT NOT NULL, `description` TEXT NOT NULL, `cost` REAL NOT NULL, `vat` TEXT NOT NULL, `measureUnit` TEXT NOT NULL, `department` TEXT NOT NULL, `subDepartment` TEXT NOT NULL, `family` TEXT NOT NULL, `subFamily` TEXT NOT NULL, `price` REAL NOT NULL, `group` TEXT NOT NULL, `ean8` TEXT NOT NULL, `ean13` TEXT, `eanAlt1` TEXT, `eanAlt2` TEXT, `eanAlt3` TEXT, `eanAlt4` TEXT, `eanAlt5` TEXT, `eanAlt6` TEXT, `eanAlt7` TEXT, `eanAlt8` TEXT, `eanAlt9` TEXT, `eanAlt10` TEXT, `metadata` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sku",
+            "columnName": "sku",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vendorSku",
+            "columnName": "vendorSku",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vat",
+            "columnName": "vat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "measureUnit",
+            "columnName": "measureUnit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "department",
+            "columnName": "department",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subDepartment",
+            "columnName": "subDepartment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "family",
+            "columnName": "family",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subFamily",
+            "columnName": "subFamily",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "group",
+            "columnName": "group",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ean8",
+            "columnName": "ean8",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ean13",
+            "columnName": "ean13",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt1",
+            "columnName": "eanAlt1",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt2",
+            "columnName": "eanAlt2",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt3",
+            "columnName": "eanAlt3",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt4",
+            "columnName": "eanAlt4",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt5",
+            "columnName": "eanAlt5",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt6",
+            "columnName": "eanAlt6",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt7",
+            "columnName": "eanAlt7",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt8",
+            "columnName": "eanAlt8",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt9",
+            "columnName": "eanAlt9",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt10",
+            "columnName": "eanAlt10",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metadata",
+            "columnName": "metadata",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "customers_remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`customer_id` INTEGER NOT NULL, `prevKey` INTEGER, `currentPage` INTEGER NOT NULL, `nextKey` INTEGER, `created_at` INTEGER NOT NULL, PRIMARY KEY(`customer_id`))",
+        "fields": [
+          {
+            "fieldPath": "customerId",
+            "columnName": "customer_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prevKey",
+            "columnName": "prevKey",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currentPage",
+            "columnName": "currentPage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextKey",
+            "columnName": "nextKey",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "customer_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "articles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sku` TEXT NOT NULL, `vendorSku` TEXT NOT NULL, `description` TEXT NOT NULL, `cost` REAL NOT NULL, `vat` TEXT NOT NULL, `measureUnit` TEXT NOT NULL, `department` TEXT NOT NULL, `subDepartment` TEXT NOT NULL, `family` TEXT NOT NULL, `subFamily` TEXT NOT NULL, `price` REAL NOT NULL, `group` TEXT NOT NULL, `ean8` TEXT NOT NULL, `ean13` TEXT, `eanAlt1` TEXT, `eanAlt2` TEXT, `eanAlt3` TEXT, `eanAlt4` TEXT, `eanAlt5` TEXT, `eanAlt6` TEXT, `eanAlt7` TEXT, `eanAlt8` TEXT, `eanAlt9` TEXT, `eanAlt10` TEXT, `metadata` TEXT NOT NULL, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sku",
+            "columnName": "sku",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vendorSku",
+            "columnName": "vendorSku",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vat",
+            "columnName": "vat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "measureUnit",
+            "columnName": "measureUnit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "department",
+            "columnName": "department",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subDepartment",
+            "columnName": "subDepartment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "family",
+            "columnName": "family",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subFamily",
+            "columnName": "subFamily",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "group",
+            "columnName": "group",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ean8",
+            "columnName": "ean8",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ean13",
+            "columnName": "ean13",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt1",
+            "columnName": "eanAlt1",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt2",
+            "columnName": "eanAlt2",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt3",
+            "columnName": "eanAlt3",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt4",
+            "columnName": "eanAlt4",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt5",
+            "columnName": "eanAlt5",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt6",
+            "columnName": "eanAlt6",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt7",
+            "columnName": "eanAlt7",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt8",
+            "columnName": "eanAlt8",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt9",
+            "columnName": "eanAlt9",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eanAlt10",
+            "columnName": "eanAlt10",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metadata",
+            "columnName": "metadata",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "links",
+            "columnName": "links",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "page",
+            "columnName": "page",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "last_updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "articles_remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`article_id` INTEGER NOT NULL, `prevKey` INTEGER, `currentPage` INTEGER NOT NULL, `nextKey` INTEGER, `created_at` INTEGER NOT NULL, PRIMARY KEY(`article_id`))",
+        "fields": [
+          {
+            "fieldPath": "articleId",
+            "columnName": "article_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prevKey",
+            "columnName": "prevKey",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currentPage",
+            "columnName": "currentPage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextKey",
+            "columnName": "nextKey",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "article_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f136dd3ce1c957efd7c9620309002e50')"
+    ]
+  }
+}

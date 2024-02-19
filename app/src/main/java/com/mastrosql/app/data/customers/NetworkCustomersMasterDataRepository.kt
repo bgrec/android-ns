@@ -6,9 +6,9 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataDao
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataDao
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 

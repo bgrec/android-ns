@@ -21,7 +21,6 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.R.string.retry
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import java.lang.Exception
 
 /**
  * The home screen displaying error message with re-attempt button.
@@ -59,6 +58,12 @@ fun ErrorScreenPreview() {
     val navController = NavController(LocalContext.current)
 
     MastroAndroidTheme {
-        ErrorScreen(exception = Exception("errore"), retryAction = {},modifier, drawerState, navController)
+        ErrorScreen(
+            exception = Exception("errore"),
+            retryAction = {},
+            modifier,
+            drawerState,
+            navController
+        )
     }
 }

@@ -35,7 +35,7 @@ fun <T : Enum<T>> AppDrawerContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LazyColumn(
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier.padding(horizontal = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(menuItems) { item ->

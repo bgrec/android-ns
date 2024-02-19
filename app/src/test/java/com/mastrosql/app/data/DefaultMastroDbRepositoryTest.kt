@@ -17,14 +17,14 @@
 package com.mastrosql.app.data
 
 import com.mastrosql.app.data.local.database.DefaultMastroDbRepository
+import com.mastrosql.app.data.local.database.MastroDb
+import com.mastrosql.app.data.local.database.MastroDbDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import com.mastrosql.app.data.local.database.MastroDb
-import com.mastrosql.app.data.local.database.MastroDbDao
 
 /**
  * Unit tests for [DefaultMastroDbRepository].

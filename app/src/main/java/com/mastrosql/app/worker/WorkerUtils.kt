@@ -5,26 +5,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
-import android.util.Log
-import androidx.annotation.WorkerThread
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.mastrosql.app.CHANNEL_ID
 import com.mastrosql.app.NOTIFICATION_ID
 import com.mastrosql.app.NOTIFICATION_TITLE
-import com.mastrosql.app.OUTPUT_PATH
 import com.mastrosql.app.R
 import com.mastrosql.app.VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION
 import com.mastrosql.app.VERBOSE_NOTIFICATION_CHANNEL_NAME
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.util.UUID
 
 private const val TAG = "WorkerUtils"
 private const val PERMISSION_REQUEST_CODE = 123 // You can use any unique code here

@@ -11,22 +11,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.mastrosql.app.ui.navigation.main.MainCompose
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import com.mastrosql.app.worker.CleanupWorker
-import com.mastrosql.app.worker.DataSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.concurrent.TimeUnit
 
 
 // Constants
@@ -51,47 +38,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-
-        /*
-        //scheduling the workmanager to run every 15 minutes
-        val workManager = WorkManager.getInstance(applicationContext)
-
-        // Create the constraints for low battery and network connectivity
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            //.setRequiresBatteryNotLow(true)
-            .build()
-
-        // Create a one-time work request for CleanupWorker
-        val cleanupRequest = OneTimeWorkRequest.from(CleanupWorker::class.java)
-            //OneTimeWorkRequestBuilder<CleanupWorker<CustomerMasterData>>()
-            //.setConstraints(constraints) // You can set constraints if needed
-            //.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            //.build()
-
-        // Create a periodic work request for DataSyncWorker
-        val syncRequest = PeriodicWorkRequestBuilder<DataSyncWorker<CustomerMasterData>>(
-            repeatInterval = 2, // Time in minutes
-            repeatIntervalTimeUnit = TimeUnit.MINUTES
-        )
-            .setConstraints(constraints)
-            //.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .build()
-
-        // Enqueue CleanupWorker as one-time work
-        workManager.beginUniqueWork(
-            "CleanUp Work",
-            ExistingWorkPolicy.REPLACE,
-            cleanupRequest
-        ).enqueue()
-
-        // Enqueue DataSyncWorker as a separate periodic work
-        workManager.enqueueUniquePeriodicWork(
-            "Sync Work",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            syncRequest
-        )
-*/
 
         // Create the placeholder account
         mAccount = createSyncAccount()

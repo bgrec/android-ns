@@ -13,6 +13,9 @@ import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.BackButton
 import com.mastrosql.app.ui.components.OnClickFunction
 
+//Used for intro screens, to show a text and a button, with a back button on top
+//and a next button on bottom (or a different text)
+//All the screens are the same, except for the text and the button text
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

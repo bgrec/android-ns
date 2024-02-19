@@ -34,9 +34,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.navigation.main.MainNavOption
 
 
 @Composable
@@ -54,25 +55,27 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(24.dp)
                 .padding(it),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Login Screen test")
             Box(
-                modifier = Modifier.offset(y = 30.dp)
+                modifier = Modifier.offset(y = 50.dp)
             )
             {
                 LogoImage()
             }// Show the logo in the center below the TopAppBar
+
             Spacer(modifier = Modifier.height(16.dp)) // Add some space between the logo and the text fields
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center
             ) {
                 // TextField for Username
-                Spacer(modifier = Modifier.weight(0.5f))
+                Spacer(modifier = Modifier.weight(1f))
                 TextField(
                     value = username, // Set your initial value here or use a state variable to manage it
                     onValueChange = { username = it },
@@ -88,8 +91,8 @@ fun LoginScreen(
                         .align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
-
+                //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
+                Spacer(modifier = Modifier.weight(0.1f))
                 // TextField for Password
                 TextField(
                     value = password, // Set your initial value here or use a state variable to manage it
@@ -111,14 +114,25 @@ fun LoginScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                 )
-                Spacer(modifier = Modifier.height(50.dp))
+                //Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
-                LoginButton(onClick = {
+                AppButton(
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                        .align(Alignment.CenterHorizontally),
+                    text = R.string.login,
+                    onClick = {
+                        // Handle login button click here
+                        navController.navigate(MainNavOption.HomeScreen.name)
+                    }
+                )
+                /*LoginButton(onClick = {
                     //navController.navigate(MainNavOption.HomeScreen.name)
                     navController.navigate(MainNavOption.CustomersScreen.name)
                 }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     // Handle login button click here
-                }
+                }*/
 
                 Spacer(modifier = Modifier.weight(1f))
                 // ModalNavigationDrawerSample(drawerState = drawerState, scope = scope){
@@ -138,7 +152,7 @@ fun LogoImage() {
     )
 }
 
-@Composable
+/*@Composable
 fun LoginButton(onClick: () -> Unit, modifier: Modifier, function: () -> Unit) {
     Button(
         onClick = onClick,
@@ -146,7 +160,7 @@ fun LoginButton(onClick: () -> Unit, modifier: Modifier, function: () -> Unit) {
     ) {
         Text("Login")
     }
-}
+}*/
 
 @Composable
 fun LoginFields(modifier: Modifier) {

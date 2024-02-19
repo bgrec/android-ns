@@ -9,7 +9,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun WelcomeScreen(navController: NavController = rememberNavController()) = IntroCompose(
     navController = navController,
-    text = "Welcome",
+    text = "Benvenuto in MastroAndroid",
     showBackButton = false
 ) {
     navController.navigate(com.mastrosql.app.ui.navigation.intro.IntroNavOption.MotivationScreen.name)

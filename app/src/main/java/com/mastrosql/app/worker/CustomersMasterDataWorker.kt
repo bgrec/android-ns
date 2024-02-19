@@ -3,16 +3,8 @@ package com.mastrosql.app.worker
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
-import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
-import androidx.work.workDataOf
-import com.mastrosql.app.DELAY_TIME_MILLIS
-import com.mastrosql.app.R
 import com.mastrosql.app.data.AppContainer
-import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 private const val TAG = "SyncDataWorker"
