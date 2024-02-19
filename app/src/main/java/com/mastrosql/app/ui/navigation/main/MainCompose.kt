@@ -1,5 +1,15 @@
 package com.mastrosql.app.ui.navigation.main
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -40,6 +50,12 @@ fun MainCompose(
                         }
                     }
 
+                    MainNavOption.NewHomeScreen -> {
+                        navController.navigate(onUserPickedOption.name) {
+                            popUpTo(NavRoutes.MainRoute.name)
+                        }
+                    }
+
                     MainNavOption.HomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
@@ -69,6 +85,7 @@ fun MainCompose(
                             popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
+
                     MainNavOption.OrdersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
@@ -92,6 +109,7 @@ fun MainCompose(
                             popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
+
                     MainNavOption.Logout -> {
                         // Handle logout
                         viewModel.logoutUser()
@@ -124,49 +142,55 @@ object DrawerParams {
         AppDrawerItemInfo(
             MainNavOption.LoginScreen,
             R.string.drawer_login,
-            android.R.drawable.ic_lock_idle_lock,
+            Icons.AutoMirrored.Filled.Login,
             R.string.drawer_login_description
+        ),
+        AppDrawerItemInfo(
+            MainNavOption.NewHomeScreen,
+            R.string.drawer_new_home,
+            Icons.Default.Home,
+            R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.HomeScreen,
             R.string.drawer_home,
-            R.drawable.ic_home,
+            Icons.Default.Home,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.CustomersScreen,
             R.string.drawer_customers,
-            android.R.drawable.ic_menu_myplaces,
+            Icons.Default.Person,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.CustomersPagedScreen,
-            R.string.drawer_customers,
-            android.R.drawable.ic_menu_myplaces,
+            R.string.drawer_customers2,
+            Icons.Default.Person,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.ArticlesScreen,
             R.string.articles,
-            android.R.drawable.ic_menu_agenda,
+            Icons.AutoMirrored.Filled.ListAlt,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.ItemsScreen,
-            R.string.items,
-            android.R.drawable.ic_menu_agenda,
+            R.string.drawer_inventory,
+            Icons.Default.Folder,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.OrdersScreen,
-            R.string.items,
-            android.R.drawable.ic_menu_agenda,
+            R.string.drawer_orders,
+            Icons.Default.Description,
             R.string.drawer_home_description
         ),
         AppDrawerItemInfo(
             MainNavOption.SettingsScreen,
             R.string.drawer_settings,
-            R.drawable.ic_settings,
+            Icons.Default.Settings,
             R.string.drawer_settings_description
         ),
         //TODO: Remove AboutScreen because it was moved to the intro navigation graph
@@ -180,19 +204,19 @@ object DrawerParams {
         AppDrawerItemInfo(
             MainNavOption.CartScreen,
             R.string.drawer_cart,
-            R.drawable.ic_info,
+            Icons.Default.ShoppingCart,
             R.string.drawer_cart_description
         ),
         AppDrawerItemInfo(
             MainNavOption.Logout,
             R.string.logout,
-            R.drawable.ic_info,
+            Icons.AutoMirrored.Filled.Logout,
             R.string.drawer_logout_description
         )
     )
 }
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun MainActivityPreview() {
     MainCompose()

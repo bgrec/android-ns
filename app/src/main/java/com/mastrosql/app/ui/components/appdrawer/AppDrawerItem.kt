@@ -34,7 +34,7 @@ fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit)
                 .padding(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = item.drawableId),
+                item.icon,
                 contentDescription = stringResource(id = item.descriptionId),
                 modifier = Modifier
                     .size(24.dp)
@@ -48,7 +48,6 @@ fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit)
         }
     }
 
-
 class MainStateProvider : PreviewParameterProvider<AppDrawerItemInfo<MainNavOption>> {
     override val values = sequence {
         DrawerParams.drawerButtons.forEach { element ->
@@ -57,7 +56,7 @@ class MainStateProvider : PreviewParameterProvider<AppDrawerItemInfo<MainNavOpti
     }
 }
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun AppDrawerItemPreview(@PreviewParameter(MainStateProvider::class) state: AppDrawerItemInfo<MainNavOption>) {
     MastroAndroidTheme {

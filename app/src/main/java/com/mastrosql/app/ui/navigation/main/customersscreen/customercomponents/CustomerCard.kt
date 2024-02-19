@@ -3,13 +3,18 @@ package com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -28,10 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -40,7 +47,16 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 fun CustomerCard(
     customerMasterData: CustomerMasterData, modifier: Modifier, navController: NavController
 ) {
+    var showToast by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
+
+    if (showToast) {
+        ShowToast(context, "Impossibile modificare cliente")
+        // Reset the showToast value after showing the toast
+        showToast = false
+    }
+
     Card(
         modifier = modifier.padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -75,13 +91,15 @@ fun CustomerCard(
                 ) {
                     CustomerNameAndId(
                         id = customerMasterData.id,
+                        pIva = customerMasterData.vat,
                         businessName = customerMasterData.businessName
                     )
                     if (expanded) {
                         CustomerAddress(
+                            businessName2 = customerMasterData.businessName2,
+                            taxId = customerMasterData.taxId,
                             street = customerMasterData.street,
                             postalCode = customerMasterData.postalCode,
-                            vat = customerMasterData.vat,
                             city = customerMasterData.city,
                             province = customerMasterData.province,
                             nation = customerMasterData.nation,
@@ -95,7 +113,8 @@ fun CustomerCard(
 
                 ) {
                     CustomerNewOrderButton(
-                        onClick = { //TO-DO
+                        onClick = {
+                            showToast = true
                         },
                     )
                 }
@@ -137,10 +156,10 @@ private fun CustomerNewOrderButton(
         onClick = onClick
     ) {
         Icon(
-            Icons.Default.ShoppingCart,
+            Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(R.string.new_order),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.size(35.dp)
         )
     }
 }
@@ -155,16 +174,43 @@ private fun CustomerNewOrderButton(
 
 @Composable
 fun CustomerNameAndId(
-    id: Int, businessName: String?, modifier: Modifier = Modifier
+    id: Int, pIva: String, businessName: String?, modifier: Modifier = Modifier
 ) {
     Column {
-        Text(
-            text = stringResource(R.string.customer_id, id),
-            style = MaterialTheme.typography.bodySmall,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.customer_id),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Text(
+                text = id.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            if (pIva != "") {
+                Spacer(modifier = Modifier.width(35.dp))
+
+                Text(
+                    text = stringResource(R.string.costumer_vat),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
+                Text(
+                    text = pIva,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+
         Text(
             text = businessName?.take(50) ?: "",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             modifier = modifier.padding(top = 4.dp)
         )
 
@@ -179,9 +225,10 @@ fun CustomerNameAndId(
  */
 @Composable
 fun CustomerAddress(
+    businessName2: String?,
+    taxId: String?,
     street: String?,
     postalCode: String?,
-    vat: String?,
     city: String?,
     province: String?,
     nation: String?,
@@ -192,36 +239,146 @@ fun CustomerAddress(
             top = 4.dp
         )
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = street ?: "", style = MaterialTheme.typography.bodySmall
-            )
+
+        if (taxId != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_taxId),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = taxId ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "$postalCode $city $province $nation",
-                style = MaterialTheme.typography.bodySmall
-            )
+
+        if (street != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_street),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = street ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.vat, vat ?: ""),
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (postalCode != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_postalCode),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = postalCode ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
+
+        if (city != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_city),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = city ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+
+
+        if (province != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_province),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = province ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+
+        if (nation != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_nation),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = nation ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+
+        if (businessName2 != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.costumer_businessName2),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = businessName2 ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+
+
     }
 }
 
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun CustomerCardPreview() {
     MastroAndroidTheme {
@@ -247,17 +404,18 @@ fun CustomerCardPreview() {
 
 }
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun CustomerAddressPreview() {
     MastroAndroidTheme {
         CustomerAddress(
+            businessName2 = "businessName2",
+            taxId = "taxId",
             street = "street",
             postalCode = "postalCode",
-            vat = "vat",
             city = "city",
             province = "province",
-            "nation",
+            nation = "nation",
             modifier = Modifier.padding(4.dp)
         )
     }

@@ -5,6 +5,7 @@
     <string name="start_app">Start using the app</string>
     <string name="welcome_image_description">App icon</string>
     <string name="drawer_home">Home</string>
+    <string name="drawer_new_home">New Home</string>
     <string name="drawer_login">Login</string>
     <string name="drawer_settings">Impostazioni</string>
     <string name="drawer_about">About</string>
@@ -14,8 +15,9 @@
     <string name="drawer_settings_description">Pulsante di navigazione per impostazioni</string>
     <string name="drawer_info_description">About navigation button</string>
     <string name="search_bar_hint_text">Articolo</string>
-    <string name="drawer_cart">Cart</string>
+    <string name="drawer_cart">Carrello</string>
     <string name="drawer_cart_description">Cart description</string>
+    <string name="drawer_inventory">Inventario</string>
     <string name="expand_button_content_description">Vedi tutti i dati.</string>
 
     <string name="loading_failed">Errore caricamento dati</string>
@@ -27,8 +29,8 @@
     <string name="customerId">Login</string>
 
 
-    <string name="article_id">"Prog "</string>
-    <string name="article_sku">"Codice "</string>
+    <string name="article_id">"Prog: "</string>
+    <string name="article_sku">"Codice: "</string>
 
     <string name="article_department">"Reparto: "</string>
     <string name="article_family">"Famiglia: "</string>
@@ -38,11 +40,23 @@
 
 
     <string name="address">Indirizzo</string>
-    <string name="customer_id">Codice %d</string>
+    <string name="customer_id">"Codice: "</string>
     <string name="new_order">Crea ordine</string>
     <string name="vat">P.IVA: %1$s</string>
+    <string name="costumer_vat">"P.IVA: "</string>
     <string name="businessName">Ragione sociale</string>
     <string name="drawer_customers">Clienti</string>
+    <string name="drawer_customers2">Clienti locale</string>
+
+    <string name="costumer_businessName2">"Descrizione 2: "</string>
+    <string name="costumer_taxId">"Codice fiscale: "</string>
+    <string name="costumer_street">"Via: "</string>
+    <string name="costumer_postalCode">"CAP: "</string>
+    <string name="costumer_city">"Citta': "</string>
+    <string name="costumer_province">"Provincia: "</string>
+    <string name="costumer_nation">"Nazione: "</string>
+
+
 
 
     <string name="attention">Attention</string>
