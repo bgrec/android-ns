@@ -155,7 +155,7 @@ private fun ArticleNewOrderButton(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(R.string.new_order),
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(35.dp)
         )
     }
 }
@@ -342,7 +342,7 @@ fun ArticleInfo(
 //
 //}
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun ArticleInfoPreview() {
     MastroAndroidTheme {
