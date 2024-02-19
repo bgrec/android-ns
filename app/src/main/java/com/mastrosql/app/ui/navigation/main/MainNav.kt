@@ -11,6 +11,7 @@ import com.mastrosql.app.ui.navigation.main.cartscreen.CartViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedScreen
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
+import com.mastrosql.app.ui.navigation.main.homescreen.NewHomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersComposable
@@ -24,6 +25,9 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
     ) {
         composable(MainNavOption.LoginScreen.name) {
             LoginScreen(drawerState, navController)
+        }
+        composable(MainNavOption.NewHomeScreen.name) {
+            NewHomeScreen(drawerState, navController)
         }
         composable(MainNavOption.HomeScreen.name) {
             HomeScreen(drawerState, navController, viewModel = CartViewModel())
@@ -55,6 +59,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
 
 enum class MainNavOption {
     LoginScreen,
+    NewHomeScreen,
     HomeScreen,
     CustomersScreen,
     CustomersPagedScreen,
