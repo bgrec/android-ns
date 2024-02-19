@@ -23,7 +23,7 @@ class OrderDetailsItemEditViewModel(
     /**
      * Holds current item ui state
      */
-    var orderDetailsUiState by mutableStateOf(OrderDetailsUiState())
+    var orderDetailsUiState by mutableStateOf(OrderDetailsEUiState())
         private set
 
     private val orderDetailsItemId: Int =
@@ -53,7 +53,7 @@ class OrderDetailsItemEditViewModel(
      */
     fun updateUiState(orderDetails: OrderDetails) {
         orderDetailsUiState =
-            OrderDetailsUiState(
+            OrderDetailsEUiState(
                 orderDetails = orderDetails,
                 isEntryValid = validateInput(orderDetails)
             )

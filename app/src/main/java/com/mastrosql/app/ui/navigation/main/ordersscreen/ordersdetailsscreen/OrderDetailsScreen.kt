@@ -1,7 +1,13 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +31,9 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.ord
 
 object OrderDetailsDestination : NavigationDestination {
     override val route = "order_details"
-    override val titleRes = R.string.app_name
+    override val titleRes = R.string.order_details_edit
+    const val orderIdArg = "orderId"
+    val routeWithArgs = "$route/$orderIdArg"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,34 +43,39 @@ fun OrderDetailsScreen(
     navigateBack: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
-    viewModel: OrderDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: OrderDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    orderId: Int
 ) {
     val orderDetailUiState = viewModel.orderDetailUiState
     val modifier = Modifier.fillMaxSize()
 
     when (orderDetailUiState) {
-        is OrderDetailUiState.Loading -> LoadingScreen(
+        is OrderDetailsUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
             navController = navController,
             loading = true
         )
 
-        is OrderDetailUiState.Success -> OrderDetailResultScreen(
+        is OrderDetailsUiState.Success -> OrderDetailResultScreen(
             orderDetailUiState.orderDetailList,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
-            navController = navController
+            navController = navController,
+            orderId = orderId
         )
 
-        is OrderDetailUiState.Error -> ErrorScreen(
+        is OrderDetailsUiState.Error -> ErrorScreen(
             orderDetailUiState.exception,
             viewModel::getOrders,
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
             navController = navController
         )
+        else -> {
+        }
     }
+
 
 }
 
@@ -72,7 +85,8 @@ fun OrderDetailResultScreen(
     orderDetailList: List<OrderDetailsItem>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
-    navController: NavController
+    navController: NavController,
+    orderId: Int
 ) {
     Scaffold(topBar = {
         AppBar(
@@ -105,10 +119,11 @@ fun OrderDetailResultScreen(
 fun OrdersScreenPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
     OrderDetailsScreen(
+        navigateToItemEntry = {},
+        navigateBack = {},
         drawerState = DrawerState(DrawerValue.Closed),
         navController = NavController(LocalContext.current),
-        navigateToItemEntry = {},
-        navigateBack = {}
+        orderId = 1//orderId
     )
 }
 

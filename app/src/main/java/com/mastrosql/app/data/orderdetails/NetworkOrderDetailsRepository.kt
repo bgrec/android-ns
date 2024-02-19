@@ -35,7 +35,7 @@ class NetworkOrderDetailsRepository(
      * Fetches list of CustomersMasterData from mastroAndroidApi
      * */
 
-    override suspend fun getOrderDetail(): OrderDetailsResponse =
+    override suspend fun getOrderDetails(): OrderDetailsResponse =
         mastroAndroidApiService.getAllOrderDetails()
 
     override fun getAllOrderDetailsStream(): Flow<List<OrderDetailsItem>> {

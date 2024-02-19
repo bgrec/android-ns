@@ -46,7 +46,7 @@ interface AppContainer {
     val itemsRepository: ItemsRepository
     val articlesRepository: ArticlesRepository
     val ordersRepository: OrdersRepository
-    val orderDetailRepository: OrderDetailsRepository
+    val orderDetailsRepository: OrderDetailsRepository
     val userPreferencesRepository: UserPreferencesRepository
 
 }
@@ -206,10 +206,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
     }
 
-    override val orderDetailRepository: OrderDetailsRepository by lazy {
+    override val orderDetailsRepository: OrderDetailsRepository by lazy {
         NetworkOrderDetailsRepository(
             retrofitService,
-            AppDatabase.getInstance(context).orderDetailDao(),
+            AppDatabase.getInstance(context).orderDetailsDao(),
             context
         )
         //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())

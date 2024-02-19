@@ -9,7 +9,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 
 
 /**
@@ -25,19 +27,39 @@ fun OrdersNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = OrdersDestination.route,
+        //startDestination = OrdersResultDestination.route,
+        startDestination = OrderDetailsDestination.route,
+
         modifier = modifier
     ) {
-        composable(route = OrdersDestination.route) {
+        composable(route = OrdersResultDestination.route) {
             OrdersScreen(
                 //navigateToOrderEntry = { navController.navigate(OrderEntryDestination.route) },
-                navigateToOrderDetails = {
-                    navController.navigate("${OrderDetailsDestination.route}/${it}")
+                navigateToOrderDetails = {orderId ->
+                    navController.navigate("${OrderDetailsDestination.route}/$orderId")
                 },
                 navController = navController,
                 drawerState = drawerState
 
             )
+        }
+
+        composable(
+            route = OrderDetailsDestination.route,
+            arguments = listOf(navArgument(OrderDetailsDestination.orderIdArg) {
+                type = NavType.IntType
+            })
+        ) {backStackEntry ->
+            val orderId = backStackEntry.arguments?.getInt("orderId")
+            if (orderId != null) {
+                OrderDetailsScreen(
+                    orderId = orderId,
+                    navigateToItemEntry = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                    navigateBack = { navController.navigateUp() },
+                    navController = navController,
+                    drawerState = drawerState
+                )
+            }
         }
         /*composable(route = OrderEntryDestination.route) {
             OrderEntryScreen(

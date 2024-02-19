@@ -92,7 +92,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesRemoteKeysDao(): ArticlesRemoteKeysDao
     abstract fun ordersDao(): OrdersDao
     abstract fun ordersRemoteKeysDao(): OrdersRemoteKeysDao
-    abstract fun orderDetailDao(): OrderDetailsDao
+    abstract fun orderDetailsDao(): OrderDetailsDao
     abstract fun orderDetailRemoteKeysDao(): OrderDetailsRemoteKeysDao
 
 

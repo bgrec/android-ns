@@ -19,7 +19,7 @@ class OrderDetailsItemEntryViewModel(private val orderDetailsRepository: OrderDe
     /**
      * Holds current item ui state
      */
-    var orderDetailsUiState by mutableStateOf(OrderDetailsUiState())
+    var orderDetailsUiState by mutableStateOf(OrderDetailsEUiState())
         private set
 
     /**
@@ -28,7 +28,7 @@ class OrderDetailsItemEntryViewModel(private val orderDetailsRepository: OrderDe
      */
     fun updateUiState(orderDetails: OrderDetails) {
         orderDetailsUiState =
-            OrderDetailsUiState(
+            OrderDetailsEUiState(
                 orderDetails = orderDetails,
                 isEntryValid = validateInput(orderDetails)
             )
@@ -53,7 +53,7 @@ class OrderDetailsItemEntryViewModel(private val orderDetailsRepository: OrderDe
 /**
  * Represents Ui State for an Item.
  */
-data class OrderDetailsUiState(
+data class OrderDetailsEUiState(
     val orderDetails: OrderDetails = OrderDetails(),
     val isEntryValid: Boolean = false
 )
@@ -140,8 +140,8 @@ fun OrderDetails.formatedPrice(): String {
 /**
  * Extension function to convert [OrderDetailsItem] to [OrderDetailsItemItemUiState]
  */
-fun OrderDetails.toOrderDetailsUiState(isEntryValid: Boolean = false): OrderDetailsUiState =
-    OrderDetailsUiState(
+fun OrderDetails.toOrderDetailsUiState(isEntryValid: Boolean = false): OrderDetailsEUiState =
+    OrderDetailsEUiState(
         orderDetails = this.toOrderDetails(),
         isEntryValid = isEntryValid
     )

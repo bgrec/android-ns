@@ -7,60 +7,52 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
-import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-sealed interface OrderDetailUiState {
+sealed interface OrderDetailsUiState {
     data class Success(
         val orderDetailList: List<OrderDetailsItem>
-    ) : OrderDetailUiState
+    ) : OrderDetailsUiState
 
-    data class Error(val exception: Exception) : OrderDetailUiState
-    data object Loading : OrderDetailUiState
+    data class Error(val exception: Exception) : OrderDetailsUiState
+    data object Loading : OrderDetailsUiState
 }
 
 /**
- * Factory for [OrderDetailViewModel] that takes [OrderDetailsRepository] as a dependency
+ * Factory for [OrderDetailsViewModel] that takes [OrderDetailsRepository] as a dependency
  */
 
-class OrderDetailViewModel(
-    private val orderDetailRepository: OrderDetailsRepository,
+class OrderDetailsViewModel(
+    private val orderDetailsRepository: OrderDetailsRepository,
 ) : ViewModel() {
 
-    var orderDetailUiState: OrderDetailUiState by mutableStateOf(OrderDetailUiState.Loading)
+    var orderDetailUiState: OrderDetailsUiState by mutableStateOf(OrderDetailsUiState.Loading)
         private set
 
     init {
-        getOrders()
+        //getOrders()
     }
 
     /**
-     * Gets Orders information from the MastroAndroid API Retrofit service and updates the
-     * [Order] [List] [MutableList].
+     * Gets OrderDetailsItem from the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
      */
     fun getOrders() {
         viewModelScope.launch {
-            orderDetailUiState = OrderDetailUiState.Loading
+            orderDetailUiState = OrderDetailsUiState.Loading
             orderDetailUiState =
                 try {
-                    val orderDetailListResult =
-                        orderDetailRepository.getOrderDetail().items
-
-                    // Trim all strings in the list
-                    //Not used because it is already done in the API (see the ordersView)
-                    /*val trimmedOrdersList =
-                        ordersListResult.map { it.trimAllStrings() }
-                    OrdersUiState.Success(trimmedOrdersList)*/
-
-                    OrderDetailUiState.Success(orderDetailListResult)
+                    val orderDetailsListResult =
+                        orderDetailsRepository.getOrderDetails().items
+                    OrderDetailsUiState.Success(orderDetailsListResult)
                 } catch (e: IOException) {
-                    OrderDetailUiState.Error(e)
+                    OrderDetailsUiState.Error(e)
                 } catch (e: HttpException) {
-                    OrderDetailUiState.Error(e)
+                    OrderDetailsUiState.Error(e)
                 } catch (e: Exception) {
-                    OrderDetailUiState.Error(e)
+                    OrderDetailsUiState.Error(e)
                 }
         }
     }

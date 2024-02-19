@@ -11,7 +11,7 @@ class OfflineOrderDetailsRepository(
     private val orderDetailDao: OrderDetailsDao,
     override val outputWorkInfo: Flow<WorkInfo>
 ) : OrderDetailsRepository {
-    override suspend fun getOrderDetail(): OrderDetailsResponse {
+    override suspend fun getOrderDetails(): OrderDetailsResponse {
         TODO()
     }
 

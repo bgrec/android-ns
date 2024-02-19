@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface OrderDetailsRepository {
 
     val outputWorkInfo: Flow<WorkInfo>
-    suspend fun getOrderDetail(): OrderDetailsResponse
+    suspend fun getOrderDetails(): OrderDetailsResponse
     //suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 
     /**

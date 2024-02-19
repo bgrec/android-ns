@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.mastrosql.app.R
 
+/**
+ * App bar to display title and conditionally display the back navigation.
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

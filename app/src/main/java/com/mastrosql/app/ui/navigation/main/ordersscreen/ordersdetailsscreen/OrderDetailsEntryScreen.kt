@@ -20,13 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
@@ -35,7 +33,7 @@ import java.util.Locale
 object OrderDetailsEntryDestination : NavigationDestination {
     override val route = "orderdetails_entry"
     //override val titleRes = R.string.item_entry_title
-    override val titleRes = R.string.edit_orderdetails_entry_title
+    override val titleRes = R.string.edit_order_details_entry_title
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +77,7 @@ fun OrderDetailsEntryScreen(
 
 @Composable
 fun OrderDetailsEntryBody(
-    ordersDetailsUiState: OrderDetailsUiState,
+    ordersDetailsUiState: OrderDetailsEUiState,
     onItemValueChange: (OrderDetailsItem) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
