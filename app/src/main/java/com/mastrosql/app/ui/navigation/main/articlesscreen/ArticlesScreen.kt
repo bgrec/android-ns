@@ -103,11 +103,11 @@ fun ArticlesScreenPreview() {
     )
 }
 
-@Preview
-@Composable
-fun SearchBarPreview() {
-    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-}
+//@Preview
+//@Composable
+//fun SearchBarPreview() {
+//    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
+//}
 
 /*
 *  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
