@@ -23,7 +23,7 @@ fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit)
         color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
             .width(200.dp)
-            .padding(16.dp),
+            .padding(6.dp),
         onClick = { onClick(item.drawerOption) },
         shape = RoundedCornerShape(50),
     ) {

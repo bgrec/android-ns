@@ -16,6 +16,10 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -35,8 +39,12 @@ fun MainCompose(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)//hiltViewModel()
 ) {
+
+    var gestureEnabled by remember { mutableStateOf(true) }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = gestureEnabled,
         drawerContent = {
             AppDrawerContent(
                 drawerState = drawerState,
@@ -53,6 +61,7 @@ fun MainCompose(
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            gestureEnabled = false
                         }
                     }
 
