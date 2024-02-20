@@ -12,7 +12,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarOrderDetail() {
+fun TopBarOrderDetails() {
     TopAppBar(
         title = {
             Text(
@@ -29,6 +29,6 @@ fun TopBarOrderDetail() {
 @Composable
 fun TopBarPreview() {
     MastroAndroidTheme {
-        TopBarOrderDetail()
+        TopBarOrderDetails()
     }
 }

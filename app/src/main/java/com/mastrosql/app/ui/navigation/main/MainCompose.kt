@@ -40,11 +40,11 @@ fun MainCompose(
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)//hiltViewModel()
 ) {
 
-    var gestureEnabled by remember { mutableStateOf(true) }
+    var gesturesEnabled by remember { mutableStateOf(true) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = gestureEnabled,
+        gesturesEnabled = gesturesEnabled,
         drawerContent = {
             AppDrawerContent(
                 drawerState = drawerState,
@@ -55,6 +55,7 @@ fun MainCompose(
                     MainNavOption.LoginScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            gesturesEnabled = false
                         }
                     }
 

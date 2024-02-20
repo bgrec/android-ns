@@ -1,4 +1,4 @@
-package com.mastrosql.app.data.orderdetails
+package com.mastrosql.app.data.orders.orderdetails
 
 import android.content.Context
 import androidx.lifecycle.asFlow
@@ -7,8 +7,8 @@ import androidx.work.WorkManager
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
@@ -31,12 +31,15 @@ class NetworkOrderDetailsRepository(
             if (it.isNotEmpty()) it.first() else null
         }
 
-    /**
-     * Fetches list of CustomersMasterData from mastroAndroidApi
-     * */
+    override suspend fun getOrderDetails(orderId: Int): OrderDetailsResponse {
+        val filter = "{\"NUME\": $orderId}"
 
-    override suspend fun getOrderDetails(): OrderDetailsResponse =
+        return mastroAndroidApiService.getOrderDetails(filter)
+    }
+
+    override suspend fun getAllOrderDetails(): OrderDetailsResponse =
         mastroAndroidApiService.getAllOrderDetails()
+
 
     override fun getAllOrderDetailsStream(): Flow<List<OrderDetailsItem>> {
         TODO("Not yet implemented")

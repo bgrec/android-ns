@@ -1,4 +1,4 @@
-package com.mastrosql.app.data.orderdetails
+package com.mastrosql.app.data.orders.orderdetails
 
 
 import androidx.work.WorkInfo
@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.Flow
 interface OrderDetailsRepository {
 
     val outputWorkInfo: Flow<WorkInfo>
-    suspend fun getOrderDetails(): OrderDetailsResponse
+
+    suspend fun getOrderDetails(orderId: Int): OrderDetailsResponse
+    suspend fun getAllOrderDetails(): OrderDetailsResponse
     //suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 
     /**

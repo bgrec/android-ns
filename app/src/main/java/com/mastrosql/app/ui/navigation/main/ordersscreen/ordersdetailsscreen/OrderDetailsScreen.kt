@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,8 +22,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
+import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsTopAppBar
 import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
@@ -33,23 +34,23 @@ object OrderDetailsDestination : NavigationDestination {
     override val route = "order_details"
     override val titleRes = R.string.order_details_edit
     const val orderIdArg = "orderId"
-    val routeWithArgs = "$route/$orderIdArg"
+    val routeWithArgs = "$route/{$orderIdArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsScreen(
-    navigateToItemEntry: () -> Unit,
+    navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrderDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    orderId: Int
 ) {
-    val orderDetailUiState = viewModel.orderDetailUiState
+
+    val orderDetailsUiState = viewModel.orderDetailsUiState
     val modifier = Modifier.fillMaxSize()
 
-    when (orderDetailUiState) {
+    when (orderDetailsUiState) {
         is OrderDetailsUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
@@ -58,40 +59,49 @@ fun OrderDetailsScreen(
         )
 
         is OrderDetailsUiState.Success -> OrderDetailResultScreen(
-            orderDetailUiState.orderDetailList,
+            navigateToEditItem = navigateToEditItem,
+            navigateBack = navigateBack,
+            orderDetailList = orderDetailsUiState.orderDetailsList,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
-            navController = navController,
-            orderId = orderId
+            navController = navController
         )
 
         is OrderDetailsUiState.Error -> ErrorScreen(
-            orderDetailUiState.exception,
-            viewModel::getOrders,
+            orderDetailsUiState.exception,
+            viewModel::getOrderDetails,
             modifier = modifier.fillMaxSize(),
             drawerState = drawerState,
             navController = navController
         )
+
         else -> {
         }
     }
-
-
 }
 
 @ExperimentalMaterial3Api
 @Composable
 fun OrderDetailResultScreen(
+    //backStackEntry: NavBackStackEntry,
+    navigateToEditItem: (Int) -> Unit,
+    navigateBack: () -> Unit,
     orderDetailList: List<OrderDetailsItem>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
-    orderId: Int
 ) {
+    //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
+
     Scaffold(topBar = {
-        AppBar(
-            drawerState = drawerState, title = R.string.drawer_orders,
+        ItemsTopAppBar(
+            title = stringResource(OrderDetailsDestination.titleRes),
+            canNavigateBack = true,
+            navigateUp = navigateBack
         )
+        /*AppBar(
+            drawerState = drawerState, title = R.string.drawer_orders,
+        )*/
     }) {
         Column(
             modifier = Modifier
@@ -119,11 +129,10 @@ fun OrderDetailResultScreen(
 fun OrdersScreenPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
     OrderDetailsScreen(
-        navigateToItemEntry = {},
+        navigateToEditItem = {},
         navigateBack = {},
         drawerState = DrawerState(DrawerValue.Closed),
-        navController = NavController(LocalContext.current),
-        orderId = 1//orderId
+        navController = NavController(LocalContext.current)
     )
 }
 

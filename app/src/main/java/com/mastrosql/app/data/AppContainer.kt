@@ -17,8 +17,8 @@ import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.data.orderdetails.NetworkOrderDetailsRepository
-import com.mastrosql.app.data.orderdetails.OrderDetailsRepository
+import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
+import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import okhttp3.OkHttpClient

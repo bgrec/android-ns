@@ -25,14 +25,14 @@ fun OrderDetailsNavHost(
     ) {
         composable(route = OrderDetailsDestination.route) {
             OrderDetailsScreen(
-                navigateToItemEntry = { navController.navigate(OrderDetailsEntryDestination.route) },
+                navigateToEditItem = { navController.navigate(OrderDetailsEntryDestination.route) },
                // navigateToItemUpdate = {
                 navigateBack = {
                     navController.navigate("${OrderDetailsDestination.route}/${it}")
                 },
                 drawerState = DrawerState(DrawerValue.Closed),
                 navController = navController,
-                orderId = 1//orderId //TODO add drawer state here
+                //orderId = 1 //TODO add drawer state here
             )
         }
         composable(route = OrderDetailsEntryDestination.route) {
@@ -49,11 +49,12 @@ fun OrderDetailsNavHost(
         ) {
             OrderDetailsScreen(
                 //navigate = { navController.navigate("${OrderDetailsItemEditDestination.route}/$it") },
-                navigateToItemEntry = { navController.navigate(OrderDetailsEntryDestination.route) },
+
+                navigateToEditItem = { navController.navigate(OrderDetailsEntryDestination.route) },
                 navigateBack = { navController.navigateUp() },
                 drawerState = DrawerState(DrawerValue.Closed),
                 navController = navController,
-                orderId = 1 //orderId, //TODO add drawer state here
+                //orderId = 1 //orderId, //TODO add drawer state here
 
             )
         }

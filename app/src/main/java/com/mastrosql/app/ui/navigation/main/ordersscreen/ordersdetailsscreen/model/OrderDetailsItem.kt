@@ -19,8 +19,7 @@ import java.util.Locale
 @Serializable
 data class OrderDetailsItem(
 
-    @PrimaryKey(autoGenerate = false)
-    @SerializedName("NUMEPRO") val id: Int,
+    @PrimaryKey(autoGenerate = false) @SerializedName("NUMEPRO") val id: Int,
     @SerializedName("NUME") val orderId: Int,
     @SerializedName("RIGA") val orderRow: Int,
     @SerializedName("ELABORATA") val confirmed: Boolean,
@@ -50,11 +49,9 @@ data class OrderDetailsItem(
     @SerializedName("LOTTO") val batch: String,
     @SerializedName("DATA_SCA") val expirationDate: String,
 
-    @TypeConverters(OrderDetailsMetadataTypeConverter::class)
-    @SerializedName("_metadata") val metadata: Metadata?,
+    @TypeConverters(OrderDetailsMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata?,
 
-    @TypeConverters(OrderDetailLinksTypeConverter::class)
-    @SerializedName("links") val links: List<Link>,
+    @TypeConverters(OrderDetailLinksTypeConverter::class) @SerializedName("links") val links: List<Link>,
 
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
@@ -65,20 +62,17 @@ data class OrderDetailsItem(
 
 @Serializable
 data class Metadata(
-    @SerializedName("etag")
-    val etag: String
+    @SerializedName("etag") val etag: String
 )
 
 @Serializable
 data class Link(
-    @SerializedName("rel") val rel: String,
-    @SerializedName("href") val href: String
+    @SerializedName("rel") val rel: String, @SerializedName("href") val href: String
 )
 
 @Serializable
 data class OrderDetailsResponseList(
-    @SerializedName("items")
-    val items: List<OrderDetailsItem>
+    @SerializedName("items") val items: List<OrderDetailsItem>
 )
 
 @Serializable
@@ -90,4 +84,6 @@ data class OrderDetailsResponse(
     val count: Int,
     val links: List<Link>
 )
+
+
 

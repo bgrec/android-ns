@@ -17,7 +17,8 @@ class MastroAndroidApplication : Application() {
      * */
     lateinit var appContainer: AppContainer
 
-    /*override fun getWorkManagerConfiguration(): Configuration {
+    /*
+    override fun getWorkManagerConfiguration(): Configuration {
         return if (BuildConfig.DEBUG) {
             Configuration.Builder()
                 .setMinimumLoggingLevel(android.util.Log.DEBUG)
@@ -27,7 +28,8 @@ class MastroAndroidApplication : Application() {
                 .setMinimumLoggingLevel(android.util.Log.ERROR)
                 .build()
         }
-    }*/
+    }
+    */
 
     override fun onCreate() {
         super.onCreate()
