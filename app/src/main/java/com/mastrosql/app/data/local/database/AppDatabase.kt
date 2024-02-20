@@ -67,7 +67,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
         OrderDetailsItem::class,
         OrderDetailsRemoteKeys::class
     ],
-    version = 1, exportSchema = false
+    version = 1, exportSchema = true // false
 )
 @TypeConverters(
     ItemMetadataTypeConverter::class,

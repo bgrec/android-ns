@@ -7,7 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.item.ItemsRepository
-import com.mastrosql.app.data.orderdetails.OrderDetailsRepository
+import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

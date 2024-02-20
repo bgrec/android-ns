@@ -34,7 +34,6 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
@@ -100,10 +99,11 @@ fun OrderCard(
                 ) {
                     OrderDetailsEditButton(
                         orderId = order.id,
-                        onClick = {orderId ->
-                                  navController.navigate(OrderDetailsDestination.route )
-                            //orderId -> navigateToOrderDetails(orderId)
-                                  },
+                        onEditClick = navigateToOrderDetails
+                        /*{//orderId ->
+                            //navigateToOrderDetails(orderId)
+                                  navController.navigate(OrderDetailsDestination.route)
+                        },*/
                     )
                 }
             }
@@ -122,9 +122,7 @@ fun OrderCard(
 
 @Composable
 private fun OrderExpandButton(
-    expanded: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    expanded: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -141,14 +139,11 @@ private fun OrderExpandButton(
 @Composable
 private fun OrderDetailsEditButton(
     orderId: Int,
-    onClick: (Int) -> Unit,
+    onEditClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-
-    ) {
+) {
     IconButton(
-        onClick = {
-            onClick(orderId)
-        }
+        onClick = { onEditClick(orderId) }
     ) {
         Icon(
             Icons.Default.Edit,
@@ -238,46 +233,42 @@ fun OrderInfo(
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
-        OrderCard(
-            order = Order(
-                id = 1,
-                clientId = 1,
-                businessName = "businessName",
-                street = "street",
-                postalCode = "postalCode",
-                city = "city",
-                province = "province",
-                nation = "nation",
-                destinationId = 1,
-                destinationName = "destinationName",
-                description = "description",
-                sequence = 1,
-                insertDate = "",
-                agent = "agent",
-                transportHandler = "transportHandler",
-                parcels = 1,
-                carrierId = 1,
-                carrierName = "carrierName",
-                weight = 1.0,
-                port = "port",
-                date = "2023-01-01",
-                notes = "notes",
-                deliveryDate = "2023-01-0",
-                deliveryDeadline = true,
-                deliveryType = 1,
-                deliveryState = 1,
-                urgent = true,
-                partial = 1,
-                number = 1,
+        OrderCard(order = Order(
+            id = 1,
+            clientId = 1,
+            businessName = "businessName",
+            street = "street",
+            postalCode = "postalCode",
+            city = "city",
+            province = "province",
+            nation = "nation",
+            destinationId = 1,
+            destinationName = "destinationName",
+            description = "description",
+            sequence = 1,
+            insertDate = "",
+            agent = "agent",
+            transportHandler = "transportHandler",
+            parcels = 1,
+            carrierId = 1,
+            carrierName = "carrierName",
+            weight = 1.0,
+            port = "port",
+            date = "2023-01-01",
+            notes = "notes",
+            deliveryDate = "2023-01-0",
+            deliveryDeadline = true,
+            deliveryType = 1,
+            deliveryState = 1,
+            urgent = true,
+            partial = 1,
+            number = 1,
 
-                links = emptyList(),
-                metadata = Metadata("etag"),
-                page = 0,
-                lastUpdated = System.currentTimeMillis()
-            ), modifier = Modifier,
-            navController = NavController(LocalContext.current),
-            {}
-        )
+            links = emptyList(),
+            metadata = Metadata("etag"),
+            page = 0,
+            lastUpdated = System.currentTimeMillis()
+        ), modifier = Modifier, navController = NavController(LocalContext.current), {})
     }
 
 }

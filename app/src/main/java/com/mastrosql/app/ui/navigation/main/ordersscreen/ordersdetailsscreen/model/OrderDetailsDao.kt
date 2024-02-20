@@ -39,7 +39,7 @@ interface OrderDetailsDao {
     fun getOrderDetailsItemById(id: Int): Flow<OrderDetails>
 
     @Query("SELECT * from order_details ORDER BY id ASC")
-    fun getAllOrderDetails(): Flow<List<OrderDetailsItem>>
+    fun getAllOrderDetailsDAO(): Flow<List<OrderDetailsItem>>
 
     @Query("SELECT * FROM order_details WHERE articleId = :articleId")
     fun getOrderDetailsItemByArticleId(articleId: Int): Flow<OrderDetailsItem>

@@ -83,7 +83,8 @@ object AppViewModelProvider {
 
         initializer {
             OrderDetailsViewModel(
-                mastroAndroidApplication().appContainer.orderDetailsRepository
+                this.createSavedStateHandle(),
+                mastroAndroidApplication().appContainer.orderDetailsRepository,
             )
         }
 
@@ -92,8 +93,6 @@ object AppViewModelProvider {
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }
-
-
 
         initializer {
             IntroViewModel(

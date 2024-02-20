@@ -22,7 +22,6 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
@@ -38,11 +37,13 @@ object OrdersResultDestination : NavigationDestination {
 @Composable
 fun OrdersScreen(
     navigateToOrderDetails: (Int) -> Unit,
+    navigateToOrderEntry: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
-    viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val ordersUiState = viewModel.ordersUiState
+    //val ordersUiState by viewModel.ordersUiState.collectAsState()
     val modifier = Modifier.fillMaxSize()
 
     when (ordersUiState) {
@@ -55,6 +56,7 @@ fun OrdersScreen(
 
         is OrdersUiState.Success -> OrdersResultScreen(
             navigateToOrderDetails = navigateToOrderDetails,
+            navigateToOrderEntry= navigateToOrderEntry,
             ordersUiState.ordersList,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
@@ -68,8 +70,9 @@ fun OrdersScreen(
             drawerState = drawerState,
             navController = navController
         )
+        else -> {
 
-        else -> {}
+        }
     }
 
 }
@@ -78,6 +81,7 @@ fun OrdersScreen(
 @Composable
 fun OrdersResultScreen(
     navigateToOrderDetails: (Int) -> Unit,
+    navigateToOrderEntry: () -> Unit,
     ordersList: List<Order>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
@@ -87,9 +91,6 @@ fun OrdersResultScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(topBar = {
-        /*AppBar(
-            drawerState = drawerState, title = R.string.drawer_orders,
-        )*/
         OrdersTopAppBar(
             title = stringResource(OrdersResultDestination.titleRes),
             canNavigateBack = false,
