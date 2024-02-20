@@ -39,6 +39,7 @@ fun MainCompose(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)//hiltViewModel()
 ) {
+
     var gesturesEnabled by remember { mutableStateOf(true) }
 
     ModalNavigationDrawer(
@@ -61,6 +62,7 @@ fun MainCompose(
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            gestureEnabled = false
                         }
                     }
 
