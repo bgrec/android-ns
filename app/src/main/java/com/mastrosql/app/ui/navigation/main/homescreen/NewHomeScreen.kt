@@ -1,20 +1,15 @@
 package com.mastrosql.app.ui.navigation.main.homescreen
 
-import android.content.pm.PackageManager.ComponentEnabledSetting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -31,10 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.navigation.main.LocalProvideGestureViewModel
+import com.mastrosql.app.ui.navigation.main.MainComposeGestureViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
-import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreen
+import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 
 @Composable
@@ -42,11 +38,15 @@ fun NewHomeScreen(
     drawerState: DrawerState,
     navController: NavController
 ) {
+
+    val gestureViewModel: MainComposeGestureViewModel = LocalProvideGestureViewModel.current
+
     Scaffold(
         topBar = {
             AppBar(
                 drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-                title = R.string.drawer_new_home
+                title = R.string.drawer_new_home,
+                showDrawerIconButton = false
             )
         }
     ) {
@@ -76,7 +76,8 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(NavRoutes.MainRoute.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(
@@ -90,7 +91,8 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(MainNavOption.CustomersPagedScreen.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_customers2))
@@ -101,7 +103,8 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(MainNavOption.ArticlesScreen.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_articles))
@@ -112,7 +115,8 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(MainNavOption.OrdersScreen.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_inventory))
@@ -123,7 +127,8 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(MainNavOption.ItemsScreen.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_orders))
@@ -134,7 +139,8 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(MainNavOption.SettingsScreen.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_settings))
@@ -145,11 +151,26 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
+                    navController.navigate(MainNavOption.CartScreen.name)
+                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_cart))
             }
+
+            Button(
+                modifier = Modifier
+                    .width(200.dp)
+                    .align(Alignment.CenterHorizontally),
+                onClick = {
+                    //logout
+                    navController.navigate(MainNavOption.LoginScreen.name)
+                    gestureViewModel.setGesturesEnabled(false)
+                }
+            ) {
+                Text(text = stringResource(R.string.drawer_logout_description))
+            }
+
         }
     }
 }

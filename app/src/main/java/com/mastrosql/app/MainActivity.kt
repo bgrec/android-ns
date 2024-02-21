@@ -51,8 +51,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     ProvideGestureViewModel {
-
+                      
                         MainCompose()
+                        
                     }
 
                     /* val multiplePermissionsState = rememberMultiplePermissionsState(

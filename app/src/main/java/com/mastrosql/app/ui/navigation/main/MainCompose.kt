@@ -17,9 +17,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -39,10 +36,11 @@ fun MainCompose(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)//hiltViewModel()
 ) {
+
     val gestureViewModel: MainComposeGestureViewModel = LocalProvideGestureViewModel.current
     //var gesturesEnabled by remember { mutableStateOf(true) }
     val gesturesEnabled by gestureViewModel.gesturesEnabled
-
+  
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
@@ -63,50 +61,55 @@ fun MainCompose(
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)
+                            
+                            gestureViewModel.setGesturesEnabled(false)
+
                         }
                     }
 
                     MainNavOption.HomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            gestureViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.CustomersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            gestureViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            gestureViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.ArticlesScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                        }
+                            gestureViewModel.setGesturesEnabled(true)                        }
                     }
 
                     MainNavOption.ItemsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                        }
+                            gestureViewModel.setGesturesEnabled(true)                        }
                     }
 
                     MainNavOption.OrdersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                        }
+                            gestureViewModel.setGesturesEnabled(true)                        }
                     }
 
                     MainNavOption.SettingsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                        }
+                            gestureViewModel.setGesturesEnabled(true)                        }
                     }
 
                     /*MainNavOption.AboutScreen -> {
@@ -118,7 +121,7 @@ fun MainCompose(
                     MainNavOption.CartScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                        }
+                            gestureViewModel.setGesturesEnabled(true)                        }
                     }
 
                     MainNavOption.Logout -> {
