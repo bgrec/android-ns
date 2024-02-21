@@ -40,8 +40,7 @@ fun MainCompose(
     val gestureViewModel: MainComposeGestureViewModel = LocalProvideGestureViewModel.current
     //var gesturesEnabled by remember { mutableStateOf(true) }
     val gesturesEnabled by gestureViewModel.gesturesEnabled
-
-
+  
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
@@ -62,7 +61,9 @@ fun MainCompose(
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
+                            
                             gestureViewModel.setGesturesEnabled(false)
+
                         }
                     }
 

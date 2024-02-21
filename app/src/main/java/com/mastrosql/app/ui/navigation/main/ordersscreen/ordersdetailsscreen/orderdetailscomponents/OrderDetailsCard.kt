@@ -26,19 +26,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun OrderDetailCard(
-    orderDetail: OrderDetailsItem, modifier: Modifier, navController: NavController
+    orderDetail: OrderDetailsItem,
+    modifier: Modifier,
+    navController: NavController,
+    navigateToEditItem: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -92,8 +93,10 @@ fun OrderDetailCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    OrderNewOrderButton(
-                        onClick = { //TO-DO
+                    ArticleEditButton(
+                        onClick = {
+                            Id = orderDetail.id,
+                            onEditClick = navigateToEditItem
                         },
                     )
                 }
@@ -128,7 +131,7 @@ private fun OrderDetailExpandButton(
 }
 
 @Composable
-private fun OrderNewOrderButton(
+private fun ArticleEditButton(
     onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(

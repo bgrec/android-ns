@@ -51,7 +51,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     ProvideGestureViewModel {
+                      
                         MainCompose()
+                        
                     }
 
                     /* val multiplePermissionsState = rememberMultiplePermissionsState(
@@ -104,7 +106,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     /**
      * Create a new placeholder account for the sync adapter
      */
@@ -115,15 +116,13 @@ class MainActivity : ComponentActivity() {
              * Add the account and account type, no password or user data
              * If successful, return the Account object, otherwise report an error.
              */
-            if (accountManager.addAccountExplicitly(newAccount, null, null)) {
-                /*
+            if (accountManager.addAccountExplicitly(newAccount, null, null)) {/*
                  * If you don't set android:syncable="true" in
                  * in your <provider> element in the manifest,
                  * then call context.setIsSyncable(account, AUTHORITY, 1)
                  * here.
                  */
-            } else {
-                /*
+            } else {/*
                  * The account exists or some other error occurred. Log this, report it,
                  * or handle it internally.
                  */

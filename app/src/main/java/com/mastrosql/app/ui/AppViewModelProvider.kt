@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
 import com.mastrosql.app.ui.navigation.intro.IntroViewModel
+import com.mastrosql.app.ui.navigation.main.MainComposeGestureViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel
@@ -69,22 +70,32 @@ object AppViewModelProvider {
             )
         }
 
+        // Initializer for ArticlesViewModel
         initializer {
             ArticlesViewModel(
                 mastroAndroidApplication().appContainer.articlesRepository
             )
         }
 
+        // Initializer for OrdersViewModel
         initializer {
             OrdersViewModel(
                 mastroAndroidApplication().appContainer.ordersRepository
             )
         }
 
+        // Initializer for OrderDetailsViewModel
         initializer {
             OrderDetailsViewModel(
-                mastroAndroidApplication().appContainer.orderDetailsRepository
+                this.createSavedStateHandle(),
+                mastroAndroidApplication().appContainer.orderDetailsRepository,
             )
+        }
+
+        // Initializer for MainComposeGestureViewModel
+        initializer {
+            MainComposeGestureViewModel()
+            TODO("Verify if this is needed")
         }
 
         initializer {
@@ -93,8 +104,7 @@ object AppViewModelProvider {
             )
         }
 
-
-
+        // Initializer for IntroViewModel
         initializer {
             IntroViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository

@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
-
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,13 +8,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 
 
 /**
- * Provides Navigation graph for the items application.
+ * Provides Navigation graph for Orders navigation.
  */
 
 
@@ -27,41 +25,35 @@ fun OrdersNavHost(
 ) {
     NavHost(
         navController = navController,
-        //startDestination = OrdersResultDestination.route,
-        startDestination = OrderDetailsDestination.route,
-
+        startDestination = OrdersResultDestination.route,
+        //startDestination = OrderDetailsDestination.route,
         modifier = modifier
     ) {
         composable(route = OrdersResultDestination.route) {
             OrdersScreen(
-                //navigateToOrderEntry = { navController.navigate(OrderEntryDestination.route) },
-                navigateToOrderDetails = {orderId ->
-                    navController.navigate("${OrderDetailsDestination.route}/$orderId")
+                navigateToOrderEntry ={},// { navController.navigate(OrderEntryDestination.route) },
+                navigateToOrderDetails = {
+                    navController.navigate("${OrderDetailsDestination.route}/${it}")
                 },
                 navController = navController,
                 drawerState = drawerState
-
             )
         }
 
         composable(
-            route = OrderDetailsDestination.route,
+            route = OrderDetailsDestination.routeWithArgs,
             arguments = listOf(navArgument(OrderDetailsDestination.orderIdArg) {
                 type = NavType.IntType
             })
-        ) {backStackEntry ->
-            val orderId = backStackEntry.arguments?.getInt("orderId")
-            if (orderId != null) {
+        ) {
                 OrderDetailsScreen(
-                    orderId = orderId,
-                    navigateToItemEntry = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                    navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
                     navigateBack = { navController.navigateUp() },
                     navController = navController,
                     drawerState = drawerState
                 )
-            }
-        }
-        /*composable(route = OrderEntryDestination.route) {
+
+        }/*composable(route = OrderEntryDestination.route) {
             OrderEntryScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() }
