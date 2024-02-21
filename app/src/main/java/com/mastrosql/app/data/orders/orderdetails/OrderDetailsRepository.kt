@@ -14,7 +14,7 @@ interface OrderDetailsRepository {
 
     val outputWorkInfo: Flow<WorkInfo>
 
-    suspend fun getOrderDetails(orderId: Int): OrderDetailsResponse
+    suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse
     suspend fun getAllOrderDetails(): OrderDetailsResponse
     //suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 

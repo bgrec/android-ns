@@ -31,7 +31,7 @@ class NetworkOrderDetailsRepository(
             if (it.isNotEmpty()) it.first() else null
         }
 
-    override suspend fun getOrderDetails(orderId: Int): OrderDetailsResponse {
+    override suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse {
         val filter = "{\"NUME\": $orderId}"
 
         return mastroAndroidApiService.getOrderDetails(filter)

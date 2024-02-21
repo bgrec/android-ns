@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
-
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +13,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.Ord
 
 
 /**
- * Provides Navigation graph for the items application.
+ * Provides Navigation graph for Orders navigation.
  */
 
 

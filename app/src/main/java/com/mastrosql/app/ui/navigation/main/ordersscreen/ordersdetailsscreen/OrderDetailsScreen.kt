@@ -94,14 +94,11 @@ fun OrderDetailResultScreen(
     //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
 
     Scaffold(topBar = {
-        ItemsTopAppBar(
+        OrderDetailsTopAppBar(
             title = stringResource(OrderDetailsDestination.titleRes),
             canNavigateBack = true,
             navigateUp = navigateBack
         )
-        /*AppBar(
-            drawerState = drawerState, title = R.string.drawer_orders,
-        )*/
     }) {
         Column(
             modifier = Modifier

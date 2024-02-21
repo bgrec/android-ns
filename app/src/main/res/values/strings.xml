@@ -127,6 +127,6 @@
     <string name="orders_description">Descrizione ordine</string>
     <string name="edit_order_details_title">Modifica righe ordine</string>
     <string name="edit_order_details_entry_title">Modifica ordine</string>
-    <string name="order_details_edit">Modifica ordine: %1$s</string>
+    <string name="order_details_edit">Modifica righe ordine: %orderId$s</string>
 
 </resources>

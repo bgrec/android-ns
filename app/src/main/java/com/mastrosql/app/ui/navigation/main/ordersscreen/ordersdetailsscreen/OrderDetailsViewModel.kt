@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -33,7 +35,11 @@ class OrderDetailsViewModel(
     var orderDetailsUiState: OrderDetailsUiState by mutableStateOf(OrderDetailsUiState.Loading)
         private set
 
-    private val orderId: Int = checkNotNull(savedStateHandle[OrderDetailsDestination.orderIdArg])
+    //private val orderId: Int = checkNotNull(savedStateHandle[OrderDetailsDestination.orderIdArg])
+    private val _orderId: MutableStateFlow<Int?> = MutableStateFlow(
+        savedStateHandle.get<Int?>(OrderDetailsDestination.orderIdArg)
+    )
+    val orderId: StateFlow<Int?> = _orderId
 
     init {
         getOrderDetails()
@@ -46,7 +52,7 @@ class OrderDetailsViewModel(
     fun getOrderDetails() {
         viewModelScope.launch {
             orderDetailsUiState = try {
-                val orderDetailsListResult = orderDetailsRepository.getOrderDetails(orderId).items
+                val orderDetailsListResult = orderDetailsRepository.getOrderDetails(orderId.value).items
                 OrderDetailsUiState.Success(orderDetailsListResult)
             } catch (e: IOException) {
                 OrderDetailsUiState.Error(e)

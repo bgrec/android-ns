@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 class OfflineOrderDetailsRepository(
     private val orderDetailDao: OrderDetailsDao, override val outputWorkInfo: Flow<WorkInfo>
 ) : OrderDetailsRepository {
-    override suspend fun getOrderDetails(orderId: Int): OrderDetailsResponse {
+    override suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse {
         TODO()
     }
 

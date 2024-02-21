@@ -98,12 +98,7 @@ fun OrderCard(
 
                 ) {
                     OrderDetailsEditButton(
-                        orderId = order.id,
-                        onEditClick = navigateToOrderDetails
-                        /*{//orderId ->
-                            //navigateToOrderDetails(orderId)
-                                  navController.navigate(OrderDetailsDestination.route)
-                        },*/
+                        orderId = order.id, onEditClick = navigateToOrderDetails
                     )
                 }
             }
@@ -142,9 +137,7 @@ private fun OrderDetailsEditButton(
     onEditClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(
-        onClick = { onEditClick(orderId) }
-    ) {
+    IconButton(onClick = { onEditClick(orderId) }) {
         Icon(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
@@ -229,7 +222,7 @@ fun OrderInfo(
 }
 
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
@@ -273,7 +266,7 @@ fun OrderCardPreview() {
 
 }
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun OrderInfoPreview() {
     MastroAndroidTheme {
