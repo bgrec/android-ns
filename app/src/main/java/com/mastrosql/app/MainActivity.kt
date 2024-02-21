@@ -12,6 +12,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.mastrosql.app.ui.navigation.main.MainCompose
+import com.mastrosql.app.ui.navigation.main.ProvideGestureViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,7 +50,9 @@ class MainActivity : ComponentActivity() {
                     //modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainCompose()
+                    ProvideGestureViewModel {
+                        MainCompose()
+                    }
 
                     /* val multiplePermissionsState = rememberMultiplePermissionsState(
                          listOf(

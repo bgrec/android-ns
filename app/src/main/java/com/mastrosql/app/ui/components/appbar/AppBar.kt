@@ -20,7 +20,8 @@ fun AppBar(
     drawerState: DrawerState? = null,
     navigationIcon: (@Composable () -> Unit)? = null,
     @StringRes title: Int? = null,
-    appBarActions: List<AppBarAction>? = null
+    appBarActions: List<AppBarAction>? = null,
+    showDrawerIconButton: Boolean = true
 ) {
     CenterAlignedTopAppBar(
         // or TopAppBar
@@ -38,7 +39,7 @@ fun AppBar(
             }
         },
         navigationIcon = {
-            if (drawerState != null && navigationIcon == null) {
+            if (drawerState != null && navigationIcon == null && showDrawerIconButton) {
                 DrawerIcon(drawerState = drawerState)
             } else {
                 navigationIcon?.invoke()

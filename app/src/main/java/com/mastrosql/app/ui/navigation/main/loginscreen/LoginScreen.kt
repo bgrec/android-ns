@@ -50,7 +50,11 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { AppBar(drawerState = drawerState) }
+        topBar = {
+            AppBar(
+            drawerState = drawerState,
+            showDrawerIconButton = false
+        ) }
     ) { it ->
         Column(
             modifier = Modifier
@@ -124,7 +128,7 @@ fun LoginScreen(
                     text = R.string.login,
                     onClick = {
                         // Handle login button click here
-                        navController.navigate(MainNavOption.HomeScreen.name)
+                        navController.navigate(MainNavOption.NewHomeScreen.name)
                     }
                 )
                 /*LoginButton(onClick = {
