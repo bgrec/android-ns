@@ -24,9 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.navigation.intro.IntroViewModel
 import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
@@ -35,8 +38,9 @@ import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 
 @Composable
 fun NewHomeScreen(
-    drawerState: DrawerState,
-    navController: NavController // = rememberNavController()
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    navController: NavController,
+    viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
@@ -44,7 +48,7 @@ fun NewHomeScreen(
     Scaffold(
         topBar = {
             AppBar(
-                drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+                drawerState = drawerState,
                 title = R.string.drawer_new_home,
                 showDrawerIconButton = false
             )
@@ -70,6 +74,7 @@ fun NewHomeScreen(
             }
 
             Spacer(Modifier.height(30.dp))
+
 
             Button(
                 modifier = Modifier

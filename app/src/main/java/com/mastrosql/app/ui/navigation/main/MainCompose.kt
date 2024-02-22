@@ -90,6 +90,7 @@ fun MainCompose(
                             }
                             //appNavigationViewModel.setGesturesEnabled(false)
                         }
+                        appNavigationViewModel.setGesturesEnabled(false)
                     }
 
                     MainNavOption.NewHomeScreen -> {
@@ -99,6 +100,7 @@ fun MainCompose(
                             }
                             //appNavigationViewModel.setGesturesEnabled(false)
                         }
+                        appNavigationViewModel.setGesturesEnabled(false)
                     }
 
                     MainNavOption.HomeScreen -> {
@@ -107,6 +109,7 @@ fun MainCompose(
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //appNavigationViewModel.setGesturesEnabled(true)
                         }
+                        appNavigationViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.CustomersScreen -> {
@@ -115,6 +118,7 @@ fun MainCompose(
                             //popUpTo(NavRoutes.MainRoute.name)
                             //appNavigationViewModel.setGesturesEnabled(true)
                         }
+                        appNavigationViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
@@ -168,6 +172,7 @@ fun MainCompose(
                     MainNavOption.Logout -> {
                         //TO-DO Handle logout
                         viewModel.logoutUser()
+                        appNavigationViewModel.setGesturesEnabled(false)
                     }
                 }
             }

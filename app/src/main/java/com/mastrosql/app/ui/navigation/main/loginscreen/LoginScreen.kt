@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,10 +33,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.AppButton
-import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
+import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 
@@ -47,16 +46,24 @@ fun LoginScreen(
     drawerState: DrawerState,
     navController: NavController //= rememberNavController(),
 ) {
+    val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = {
-            AppBar(
-            drawerState = drawerState,
-            showDrawerIconButton = false
-        ) }
+            LoginAppBar(onClick = {
+                navController.navigate(MainNavOption.SettingsScreen.name) {
+                    // Configure the navigation action
+                    popUpTo(NavRoutes.MainRoute.name) {
+                        inclusive =
+                            true // Set to true if you want to include MainRoute in the popUpTo destination
+                    }
+                }
+                gestureViewModel.setGesturesEnabled(true)
+            })
+        }
     ) { it ->
         Column(
             modifier = Modifier
@@ -189,9 +196,9 @@ fun LoginFields(modifier: Modifier) {
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    Button(
-        onClick = {},
-    ) {
-        Text("Login")
-    }
+//    Button(
+//        onClick = onClick,
+//    ) {
+//        Text("Login")
+//    }
 }
