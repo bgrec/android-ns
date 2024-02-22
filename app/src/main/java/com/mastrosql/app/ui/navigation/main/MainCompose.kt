@@ -55,29 +55,29 @@ fun MainCompose(
                     MainNavOption.LoginScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(false)
                         }
+                        gestureViewModel.setGesturesEnabled(false)
                     }
 
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(false)
                         }
+                        gestureViewModel.setGesturesEnabled(false)
                     }
 
                     MainNavOption.HomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)
                         }
+                        gestureViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.CustomersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)
                         }
+                        gestureViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
@@ -90,25 +90,29 @@ fun MainCompose(
                     MainNavOption.ArticlesScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                        }
+                        gestureViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.ItemsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                        }
+                        gestureViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.OrdersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                        }
+                        gestureViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.SettingsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                        }
+                        gestureViewModel.setGesturesEnabled(true)
                     }
 
                     /*MainNavOption.AboutScreen -> {
@@ -120,12 +124,14 @@ fun MainCompose(
                     MainNavOption.CartScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                            gestureViewModel.setGesturesEnabled(true)
+                        }
                     }
 
                     MainNavOption.Logout -> {
                         // Handle logout
                         viewModel.logoutUser()
+                        gestureViewModel.setGesturesEnabled(false)
                     }
 
 
@@ -135,6 +141,10 @@ fun MainCompose(
     ) {
         // call the navigation graph
         val isOnboarded = viewModel.isOnboarded.collectAsState()
+
+        if (!isOnboarded.value) {
+            gestureViewModel.setGesturesEnabled(false)
+        }
         NavHost(
             navController,
             startDestination = if (isOnboarded.value) NavRoutes.MainRoute.name else NavRoutes.IntroRoute.name

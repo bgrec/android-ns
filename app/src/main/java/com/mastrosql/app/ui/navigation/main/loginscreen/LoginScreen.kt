@@ -36,8 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.AppButton
-import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.navigation.main.LocalProvideGestureViewModel
+import com.mastrosql.app.ui.navigation.main.MainComposeGestureViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.navigation.main.NavRoutes
 
 
 @Composable
@@ -45,16 +47,24 @@ fun LoginScreen(
     drawerState: DrawerState,
     navController: NavController,
 ) {
+    val gestureViewModel: MainComposeGestureViewModel = LocalProvideGestureViewModel.current
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = {
-            AppBar(
-            drawerState = drawerState,
-            showDrawerIconButton = false
-        ) }
+            LoginAppBar(onClick = {
+                navController.navigate(MainNavOption.SettingsScreen.name) {
+                    // Configure the navigation action
+                    popUpTo(NavRoutes.MainRoute.name) {
+                        inclusive =
+                            true // Set to true if you want to include MainRoute in the popUpTo destination
+                    }
+                }
+                gestureViewModel.setGesturesEnabled(true)
+            })
+        }
     ) { it ->
         Column(
             modifier = Modifier
@@ -110,7 +120,7 @@ fun LoginScreen(
                         onDone = {
                             focusManager.clearFocus()
                             // Handle login button click here
-                            navController.navigate(MainNavOption.HomeScreen.name)
+                            navController.navigate(MainNavOption.NewHomeScreen.name)
                         }
                     ),
 
@@ -129,6 +139,7 @@ fun LoginScreen(
                     onClick = {
                         // Handle login button click here
                         navController.navigate(MainNavOption.NewHomeScreen.name)
+
                     }
                 )
                 /*LoginButton(onClick = {
@@ -174,9 +185,9 @@ fun LoginFields(modifier: Modifier) {
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    Button(
-        onClick = {},
-    ) {
-        Text("Login")
-    }
+//    Button(
+//        onClick = onClick,
+//    ) {
+//        Text("Login")
+//    }
 }

@@ -230,81 +230,91 @@ fun ArticleInfo(
             .padding(top = 4.dp)
     ) {
 
+        if (department != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.article_department),
+                    style = MaterialTheme.typography.bodySmall
+                )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.article_department),
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Text(
-                text = department,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
+                Text(
+                    text = department,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.article_family),
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (family != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.article_family),
+                    style = MaterialTheme.typography.bodySmall
+                )
 
-            Text(
-                text = family,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
+                Text(
+                    text = family,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.article_vendorSku),
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (vendorSku != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.article_vendorSku),
+                    style = MaterialTheme.typography.bodySmall
+                )
 
-            Text(
-                text = vendorSku,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
+                Text(
+                    text = vendorSku,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.article_measureUnit),
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (measureUnit != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.article_measureUnit),
+                    style = MaterialTheme.typography.bodySmall
+                )
 
-            Text(
-                text = measureUnit,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
+                Text(
+                    text = measureUnit,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.article_price),
-                style = MaterialTheme.typography.bodySmall
-            )
 
-            Text(
-                text = price.toString(),
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (price.toString() != "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.article_price),
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = price.toString(),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
