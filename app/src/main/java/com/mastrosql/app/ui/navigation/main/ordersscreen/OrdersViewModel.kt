@@ -12,6 +12,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 sealed interface OrdersUiState {
+
     data class Success(
         val ordersList: List<Order>
     ) : OrdersUiState
@@ -46,13 +47,6 @@ class OrdersViewModel(
                 try {
                     val ordersListResult =
                         ordersRepository.getOrders().items
-
-                    // Trim all strings in the list
-                    //Not used because it is already done in the API (see the ordersView)
-                    /*val trimmedOrdersList =
-                        ordersListResult.map { it.trimAllStrings() }
-                    OrdersUiState.Success(trimmedOrdersList)*/
-
                     OrdersUiState.Success(ordersListResult)
                 } catch (e: IOException) {
                     OrdersUiState.Error(e)

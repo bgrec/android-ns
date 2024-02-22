@@ -30,8 +30,8 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.main.LocalProvideGestureViewModel
-import com.mastrosql.app.ui.navigation.main.MainComposeGestureViewModel
+import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
+import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
@@ -43,7 +43,7 @@ fun NewHomeScreen(
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
-    val gestureViewModel: MainComposeGestureViewModel = LocalProvideGestureViewModel.current
+    val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
 
     Scaffold(
         topBar = {
@@ -81,18 +81,14 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-
-
-                    navController.navigate(
-                        MainNavOption.CustomersScreen.name
-                    ) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive =
-                                false // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                    navController.navigate(MainNavOption.CustomersScreen.name) {
+                        popUpTo(MainNavOption.NewHomeScreen.name)
+                        //gestureViewModel.setGesturesEnabled(true)
+                        gestureViewModel.setCurrentScreen(MainNavOption.CustomersScreen)
                     }
-                    gestureViewModel.setGesturesEnabled(true)
+                    /*navController.currentDestination?.route?.let { route ->
+                        gestureViewModel.setGesturesEnabled(route == NavRoutes.MainRoute.name)
+                    }*/
                 }
             ) {
                 Text(
@@ -107,13 +103,13 @@ fun NewHomeScreen(
                     .align(Alignment.CenterHorizontally),
                 onClick = {
                     navController.navigate(MainNavOption.CustomersPagedScreen.name) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive =
-                                true // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                        popUpTo(MainNavOption.NewHomeScreen.name)
+                        //gestureViewModel.setGesturesEnabled(true)
+                        gestureViewModel.setCurrentScreen(MainNavOption.CustomersScreen)
+                        //popUpTo(NavRoutes.MainRoute.name)
+                        //gestureViewModel.setGesturesEnabled(true)
+
                     }
-                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_customers2))
@@ -124,14 +120,10 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.ArticlesScreen.name) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive =
-                                true // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                    navController.navigate(MainNavOption.ArticlesScreen.name){
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setGesturesEnabled(true)
                     }
-                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_articles))
@@ -142,13 +134,10 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.ItemsScreen.name) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive = true // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                    navController.navigate(MainNavOption.OrdersScreen.name){
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setGesturesEnabled(true)
                     }
-                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_inventory))
@@ -159,13 +148,10 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.OrdersScreen.name) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive = true // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                    navController.navigate(MainNavOption.ItemsScreen.name){
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setGesturesEnabled(true)
                     }
-                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_orders))
@@ -176,14 +162,10 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.SettingsScreen.name) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive =
-                                true // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                    navController.navigate(MainNavOption.SettingsScreen.name){
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setGesturesEnabled(true)
                     }
-                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_settings))
@@ -194,14 +176,10 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.CartScreen.name) {
-                        // Configure the navigation action
-                        popUpTo(NavRoutes.MainRoute.name) {
-                            inclusive =
-                                true // Set to true if you want to include MainRoute in the popUpTo destination
-                        }
+                    navController.navigate(MainNavOption.CartScreen.name){
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setGesturesEnabled(true)
                     }
-                    gestureViewModel.setGesturesEnabled(true)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_cart))
@@ -213,8 +191,10 @@ fun NewHomeScreen(
                     .align(Alignment.CenterHorizontally),
                 onClick = {
                     //logout
-                    viewModel.logoutUser()
-                    gestureViewModel.setGesturesEnabled(false)
+                    navController.navigate(MainNavOption.LoginScreen.name){
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setGesturesEnabled(false)
+                    }
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_logout_description))

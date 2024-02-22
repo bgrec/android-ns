@@ -6,17 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
 /**
- * Top level composable that represents screens for the orders.
+ * Composable that displays the Orders screen.
+ 
  */
-
 @Composable
 fun OrdersComposable(
-    drawerState: DrawerState,
-    navController: NavHostController = rememberNavController()
+    drawerState: DrawerState, navController: NavHostController = rememberNavController()
 ) {
-     /*
-        * This is the main entry point for the Orders screen.
-     */
     OrdersNavHost(drawerState = drawerState, navController = navController)
 }
 

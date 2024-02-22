@@ -63,9 +63,15 @@ interface MastroAndroidApiService {
     ): OrdersResponse
 
     @GET("rigOrdc")
-    fun getAllOrderDetails(
+    suspend fun getOrderDetails(
+        @Query("q") filter: String,  //"{\"NUME\": 4}" rigOrdc/?q={"NUME": 4}
+        @Query("orderby") order : String = "{\"RIGA\": \"ASC\"}"
+    ): OrderDetailsResponse
+
+    @GET("rigOrdc")
+    suspend fun getAllOrderDetails(
         @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("limit") pageSize: Int = 1000
     ): OrderDetailsResponse
 
 }
