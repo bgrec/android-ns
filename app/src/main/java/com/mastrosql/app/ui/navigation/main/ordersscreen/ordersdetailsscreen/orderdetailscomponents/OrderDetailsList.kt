@@ -49,7 +49,9 @@ fun OrderDetailList(
                     .padding(4.dp)
                     .fillMaxWidth(),
                 //.focusable(),
-                navController = navController
+                navController = navController,
+                navigateToEditItem = {}
+
             )
         }
     }

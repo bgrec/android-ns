@@ -29,18 +29,46 @@ import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.intro.IntroViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
 
-
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)//hiltViewModel()
+    viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    // TODO: try to use hiltViewModel()
 ) {
+    val appNavigationViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
 
-    val gestureViewModel: MainComposeGestureViewModel = LocalProvideGestureViewModel.current
-    //var gesturesEnabled by remember { mutableStateOf(true) }
-    val gesturesEnabled by gestureViewModel.gesturesEnabled
-  
+    val gesturesEnabled by appNavigationViewModel.gesturesEnabled
+    val currentScreen by appNavigationViewModel.currentScreen
+
+
+    // Update current screen when navigating
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        when (destination.route) {
+            MainNavOption.LoginScreen.name,
+            MainNavOption.NewHomeScreen.name,
+            MainNavOption.HomeScreen.name,
+            MainNavOption.CustomersScreen.name,
+            MainNavOption.CustomersPagedScreen.name,
+            MainNavOption.ArticlesScreen.name,
+            MainNavOption.ItemsScreen.name,
+            MainNavOption.OrdersScreen.name,
+            MainNavOption.SettingsScreen.name,
+            MainNavOption.CartScreen.name,
+            MainNavOption.Logout.name -> {
+                appNavigationViewModel.setCurrentScreen(MainNavOption.valueOf(destination.route!!))
+            }
+        }
+    }
+
+
+    //TO-DO get the user logged in status from the viewmodel
+    val isUserLoggedIn = false //viewModel.isUserLoggedIn.collectAsState()
+    val defaultPick = when {
+        isUserLoggedIn -> MainNavOption.NewHomeScreen // For example, if the user is logged in, default to the home screen
+        else -> MainNavOption.LoginScreen // Otherwise, default to the login screen
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
@@ -48,94 +76,110 @@ fun MainCompose(
             AppDrawerContent(
                 drawerState = drawerState,
                 menuItems = DrawerParams.drawerButtons,
-                defaultPick = MainNavOption.LoginScreen
+                currentPick = currentScreen ?: defaultPick, //MainNavOption.LoginScreen
+                onCurrentPickChange = { newCurrentPick ->
+                    appNavigationViewModel.setCurrentScreen(newCurrentPick)
+                },
             ) { onUserPickedOption ->
+                appNavigationViewModel.setCurrentScreen(onUserPickedOption)
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(false)
+                            popUpTo(NavRoutes.MainRoute.name) {
+                                inclusive = true
+                            }
+                            //appNavigationViewModel.setGesturesEnabled(false)
                         }
                     }
 
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            
-                            gestureViewModel.setGesturesEnabled(false)
-
+                            popUpTo(NavRoutes.MainRoute.name) {
+                                inclusive = true
+                            }
+                            //appNavigationViewModel.setGesturesEnabled(false)
                         }
                     }
 
                     MainNavOption.HomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.CustomersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.ArticlesScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
+                        }
                     }
 
                     MainNavOption.ItemsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
+                        }
                     }
 
                     MainNavOption.OrdersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
+                        }
                     }
 
                     MainNavOption.SettingsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
-                    }
-
-                    /*MainNavOption.AboutScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
-                    }*/
+                    }
 
                     MainNavOption.CartScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                        }
+                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            //popUpTo(NavRoutes.MainRoute.name)
+                            //appNavigationViewModel.setGesturesEnabled(true)
+                        }
                     }
 
                     MainNavOption.Logout -> {
-                        // Handle logout
+                        //TO-DO Handle logout
                         viewModel.logoutUser()
                     }
-
-
                 }
             }
-        }
-    ) {
+        }) {
         // call the navigation graph
         val isOnboarded = viewModel.isOnboarded.collectAsState()
+
+        // Disable gestures on drawer if the user is not onboarded
+        if (!isOnboarded.value) {
+            appNavigationViewModel.setGesturesEnabled(false)
+        }
+
         NavHost(
             navController,
             startDestination = if (isOnboarded.value) NavRoutes.MainRoute.name else NavRoutes.IntroRoute.name
@@ -147,8 +191,7 @@ fun MainCompose(
 }
 
 enum class NavRoutes {
-    IntroRoute,
-    MainRoute,
+    IntroRoute, MainRoute,
 }
 
 object DrawerParams {
@@ -158,70 +201,53 @@ object DrawerParams {
             R.string.drawer_login,
             Icons.AutoMirrored.Filled.Login,
             R.string.drawer_login_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.NewHomeScreen,
             R.string.drawer_new_home,
             Icons.Default.Home,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.HomeScreen,
             R.string.drawer_home,
             Icons.Default.Home,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.CustomersScreen,
             R.string.drawer_customers,
             Icons.Default.Person,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.CustomersPagedScreen,
             R.string.drawer_customers2,
             Icons.Default.Person,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.ArticlesScreen,
             R.string.articles,
             Icons.AutoMirrored.Filled.ListAlt,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.ItemsScreen,
             R.string.drawer_inventory,
             Icons.Default.Folder,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.OrdersScreen,
             R.string.drawer_orders,
             Icons.Default.Description,
             R.string.drawer_home_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.SettingsScreen,
             R.string.drawer_settings,
             Icons.Default.Settings,
             R.string.drawer_settings_description
         ),
-        //TODO: Remove AboutScreen because it was moved to the intro navigation graph
-        /*
-        AppDrawerItemInfo(
-            MainNavOption.AboutScreen,
-            R.string.drawer_about,
-            R.drawable.ic_info,
-            R.string.drawer_info_description
-        ),*/
         AppDrawerItemInfo(
             MainNavOption.CartScreen,
             R.string.drawer_cart,
             Icons.Default.ShoppingCart,
             R.string.drawer_cart_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.Logout,
             R.string.logout,
             Icons.AutoMirrored.Filled.Logout,

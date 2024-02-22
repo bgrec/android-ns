@@ -34,16 +34,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.navigation.main.NavRoutes
 
 
 @Composable
 fun LoginScreen(
     drawerState: DrawerState,
-    navController: NavController,
+    navController: NavController //= rememberNavController(),
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -110,7 +112,11 @@ fun LoginScreen(
                         onDone = {
                             focusManager.clearFocus()
                             // Handle login button click here
-                            navController.navigate(MainNavOption.HomeScreen.name)
+                            navController.navigate(MainNavOption.NewHomeScreen.name){
+                                popUpTo(NavRoutes.MainRoute.name)
+                            }
+                            //navController.navigate(MainNavOption.HomeScreen.name)
+                            TODO ("Verify this if it is correct, to navigate to the HomeScreen after the login button is clicked.")
                         }
                     ),
 
@@ -128,7 +134,16 @@ fun LoginScreen(
                     text = R.string.login,
                     onClick = {
                         // Handle login button click here
-                        navController.navigate(MainNavOption.NewHomeScreen.name)
+                        navController.navigate(MainNavOption.NewHomeScreen.name){
+                            popUpTo(NavRoutes.MainRoute.name)
+                            //gestureViewModel.setGesturesEnabled(false)
+                        }
+
+                        /*navController.navigate(onUserPickedOption.name) {
+                            popUpTo(NavRoutes.MainRoute.name)
+                            gestureViewModel.setGesturesEnabled(true)                       }
+                    }*/
+
                     }
                 )
                 /*LoginButton(onClick = {

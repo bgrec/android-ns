@@ -95,8 +95,8 @@ fun OrderDetailCard(
                 ) {
                     ArticleEditButton(
                         onClick = {
-                            Id = orderDetail.id,
-                            onEditClick = navigateToEditItem
+                            //Id = orderDetail.id,
+                           // onEditClick = navigateToEditItem
                         },
                     )
                 }

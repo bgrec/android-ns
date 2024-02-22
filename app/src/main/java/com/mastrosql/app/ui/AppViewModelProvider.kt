@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
 import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.main.MainComposeGestureViewModel
+import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel
@@ -94,7 +94,7 @@ object AppViewModelProvider {
 
         // Initializer for MainComposeGestureViewModel
         initializer {
-            MainComposeGestureViewModel()
+            AppNavigationViewModel()
             TODO("Verify if this is needed")
         }
 
