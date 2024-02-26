@@ -34,9 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
-import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 
@@ -46,7 +46,6 @@ fun LoginScreen(
     drawerState: DrawerState,
     navController: NavController //= rememberNavController(),
 ) {
-    val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -57,11 +56,9 @@ fun LoginScreen(
                 navController.navigate(MainNavOption.SettingsScreen.name) {
                     // Configure the navigation action
                     popUpTo(NavRoutes.MainRoute.name) {
-                        inclusive =
-                            true // Set to true if you want to include MainRoute in the popUpTo destination
+                        inclusive = true // Set to true if you want to include MainRoute in the popUpTo destination
                     }
                 }
-                gestureViewModel.setGesturesEnabled(true)
             })
         }
     ) { it ->

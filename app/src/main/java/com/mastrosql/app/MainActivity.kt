@@ -11,8 +11,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainCompose
-import com.mastrosql.app.ui.navigation.main.AppNavigationViewModelProvider
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,7 +50,13 @@ class MainActivity : ComponentActivity() {
                     //modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavigationViewModelProvider {
+                    /*
+                     *Provide the AppNavigationViewModel to the entire app
+                     *so that it can be accessed from anywhere in the app
+                     *using LocalAppNavigationViewModelProvider.current
+                     */
+
+                    AppViewModelProvider.ProvideAppNavigationViewModel{
                       
                         MainCompose()
                         

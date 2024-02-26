@@ -30,7 +30,6 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
@@ -43,7 +42,7 @@ fun NewHomeScreen(
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
-    val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
+    val gestureViewModel: AppNavigationViewModel = AppViewModelProvider.LocalAppNavigationViewModelProvider.current
 
     Scaffold(
         topBar = {
@@ -134,7 +133,7 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.OrdersScreen.name){
+                    navController.navigate(MainNavOption.ItemsScreen.name){
                         popUpTo(NavRoutes.MainRoute.name)
                         gestureViewModel.setGesturesEnabled(true)
                     }
@@ -148,7 +147,7 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    navController.navigate(MainNavOption.ItemsScreen.name){
+                    navController.navigate(MainNavOption.OrdersScreen.name){
                         popUpTo(NavRoutes.MainRoute.name)
                         gestureViewModel.setGesturesEnabled(true)
                     }
@@ -195,6 +194,8 @@ fun NewHomeScreen(
                         popUpTo(NavRoutes.MainRoute.name)
                         gestureViewModel.setGesturesEnabled(false)
                     }
+                    //TO-DO logout
+
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_logout_description))
