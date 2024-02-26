@@ -81,16 +81,16 @@ fun MainCompose(
                     appNavigationViewModel.setCurrentScreen(newCurrentPick)
                 },
             ) { onUserPickedOption ->
+                //
                 appNavigationViewModel.setCurrentScreen(onUserPickedOption)
+
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name) {
                                 inclusive = true
                             }
-                            //appNavigationViewModel.setGesturesEnabled(false)
                         }
-                        appNavigationViewModel.setGesturesEnabled(false)
                     }
 
                     MainNavOption.NewHomeScreen -> {
@@ -98,34 +98,27 @@ fun MainCompose(
                             popUpTo(NavRoutes.MainRoute.name) {
                                 inclusive = true
                             }
-                            //appNavigationViewModel.setGesturesEnabled(false)
                         }
-                        appNavigationViewModel.setGesturesEnabled(false)
                     }
 
                     MainNavOption.HomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             //popUpTo(NavRoutes.MainRoute.name)
                             popUpTo(MainNavOption.NewHomeScreen.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
-                        appNavigationViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.CustomersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
-                        appNavigationViewModel.setGesturesEnabled(true)
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
@@ -133,7 +126,6 @@ fun MainCompose(
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
@@ -141,7 +133,6 @@ fun MainCompose(
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
@@ -149,7 +140,6 @@ fun MainCompose(
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
@@ -157,7 +147,6 @@ fun MainCompose(
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
@@ -165,14 +154,12 @@ fun MainCompose(
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                             //popUpTo(NavRoutes.MainRoute.name)
-                            //appNavigationViewModel.setGesturesEnabled(true)
                         }
                     }
 
                     MainNavOption.Logout -> {
                         //TO-DO Handle logout
                         viewModel.logoutUser()
-                        appNavigationViewModel.setGesturesEnabled(false)
                     }
                 }
             }
