@@ -42,7 +42,7 @@ fun NewHomeScreen(
     viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
-    val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
+    val gestureViewModel: AppNavigationViewModel = AppViewModelProvider.LocalAppNavigationViewModelProvider.current
 
     Scaffold(
         topBar = {

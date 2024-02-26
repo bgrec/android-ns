@@ -32,18 +32,11 @@ class IntroViewModel(
         }
     }
 
+    //TO-DO move to usepreferencesviewmodel
     fun logoutUser() {
         viewModelScope.launch {
             userPreferencesRepository.saveOnBoardingCompleted(false)
         }
     }
-
-    /*private val _isOnboarded: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    var isOnboarded = _isOnboarded.asStateFlow()
-
-
-    fun saveUserOnboarding() {
-        _isOnboarded.value = true
-    }*/
 
 }
