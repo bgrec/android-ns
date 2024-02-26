@@ -128,5 +128,8 @@
     <string name="edit_order_details_title">Modifica righe ordine</string>
     <string name="edit_order_details_entry_title">Modifica ordine</string>
     <string name="order_details_edit">Modifica righe ordine: %orderId$s</string>
+    <string name="stringa_prova">"Prova"</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
 
 </resources>

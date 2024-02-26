@@ -24,7 +24,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         route = NavRoutes.MainRoute.name
     ) {
         composable(MainNavOption.LoginScreen.name) {
-            LoginScreen(drawerState, navController)
+            LoginScreen(navController)
         }
         composable(MainNavOption.NewHomeScreen.name) {
             NewHomeScreen(drawerState, navController)
@@ -49,7 +49,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
             ItemsComposable()
         }
         composable(MainNavOption.SettingsScreen.name) {
-            SettingsScreen(drawerState)
+            SettingsScreen(navController)
         }
         composable(MainNavOption.CartScreen.name) {
             CartScreen(drawerState, navController)

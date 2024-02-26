@@ -89,7 +89,9 @@ fun MainCompose(
                     appNavigationViewModel.setCurrentScreen(newCurrentPick)
                 },
             ) { onUserPickedOption ->
+                //
                 appNavigationViewModel.setCurrentScreen(onUserPickedOption)
+
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
                         navController.navigate(onUserPickedOption.name) {
@@ -232,8 +234,7 @@ object DrawerParams {
             R.string.drawer_settings,
             Icons.Default.Settings,
             R.string.drawer_settings_description
-        ),
-        AppDrawerItemInfo(
+        ), AppDrawerItemInfo(
             MainNavOption.CartScreen,
             R.string.drawer_cart,
             Icons.Default.ShoppingCart,

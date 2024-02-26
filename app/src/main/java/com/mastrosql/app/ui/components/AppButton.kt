@@ -23,7 +23,8 @@ typealias OnClickFunction = () -> Unit
 @Composable
 fun AppButton(
     modifier: Modifier = Modifier,
-    @StringRes text: Int, onClick: OnClickFunction
+    @StringRes text: Int,
+    onClick: OnClickFunction
 ) {
     Button(
         modifier = modifier
