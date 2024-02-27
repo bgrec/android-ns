@@ -17,10 +17,10 @@ import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
-import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
+import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
+import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -35,7 +35,8 @@ import javax.net.ssl.X509TrustManager
  * Dependency Injection container at the application level.
  * This is used to provide a central location for the storage and retrieval of objects.
  *
- * *  App container for Dependency injection.
+ * App container for Dependency injection.
+ *
  */
 
 interface AppContainer {
@@ -52,21 +53,18 @@ interface AppContainer {
 }
 
 /**
- * Implementation for the Dependency Injection container at the application level.
- *
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
 
-private const val LAYOUT_PREFERENCE_NAME = "mastroandroid_preferences"
+private const val APP_PREFERENCES_SETTINGS = "mastroandroid_preferences"
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = LAYOUT_PREFERENCE_NAME
+    name = APP_PREFERENCES_SETTINGS
 )
 
 /**
  * Base URL for the MastroAndroid API
  */
-
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
@@ -99,7 +97,12 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
 
-    // Custom TrustManager for testing purposes (not recommended for production)
+    /**
+     *  Custom TrustManager for testing purposes (not recommended for production)
+     *  This TrustManager trusts all certificates
+     *  This is used to bypass SSL certificate validation
+     */
+
     private val trustAllCertificates = arrayOf<TrustManager>(
         object : X509TrustManager {
             override fun checkClientTrusted(
@@ -151,7 +154,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     /**
      * Retrofit service object for creating api calls
      */
-
     private val retrofitService: MastroAndroidApiService by lazy {
         retrofit.create(MastroAndroidApiService::class.java)
     }
