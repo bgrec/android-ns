@@ -1,8 +1,9 @@
-package com.mastrosql.app.ui
+package com.mastrosql.app.ui.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.local.UserPreferencesRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -13,6 +14,47 @@ class UserPreferencesViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
+    // Flow to observe isOnboardingComplete value
+    private val isOnboarded: Flow<Boolean> =
+        userPreferencesRepository.getIsOnboarded()
+
+    val isOnboardedUiState = isOnboarded.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = false
+    )
+
+    private val isLoggedIn: Flow<Boolean> =
+        userPreferencesRepository.getIsLoggedIn()
+
+    private val isLoggedInUiState = isLoggedIn.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = false
+    )
+
+    // Expose the value as a StateFlow
+    /*val isOnboarded = this.isOnboarded.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = false
+    )*/
+
+    // Function to set user onboarded
+    fun setUserIsOnboarded() {
+        viewModelScope.launch {
+            userPreferencesRepository.saveOnBoardingCompleted(true)
+        }
+    }
+
+    // Function to set user not onboarded
+    fun setUserIsNotOnboarded() {
+        viewModelScope.launch {
+            userPreferencesRepository.saveOnBoardingCompleted(false)
+        }
+    }
+
+    /*
     // UI states access for various [DessertReleaseUiState]
     val isLinearLayoutUiState: StateFlow<DessertReleaseUiState> =
         userPreferencesRepository.isLinearLayout.map { isLinearLayout ->
@@ -26,19 +68,8 @@ class UserPreferencesViewModel(
             initialValue = DessertReleaseUiState()
         )
 
-    // UI states access for various [IsOnBoardingCompletedUiState]
+     */
 
-    val isOnBoardingCompletedUiState: StateFlow<IsOnBoardingCompletedUiState> =
-        userPreferencesRepository.isOnboardingCompleted.map { isOnBoardingCompleted ->
-            IsOnBoardingCompletedUiState(isOnBoardingCompleted)
-        }.stateIn(
-            scope = viewModelScope,
-            // Flow is set to emits value for when app is on the foreground
-            // 5 seconds stop delay is added to ensure it flows continuously
-            // for cases such as configuration change
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = IsOnBoardingCompletedUiState()
-        )
 
     /*
      * [selectLayout] change the layout and icons accordingly and
@@ -57,10 +88,12 @@ class UserPreferencesViewModel(
     fun onBoardingCompleted(isOnBoardingCompleted: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveOnBoardingCompleted(isOnBoardingCompleted)
-            // Call the saveUserOnboarding method in IntroViewModel when onboarding is completed
-            /* if (isOnBoardingCompleted) {
-                 introViewModel.saveUserOnboarding()
-             }*/
+        }
+    }
+
+    fun loginCompleted(isLoggedIn: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveLoggedIn(isLoggedIn)
         }
     }
 }
@@ -73,6 +106,7 @@ data class DessertReleaseUiState(
     //if (isLinearLayout) R.drawable.ic_grid_layout else R.drawable.ic_linear_layout
 )
 
-data class IsOnBoardingCompletedUiState(
+data class IsLoggedInUiState(
     val isOnBoardingCompleted: Boolean = false
 )
+

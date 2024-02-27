@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
@@ -91,11 +92,12 @@ fun OrdersResultScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(topBar = {
-        OrdersTopAppBar(
+        /*OrdersTopAppBar(
             title = stringResource(OrdersResultDestination.titleRes),
             canNavigateBack = false,
             scrollBehavior = scrollBehavior
-        )
+        )*/
+        AppBar()
     }) {
         Column(
             modifier = Modifier

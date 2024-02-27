@@ -30,20 +30,20 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
-import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
-import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
+import com.mastrosql.app.ui.navigation.AppNavigationViewModel
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 
 @Composable
 fun NewHomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     navController: NavController,
-    viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
-    val gestureViewModel: AppNavigationViewModel = LocalAppNavigationViewModelProvider.current
+    val gestureViewModel: AppNavigationViewModel = AppViewModelProvider.LocalAppNavigationViewModelProvider.current
 
     Scaffold(
         topBar = {
@@ -182,8 +182,13 @@ fun NewHomeScreen(
                     .align(Alignment.CenterHorizontally),
                 text = R.string.drawer_logout_description,
                 onClick = {
-                    viewModel.logoutUser()
+                    navController.navigate(MainNavOption.LoginScreen.name) {
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setCurrentScreen(MainNavOption.LoginScreen)
                     }
+                    //Log out
+                    viewModel.loginCompleted(false)
+                }
             )
         }
     }
