@@ -12,8 +12,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
+import com.mastrosql.app.ui.navigation.AppNavigationViewModel
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel
@@ -108,13 +108,8 @@ object AppViewModelProvider {
             )
         }
 
-        // Initializer for IntroViewModel
-        initializer {
-            IntroViewModel(
-                mastroAndroidApplication().appContainer.userPreferencesRepository
-            )
-        }
     }
+
     // Define CompositionLocal for AppNavigationViewModel
     val LocalAppNavigationViewModelProvider = staticCompositionLocalOf<AppNavigationViewModel> {
         error("No AppNavigationViewModel provided")

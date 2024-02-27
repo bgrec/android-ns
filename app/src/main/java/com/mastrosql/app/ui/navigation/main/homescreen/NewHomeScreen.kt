@@ -29,17 +29,17 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
-import com.mastrosql.app.ui.navigation.intro.IntroViewModel
-import com.mastrosql.app.ui.navigation.main.AppNavigationViewModel
-import com.mastrosql.app.ui.navigation.main.LocalAppNavigationViewModelProvider
+import com.mastrosql.app.ui.navigation.AppNavigationViewModel
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 
 @Composable
 fun NewHomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     navController: NavController,
-    viewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     val gestureViewModel: AppNavigationViewModel = AppViewModelProvider.LocalAppNavigationViewModelProvider.current
@@ -82,7 +82,6 @@ fun NewHomeScreen(
                 onClick = {
                     navController.navigate(MainNavOption.CustomersScreen.name) {
                         popUpTo(MainNavOption.NewHomeScreen.name)
-                        //gestureViewModel.setGesturesEnabled(true)
                         gestureViewModel.setCurrentScreen(MainNavOption.CustomersScreen)
                     }
                     /*navController.currentDestination?.route?.let { route ->
@@ -188,8 +187,12 @@ fun NewHomeScreen(
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    //logout
-                    viewModel.logoutUser()
+                    navController.navigate(MainNavOption.LoginScreen.name) {
+                        popUpTo(NavRoutes.MainRoute.name)
+                        gestureViewModel.setCurrentScreen(MainNavOption.LoginScreen)
+                    }
+                    //Log out
+                    viewModel.loginCompleted(false)
                 }
             ) {
                 Text(text = stringResource(R.string.drawer_logout_description))

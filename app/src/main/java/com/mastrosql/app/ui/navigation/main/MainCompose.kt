@@ -26,14 +26,15 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerContent
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
-import com.mastrosql.app.ui.navigation.intro.IntroViewModel
+import com.mastrosql.app.ui.navigation.AppNavigationViewModel
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
 
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    preferencesViewModel: IntroViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory),
     appNavigationViewModel: AppNavigationViewModel = viewModel(factory = AppViewModelProvider.Factory)
     // TODO: try to use hiltViewModel()
 ) {
@@ -159,13 +160,13 @@ fun MainCompose(
 
                     MainNavOption.Logout -> {
                         //TO-DO Handle logout
-                        preferencesViewModel.logoutUser()
+                        preferencesViewModel.loginCompleted(false)
                     }
                 }
             }
         }) {
         // call the navigation graph
-        val isOnboarded = preferencesViewModel.isOnboarded.collectAsState()
+        val isOnboarded = preferencesViewModel.isOnboardedUiState.collectAsState()
 
         // Disable gestures on drawer if the user is not onboarded
         /*if (!isOnboarded.value) {
