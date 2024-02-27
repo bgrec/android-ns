@@ -189,9 +189,7 @@ fun NewHomeScreen(
                     //Log out
                     viewModel.loginCompleted(false)
                 }
-            ) {
-                Text(text = stringResource(R.string.drawer_logout_description))
-            }
+            )
         }
     }
 }
