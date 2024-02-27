@@ -131,5 +131,9 @@
     <string name="stringa_prova">"Prova"</string>
     <string name="Username">Username</string>
     <string name="Password">Password</string>
+    <string name="label_url">Inserire URL</string>
+    <string name="dialog_button">Gestisci sezioni</string>
+    <string name="confirm_button">OK</string>
+    <string name="cancel_button">Annulla</string>
 
 </resources>

@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
@@ -75,117 +76,111 @@ fun NewHomeScreen(
             Spacer(Modifier.height(30.dp))
 
 
-            Button(
+//            Button(
+//                modifier = Modifier
+//                    .width(200.dp)
+//                    .align(Alignment.CenterHorizontally),
+//                onClick = {
+//                    navController.navigate(MainNavOption.CustomersScreen.name) {
+//                        popUpTo(MainNavOption.NewHomeScreen.name)
+//                        gestureViewModel.setCurrentScreen(MainNavOption.CustomersScreen)
+//                    }
+//                }
+//            ) {
+//                Text(
+//                    text = stringResource(R.string.drawer_customers),
+//                    textAlign = TextAlign.Center
+//                )
+//            }
+
+            AppButton(
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(300.dp)
+                    .height(50.dp)
                     .align(Alignment.CenterHorizontally),
+                text = R.string.drawer_customers,
                 onClick = {
                     navController.navigate(MainNavOption.CustomersScreen.name) {
                         popUpTo(MainNavOption.NewHomeScreen.name)
                         gestureViewModel.setCurrentScreen(MainNavOption.CustomersScreen)
                     }
-                    /*navController.currentDestination?.route?.let { route ->
-                        gestureViewModel.setGesturesEnabled(route == NavRoutes.MainRoute.name)
-                    }*/
                 }
-            ) {
-                Text(
-                    text = stringResource(R.string.drawer_customers),
-                    textAlign = TextAlign.Center
-                )
-            }
+            )
 
-            Button(
+            Spacer(modifier = Modifier.height(10.dp))
+
+            AppButton(
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(300.dp)
+                    .height(50.dp)
                     .align(Alignment.CenterHorizontally),
+                text = R.string.drawer_customers2,
                 onClick = {
                     navController.navigate(MainNavOption.CustomersPagedScreen.name) {
                         popUpTo(MainNavOption.NewHomeScreen.name)
                         gestureViewModel.setCurrentScreen(MainNavOption.CustomersPagedScreen)
-                        //popUpTo(NavRoutes.MainRoute.name)
-                        //gestureViewModel.setGesturesEnabled(true)
-
                     }
                 }
-            ) {
-                Text(text = stringResource(R.string.drawer_customers2))
-            }
+            )
 
-            Button(
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            AppButton(
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(300.dp)
+                    .height(50.dp)
                     .align(Alignment.CenterHorizontally),
+                text = R.string.drawer_articles,
                 onClick = {
                     navController.navigate(MainNavOption.ArticlesScreen.name) {
                         popUpTo(MainNavOption.NewHomeScreen.name)
                         gestureViewModel.setCurrentScreen(MainNavOption.ArticlesScreen)
                     }
                 }
-            ) {
-                Text(text = stringResource(R.string.drawer_articles))
-            }
+            )
 
-            Button(
+            Spacer(modifier = Modifier.height(10.dp))
+
+            AppButton(
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(300.dp)
+                    .height(50.dp)
                     .align(Alignment.CenterHorizontally),
+                text = R.string.drawer_inventory,
                 onClick = {
                     navController.navigate(MainNavOption.ItemsScreen.name) {
                         popUpTo(MainNavOption.NewHomeScreen.name)
                         gestureViewModel.setCurrentScreen(MainNavOption.ItemsScreen)
                     }
                 }
-            ) {
-                Text(text = stringResource(R.string.drawer_inventory))
-            }
+            )
 
-            Button(
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            AppButton(
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(300.dp)
+                    .height(50.dp)
                     .align(Alignment.CenterHorizontally),
+                text = R.string.drawer_orders,
                 onClick = {
                     navController.navigate(MainNavOption.OrdersScreen.name) {
                         popUpTo(MainNavOption.NewHomeScreen.name)
                         gestureViewModel.setCurrentScreen(MainNavOption.OrdersScreen)
                     }
                 }
-            ) {
-                Text(text = stringResource(R.string.drawer_orders))
-            }
+            )
 
-            Button(
-                modifier = Modifier
-                    .width(200.dp)
-                    .align(Alignment.CenterHorizontally),
-                onClick = {
-                    navController.navigate(MainNavOption.SettingsScreen.name) {
-                        popUpTo(MainNavOption.LoginScreen.name)
-                        gestureViewModel.setCurrentScreen(MainNavOption.SettingsScreen)
-                    }
-                }
-            ) {
-                Text(text = stringResource(R.string.drawer_settings))
-            }
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Button(
+            AppButton(
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(300.dp)
+                    .height(50.dp)
                     .align(Alignment.CenterHorizontally),
-                onClick = {
-                    navController.navigate(MainNavOption.CartScreen.name) {
-                        popUpTo(MainNavOption.NewHomeScreen.name)
-                        gestureViewModel.setCurrentScreen(MainNavOption.CartScreen)
-                    }
-                }
-            ) {
-                Text(text = stringResource(R.string.drawer_cart))
-            }
-
-            Button(
-                modifier = Modifier
-                    .width(200.dp)
-                    .align(Alignment.CenterHorizontally),
+                text = R.string.drawer_logout_description,
                 onClick = {
                     navController.navigate(MainNavOption.LoginScreen.name) {
                         popUpTo(NavRoutes.MainRoute.name)
@@ -197,7 +192,6 @@ fun NewHomeScreen(
             ) {
                 Text(text = stringResource(R.string.drawer_logout_description))
             }
-
         }
     }
 }
