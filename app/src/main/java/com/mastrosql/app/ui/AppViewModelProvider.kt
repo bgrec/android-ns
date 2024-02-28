@@ -1,10 +1,6 @@
 package com.mastrosql.app.ui
 
 import android.app.Application
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -12,7 +8,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
@@ -96,32 +91,11 @@ object AppViewModelProvider {
             )
         }
 
-        // Initializer for AppNavigationViewModel
-        initializer {
-            AppNavigationViewModel()
-        }
-
         // Initializer for UserPreferencesViewModel
         initializer {
             UserPreferencesViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
-        }
-
-    }
-
-    // Define CompositionLocal for AppNavigationViewModel
-    val LocalAppNavigationViewModelProvider = staticCompositionLocalOf<AppNavigationViewModel> {
-        error("No AppNavigationViewModel provided")
-        //TODO: Add a proper error message here and handle it
-    }
-
-    // Function to provide AppNavigationViewModel
-    @Composable
-    fun ProvideAppNavigationViewModel(content: @Composable () -> Unit) {
-        val appNavigationViewModel = remember { AppNavigationViewModel() }
-        CompositionLocalProvider(LocalAppNavigationViewModelProvider provides appNavigationViewModel) {
-            content()
         }
     }
 }
@@ -133,16 +107,14 @@ object AppViewModelProvider {
 private fun CreationExtras.mastroAndroidApplication(): MastroAndroidApplication =
     (this[AndroidViewModelFactory.APPLICATION_KEY] as MastroAndroidApplication)
 
-/*
-companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as MastroAndroidApplication)
-                val customersMasterDataRepository =
-                    application.container.customersMasterDataRepository
-                CustomersMasterDataViewModel(customersMasterDataRepository = customersMasterDataRepository)
-            }
-        }
-    }
 
-*/
+//companion object {
+//        val Factory: ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val application = (this[APPLICATION_KEY] as MastroAndroidApplication)
+//                val customersMasterDataRepository =
+//                    application.container.customersMasterDataRepository
+//                CustomersMasterDataViewModel(customersMasterDataRepository = customersMasterDataRepository)
+//            }
+//        }
+//    }

@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.intro.composables
+package com.mastrosql.app.ui.navigation.main.aboutscreen
 
 import android.content.Context
 import android.content.pm.PackageInfo

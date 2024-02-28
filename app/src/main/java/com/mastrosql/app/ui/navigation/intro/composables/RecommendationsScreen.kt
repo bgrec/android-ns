@@ -19,8 +19,10 @@ fun RecommendationScreen(
     navController = navController,
     text = "Raccomandazione",
     buttonText = R.string.start_app,
-
     ) {
+    /*
+    * When the user clicks on the button, we set the onBoardingCompleted to true
+     */
     viewModel.onBoardingCompleted(true)
     navController.navigate(NavRoutes.MainRoute.name) {
         popUpTo(NavRoutes.IntroRoute.name)
