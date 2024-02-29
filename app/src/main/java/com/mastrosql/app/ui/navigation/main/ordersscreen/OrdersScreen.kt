@@ -4,8 +4,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -13,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +32,6 @@ import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
-import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchView
 
 object OrdersResultDestination : NavigationDestination {
@@ -57,7 +62,7 @@ fun OrdersScreen(
 
         is OrdersUiState.Success -> OrdersResultScreen(
             navigateToOrderDetails = navigateToOrderDetails,
-            navigateToOrderEntry= navigateToOrderEntry,
+            navigateToOrderEntry = navigateToOrderEntry,
             ordersUiState.ordersList,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
@@ -71,6 +76,7 @@ fun OrdersScreen(
             drawerState = drawerState,
             navController = navController
         )
+
         else -> {
 
         }
@@ -91,23 +97,46 @@ fun OrdersResultScreen(
     //val itemsUiState by viewModel.itemsUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    Scaffold(topBar = {
-        /*OrdersTopAppBar(
-            title = stringResource(OrdersResultDestination.titleRes),
-            canNavigateBack = false,
-            scrollBehavior = scrollBehavior
-        )*/
-        AppBar()
-    }) {
+    Scaffold(
+        topBar = {
+            /*
+            Not used anymore
+             */
+//        OrdersTopAppBar(
+//            title = stringResource(OrdersResultDestination.titleRes),
+//            canNavigateBack = false,
+//            scrollBehavior = scrollBehavior
+//        )
+
+            AppBar(
+                drawerState = drawerState,
+                title = R.string.clients_orders_bar_title,
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToOrderEntry,
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.order_entry_title)
+                )
+            }
+        },
+        ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(innerPadding),
             // verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
+
             SearchView(state = textState)
+
             OrdersList(
                 ordersList = ordersList,
                 state = textState,

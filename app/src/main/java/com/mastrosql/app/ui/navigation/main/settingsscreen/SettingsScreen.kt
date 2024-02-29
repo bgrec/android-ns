@@ -95,8 +95,7 @@ fun SettingsScreen(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .size(50.dp),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {

@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -93,10 +93,10 @@ fun OrderDetailCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    ArticleEditButton(
+                    ItemEditButton(
                         onClick = {
                             //Id = orderDetail.id,
-                           // onEditClick = navigateToEditItem
+                            // onEditClick = navigateToEditItem
                         },
                     )
                 }
@@ -116,7 +116,9 @@ fun OrderDetailCard(
 
 @Composable
 private fun OrderDetailExpandButton(
-    expanded: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -131,16 +133,16 @@ private fun OrderDetailExpandButton(
 }
 
 @Composable
-private fun ArticleEditButton(
+private fun ItemEditButton(
     onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
     ) {
         Icon(
-            Icons.Default.ShoppingCart,
+            Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = stringResource(R.string.new_order),
+            contentDescription = stringResource(R.string.edit_button_order_item),
             modifier = Modifier.fillMaxSize()
         )
     }

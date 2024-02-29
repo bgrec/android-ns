@@ -20,7 +20,13 @@ sealed interface OrderDetailsUiState {
     ) : OrderDetailsUiState
 
     data class Error(val exception: Exception) : OrderDetailsUiState
+    
     data object Loading : OrderDetailsUiState
+
+    data class Order(
+        val orderId: Int,
+        val orderDescription : String
+    ) : OrderDetailsUiState
 }
 
 /**
