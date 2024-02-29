@@ -16,6 +16,7 @@ class AppNavigationViewModel() : ViewModel() {
     private val _currentScreen = mutableStateOf<MainNavOption?>(null)
     val currentScreen: State<MainNavOption?> = _currentScreen
 
+    // Flow to observe current screen
     private fun updateGestures() {
         val currentScreenValue = _currentScreen.value
 
@@ -31,7 +32,8 @@ class AppNavigationViewModel() : ViewModel() {
             MainNavOption.SettingsScreen -> false
             MainNavOption.CartScreen -> true
             MainNavOption.AboutScreen -> false
-            else -> false
+            MainNavOption.Logout -> false
+            else -> true
         }
     }
 

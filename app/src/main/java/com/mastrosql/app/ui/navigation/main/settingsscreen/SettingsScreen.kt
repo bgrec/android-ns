@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.settingsscreen
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,34 +37,34 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import java.util.EnumMap
 
-@SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf(false) }
-    var baseUrl by remember { mutableStateOf("") }
 
-    val hashMapButtons = remember {
-        mutableStateOf(
-            hashMapOf<MainNavOption, Boolean>().apply {
-                MainNavOption.entries.sortedBy { it.ordinal }.forEach {
-                    this[it] = it == MainNavOption.Logout
-                }
-            }
-        )
-    }
+    //var baseUrl by remember { mutableStateOf("") }
+    val baseUrlUiState by viewModel.baseUrlUiState.collectAsState()
 
-    //associo le stringe in strings.xml ad ogni nav
+    val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
+
+    /*
+    *Map to associate each MainNavOption with a string resource
+    */
     val stringResMap = remember {
         mapOf(
             MainNavOption.CustomersScreen to R.string.drawer_customers,
@@ -74,7 +74,6 @@ fun SettingsScreen(
             MainNavOption.OrdersScreen to R.string.drawer_orders
         )
     }
-
     Scaffold(
         topBar = {
             SettingsTopAppBar(
@@ -95,7 +94,12 @@ fun SettingsScreen(
                     focusManager.clearFocus()
                 })
             }
-    ) {
+        })
+    }, modifier = Modifier.pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            focusManager.clearFocus()
+        })
+    }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,22 +110,21 @@ fun SettingsScreen(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .size(50.dp),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 OutlinedTextField(
-                    value = baseUrl,
+                    value = baseUrlUiState,
                     singleLine = true,
-                    onValueChange = { baseUrl = it },
+                    onValueChange = {
+                        viewModel.setBaseUrl(it.toString())
+                    },
                     label = { Text(stringResource(R.string.label_url)) },
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
+                    modifier = Modifier.focusRequester(focusRequester)
                 )
                 BackHandler(true) { focusManager.clearFocus() }
             }
-
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -136,23 +139,21 @@ fun SettingsScreen(
 
             //inizio finestra
             if (showDialog) {
-                AlertDialog(
-                    modifier = Modifier
-                        .size(400.dp)
-                        .padding(8.dp),
+                AlertDialog(modifier = Modifier
+                    .size(400.dp)
+                    .padding(8.dp),
                     onDismissRequest = { showDialog = false },
                     title = { Text(stringResource(R.string.dialog_button)) },
                     text = {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
 
-                            items(MainNavOption.entries) { option ->
-                                if (
-                                    option != MainNavOption.LoginScreen &&
-                                    option != MainNavOption.NewHomeScreen &&
-                                    option != MainNavOption.HomeScreen &&
-                                    option != MainNavOption.SettingsScreen &&
-                                    option != MainNavOption.CartScreen &&
-                                    option != MainNavOption.Logout
+                            items(MainNavOption.entries.toList()) { it ->
+                                if ((it != MainNavOption.LoginScreen)
+                                    && (it != MainNavOption.NewHomeScreen)
+                                    && (it != MainNavOption.HomeScreen)
+                                    && (it != MainNavOption.SettingsScreen)
+                                    && (it != MainNavOption.CartScreen)
+                                    && (it != MainNavOption.Logout)
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -161,42 +162,40 @@ fun SettingsScreen(
                                     ) {
                                         Text(
                                             text = stringResource(
-                                                stringResMap[option] ?: R.string.label_url
+                                                stringResMap[it] ?: R.string.label_url
                                             )
                                         )
                                         Spacer(Modifier.weight(1f))
-                                        Switch(
-                                            checked = hashMapButtons.value[option] ?: false,
-                                            onCheckedChange = {
-                                                hashMapButtons.value[option] = it
-                                            }
-                                        )
+                                        Switch(checked = activeButtonsUiState[it] ?: false,
+                                            onCheckedChange = { isChecked ->
+                                                val updatedState = EnumMap(activeButtonsUiState)
+                                                updatedState[it] = isChecked
+                                                //activeButtonsUiState[it] = isChecked
+                                                //viewModel.updateActiveButtons(activeButtonsUiState)
+                                                viewModel.updateActiveButtons(updatedState)
+
+                                            })
                                     }
                                 }
                             }
                         }
                     },
                     confirmButton = {
-                        Button(
-                            onClick = {
-                                // gestire salvataggio
-                                showDialog = false
-                            }
-                        ) {
+                        Button(onClick = {
+                            // gestire salvataggio
+                            showDialog = false
+                        }) {
                             Text(stringResource(R.string.confirm_button))
                         }
                     },
                     dismissButton = {
-                        Button(
-                            onClick = {
-                                // gestire annulla salvataggio
-                                showDialog = false
-                            }
-                        ) {
+                        Button(onClick = {
+                            // gestire annulla salvataggio
+                            showDialog = false
+                        }) {
                             Text(stringResource(R.string.cancel_button))
                         }
-                    }
-                )
+                    })
             }
             //fine finestra
 
@@ -208,13 +207,11 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = stringResource(R.string.stringa_prova))
-                Switch(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.End),
+                Switch(modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.End),
                     checked = showDialog,
-                    onCheckedChange = { showDialog = it }
-                )
+                    onCheckedChange = { showDialog = it })
             }
         }
     }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import java.util.EnumMap
 import javax.inject.Inject
 
 data class UserPreferences(
@@ -23,10 +24,11 @@ data class UserPreferences(
     val isOnboarded: Boolean = false,
     val isLoggedIn: Boolean = false,
     val baseUrl: String = "",
-    val activeButtons: java.util.HashMap<MainNavOption, Boolean> = hashMapOf(),
+    val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java),
     val username: String = "",
     val userType: String = "",
     val userErpCode: Comparable<*> = 0,
+    val appVersion: String = ""
 )
 
 /**
@@ -49,6 +51,7 @@ class UserPreferencesRepository @Inject constructor(
         val USERNAME = stringPreferencesKey("username")
         val USER_TYPE = stringPreferencesKey("user_type")
         val USER_ERP_CODE = stringPreferencesKey("user_erp_code")
+        val APP_VERSION = stringPreferencesKey("app_version")
     }
 
     /**
@@ -73,11 +76,13 @@ class UserPreferencesRepository @Inject constructor(
         val isOnboarded = preferences[UserPreferencesKeys.IS_ONBOARDED] ?: false
         val isLoggedIn = preferences[UserPreferencesKeys.IS_LOGGED_IN] ?: false
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
-        val activeButtons =
-            preferences[UserPreferencesKeys.ACTIVE_BUTTONS]?.toHashMap() ?: hashMapOf()
+        val activeButtons = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]?.toEnumMap() ?: EnumMap(
+            MainNavOption::class.java
+        )
         val username = preferences[UserPreferencesKeys.USERNAME] ?: ""
         val userType = preferences[UserPreferencesKeys.USER_TYPE] ?: ""
         val userErpCode = preferences[UserPreferencesKeys.USER_ERP_CODE] ?: 0
+        val appVersion = preferences[UserPreferencesKeys.APP_VERSION] ?: ""
 
         return UserPreferences(
             searchValue,
@@ -88,7 +93,8 @@ class UserPreferencesRepository @Inject constructor(
             activeButtons,
             username,
             userType,
-            userErpCode
+            userErpCode,
+            appVersion
         )
     }
 
@@ -104,6 +110,7 @@ class UserPreferencesRepository @Inject constructor(
             preferences[UserPreferencesKeys.USERNAME] = userPreferences.username
             preferences[UserPreferencesKeys.USER_TYPE] = userPreferences.userType
             preferences[UserPreferencesKeys.USER_ERP_CODE] = userPreferences.userErpCode.toString()
+            preferences[UserPreferencesKeys.APP_VERSION] = userPreferences.appVersion
 
         }
     }
@@ -132,7 +139,7 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun saveActiveButtons(activeButtons: HashMap<MainNavOption, Boolean>) {
+    suspend fun saveActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.ACTIVE_BUTTONS] = activeButtons.toJsonString()
         }
@@ -159,17 +166,29 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun fetchInitialPreferences() =
         mapUserPreferences(dataStore.data.first().toPreferences())
 
-    // Function to serialize a HashMap to a JSON string
-    private fun HashMap<MainNavOption, Boolean>.toJsonString(): String {
+    // Function to serialize a EnumMap to a JSON string
+    private fun EnumMap<MainNavOption, Boolean>.toJsonString(): String {
         return gson.toJson(this)
     }
 
-    // Function to deserialize a JSON string to a HashMap
-    private fun String.toHashMap(): HashMap<MainNavOption, Boolean> {
-        return gson.fromJson(this, object : TypeToken<HashMap<MainNavOption, Boolean>>() {}.type)
+    // Function to deserialize a JSON string to a EnumMap
+    private fun String.toEnumMap(): EnumMap<MainNavOption, Boolean> {
+        //return gson.fromJson(this, object : TypeToken<EnumMap<MainNavOption, Boolean>>() {}.type)
+        val mapType = object : TypeToken<HashMap<String, Boolean>>() {}.type
+        val gson = Gson()
+        val map: HashMap<String, Boolean> = gson.fromJson(this, mapType)
+
+        // Convert HashMap<String, Boolean> to EnumMap<MainNavOption, Boolean>
+        val enumMap: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
+
+        for ((key, value) in map) {
+            val option = MainNavOption.valueOf(key)
+            enumMap[option] = value
+        }
+        return enumMap
     }
 
-    fun getActiveButtons(): Flow<HashMap<MainNavOption, Boolean>> {
+    fun getActiveButtons(): Flow<EnumMap<MainNavOption, Boolean>> {
         return userPreferencesFlow.map { it.activeButtons }
     }
 
@@ -205,6 +224,22 @@ class UserPreferencesRepository @Inject constructor(
         return userPreferencesFlow.map { it.searchValue }
     }
 
+    fun getAppVersion(): Flow<String> {
+        return userPreferencesFlow.map { it.appVersion }
+    }
+
+    suspend fun saveAppVersion(appVersion: String) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.APP_VERSION] = appVersion
+        }
+    }
+
+    suspend fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.ACTIVE_BUTTONS] = activeButtons.toJsonString()
+        }
+    }
+
     private fun handleError(tag: String, exception: Throwable) {
         if (exception is IOException) {
             Log.e(tag, "Error reading preferences", exception)
@@ -214,200 +249,3 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 }
-
-
-/*
-class UserPreferencesRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
-) {
-
-***
-   /* Not used
-   suspend fun saveHashMapPreferences(hashMap: HashMap<MainNavOption, Boolean>) {
-       val jsonString = hashMap.toJsonString()
-       dataStore.edit { preferences ->
-           preferences[UserPreferencesKeys.ACTIVE_BUTTONS] = jsonString
-       }
-   }
-
-   suspend fun getHashMapPreferences(): HashMap<MainNavOption, Boolean> {
-       val jsonString = dataStore.data.firstOrNull()?.get(UserPreferencesKeys.ACTIVE_BUTTONS) ?: ""
-       return jsonString.toHashMap()
-   }
-
-
-   // Function to deserialize a JSON string to a HashMap
-   private inline fun <reified K, reified V> String.toHashMap(): HashMap<K, V> {
-       return gson.fromJson(this, object : TypeToken<HashMap<K, V>>() {}.type)
-   }
-
-   // Function to save a HashMap to user preferences
-   private suspend inline fun <reified K, reified V> saveHashMapPreferences(
-       key: String,
-       hashMap: HashMap<K, V>
-   ) {
-       val jsonString = hashMap.toJsonString<K, V>()
-       dataStore.edit { preferences ->
-           preferences[stringPreferencesKey(key)] = jsonString
-       }
-   }
-
-   // Function to retrieve a HashMap from user preferences
-   private suspend inline fun <reified K, reified V> getHashMapPreferences(key: String): HashMap<K, V> {
-       val jsonString = dataStore.data.firstOrNull()?.get(stringPreferencesKey(key)) ?: ""
-       return jsonString.toHashMap<K, V>()
-   }
-
-    */
-***
-
-/*private companion object {
-    val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
-    val SEARCH_VALUE = stringPreferencesKey("search_value")
-    val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
-    val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-
-    const val TAG = "UserPreferencesRepo"
-}*/
-private companion object {
-    const val TAG = "UserPreferencesRepo"
-}
-
-val isLinearLayout: Flow<Boolean> = getValueFlow(UserPreferencesKeys.IS_LINEAR_LAYOUT, true)
-
-val isOnboardingCompleted: Flow<Boolean> = getValueFlow(UserPreferencesKeys.IS_ONBOARDED, false)
-
-val isLoggedIn: Flow<Boolean> = getValueFlow(UserPreferencesKeys.IS_LOGGED_IN, false)
-
-val baseUrl: Flow<String> = getValueFlow(UserPreferencesKeys.BASE_URL, "")
-
-
-private inline fun <reified T : Any> getValueFlow(
-    key: Preferences.Key<T>,
-    defaultValue: T
-): Flow<T> {
-    return dataStore.data
-        .catch { e -> handleError(e, key) }
-        .map { preferences -> preferences[key] ?: defaultValue }
-}
-
-private fun <T : Any> handleError(exception: Throwable, key: Preferences.Key<T>) {
-    if (exception is IOException) {
-        Log.e(TAG, "Error reading preferences, key: ${key.name}", exception)
-    } else {
-        throw exception
-    }
-}
-
-suspend fun saveLayoutPreference(isLinearLayout: Boolean) {
-    savePreference(UserPreferencesKeys.IS_LINEAR_LAYOUT, isLinearLayout)
-}
-
-suspend fun saveOnBoardingCompleted(isOnboarded: Boolean) {
-    savePreference(UserPreferencesKeys.IS_ONBOARDED, isOnboarded)
-}
-
-suspend fun saveLoggedIn(isLoggedIn: Boolean) {
-    savePreference(UserPreferencesKeys.IS_LOGGED_IN, isLoggedIn)
-}
-
-suspend fun updateUserPreferences(searchValue: String) {
-    savePreference(UserPreferencesKeys.SEARCH_VALUE, searchValue)
-}
-
-private suspend fun <T : Any> savePreference(key: Preferences.Key<T>, value: T) {
-    dataStore.edit { preferences ->
-        preferences[key] = value
-    }
-}
-
-val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
-    .catch { e -> handleError(e, UserPreferencesKeys.SEARCH_VALUE) }
-    .map { preferences ->
-        UserPreferences(
-            searchValue = preferences[UserPreferencesKeys.SEARCH_VALUE] ?: ""
-        )
-    }
-
-/*val isLinearLayout: Flow<Boolean> = dataStore.data
-    .catch {
-        if (it is IOException) {
-            Log.e(TAG, "Error reading preferences.", it)
-            emit(emptyPreferences())
-        } else {
-            throw it
-        }
-    }
-    .map { preferences ->
-        preferences[IS_LINEAR_LAYOUT] ?: true
-    }*/
-
-/*val isOnboardingCompleted: Flow<Boolean> = dataStore.data
-    .catch {
-        if (it is IOException) {
-            Log.e(TAG, "Error reading preferences, key: is_onboarded", it)
-            emit(emptyPreferences())
-        } else {
-            throw it
-        }
-    }
-    .map { preferences ->
-        preferences[IS_ONBOARDED] ?: false
-    }
-
-val isLoggedIn: Flow<Boolean> = dataStore.data
-    .catch {
-        if (it is IOException) {
-            Log.e(TAG, "Error reading preferences, key: is_logged_in", it)
-            emit(emptyPreferences())
-        } else {
-            throw it
-        }
-    }
-    .map { preferences ->
-        preferences[IS_LOGGED_IN] ?: false
-    }*/
-/*
-suspend fun saveLayoutPreference(isLinearLayout: Boolean) {
-    dataStore.edit { preferences ->
-        preferences[IS_LINEAR_LAYOUT] = isLinearLayout
-    }
-}
-
-suspend fun saveOnBoardingCompleted(isOnboarded: Boolean) {
-    dataStore.edit { preferences ->
-        preferences[IS_ONBOARDED] = isOnboarded
-    }
-}
-
-suspend fun saveLoggedIn(isLoggedIn: Boolean) {
-    dataStore.edit { preferences ->
-        preferences[IS_LOGGED_IN] = isLoggedIn
-    }
-}
-
-// Update the user preferences
-suspend fun updateUserPreferences(
-    searchValue: String,
-) {
-    dataStore.edit { preferences ->
-        preferences[SEARCH_VALUE] = searchValue
-    }
-}
-
-// Read the user preferences as a Flow
-val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
-    .catch { exception ->
-        if (exception is IOException) {
-            // Handle the exception
-        } else {
-            throw exception
-        }
-    }
-    .map { preferences ->
-        UserPreferences(
-            searchValue = preferences[SEARCH_VALUE] ?: "",
-        )
-    }*/
-}
-*/

@@ -2,13 +2,15 @@ package com.mastrosql.app.ui.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.mastrosql.app.data.local.UserPreferencesRepository
+import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.navigation.main.NavRoutes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.EnumMap
 
 class UserPreferencesViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
@@ -27,20 +29,39 @@ class UserPreferencesViewModel(
     private val isLoggedIn: Flow<Boolean> =
         userPreferencesRepository.getIsLoggedIn()
 
-    private val isLoggedInUiState = isLoggedIn.stateIn(
+    val isLoggedInUiState = isLoggedIn.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
         initialValue = false
     )
 
-    // Expose the value as a StateFlow
-    /*val isOnboarded = this.isOnboarded.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = false
-    )*/
+    private val baseUrl: Flow<String> =
+        userPreferencesRepository.getBaseUrl()
 
-    // Function to set user onboarded
+    val baseUrlUiState = baseUrl
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+            initialValue = ""
+        )
+
+    private val activeButtons: Flow<EnumMap<MainNavOption, Boolean>> =
+        userPreferencesRepository.getActiveButtons()
+
+    val activeButtonsUiState = activeButtons
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+            initialValue = EnumMap(MainNavOption::class.java)
+
+        )
+
+    fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
+        viewModelScope.launch {
+            userPreferencesRepository.updateActiveButtons(activeButtons)
+        }
+    }
+
     fun setUserIsOnboarded() {
         viewModelScope.launch {
             userPreferencesRepository.saveOnBoardingCompleted(true)
@@ -94,6 +115,26 @@ class UserPreferencesViewModel(
     fun loginCompleted(isLoggedIn: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveLoggedIn(isLoggedIn)
+        }
+    }
+
+    fun setBaseUrl(baseUrl: String) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveBaseUrl(baseUrl)
+        }
+    }
+
+    fun logout(navController: NavController) {
+        viewModelScope.launch {
+            // Navigate to the login screen
+            navController.navigate(MainNavOption.LoginScreen.name) {
+                // Pop up to the main route to clear the back stack
+                popUpTo(NavRoutes.MainRoute.name) {
+                    inclusive = true
+                }
+            }
+            loginCompleted(false)
+            //onBoardingCompleted(false)
         }
     }
 }

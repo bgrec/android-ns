@@ -41,9 +41,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -51,7 +54,8 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun LoginScreen(
-    navController: NavController //= rememberNavController(),
+    navController: NavController,
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -148,29 +152,10 @@ fun LoginScreen(
                         .align(Alignment.CenterHorizontally),
                     text = R.string.login,
                     onClick = {
-                        // Handle login button click here
-                        navController.navigate(MainNavOption.NewHomeScreen.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            //gestureViewModel.setGesturesEnabled(false)
-                        }
-
-                        /*navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name)
-                            gestureViewModel.setGesturesEnabled(true)                       }
-                    }*/
-
+                        viewModel.loginCompleted(true)
                     }
                 )
-                /*LoginButton(onClick = {
-                    //navController.navigate(MainNavOption.HomeScreen.name)
-                    navController.navigate(MainNavOption.CustomersScreen.name)
-                }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    // Handle login button click here
-                }*/
-
                 Spacer(modifier = Modifier.weight(1f))
-                // ModalNavigationDrawerSample(drawerState = drawerState, scope = scope){
-                //}
             }
         }
     }

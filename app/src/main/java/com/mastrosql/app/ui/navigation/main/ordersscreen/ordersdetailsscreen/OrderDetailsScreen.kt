@@ -1,12 +1,19 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,11 +31,11 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
-import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsTopAppBar
 import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.SearchView
 
 object OrderDetailsDestination : NavigationDestination {
@@ -93,13 +101,45 @@ fun OrderDetailResultScreen(
 ) {
     //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
 
-    Scaffold(topBar = {
-        OrderDetailsTopAppBar(
-            title = stringResource(OrderDetailsDestination.titleRes),
-            canNavigateBack = true,
-            navigateUp = navigateBack
-        )
-    }) {
+    Scaffold(
+        topBar = {
+            OrderDetailsTopAppBar(
+                title = stringResource(OrderDetailsDestination.titleRes),
+                canNavigateBack = true,
+                navigateUp = navigateBack
+            )
+        },
+        floatingActionButton = {
+            Column (
+                modifier = Modifier.padding(16.dp),
+                //verticalArrangement = Arrangement.Bottom
+            ){
+                FloatingActionButton(
+                    onClick = {},//{ navigateToEditItem(orderDetailId!!) },
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.order_details_entry_title),
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                FloatingActionButton(
+                    onClick = {},//{ navigateToEditItem(orderDetailId!!) },
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.QrCodeScanner,
+                        contentDescription = stringResource(R.string.order_details_qrscan_title),
+                    )
+                }
+            }
+        },
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -5,8 +5,10 @@
     <string name="start_app">"Inizia"</string>
     <string name="welcome_content_text">"Benvenuto in MastroSQL Beta app"</string>
     <string name="drawer_home">prova pulsanti</string>
+
     <string name="drawer_new_home">New Home</string>
     <string name="drawer_login">Accedi</string>
+
     <string name="drawer_settings">Impostazioni</string>
     <string name="drawer_about">"Informazioni"</string>
     <string name="drawer_menu_description">Menu navigation button</string>
@@ -136,6 +138,7 @@
     <string name="dialog_title">Sezioni</string>
     <string name="confirm_button">OK</string>
     <string name="cancel_button">Annulla</string>
+
     <string name="intro_title">Introduzione</string>
     <string name="costumer_error_toast">Impossibile modificare cliente</string>
     <string name="article_error_toast">Impossibile modificare articolo</string>
@@ -152,4 +155,5 @@
     <string name="orders_content_text">descrizione documenti</string>
     <string name="drawer_content_title">Menù a tendina</string>
     <string name="drawer_content_text">descrizione menù a tendina</string>
+
 </resources>
