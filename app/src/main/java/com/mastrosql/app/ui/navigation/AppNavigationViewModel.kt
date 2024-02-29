@@ -31,6 +31,7 @@ class AppNavigationViewModel() : ViewModel() {
             MainNavOption.OrdersScreen -> true
             MainNavOption.SettingsScreen -> false
             MainNavOption.CartScreen -> true
+            MainNavOption.AboutScreen -> false
             MainNavOption.Logout -> false
             else -> true
         }

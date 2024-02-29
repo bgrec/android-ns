@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -73,11 +74,25 @@ fun SettingsScreen(
             MainNavOption.OrdersScreen to R.string.drawer_orders
         )
     }
-
-    Scaffold(topBar = {
-        SettingsTopAppBar(title = stringResource(R.string.drawer_settings), navigateUp = {
-            navController.navigate(MainNavOption.LoginScreen.name) {
-                popUpTo(MainNavOption.LoginScreen.name)
+    Scaffold(
+        topBar = {
+            SettingsTopAppBar(
+                title = stringResource(R.string.drawer_settings),
+                navigateUp = {
+                    navController.navigateUp()
+                },
+                onClick = {
+                    navController.navigate(MainNavOption.AboutScreen.name){
+                        popUpTo(MainNavOption.SettingsScreen.name)
+                    }
+                }
+            )
+        },
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
             }
         })
     }, modifier = Modifier.pointerInput(Unit) {

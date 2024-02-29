@@ -50,7 +50,7 @@ fun ArticleCard(
     var expanded by remember { mutableStateOf(false) }
 
     if (showToast) {
-        ShowToast(context, "Impossibile modificare articolo")
+        ShowToast(context, stringResource(R.string.article_error_toast))
         // Reset the showToast value after showing the toast
         showToast = false
     }

@@ -79,6 +79,7 @@ fun MainCompose(
             MainNavOption.OrdersScreen.name,
             MainNavOption.SettingsScreen.name,
             MainNavOption.CartScreen.name,
+            MainNavOption.AboutScreen.name,
             MainNavOption.Logout.name -> {
                 appNavigationViewModel
                     .setCurrentScreen(MainNavOption.valueOf(destination.route!!))
@@ -119,17 +120,13 @@ fun MainCompose(
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name) {
-                                inclusive = true
-                            }
+                            popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
                     MainNavOption.NewHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(NavRoutes.MainRoute.name) {
-                                inclusive = true
-                            }
+                            popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
@@ -171,13 +168,19 @@ fun MainCompose(
 
                     MainNavOption.SettingsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
                     MainNavOption.CartScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
+                        }
+                    }
+
+                    MainNavOption.AboutScreen -> {
+                        navController.navigate(onUserPickedOption.name) {
+                            popUpTo(MainNavOption.SettingsScreen.name)
                         }
                     }
 
