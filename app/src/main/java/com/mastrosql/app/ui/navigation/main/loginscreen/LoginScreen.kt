@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -190,11 +191,14 @@ fun LoginFields(
     onValueChanged: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
     modifier: Modifier,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    onImeActionPerformed: (ImeAction) -> Unit = {}
 ) {
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val softwareKeyboardController = LocalSoftwareKeyboardController.current
+
     OutlinedTextField(
         leadingIcon = icon,
         value = value,
@@ -204,7 +208,14 @@ fun LoginFields(
         keyboardOptions = keyboardOptions,
         modifier = modifier
             .focusRequester(focusRequester),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
+        onImeActionPerformed = { action ->
+            if (action == ImeAction.Done) {
+                onImeActionPerformed()
+                focusManager.clearFocus()
+                softwareKeyboardController?.hide()
+            }
+        }
     )
     BackHandler(true) { focusManager.clearFocus() }
 }

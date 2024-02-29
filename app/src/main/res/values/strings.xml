@@ -155,5 +155,10 @@
     <string name="orders_content_text">descrizione documenti</string>
     <string name="drawer_content_title">Menù a tendina</string>
     <string name="drawer_content_text">descrizione menù a tendina</string>
+    <string name="drawer_home_menu">Prova pulsanti</string>
+    <string name="order_entry_title">Modifica ordine</string>
+    <string name="order_details_entry_title">Inserimento riga</string>
+    <string name="order_details_qrscan_title">Apri scanner</string>
+    <string name="edit_button_order_item">Modifica riga</string>
 
 </resources>

@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -82,7 +81,7 @@ fun SettingsScreen(
                     navController.navigateUp()
                 },
                 onClick = {
-                    navController.navigate(MainNavOption.AboutScreen.name){
+                    navController.navigate(MainNavOption.AboutScreen.name) {
                         popUpTo(MainNavOption.SettingsScreen.name)
                     }
                 }
@@ -94,12 +93,8 @@ fun SettingsScreen(
                     focusManager.clearFocus()
                 })
             }
-        })
-    }, modifier = Modifier.pointerInput(Unit) {
-        detectTapGestures(onTap = {
-            focusManager.clearFocus()
-        })
-    }) {
+    )
+    {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -117,7 +112,7 @@ fun SettingsScreen(
                 OutlinedTextField(
                     value = baseUrlUiState,
                     singleLine = true,
-                    onValueChange = {
+                    onValueChange = { it ->
                         viewModel.setBaseUrl(it.toString())
                     },
                     label = { Text(stringResource(R.string.label_url)) },
