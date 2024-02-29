@@ -59,6 +59,8 @@ fun SettingsScreen(
     //var baseUrl by remember { mutableStateOf("") }
     val baseUrlUiState by viewModel.baseUrlUiState.collectAsState()
 
+    val isOnboardedUiState by viewModel.isOnboardedUiState.collectAsState()
+
     val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
 
     /*

@@ -41,7 +41,7 @@ fun OrderCard(
     order: Order,
     modifier: Modifier,
     navController: NavController,
-    navigateToOrderDetails: (Int) -> Unit
+    navigateToOrderDetails: (Int, String) -> Unit
 
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -98,7 +98,9 @@ fun OrderCard(
 
                 ) {
                     OrderDetailsEditButton(
-                        orderId = order.id, onEditClick = navigateToOrderDetails
+                        orderId = order.id,
+                        orderDescription = order.description,
+                        onEditClick = navigateToOrderDetails
                     )
                 }
             }
@@ -134,10 +136,11 @@ private fun OrderExpandButton(
 @Composable
 private fun OrderDetailsEditButton(
     orderId: Int,
-    onEditClick: (Int) -> Unit,
+    orderDescription: String,
+    onEditClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = { onEditClick(orderId) }) {
+    IconButton(onClick = { onEditClick(orderId, orderDescription ) }) {
         Icon(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
@@ -226,7 +229,8 @@ fun OrderInfo(
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
-        OrderCard(order = Order(
+        OrderCard(
+            order = Order(
             id = 1,
             clientId = 1,
             businessName = "businessName",
@@ -261,7 +265,8 @@ fun OrderCardPreview() {
             metadata = Metadata("etag"),
             page = 0,
             lastUpdated = System.currentTimeMillis()
-        ), modifier = Modifier, navController = NavController(LocalContext.current), {})
+        ), modifier = Modifier, navController = NavController(LocalContext.current)
+        ) { _, _ -> }
     }
 
 }

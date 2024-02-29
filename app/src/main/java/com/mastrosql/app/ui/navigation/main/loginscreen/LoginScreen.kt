@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -77,12 +78,12 @@ fun LoginScreen(
                     focusManager.clearFocus()
                 })
             }
-    ) {
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
-                .padding(it),
+                .padding(innerPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -120,6 +121,11 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
+                    keyBooardAction = KeyboardActions(
+                        onNext = {
+                            focusManager.clearFocus()
+                        }
+                    )
                 )
 
                 //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
@@ -142,6 +148,14 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
+
+                    ),
+                    keyBooardAction = KeyboardActions(
+                        onDone = {
+                            viewModel.loginCompleted(true)
+                            focusManager.clearFocus()
+
+                        }
                     )
                 )
                 //Spacer(modifier = Modifier.height(50.dp))
@@ -190,14 +204,13 @@ fun LoginFields(
     icon: @Composable (() -> Unit),
     onValueChanged: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
+    keyBooardAction: KeyboardActions,
     modifier: Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    onImeActionPerformed: (ImeAction) -> Unit = {}
 ) {
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    val softwareKeyboardController = LocalSoftwareKeyboardController.current
 
     OutlinedTextField(
         leadingIcon = icon,
@@ -206,16 +219,10 @@ fun LoginFields(
         onValueChange = onValueChanged,
         label = { Text(stringResource(label)) },
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyBooardAction,
         modifier = modifier
             .focusRequester(focusRequester),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
-        onImeActionPerformed = { action ->
-            if (action == ImeAction.Done) {
-                onImeActionPerformed()
-                focusManager.clearFocus()
-                softwareKeyboardController?.hide()
-            }
-        }
     )
     BackHandler(true) { focusManager.clearFocus() }
 }
@@ -268,6 +275,11 @@ fun LoginScreenPreview() {
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
+                    keyBooardAction = KeyboardActions(
+                        onNext = {
+                            //focusManager.clearFocus()
+                        }
+                    )
                 )
 
                 //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
@@ -291,6 +303,11 @@ fun LoginScreenPreview() {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
+                    ),
+                    keyBooardAction = KeyboardActions(
+                        onDone = {
+                            //focusManager.clearFocus()
+                        }
                     )
                 )
                 //Spacer(modifier = Modifier.height(50.dp))

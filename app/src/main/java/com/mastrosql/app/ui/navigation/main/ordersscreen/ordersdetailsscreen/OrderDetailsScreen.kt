@@ -42,7 +42,8 @@ object OrderDetailsDestination : NavigationDestination {
     override val route = "order_details"
     override val titleRes = R.string.order_details_edit
     const val orderIdArg = "orderId"
-    val routeWithArgs = "$route/{$orderIdArg}"
+    const val orderDescriptionArg = "orderDescription"
+    val routeWithArgs = "$route/{$orderIdArg}?orderDescription={$orderDescriptionArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +71,8 @@ fun OrderDetailsScreen(
             navigateToEditItem = navigateToEditItem,
             navigateBack = navigateBack,
             orderDetailList = orderDetailsUiState.orderDetailsList,
+            orderId = orderDetailsUiState.orderId,
+            orderDescription = orderDetailsUiState.orderDescription,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
             navController = navController
@@ -95,6 +98,8 @@ fun OrderDetailResultScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     orderDetailList: List<OrderDetailsItem>,
+    orderId: Int?,
+    orderDescription: String?,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
@@ -104,16 +109,20 @@ fun OrderDetailResultScreen(
     Scaffold(
         topBar = {
             OrderDetailsTopAppBar(
-                title = stringResource(OrderDetailsDestination.titleRes),
+                title = stringResource(
+                    OrderDetailsDestination.titleRes,
+                    orderId ?: 0,
+                    orderDescription ?: ""
+                ),
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
         },
         floatingActionButton = {
-            Column (
+            Column(
                 modifier = Modifier.padding(16.dp),
                 //verticalArrangement = Arrangement.Bottom
-            ){
+            ) {
                 FloatingActionButton(
                     onClick = {},//{ navigateToEditItem(orderDetailId!!) },
                     shape = MaterialTheme.shapes.medium,

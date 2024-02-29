@@ -53,9 +53,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import kotlinx.coroutines.launch
@@ -66,7 +69,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun IntroScreen(navController: NavController) {
+fun IntroScreen(
+    navController: NavController,
+    preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
 
     val focusManager = LocalFocusManager.current
 
@@ -176,6 +182,7 @@ fun IntroScreen(navController: NavController) {
                             navController.navigate(MainNavOption.LoginScreen.name) {
                                 popUpTo(NavRoutes.MainRoute.name)
                             }
+                            preferencesViewModel.onBoardingCompleted(true)
                         },
                         modifier = Modifier.padding(start = 16.dp)
                     ) {
@@ -499,7 +506,7 @@ fun OrdersContent() {
             modifier = Modifier.fillMaxWidth()
         )
 
-            //mettere immagine per ordini
+        //mettere immagine per ordini
 
 
         //per evitare che il contenuto si sovrappone al PageIndicator

@@ -32,8 +32,11 @@ fun OrdersNavHost(
         composable(route = OrdersResultDestination.route) {
             OrdersScreen(
                 navigateToOrderEntry ={},// { navController.navigate(OrderEntryDestination.route) },
-                navigateToOrderDetails = {
-                    navController.navigate("${OrderDetailsDestination.route}/${it}")
+                navigateToOrderDetails = { orderId, orderDescription ->
+                    navController.navigate("${OrderDetailsDestination.route}/${orderId}?orderDescription=${orderDescription}") {
+                        //TODO verify if launchSigleTop is  needed
+                        launchSingleTop = true
+                    }
                 },
                 navController = navController,
                 drawerState = drawerState
@@ -44,7 +47,7 @@ fun OrdersNavHost(
             route = OrderDetailsDestination.routeWithArgs,
             arguments = listOf(navArgument(OrderDetailsDestination.orderIdArg) {
                 type = NavType.IntType
-            })
+            }, )
         ) {
                 OrderDetailsScreen(
                     navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
