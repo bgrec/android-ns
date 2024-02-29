@@ -62,9 +62,7 @@ fun LoginScreen(
             LoginAppBar(onClick = {
                 navController.navigate(MainNavOption.SettingsScreen.name) {
                     // Configure the navigation action
-                    popUpTo(NavRoutes.MainRoute.name) {
-                        inclusive = true // Set to true if you want to include MainRoute in the popUpTo destination
-                    }
+                    popUpTo(MainNavOption.LoginScreen.name)
                 }
             })
         },

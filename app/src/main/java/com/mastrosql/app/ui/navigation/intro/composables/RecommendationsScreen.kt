@@ -15,17 +15,10 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 fun RecommendationScreen(
     navController: NavController,
     viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
-) = IntroCompose(
-    navController = navController,
-    text = "Raccomandazione",
-    buttonText = R.string.start_app,
+) = IntroScreen(
+    navController = navController
 
-    ) {
-    viewModel.onBoardingCompleted(true)
-    navController.navigate(NavRoutes.MainRoute.name) {
-        popUpTo(NavRoutes.IntroRoute.name)
-    }
-}
+    )
 
 @AllScreenPreview
 @Composable

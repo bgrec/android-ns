@@ -1,10 +1,12 @@
 package com.mastrosql.app.ui.navigation.main
 
 import androidx.compose.material3.DrawerState
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.mastrosql.app.ui.navigation.main.aboutscreen.AboutScreen
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesScreen
 import com.mastrosql.app.ui.navigation.main.cartscreen.CartScreen
 import com.mastrosql.app.ui.navigation.main.cartscreen.CartViewModel
@@ -54,6 +56,9 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         composable(MainNavOption.CartScreen.name) {
             CartScreen(drawerState, navController)
         }
+        composable(MainNavOption.AboutScreen.name) {
+            AboutScreen(navController, LocalContext.current)
+        }
     }
 }
 
@@ -68,5 +73,6 @@ enum class MainNavOption {
     CartScreen,
     ArticlesScreen,
     OrdersScreen,
+    AboutScreen,
     Logout
 }

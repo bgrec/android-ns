@@ -52,7 +52,7 @@ fun CustomerCard(
     var expanded by remember { mutableStateOf(false) }
 
     if (showToast) {
-        ShowToast(context, "Impossibile modificare cliente")
+        ShowToast(context, stringResource(R.string.costumer_error_toast))
         // Reset the showToast value after showing the toast
         showToast = false
     }
