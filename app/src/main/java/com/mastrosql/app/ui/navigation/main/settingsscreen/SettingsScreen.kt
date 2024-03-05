@@ -141,6 +141,7 @@ fun SettingsScreen(
                             focusManager.clearFocus()
                         }
                     ),
+
                     label = { Text(stringResource(R.string.label_url)) },
                     modifier = Modifier
                         .focusRequester(focusRequester)

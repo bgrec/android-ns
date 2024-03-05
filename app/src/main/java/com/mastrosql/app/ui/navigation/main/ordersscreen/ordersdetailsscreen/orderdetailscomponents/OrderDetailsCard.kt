@@ -1,24 +1,40 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,22 +42,165 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.Purple40
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@Composable
+fun OrderDetailsItem(
+    orderDetailsItem: OrderDetailsItem,
+    modifier: Modifier,
+    navController: NavController,
+    navigateToEditItem: (Int) -> Unit,
+    onRemove: (OrderDetailsItem) -> Boolean
+) {
+    val visibleState = remember { MutableTransitionState(true) }
+    val context = LocalContext.current
+
+    AnimatedVisibility(
+        visibleState = visibleState, exit = fadeOut(spring())
+    ) {
+        SwipeToDismissItem(
+            visibleState = visibleState,
+            orderDetailsItem = orderDetailsItem,
+            modifier = modifier,
+            navController = navController,
+            navigateToEditItem = navigateToEditItem,
+            onRemove = onRemove
+        )
+    }
+    if (!visibleState.targetState) {
+        ShowToast(context = context, text = "item removed")
+
+    }
+}
+/*
+// Call the SwipeToDismissItem function with an implementation of onRemove
+SwipeToDismissItem(
+    visibleState = visibleState,
+    orderDetailsItem = orderDetailsItem,
+    modifier = modifier,
+    navController = navController,
+    navigateToEditItem = navigateToEditItem,
+    onRemove = { item ->
+        // Implement the logic to remove the item
+        // If the item is successfully removed, return true, otherwise return false
+        // For example:
+        // val removedSuccessfully = removeItemFromServer(item)
+        // removedSuccessfully
+    }
+)
+ */
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@Composable
+private fun SwipeToDismissItem(
+    visibleState: MutableTransitionState<Boolean>,
+    orderDetailsItem: OrderDetailsItem,
+    modifier: Modifier,
+    navController: NavController,
+    navigateToEditItem: (Int) -> Unit,
+    onRemove: (OrderDetailsItem) -> Boolean
+) {
+
+    val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
+        /*
+        Only for end to start action
+         */
+        if (it == SwipeToDismissBoxValue.EndToStart) {
+            // Call onRemove and set the visible state based on its result
+            val shouldRemove = onRemove(orderDetailsItem)
+            visibleState.targetState = !shouldRemove
+            // Return true only if onRemove returns true
+            shouldRemove
+        } else false
+    }, positionalThreshold = { distance -> distance * 0.5f })
+
+    SwipeToDismissBox(state = dismissState,
+        modifier = Modifier,
+        enableDismissFromEndToStart = true,
+        enableDismissFromStartToEnd = true,
+        backgroundContent = {
+            SwipeToDismissBackground(
+                dismissState = dismissState,
+            )
+
+
+        }, content = {
+            OrderDetailsItemContent(
+                orderDetail = orderDetailsItem,
+                modifier = modifier,
+                navController = navController,
+                navigateToEditItem = navigateToEditItem
+            )
+        })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeToDismissBackground(
+    dismissState: SwipeToDismissBoxState
+) {
+    val direction = dismissState.dismissDirection
+    val color by animateColorAsState(
+        when (dismissState.targetValue) {
+            SwipeToDismissBoxValue.Settled -> Color.Transparent//colorScheme.background
+            SwipeToDismissBoxValue.StartToEnd -> Purple40
+            SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose
+        }, label = "swipe_color"
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(16.dp, 2.dp)
+            .fillMaxHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        if (direction == SwipeToDismissBoxValue.StartToEnd) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = stringResource(id = R.string.delete),
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+
+        Spacer(Modifier)
+
+        if (direction == SwipeToDismissBoxValue.EndToStart) {
+            Icon(
+                Icons.Default.Delete,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = stringResource(id = R.string.order_details_edit),
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+    }
+
+}
 
 @Composable
-fun OrderDetailCard(
+private fun OrderDetailsItemContent(
     orderDetail: OrderDetailsItem,
     modifier: Modifier,
     navController: NavController,
-    navigateToEditItem: (Int) -> Unit
+    navigateToEditItem: (Int) -> Unit,
 ) {
+
     var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = modifier.padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -49,7 +208,8 @@ fun OrderDetailCard(
         Column(
             modifier = Modifier.animateContentSize(
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
                 )
             )
         ) {
@@ -70,7 +230,8 @@ fun OrderDetailCard(
                 }
                 //Spacer(Modifier.weight(0.5f))
                 Column(
-                    modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start
                 ) {
                     OrderDetailDescriptionAndId(
                         id = orderDetail.id, description = orderDetail.description
@@ -116,9 +277,7 @@ fun OrderDetailCard(
 
 @Composable
 private fun OrderDetailExpandButton(
-    expanded: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    expanded: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -147,6 +306,7 @@ private fun ItemEditButton(
         )
     }
 }
+
 
 /**
  * Composable that displays a order business name and address.

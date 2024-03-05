@@ -1,21 +1,26 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,22 +33,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination.route
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination.titleRes
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.SearchView
 
+
 object OrderDetailsDestination : NavigationDestination {
     override val route = "order_details"
     override val titleRes = R.string.order_details_edit
     const val orderIdArg = "orderId"
-    val routeWithArgs = "$route/{$orderIdArg}"
+    const val orderDescriptionArg = "orderDescription"
+    val routeWithArgs = "$route/{$orderIdArg}?orderDescription={$orderDescriptionArg}"
 }
+
+sealed class Screen(val route: String, @StringRes val resourceId: Int) {
+    object Edit : Screen(route, titleRes)
+    object Add : Screen(route, titleRes)
+}
+
+val items = listOf(
+    Screen.Edit,
+    Screen.Edit,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +92,8 @@ fun OrderDetailsScreen(
             navigateToEditItem = navigateToEditItem,
             navigateBack = navigateBack,
             orderDetailList = orderDetailsUiState.orderDetailsList,
+            orderId = orderDetailsUiState.orderId,
+            orderDescription = orderDetailsUiState.orderDescription,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
             navController = navController
@@ -95,6 +119,8 @@ fun OrderDetailResultScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     orderDetailList: List<OrderDetailsItem>,
+    orderId: Int?,
+    orderDescription: String?,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
@@ -104,17 +130,21 @@ fun OrderDetailResultScreen(
     Scaffold(
         topBar = {
             OrderDetailsTopAppBar(
-                title = stringResource(OrderDetailsDestination.titleRes),
+                title = stringResource(
+                    OrderDetailsDestination.titleRes,
+                    orderId ?: 0,
+                    orderDescription ?: ""
+                ),
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
         },
         floatingActionButton = {
-            Column (
+            Column(
                 modifier = Modifier.padding(16.dp),
                 //verticalArrangement = Arrangement.Bottom
-            ){
-                FloatingActionButton(
+            ) {
+                /*FloatingActionButton(
                     onClick = {},//{ navigateToEditItem(orderDetailId!!) },
                     shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
@@ -123,7 +153,7 @@ fun OrderDetailResultScreen(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(R.string.order_details_entry_title),
                     )
-                }
+                }*/
 
                 Spacer(modifier = Modifier.padding(8.dp))
 
@@ -139,11 +169,39 @@ fun OrderDetailResultScreen(
                 }
             }
         },
-    ) {
+        /*bottomBar = {
+            BottomNavigation {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                items.forEach { screen ->
+                    BottomNavigationItem(
+                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                        label = { Text(stringResource(screen.resourceId)) },
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            }
+        },*/
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(innerPadding),
             // verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

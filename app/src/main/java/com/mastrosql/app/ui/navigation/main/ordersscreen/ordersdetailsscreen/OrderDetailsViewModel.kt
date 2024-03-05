@@ -15,18 +15,17 @@ import retrofit2.HttpException
 import java.io.IOException
 
 sealed interface OrderDetailsUiState {
+
     data class Success(
-        val orderDetailsList: List<OrderDetailsItem>
+        val orderDetailsList: List<OrderDetailsItem>,
+        val orderId: Int? = null,
+        val orderDescription: String? = null
     ) : OrderDetailsUiState
 
     data class Error(val exception: Exception) : OrderDetailsUiState
-    
+
     data object Loading : OrderDetailsUiState
 
-    data class Order(
-        val orderId: Int,
-        val orderDescription : String
-    ) : OrderDetailsUiState
 }
 
 /**
@@ -47,6 +46,11 @@ class OrderDetailsViewModel(
     )
     val orderId: StateFlow<Int?> = _orderId
 
+    private val _orderDescription: MutableStateFlow<String?> = MutableStateFlow(
+        savedStateHandle.get<String?>(OrderDetailsDestination.orderDescriptionArg)
+    )
+    private val orderDescription: StateFlow<String?> = _orderDescription
+
     init {
         getOrderDetails()
     }
@@ -58,8 +62,9 @@ class OrderDetailsViewModel(
     fun getOrderDetails() {
         viewModelScope.launch {
             orderDetailsUiState = try {
-                val orderDetailsListResult = orderDetailsRepository.getOrderDetails(orderId.value).items
-                OrderDetailsUiState.Success(orderDetailsListResult)
+                val orderDetailsListResult =
+                    orderDetailsRepository.getOrderDetails(orderId.value).items
+                OrderDetailsUiState.Success(orderDetailsListResult, orderId.value, orderDescription.value)
             } catch (e: IOException) {
                 OrderDetailsUiState.Error(e)
             } catch (e: HttpException) {

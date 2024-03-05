@@ -26,7 +26,7 @@ fun OrdersList(
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
     navController: NavController,
-    navigateToOrderDetails: (Int) -> Unit,
+    navigateToOrderDetails: (Int, String) -> Unit,
 
     ) {
     LazyColumn(
@@ -148,7 +148,7 @@ fun OrdersListPreview() {
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current),
-            navigateToOrderDetails = {}
+            navigateToOrderDetails = { _, _ -> }
         )
     }
 }

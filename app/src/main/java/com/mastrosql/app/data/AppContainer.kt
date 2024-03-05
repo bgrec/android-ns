@@ -1,7 +1,9 @@
 package com.mastrosql.app.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.mastrosql.app.BuildConfig
@@ -15,16 +17,24 @@ import com.mastrosql.app.data.customers.workmanager.WorkManagerCustomersMasterDa
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
+import com.mastrosql.app.data.local.UserPreferencesKeys
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
 import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.MalformedURLException
+import java.net.URISyntaxException
+import java.net.URL
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -56,6 +66,7 @@ interface AppContainer {
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
 
+
 private const val APP_PREFERENCES_SETTINGS = "mastroandroid_preferences"
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
@@ -68,16 +79,34 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
-    private val baseUrl = if (isDevBuild()) {
+    private lateinit var retrofitService: MastroAndroidApiService
+
+    private val defaultBaseUrl = if (isDevBuild()) {
         // Use predefined BASE_URL for dev builds
         BuildConfig.API_URL
     } else {
-        // Read BASE_URL from datastore for other builds
-        readBaseUrlFromDataStore(context)
+        // Use a default value for release builds
+        "https://nipeservice.com"
     }
 
-//private const val BASE_URL = "https://192.168.0.126:8446/mastrosql/lmNew/"
-//"https://android-kotlin-fun-mars-server.appspot.com/"
+    private lateinit var baseUrl: String
+
+    init {
+        // Launch a coroutine to read BASE_URL from datastore
+        CoroutineScope(Dispatchers.IO).launch {
+            baseUrl = readBaseUrlFromDataStore(context)
+        }.invokeOnCompletion { cause ->
+            if (cause != null) {
+                // Coroutine failed with an exception
+                // Log the error or handle it accordingly
+                Log.e("baseUrl", "Error reading BASE_URL from datastore: ${cause.message}")
+            } else {
+                // Create Retrofit instance after getting baseUrl from DataStore
+                createRetrofitInstance(baseUrl)
+            }
+        }
+    }
+
 
     // Function to check if the build is .dev
     private fun isDevBuild(): Boolean {
@@ -85,15 +114,32 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     // Function to read BASE_URL from datastore
-    private fun readBaseUrlFromDataStore(context: Context): String {
-        // Implement logic to read BASE_URL from datastore
-        // For example:
-        // val dataStore: DataStore<Preferences> = context.createDataStore(name = "settings")
-        // val baseUrl = dataStore.data.map { preferences ->
-        //     preferences[BASE_URL_KEY] ?: DEFAULT_BASE_URL
-        // }.first()
-        // return baseUrl
-        return "https://example.com/" // Dummy value, replace with actual logic
+    private suspend fun readBaseUrlFromDataStore(context: Context): String {
+        val dataStore: DataStore<Preferences> = context.dataStore
+        return try {
+            val preferences = dataStore.data.first()
+            val baseUrl = preferences[UserPreferencesKeys.BASE_URL]
+            if (baseUrl != null && isValidUrl(baseUrl)) {
+                baseUrl
+            } else {
+                defaultBaseUrl
+            }
+        } catch (e: IOException) {
+            // Handle IO exception (e.g., reading from DataStore failed)
+            Log.d("baseUrl", "IOException while reading BASE_URL from DataStore: ${e.message}")
+            defaultBaseUrl
+        }
+    }
+
+    private fun isValidUrl(url: String): Boolean {
+        return try {
+            URL(url).toURI()
+            true
+        } catch (e: MalformedURLException) {
+            false
+        } catch (e: URISyntaxException) {
+            false
+        }
     }
 
 
@@ -138,25 +184,32 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
      * Use the Retrofit builder to build a retrofit object using a kotlinx.serialization converter
      */
 
-    private val retrofit: Retrofit = Retrofit.Builder()
-        // .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(baseUrl)
-        .client(
-            OkHttpClient.Builder()
-                .sslSocketFactory(sslSocketFactory, trustAllCertificates[0] as X509TrustManager)
-                .hostnameVerifier { _, _ -> true }
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .build()
-        )
-        .build()
+    // Function to create Retrofit instance
+    private fun createRetrofitInstance(baseUrl: String) {
+
+        val retrofit: Retrofit = Retrofit.Builder()
+            // .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(baseUrl)
+            .client(
+                OkHttpClient.Builder()
+                    .sslSocketFactory(sslSocketFactory, trustAllCertificates[0] as X509TrustManager)
+                    .hostnameVerifier { _, _ -> true }
+                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .build()
+            )
+            .build()
+        // Initialize retrofitService
+        retrofitService = retrofit.create(MastroAndroidApiService::class.java)
+    }
+
 
     /**
      * Retrofit service object for creating api calls
      */
-    private val retrofitService: MastroAndroidApiService by lazy {
+    /*private val retrofitService: MastroAndroidApiService by lazy {
         retrofit.create(MastroAndroidApiService::class.java)
-    }
+    }*/
 
     /**
      * DI implementation for Customer Master Data repository

@@ -86,7 +86,6 @@ fun IntroScreen(
 ) {
 
     val focusManager = LocalFocusManager.current
-
     val pageCount = 7
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val coroutineScope = rememberCoroutineScope()
@@ -669,17 +668,15 @@ fun OrdersContent() {
             modifier = Modifier.fillMaxWidth()
         )
 
+
         Box(
             modifier = Modifier.offset(y = 30.dp)
         )
         {
             WelcomeLogo()
         }
-
-
         //per evitare che il contenuto si sovrappone al PageIndicator
         Spacer(Modifier.height(16.dp))
-
     }
 }
 

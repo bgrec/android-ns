@@ -42,7 +42,7 @@ object OrdersResultDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
-    navigateToOrderDetails: (Int) -> Unit,
+    navigateToOrderDetails: (Int, String) -> Unit,
     navigateToOrderEntry: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
@@ -87,7 +87,7 @@ fun OrdersScreen(
 @ExperimentalMaterial3Api
 @Composable
 fun OrdersResultScreen(
-    navigateToOrderDetails: (Int) -> Unit,
+    navigateToOrderDetails: (Int, String) -> Unit,
     navigateToOrderEntry: () -> Unit,
     ordersList: List<Order>,
     modifier: Modifier = Modifier,

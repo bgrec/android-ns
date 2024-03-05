@@ -31,6 +31,19 @@ data class UserPreferences(
     val appVersion: String = ""
 )
 
+object UserPreferencesKeys {
+    val SEARCH_VALUE = stringPreferencesKey("search_value")
+    val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
+    val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
+    val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+    val BASE_URL = stringPreferencesKey("base_url")
+    val ACTIVE_BUTTONS = stringPreferencesKey("active_buttons")
+    val USERNAME = stringPreferencesKey("username")
+    val USER_TYPE = stringPreferencesKey("user_type")
+    val USER_ERP_CODE = stringPreferencesKey("user_erp_code")
+    val APP_VERSION = stringPreferencesKey("app_version")
+}
+
 /**
  * Class that handles saving and retrieving user preferences
  */
@@ -41,18 +54,6 @@ class UserPreferencesRepository @Inject constructor(
 
     private val gson = Gson()
 
-    private object UserPreferencesKeys {
-        val SEARCH_VALUE = stringPreferencesKey("search_value")
-        val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
-        val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
-        val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-        val BASE_URL = stringPreferencesKey("base_url")
-        val ACTIVE_BUTTONS = stringPreferencesKey("active_buttons")
-        val USERNAME = stringPreferencesKey("username")
-        val USER_TYPE = stringPreferencesKey("user_type")
-        val USER_ERP_CODE = stringPreferencesKey("user_erp_code")
-        val APP_VERSION = stringPreferencesKey("app_version")
-    }
 
     /**
      * Get the user preferences flow.

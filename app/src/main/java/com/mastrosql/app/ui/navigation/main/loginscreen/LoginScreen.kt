@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -48,7 +49,6 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
-import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 
@@ -76,15 +76,12 @@ fun LoginScreen(
                     focusManager.clearFocus()
                 })
             }
-    ) {
-
-        BackHandler(true) { navController.navigateUp() }
-
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
-                .padding(it),
+                .padding(innerPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -122,6 +119,11 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
+                    keyboardAction = KeyboardActions(
+                        onNext = {
+                            focusManager.clearFocus()
+                        }
+                    )
                 )
 
                 //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
@@ -144,6 +146,14 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
+
+                    ),
+                    keyboardAction = KeyboardActions(
+                        onDone = {
+                            viewModel.loginCompleted(true)
+                            focusManager.clearFocus()
+
+                        }
                     )
                 )
                 //Spacer(modifier = Modifier.height(50.dp))
@@ -192,11 +202,14 @@ fun LoginFields(
     icon: @Composable (() -> Unit),
     onValueChanged: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
+    keyboardAction: KeyboardActions,
     modifier: Modifier,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
 
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+  
     OutlinedTextField(
         leadingIcon = icon,
         value = value,
@@ -204,9 +217,10 @@ fun LoginFields(
         onValueChange = onValueChanged,
         label = { Text(stringResource(label)) },
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardAction,
         modifier = modifier
             .focusRequester(focusRequester),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
     )
 }
 
@@ -258,6 +272,11 @@ fun LoginScreenPreview() {
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
+                    keyboardAction = KeyboardActions(
+                        onNext = {
+                            //focusManager.clearFocus()
+                        }
+                    )
                 )
 
                 //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
@@ -281,6 +300,11 @@ fun LoginScreenPreview() {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
+                    ),
+                    keyboardAction = KeyboardActions(
+                        onDone = {
+                            //focusManager.clearFocus()
+                        }
                     )
                 )
                 //Spacer(modifier = Modifier.height(50.dp))

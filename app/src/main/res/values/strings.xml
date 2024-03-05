@@ -57,10 +57,9 @@
     <string name="costumer_province">"Provincia: "</string>
     <string name="costumer_nation">"Nazione: "</string>
 
-
-    <string name="attention">Attention</string>
-    <string name="back_button">Back</string>
-    <string name="delete">Delete</string>
+    <string name="attention">Attenzione</string>
+    <string name="back_button">Indietro</string>
+    <string name="delete">Cancella</string>
     <string name="delete_question">Are you sure you want to delete?</string>
     <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
     <string name="edit_item_title">Edit Item</string>
@@ -126,8 +125,11 @@
     <string name="orders_description">Descrizione ordine</string>
     <string name="edit_order_details_title">Modifica righe ordine</string>
     <string name="edit_order_details_entry_title">Modifica ordine</string>
-    <string name="order_details_edit">Modifica righe ordine: %orderId$s</string>
+
     <string name="show_intro_again">"Mostra introduzione"</string>
+
+    <string name="order_details_edit">Ord.n %1$d %2$s</string>
+
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="label_url">Inserire URL</string>
@@ -160,15 +162,20 @@
     <string name="orders_content_title">Documenti</string>
     <string name="orders_content_text">descrizione documenti</string>
     <string name="drawer_content_title">Menù a tendina</string>
+
     <string name="drawer_content_text">"Premere l'icona ≡ in alto a sinistra per visualizzare il menù con tutte le sezioni scelte e il logout."</string>
     <string name="drawer_content_text2">"É possibile anche accedere al menù scorrendo sullo schermo da sinistra verso destra."</string>
     <string name="drawer_home_menu">Home</string>
+
     <string name="order_entry_title">Modifica ordine</string>
     <string name="order_details_entry_title">Inserimento riga</string>
     <string name="order_details_qrscan_title">Apri scanner</string>
     <string name="edit_button_order_item">Modifica riga</string>
+  
     <string name="news_button">visualizza le novità</string>
     <string name="news_title">Novità</string>
     <string name="null_text">Null</string>
+
+    <string name="order_details_add_button">Aggiungi articolo</string>
 
 </resources>
