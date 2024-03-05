@@ -77,6 +77,9 @@ fun LoginScreen(
                 })
             }
     ) {
+
+        BackHandler(true) { navController.navigateUp() }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -194,7 +197,6 @@ fun LoginFields(
 ) {
 
     val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         leadingIcon = icon,
         value = value,
@@ -206,7 +208,6 @@ fun LoginFields(
             .focusRequester(focusRequester),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
     )
-    BackHandler(true) { focusManager.clearFocus() }
 }
 
 @Preview(apiLevel = 33, showBackground = true)
