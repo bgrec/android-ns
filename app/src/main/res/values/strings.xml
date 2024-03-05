@@ -3,7 +3,6 @@
     <string name="ic_arrow_back">Back button</string>
     <string name="next">Successivo</string>
     <string name="start_app">"Inizia"</string>
-    <string name="welcome_content_text">"Benvenuto in MastroSQL Beta app"</string>
     <string name="drawer_home">prova pulsanti</string>
 
     <string name="drawer_new_home">New Home</string>
@@ -57,9 +56,6 @@
     <string name="costumer_city">"Citta': "</string>
     <string name="costumer_province">"Provincia: "</string>
     <string name="costumer_nation">"Nazione: "</string>
-
-
-
 
     <string name="attention">Attenzione</string>
     <string name="back_button">Indietro</string>
@@ -129,37 +125,57 @@
     <string name="orders_description">Descrizione ordine</string>
     <string name="edit_order_details_title">Modifica righe ordine</string>
     <string name="edit_order_details_entry_title">Modifica ordine</string>
+
+    <string name="show_intro_again">"Mostra introduzione"</string>
+
     <string name="order_details_edit">Ord.n %1$d %2$s</string>
-    <string name="stringa_prova">"Prova"</string>
+
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="label_url">Inserire URL</string>
     <string name="dialog_button">Gestisci sezioni</string>
     <string name="dialog_title">Sezioni</string>
-    <string name="confirm_button">OK</string>
-    <string name="cancel_button">Annulla</string>
+    <string name="close_button">Chiudi</string>
 
     <string name="intro_title">Introduzione</string>
     <string name="costumer_error_toast">Impossibile modificare cliente</string>
     <string name="article_error_toast">Impossibile modificare articolo</string>
     <string name="skip">Salta</string>
+    <string name="welcome_content_title">Benvenuto in MastroSQL Beta app</string>
+    <string name="welcome_content_text">"Quest'app permette di gestire singolarmente i clienti, gli articoli e gli ordini."</string>
     <string name="config_content_title">Configurazione preferenze</string>
-    <string name="config_content_text">"Configura le seguenti preferenze per l'app (Modificabili successivamente nelle Impostazioni)."</string>
+    <string name="config_content_text">"Configurare le seguenti preferenze per l'app (Modificabili successivamente nelle Impostazioni)."</string>
+    <string name="config_url_text">"Inserire URL valido per collegarsi al database."</string>
+    <string name="config_section_text">"Scegliere le sezioni che si vuole visualizzare nella home e nel menù a tendina."</string>
     <string name="login_content_title">Login</string>
-    <string name="login_content_text">descrizione login</string>
+    <string name="login_content_text">"Nella schermata di login, per accedere alle impostazioni premere l'icona ⚙ in alto a destra."</string>
+    <string name="login_content_text2">"Per accedere bisogna inserire un URL valido (configurabile dalle impostazioni), e usare delle credenziali valide."</string>
     <string name="home_content_title">Home</string>
-    <string name="home_content_text">descrizione home</string>
+    <string name="home_content_text">Nella home vengono visualizzate le sezioni che sono state scelte ed è possibile fare il logout nel caso si voglia cambiare delle preferenze nelle impostazioni o accedere usando diverse credenziali.</string>
     <string name="archives_content_title">Archivi</string>
     <string name="archives_content_text">descrizione archivi</string>
+    <string name="archives_articles_title">Articoli</string>
+    <string name="archives_client_title">Clienti</string>
+    <string name="archives_content_expand">"Per visualizzare i dettagli premere:"</string>
+    <string name="archives_content_reduce">Per chiudere i dettagli premere:</string>
+    <string name="archives_content_edit">"Per modificare premere:"</string>
     <string name="orders_content_title">Documenti</string>
     <string name="orders_content_text">descrizione documenti</string>
     <string name="drawer_content_title">Menù a tendina</string>
-    <string name="drawer_content_text">descrizione menù a tendina</string>
-    <string name="drawer_home_menu">Prova pulsanti</string>
+
+    <string name="drawer_content_text">"Premere l'icona ≡ in alto a sinistra per visualizzare il menù con tutte le sezioni scelte e il logout."</string>
+    <string name="drawer_content_text2">"É possibile anche accedere al menù scorrendo sullo schermo da sinistra verso destra."</string>
+    <string name="drawer_home_menu">Home</string>
+
     <string name="order_entry_title">Modifica ordine</string>
     <string name="order_details_entry_title">Inserimento riga</string>
     <string name="order_details_qrscan_title">Apri scanner</string>
     <string name="edit_button_order_item">Modifica riga</string>
+  
+    <string name="news_button">visualizza le novità</string>
+    <string name="news_title">Novità</string>
+    <string name="null_text">Null</string>
+
     <string name="order_details_add_button">Aggiungi articolo</string>
 
 </resources>
