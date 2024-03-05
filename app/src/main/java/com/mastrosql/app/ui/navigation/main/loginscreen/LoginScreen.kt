@@ -34,7 +34,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -50,7 +49,6 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
-import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 
@@ -121,7 +119,7 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    keyBooardAction = KeyboardActions(
+                    keyboardAction = KeyboardActions(
                         onNext = {
                             focusManager.clearFocus()
                         }
@@ -150,7 +148,7 @@ fun LoginScreen(
                         imeAction = ImeAction.Done
 
                     ),
-                    keyBooardAction = KeyboardActions(
+                    keyboardAction = KeyboardActions(
                         onDone = {
                             viewModel.loginCompleted(true)
                             focusManager.clearFocus()
@@ -204,7 +202,7 @@ fun LoginFields(
     icon: @Composable (() -> Unit),
     onValueChanged: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
-    keyBooardAction: KeyboardActions,
+    keyboardAction: KeyboardActions,
     modifier: Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
@@ -219,7 +217,7 @@ fun LoginFields(
         onValueChange = onValueChanged,
         label = { Text(stringResource(label)) },
         keyboardOptions = keyboardOptions,
-        keyboardActions = keyBooardAction,
+        keyboardActions = keyboardAction,
         modifier = modifier
             .focusRequester(focusRequester),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
@@ -275,7 +273,7 @@ fun LoginScreenPreview() {
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    keyBooardAction = KeyboardActions(
+                    keyboardAction = KeyboardActions(
                         onNext = {
                             //focusManager.clearFocus()
                         }
@@ -304,7 +302,7 @@ fun LoginScreenPreview() {
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
-                    keyBooardAction = KeyboardActions(
+                    keyboardAction = KeyboardActions(
                         onDone = {
                             //focusManager.clearFocus()
                         }

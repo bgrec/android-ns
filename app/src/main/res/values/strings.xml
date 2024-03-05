@@ -61,9 +61,9 @@
 
 
 
-    <string name="attention">Attention</string>
-    <string name="back_button">Back</string>
-    <string name="delete">Delete</string>
+    <string name="attention">Attenzione</string>
+    <string name="back_button">Indietro</string>
+    <string name="delete">Cancella</string>
     <string name="delete_question">Are you sure you want to delete?</string>
     <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
     <string name="edit_item_title">Edit Item</string>
@@ -160,5 +160,6 @@
     <string name="order_details_entry_title">Inserimento riga</string>
     <string name="order_details_qrscan_title">Apri scanner</string>
     <string name="edit_button_order_item">Modifica riga</string>
+    <string name="order_details_add_button">Aggiungi articolo</string>
 
 </resources>

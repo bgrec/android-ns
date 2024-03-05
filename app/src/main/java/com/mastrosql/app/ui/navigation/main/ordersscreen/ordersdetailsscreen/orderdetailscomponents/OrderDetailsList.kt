@@ -43,15 +43,15 @@ fun OrderDetailList(
         }
 
         items(filteredList) { orderDetail ->
-            OrderDetailCard(
-                orderDetail = orderDetail,
+            OrderDetailsItem(
+                orderDetailsItem = orderDetail,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
                 //.focusable(),
                 navController = navController,
-                navigateToEditItem = {}
-
+                navigateToEditItem = {},
+                onRemove = {true}
             )
         }
     }
