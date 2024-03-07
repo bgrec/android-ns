@@ -45,12 +45,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.ui.theme.Purple40
@@ -234,21 +236,22 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.Start
                 ) {
                     OrderDetailDescriptionAndId(
-                        id = orderDetail.id, description = orderDetail.description
+                        articleId = orderDetail.articleId,
+                        sku = orderDetail.sku,
+                        batch = orderDetail.batch,
+                        description = orderDetail.description,
+                        quantity = orderDetail.quantity,
+                        orderedQuantity = orderDetail.orderedQuantity,
+                        shippedQuantity = orderDetail.shippedQuantity
                     )
                     if (expanded) {
                         OrderDetailInfo(
-                            id = orderDetail.id,
-                            sku = orderDetail.articleId.toString(),
-                            vendorSku = orderDetail.sku,
-                            description = orderDetail.description,
-                            vat = orderDetail.vat,
-                            measureUnit = orderDetail.measureUnit,
-                            price = orderDetail.price.toDouble(),
+                            expirationDate = orderDetail.expirationDate,
+                            completeDescription = orderDetail.completeDescription
                         )
                     }
                 }
-                //Spacer(Modifier.weight(1f))
+
                 Column(
                     modifier = Modifier.widthIn(60.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -318,18 +321,115 @@ private fun ItemEditButton(
 
 @Composable
 fun OrderDetailDescriptionAndId(
-    id: Int, description: String?, modifier: Modifier = Modifier
+    articleId: Int,
+    sku: String?,
+    batch: String?,
+    description: String?,
+    quantity: Double,
+    orderedQuantity: Double,
+    shippedQuantity: Double,
+    modifier: Modifier = Modifier
 ) {
     Column {
-        Text(
-            text = stringResource(R.string.order_id, id),
-            style = MaterialTheme.typography.bodySmall,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_detail_articleId),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Text(
+                text = articleId.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Spacer(modifier = Modifier.weight(0.5f))
+
+            Text(
+                text = stringResource(R.string.order_detail_sku),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Text(
+                text = sku ?: "",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_detail_batch),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            if (batch != null) {
+                Text(
+                    text = batch,
+                    color = ColorLightBlue,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+
         Text(
             text = description?.take(50) ?: "",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = modifier.padding(top = 4.dp)
+            style = MaterialTheme.typography.titleMedium,
         )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_detail_quantity),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            Text(
+                text = quantity.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_detail_orderedQuantity),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            Text(
+                text = orderedQuantity.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_detail_shippedQuantity),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            Text(
+                text = shippedQuantity.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
     }
 }
 
@@ -340,13 +440,8 @@ fun OrderDetailDescriptionAndId(
  */
 @Composable
 fun OrderDetailInfo(
-    id: Int,
-    sku: String?,
-    vendorSku: String?,
-    description: String?,
-    vat: String?,
-    measureUnit: String?,
-    price: Double,
+    expirationDate: String?,
+    completeDescription: String?,
     modifier: Modifier = Modifier
 
 ) {
@@ -356,28 +451,41 @@ fun OrderDetailInfo(
         )
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = description ?: "", style = MaterialTheme.typography.bodySmall
+                text = stringResource(R.string.order_detail_expirationDate),
+                style = MaterialTheme.typography.bodySmall,
             )
+
+            if (expirationDate != null) {
+                Text(
+                    text = expirationDate,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "$id $sku $measureUnit $price", style = MaterialTheme.typography.bodySmall
-            )
-        }
+        if (completeDescription != null){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
 
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.vat, vat ?: ""),
-                style = MaterialTheme.typography.bodySmall
-            )
+                Text(
+                    text = stringResource(R.string.order_detail_completeDescription),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
+
+                Text(
+                    text = completeDescription,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }
@@ -431,18 +539,13 @@ fun OrderDetailCardPreview() {
 
 }*/
 
-@Preview
+@Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun OrderDetailInfoPreview() {
     MastroAndroidTheme {
         OrderDetailInfo(
-            id = 1,
-            sku = "sku",
-            vendorSku = "vendorSku",
-            description = "description",
-            vat = "vat",
-            measureUnit = "measureUnit",
-            price = 1.0,
+            expirationDate = "expirationDate",
+            completeDescription = "completeDescription",
             modifier = Modifier
         )
     }

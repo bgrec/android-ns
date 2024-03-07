@@ -28,7 +28,6 @@ import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -84,7 +83,6 @@ fun IntroScreen(
     navController: NavController,
     viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-
     val focusManager = LocalFocusManager.current
     val pageCount = 7
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -103,6 +101,7 @@ fun IntroScreen(
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
+                    viewModel.onBoardingCompleted(false)
                 })
             }) {
         Box(modifier = Modifier.fillMaxSize()) {
