@@ -141,8 +141,7 @@ fun IntroScreen(
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(lastPage)
                             }
-                        },
-                        modifier = Modifier.padding(start = 16.dp)
+                        }, modifier = Modifier.padding(start = 16.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.skip),
@@ -180,8 +179,7 @@ fun IntroScreen(
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(nextPage)
                             }
-                        },
-                        modifier = Modifier.padding(start = 16.dp)
+                        }, modifier = Modifier.padding(start = 16.dp)
                     ) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.NavigateNext, null)
                     }
@@ -192,8 +190,7 @@ fun IntroScreen(
                                 popUpTo(NavRoutes.MainRoute.name)
                             }
                             viewModel.onBoardingCompleted(true)
-                        },
-                        modifier = Modifier.padding(start = 16.dp)
+                        }, modifier = Modifier.padding(start = 16.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.start_app),
@@ -208,20 +205,14 @@ fun IntroScreen(
 
 @Composable
 fun PagerIndicator(
-    index: Int,
-    currentPage: Int,
-    onClick: (Int) -> Unit,
-    activeColor: Color,
-    deactiveColor: Color
+    index: Int, currentPage: Int, onClick: (Int) -> Unit, activeColor: Color, deactiveColor: Color
 ) {
-    Box(
-        modifier = Modifier
-            .padding(2.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(if (index == currentPage) activeColor else deactiveColor)
-            .size(16.dp)
-            .clickable { onClick(index) }
-    )
+    Box(modifier = Modifier
+        .padding(2.dp)
+        .clip(RoundedCornerShape(10.dp))
+        .background(if (index == currentPage) activeColor else deactiveColor)
+        .size(16.dp)
+        .clickable { onClick(index) })
 }
 
 //inizio contenuti dei pager (aggiungere Spacer alla fine di ogni content per evitare che il contenuto si sovrapponga al PageIndicator)
@@ -229,8 +220,7 @@ fun PagerIndicator(
 @Composable
 fun WelcomeContent() {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -246,8 +236,7 @@ fun WelcomeContent() {
 
         Box(
             modifier = Modifier.offset(y = 30.dp)
-        )
-        {
+        ) {
             WelcomeLogo()
         }
 
@@ -278,13 +267,10 @@ fun WelcomeLogo() {
 
 @Composable
 fun ConfigContent(
-    viewModel: UserPreferencesViewModel,
-    focusManager: FocusManager
+    viewModel: UserPreferencesViewModel, focusManager: FocusManager
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
@@ -325,24 +311,19 @@ fun ConfigContent(
             urlState = baseUrlUiState
         }
 
-        OutlinedTextField(
-            value = urlState,
+        OutlinedTextField(value = urlState,
             singleLine = true,
             onValueChange = { newValue -> urlState = newValue },
             leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
+                keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    viewModel.setBaseUrl(urlState)
-                    focusManager.clearFocus()
-                }
-            ),
+            keyboardActions = KeyboardActions(onDone = {
+                viewModel.setBaseUrl(urlState)
+                focusManager.clearFocus()
+            }),
             label = { Text(stringResource(R.string.label_url)) },
-            modifier = Modifier
-                .focusRequester(focusRequester)
+            modifier = Modifier.focusRequester(focusRequester)
         )
 
         //fine TextField per inserire url
@@ -366,7 +347,7 @@ fun ConfigContent(
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
-                MainNavOption.OrdersScreen to R.string.drawer_orders
+                MainNavOption.OrdersComposable to R.string.drawer_orders
             )
         }
 
@@ -382,10 +363,9 @@ fun ConfigContent(
 
 
         if (showDialog) {
-            AlertDialog(
-                modifier = Modifier
-                    .size(425.dp)
-                    .padding(8.dp),
+            AlertDialog(modifier = Modifier
+                .size(425.dp)
+                .padding(8.dp),
                 onDismissRequest = { showDialog = false },
                 title = { Text(stringResource(R.string.dialog_title)) },
                 text = {
@@ -401,29 +381,24 @@ fun ConfigContent(
 
                                     Spacer(Modifier.weight(1f))
 
-                                    Switch(
-                                        checked = activeButtonsUiState[it] ?: false,
+                                    Switch(checked = activeButtonsUiState[it] ?: false,
                                         onCheckedChange = { isChecked ->
                                             val updatedState = EnumMap(activeButtonsUiState)
                                             updatedState[it] = isChecked
                                             viewModel.updateActiveButtons(updatedState)
-                                        }
-                                    )
+                                        })
                                 }
                             }
                         }
                     }
                 },
                 confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDialog = false
-                        }
-                    ) {
+                    TextButton(onClick = {
+                        showDialog = false
+                    }) {
                         Text(stringResource(R.string.close_button))
                     }
-                }
-            )
+                })
         }
 
         //fine pulsante
@@ -436,9 +411,7 @@ fun ConfigContent(
 @Composable
 fun LoginContent() {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
@@ -456,8 +429,7 @@ fun LoginContent() {
 
         Box(
             modifier = Modifier.offset(y = 30.dp)
-        )
-        {
+        ) {
             WelcomeLogo()
         }
 
@@ -478,9 +450,7 @@ fun LoginContent() {
 @Composable
 fun HomeContent() {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
@@ -498,8 +468,7 @@ fun HomeContent() {
 
         Box(
             modifier = Modifier.offset(y = 30.dp)
-        )
-        {
+        ) {
             WelcomeLogo()
         }
 
@@ -513,8 +482,7 @@ fun HomeContent() {
 @Composable
 fun ArchivesContent() {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -534,26 +502,21 @@ fun ArchivesContent() {
         Spacer(Modifier.weight(0.2f))
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     stringResource(R.string.archives_client_title),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Box(
                     modifier = Modifier.offset(y = 20.dp)
-                )
-                {
+                ) {
                     WelcomeLogo()//sostituire con immagine sezione clienti
                 }
             }
@@ -561,8 +524,7 @@ fun ArchivesContent() {
             Spacer(Modifier.weight(0.5f))
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     stringResource(R.string.archives_articles_title),
@@ -572,8 +534,7 @@ fun ArchivesContent() {
 
                 Box(
                     modifier = Modifier.offset(y = 20.dp)
-                )
-                {
+                ) {
                     WelcomeLogo()//sostituire con immagine sezione articoli
                 }
             }
@@ -583,23 +544,20 @@ fun ArchivesContent() {
         Spacer(Modifier.weight(0.1f))
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = stringResource(R.string.archives_content_expand),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
 
                 IconButton({}, enabled = false) {
@@ -608,14 +566,12 @@ fun ArchivesContent() {
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(R.string.archives_content_reduce),
-                    modifier = Modifier
+                    text = stringResource(R.string.archives_content_reduce), modifier = Modifier
                 )
 
                 IconButton({}, enabled = false) {
@@ -624,14 +580,12 @@ fun ArchivesContent() {
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(R.string.archives_content_edit),
-                    modifier = Modifier
+                    text = stringResource(R.string.archives_content_edit), modifier = Modifier
                 )
 
                 IconButton({}, enabled = false) {
@@ -650,9 +604,7 @@ fun ArchivesContent() {
 @Composable
 fun OrdersContent() {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             stringResource(R.string.orders_content_title),
@@ -670,8 +622,7 @@ fun OrdersContent() {
 
         Box(
             modifier = Modifier.offset(y = 30.dp)
-        )
-        {
+        ) {
             WelcomeLogo()
         }
         //per evitare che il contenuto si sovrappone al PageIndicator
@@ -682,9 +633,7 @@ fun OrdersContent() {
 @Composable
 fun DrawerContent(navController: NavController) {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
@@ -702,8 +651,7 @@ fun DrawerContent(navController: NavController) {
 
         Box(
             modifier = Modifier.offset(y = 30.dp)
-        )
-        {
+        ) {
             WelcomeLogo()
         }
 

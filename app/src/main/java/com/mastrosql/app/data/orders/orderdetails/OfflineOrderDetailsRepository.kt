@@ -1,6 +1,7 @@
 package com.mastrosql.app.data.orders.orderdetails
 
 import androidx.work.WorkInfo
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
@@ -39,4 +40,8 @@ class OfflineOrderDetailsRepository(
 
     override suspend fun updateOrderDetails(orderDetail: OrderDetailsItem) =
         orderDetailDao.update(orderDetail)
+
+    override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        TODO("Not yet implemented")
+    }
 }

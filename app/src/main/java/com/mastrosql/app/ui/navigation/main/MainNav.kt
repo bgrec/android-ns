@@ -43,7 +43,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         composable(MainNavOption.ArticlesScreen.name) {
             ArticlesScreen(drawerState = drawerState, navController = navController)
         }
-        composable(MainNavOption.OrdersScreen.name) {
+        composable(MainNavOption.OrdersComposable.name) {
             //OrdersScreen(drawerState = drawerState, navController = navController)
             OrdersComposable(drawerState = drawerState)
         }
@@ -72,7 +72,7 @@ enum class MainNavOption {
     SettingsScreen,
     CartScreen,
     ArticlesScreen,
-    OrdersScreen,
+    OrdersComposable,
     AboutScreen,
     Logout
 }

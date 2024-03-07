@@ -1,19 +1,27 @@
 package com.mastrosql.app.ui.navigation
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.SocketTimeoutException
 import java.util.EnumMap
 
 class UserPreferencesViewModel(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
     // Flow to observe isOnboardingComplete value
@@ -137,6 +145,54 @@ class UserPreferencesViewModel(
             //onBoardingCompleted(false)
         }
     }
+
+    fun testRetrofitConnection(context: Context) {
+        // Show loading message
+        showToast(context, "Collegamento in corso...attendere")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Perform a test API call using the repository's service
+                val response = userPreferencesRepository.testApiCall()
+
+                // Handle the response status code
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        200 -> showToast(context, "Collegamento riuscito ${response.code()}")
+                        404 -> showToast(
+                            context,
+                            "Collegamento riuscito, api not trovata ${response.code()}"
+                        )
+
+                        else -> showToast(context, "Errore api: ${response.code()}")
+                    }
+                }
+            } catch (e: IOException) {
+                // Handle IOException (e.g., network error)
+                showToast(context, "Network error occurred: ${e.message}")
+            } catch (e: HttpException) {
+                // Handle HttpException (e.g., non-2xx response)
+                showToast(context, "HTTP error occurred: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                showToast(context, "Connection timed out. Please try again later.")
+            } catch (e: Exception) {
+                // Handle generic exception
+                showToast(context, "An unexpected error occurred: ${e.message}")
+            }
+        }
+    }
+
+    private fun showToast(context: Context, message: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (message.isNotEmpty()) {
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            } else {
+                // Hide loading message by not showing any toast
+            }
+        }
+    }
+
 }
 
 data class DessertReleaseUiState(

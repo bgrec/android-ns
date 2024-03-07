@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+
 private val lightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -85,8 +86,7 @@ private val darkColorScheme = darkColorScheme(
 fun MastroAndroidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    dynamicColor: Boolean = true, content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -113,10 +113,7 @@ fun MastroAndroidTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        shapes = Shapes,
-        typography = Typography,
-        content = content
+        colorScheme = colorScheme, shapes = Shapes, typography = Typography, content = content
     )
 }
 

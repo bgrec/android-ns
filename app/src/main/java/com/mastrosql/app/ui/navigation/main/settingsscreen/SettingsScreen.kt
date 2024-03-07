@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -59,12 +58,11 @@ fun SettingsScreen(
     navController: NavController,
     viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-
+    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf(false) }
 
-    //var baseUrl by remember { mutableStateOf("") }
     val baseUrlUiState by viewModel.baseUrlUiState.collectAsState()
 
     var urlState by remember { mutableStateOf(baseUrlUiState) }
@@ -76,18 +74,18 @@ fun SettingsScreen(
 
     val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
 
-    /*
-    *Map to associate each MainNavOption with a string resource
-    */
-    val stringResMap = remember {
-        mapOf(
-            MainNavOption.CustomersScreen to R.string.drawer_customers,
-            MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
-            MainNavOption.ArticlesScreen to R.string.drawer_articles,
-            MainNavOption.ItemsScreen to R.string.drawer_inventory,
-            MainNavOption.OrdersScreen to R.string.drawer_orders
+    val stringResMap by remember {
+        mutableStateOf(
+            mapOf(
+                MainNavOption.CustomersScreen to R.string.drawer_customers,
+                MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
+                MainNavOption.ArticlesScreen to R.string.drawer_articles,
+                MainNavOption.ItemsScreen to R.string.drawer_inventory,
+                MainNavOption.OrdersComposable to R.string.drawer_orders
+            )
         )
     }
+
     Scaffold(
         topBar = {
             SettingsTopAppBar(
@@ -107,28 +105,30 @@ fun SettingsScreen(
         modifier = Modifier
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
+                    viewModel.setBaseUrl(urlState)
                     focusManager.clearFocus()
                 })
             }
     )
-    {
+    { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
-                .padding(horizontal = 40.dp),
+                .padding(innerPadding)
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+
                 OutlinedTextField(
                     value = urlState,
-                    singleLine = true,
+                    singleLine = false,
                     onValueChange = { newValue -> urlState = newValue },
                     leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -141,7 +141,6 @@ fun SettingsScreen(
                             focusManager.clearFocus()
                         }
                     ),
-
                     label = { Text(stringResource(R.string.label_url)) },
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -152,24 +151,27 @@ fun SettingsScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
             ) {
-                Button(onClick = { showDialog = true }) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showDialog = true }) {
                     Text(stringResource(R.string.dialog_button))
                 }
             }
+            Spacer(modifier = Modifier)
 
-
-            //inizio finestra
             if (showDialog) {
-                AlertDialog(modifier = Modifier
-                    .size(425.dp)
-                    .padding(8.dp),
+
+
+                AlertDialog(
+
                     onDismissRequest = { showDialog = false },
                     title = { Text(stringResource(R.string.dialog_button)) },
                     text = {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
-
                             items(MainNavOption.entries.toList()) {
                                 if ((stringResMap[it] != null)) {
                                     Row(
@@ -201,23 +203,39 @@ fun SettingsScreen(
                         }
                     })
             }
-            //fine finestra
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
             ) {
                 Button(
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.onBoardingCompleted(false) }
                 ) {
                     Text(text = stringResource(R.string.show_intro_again))
                 }
             }
+            Spacer(modifier = Modifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.testRetrofitConnection(context) }
+                ) {
+                    Text(text = stringResource(R.string.test_retrofit_button))
+                }
+            }
         }
     }
 }
-
 
 @Preview(apiLevel = 33)
 @Composable

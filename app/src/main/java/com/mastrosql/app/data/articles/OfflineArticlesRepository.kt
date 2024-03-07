@@ -1,6 +1,7 @@
 package com.mastrosql.app.data.articles
 
 import androidx.work.WorkInfo
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesDao
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
@@ -23,4 +24,7 @@ class OfflineArticlesRepository(
     override suspend fun deleteArticle(article: Article) = articleDao.delete(article)
 
     override suspend fun updateArticle(article: Article) = articleDao.update(article)
+    override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        TODO("Not yet implemented")
+    }
 }

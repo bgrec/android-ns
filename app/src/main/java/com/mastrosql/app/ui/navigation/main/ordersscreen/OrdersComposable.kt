@@ -7,7 +7,7 @@ import androidx.navigation.compose.rememberNavController
 
 /**
  * Composable that displays the Orders screen.
- 
+
  */
 @Composable
 fun OrdersComposable(

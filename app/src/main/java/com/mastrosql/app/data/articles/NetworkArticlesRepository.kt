@@ -17,10 +17,14 @@ import kotlinx.coroutines.flow.mapNotNull
  */
 
 class NetworkArticlesRepository(
-    private val mastroAndroidApiService: MastroAndroidApiService,
+    private var mastroAndroidApiService: MastroAndroidApiService,
     private val articlesDao: ArticlesDao,
     context: Context
 ) : ArticlesRepository {
+
+    override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        this.mastroAndroidApiService = newMastroAndroidApiService
+    }
 
     // set context as application context from parameter passed
     private val workManager = WorkManager.getInstance(context)

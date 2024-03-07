@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ class AppNavigationViewModel() : ViewModel() {
     val gesturesEnabled: State<Boolean> = _gesturesEnabled
 
     fun setGesturesEnabled(enabled: Boolean) {
+        Log.d("AppNavigationViewModel", "setGesturesEnabled: $enabled")
         _gesturesEnabled.value = enabled
     }
 
@@ -28,12 +30,12 @@ class AppNavigationViewModel() : ViewModel() {
             MainNavOption.CustomersPagedScreen -> true
             MainNavOption.ArticlesScreen -> true
             MainNavOption.ItemsScreen -> true
-            MainNavOption.OrdersScreen -> true
+            MainNavOption.OrdersComposable -> true
             MainNavOption.SettingsScreen -> false
             MainNavOption.CartScreen -> true
             MainNavOption.AboutScreen -> false
             MainNavOption.Logout -> false
-            else -> true
+            else -> false
         }
     }
 

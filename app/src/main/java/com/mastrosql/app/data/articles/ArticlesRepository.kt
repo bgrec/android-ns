@@ -2,6 +2,7 @@ package com.mastrosql.app.data.articles
 
 
 import androidx.work.WorkInfo
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import kotlinx.coroutines.flow.Flow
@@ -39,4 +40,5 @@ interface ArticlesRepository {
      * Update article in the data source
      */
     suspend fun updateArticle(article: Article)
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }

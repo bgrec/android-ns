@@ -2,6 +2,7 @@ package com.mastrosql.app.data.customers.offline
 
 import androidx.work.WorkInfo
 import com.mastrosql.app.data.customers.CustomersMasterDataRepository
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
@@ -18,6 +19,10 @@ class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDa
     }
 
     override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         TODO("Not yet implemented")
     }
 

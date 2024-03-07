@@ -1,10 +1,12 @@
 package com.mastrosql.app.data.datasource.network
 
+import com.google.gson.JsonObject
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -46,8 +48,8 @@ interface MastroAndroidApiService {
     // @GET("movie/popular?api_key=${MOVIE_API_KEY}&language=en-US")
     @GET("clientsview")
     suspend fun getCustomersMasterDataPage(
-        @Query("offset") offset: Int,
-        @Query("limit") pageSize: Int
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1000000
     ): CustomersMasterDataResponse
 
     @GET("articlesview")
@@ -73,6 +75,12 @@ interface MastroAndroidApiService {
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1000
     ): OrderDetailsResponse
+
+    @GET("clientsview")
+    suspend fun testApiCall(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1
+    ): Response<JsonObject>
 
 }
 

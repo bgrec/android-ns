@@ -14,4 +14,5 @@ interface CustomersPagedMasterDataRepository {
 
     suspend fun getPagedCustomersMasterData(offset: Int, limit: Int): CustomersMasterDataResponse
 
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }
