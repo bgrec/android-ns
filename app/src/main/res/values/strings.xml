@@ -177,5 +177,6 @@
     <string name="null_text">Null</string>
 
     <string name="order_details_add_button">Aggiungi articolo</string>
+    <string name="test_retrofit_button">"Test conessione "</string>
 
 </resources>

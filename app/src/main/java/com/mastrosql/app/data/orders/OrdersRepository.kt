@@ -2,6 +2,7 @@ package com.mastrosql.app.data.orders
 
 
 import androidx.work.WorkInfo
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import kotlinx.coroutines.flow.Flow
@@ -39,4 +40,5 @@ interface OrdersRepository {
      * Update order in the data source
      */
     suspend fun updateOrder(order: Order)
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }

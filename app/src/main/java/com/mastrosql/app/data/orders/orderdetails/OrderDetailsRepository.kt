@@ -2,6 +2,7 @@ package com.mastrosql.app.data.orders.orderdetails
 
 
 import androidx.work.WorkInfo
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
@@ -42,4 +43,5 @@ interface OrderDetailsRepository {
      * Update order in the data source
      */
     suspend fun updateOrderDetails(orderDetail: OrderDetailsItem)
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }

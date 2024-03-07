@@ -76,15 +76,21 @@ fun MainCompose(
             MainNavOption.CustomersPagedScreen.name,
             MainNavOption.ArticlesScreen.name,
             MainNavOption.ItemsScreen.name,
-            MainNavOption.OrdersScreen.name,
+            MainNavOption.OrdersComposable.name,
             MainNavOption.SettingsScreen.name,
             MainNavOption.CartScreen.name,
             MainNavOption.AboutScreen.name,
-            MainNavOption.Logout.name -> {
+            MainNavOption.Logout.name,
+            -> {
                 appNavigationViewModel
                     .setCurrentScreen(MainNavOption.valueOf(destination.route!!))
             }
+
+            else -> {
+                appNavigationViewModel.setGesturesEnabled(false)
+            }
         }
+
     }
 
     /*val defaultPick = when {
@@ -160,7 +166,7 @@ fun MainCompose(
                         }
                     }
 
-                    MainNavOption.OrdersScreen -> {
+                    MainNavOption.OrdersComposable -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                         }
@@ -187,6 +193,10 @@ fun MainCompose(
                     MainNavOption.Logout -> {
                         preferencesViewModel.logout(navController)
                         //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
+                    }
+
+                    else -> {
+                        //appNavigationViewModel.setGesturesEnabled(false)
                     }
                 }
             }
@@ -279,10 +289,10 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.OrdersScreen] == true) {
+        if (activeButtonsUiState[MainNavOption.OrdersComposable] == true) {
             buttons.add(
                 AppDrawerItemInfo(
-                    MainNavOption.OrdersScreen,
+                    MainNavOption.OrdersComposable,
                     R.string.drawer_orders,
                     Icons.Default.Description,
                     R.string.drawer_home_description

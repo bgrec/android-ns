@@ -125,7 +125,7 @@ fun OrdersResultScreen(
                 )
             }
         },
-        ) { innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

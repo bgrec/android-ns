@@ -24,10 +24,14 @@ import java.util.concurrent.TimeUnit
 
 
 class WorkManagerCustomersMasterDataRepository(
-    private val mastroAndroidApiService: MastroAndroidApiService,
+    private var mastroAndroidApiService: MastroAndroidApiService,
     context: Context
 
 ) : CustomersMasterDataRepository {
+
+    override fun updateMastroAndroidApiService (newMastroAndroidApiService: MastroAndroidApiService){
+        this.mastroAndroidApiService = newMastroAndroidApiService
+    }
 
     private val workManager = WorkManager.getInstance(context)
     val applicationContext = context

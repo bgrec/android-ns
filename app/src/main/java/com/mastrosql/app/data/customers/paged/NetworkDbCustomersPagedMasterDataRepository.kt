@@ -8,8 +8,12 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMaste
  */
 
 class NetworkDbCustomersPagedMasterDataRepository(
-    private val mastroAndroidApiService: MastroAndroidApiService
+    private var mastroAndroidApiService: MastroAndroidApiService
 ) : CustomersPagedMasterDataRepository {
+
+    override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        this.mastroAndroidApiService = newMastroAndroidApiService
+    }
 
     override fun getApiService(): MastroAndroidApiService = mastroAndroidApiService
 

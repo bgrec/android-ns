@@ -24,8 +24,6 @@ val ColorBlueIcebergVariantLight = Color(0xFFE9DDFF)
 val ColorGreenLight = Color(0xFFC3FBFF)
 
 
-
-
 val ColorRed = Color(0xFFFF0000)
 
 val md_theme_light_primary = Color(0xFF6B3DD4)

@@ -8,12 +8,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.mastrosql.app.data.AppContainer
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import retrofit2.Response
 import java.io.IOException
 import java.util.EnumMap
 import javax.inject.Inject
@@ -48,12 +52,17 @@ object UserPreferencesKeys {
  * Class that handles saving and retrieving user preferences
  */
 class UserPreferencesRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val appContainer: AppContainer,
+    private var mastroAndroidApiService: MastroAndroidApiService
 ) {
     private val tag = "MastroAndroidUserPref."
-
     private val gson = Gson()
 
+
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        this.mastroAndroidApiService = newMastroAndroidApiService
+    }
 
     /**
      * Get the user preferences flow.
@@ -77,9 +86,18 @@ class UserPreferencesRepository @Inject constructor(
         val isOnboarded = preferences[UserPreferencesKeys.IS_ONBOARDED] ?: false
         val isLoggedIn = preferences[UserPreferencesKeys.IS_LOGGED_IN] ?: false
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
-        val activeButtons = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]?.toEnumMap() ?: EnumMap(
-            MainNavOption::class.java
-        )
+        val activeButtonsJson = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]
+        val activeButtons = if (activeButtonsJson != null) {
+            try {
+                activeButtonsJson.toEnumMap()
+            } catch (e: Exception) {
+                // Handle enum mismatch or JSON parsing error
+                Log.e("UserPreferences", "Error parsing activeButtons JSON", e)
+                EnumMap(MainNavOption::class.java) // Provide fallback value
+            }
+        } else {
+            EnumMap(MainNavOption::class.java) // Provide default value if preferences are empty
+        }
         val username = preferences[UserPreferencesKeys.USERNAME] ?: ""
         val userType = preferences[UserPreferencesKeys.USER_TYPE] ?: ""
         val userErpCode = preferences[UserPreferencesKeys.USER_ERP_CODE] ?: 0
@@ -138,6 +156,8 @@ class UserPreferencesRepository @Inject constructor(
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.BASE_URL] = baseUrl
         }
+        //Create a new Retrofit instance with the new base URL
+        appContainer.updateRetrofitService(baseUrl)
     }
 
     suspend fun saveActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
@@ -248,5 +268,9 @@ class UserPreferencesRepository @Inject constructor(
             Log.e(tag, "Error reading preferences for key: Unknown", exception)
             throw exception
         }
+    }
+
+    suspend fun testApiCall(): Response<JsonObject> {
+        return mastroAndroidApiService.testApiCall()
     }
 }

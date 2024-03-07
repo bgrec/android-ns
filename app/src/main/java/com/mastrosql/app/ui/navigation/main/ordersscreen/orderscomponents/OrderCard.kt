@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -140,7 +141,13 @@ private fun OrderDetailsEditButton(
     onEditClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = { onEditClick(orderId, orderDescription ) }) {
+    //
+    val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
+
+    IconButton(onClick = {
+        appNavigationViewModel.setGesturesEnabled(false)
+        onEditClick(orderId, orderDescription )
+    }) {
         Icon(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,

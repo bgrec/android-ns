@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
+import android.util.Log
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 
@@ -23,6 +25,7 @@ fun OrdersNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
     NavHost(
         navController = navController,
         startDestination = OrdersResultDestination.route,
@@ -31,12 +34,16 @@ fun OrdersNavHost(
     ) {
         composable(route = OrdersResultDestination.route) {
             OrdersScreen(
-                navigateToOrderEntry ={},// { navController.navigate(OrderEntryDestination.route) },
+                navigateToOrderEntry = {},// { navController.navigate(OrderEntryDestination.route) },
                 navigateToOrderDetails = { orderId, orderDescription ->
+
+                    appNavigationViewModel.setGesturesEnabled(false)
                     navController.navigate("${OrderDetailsDestination.route}/${orderId}?orderDescription=${orderDescription}") {
                         //TODO verify if launchSigleTop is  needed
                         launchSingleTop = true
+                        Log.d("OrdersNavHost", "appNavigationViewModel: ${appNavigationViewModel.gesturesEnabled.value}")
                     }
+
                 },
                 navController = navController,
                 drawerState = drawerState
@@ -45,16 +52,20 @@ fun OrdersNavHost(
 
         composable(
             route = OrderDetailsDestination.routeWithArgs,
-            arguments = listOf(navArgument(OrderDetailsDestination.orderIdArg) {
-                type = NavType.IntType
-            }, )
+            arguments = listOf(
+                navArgument(OrderDetailsDestination.orderIdArg) {
+                    type = NavType.IntType
+                },
+            )
         ) {
-                OrderDetailsScreen(
-                    navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
-                    navigateBack = { navController.navigateUp() },
-                    navController = navController,
-                    drawerState = drawerState
-                )
+            OrderDetailsScreen(
+                navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                navigateBack = {
+                    navController.navigateUp()
+                },
+                navController = navController,
+                drawerState = drawerState
+            )
 
         }/*composable(route = OrderEntryDestination.route) {
             OrderEntryScreen(
