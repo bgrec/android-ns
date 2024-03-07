@@ -83,23 +83,27 @@ fun IntroScreen(
     navController: NavController,
     viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-
     val focusManager = LocalFocusManager.current
     val pageCount = 7
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(topBar = {
-        CenterAlignedTopAppBar(title = {
-            Text(
-                text = stringResource(R.string.intro_title)
-            )
-        })
-    }, modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                focusManager.clearFocus()
-            })
-        }) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.intro_title)
+                    )
+                })
+        },
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                    viewModel.onBoardingCompleted(false)
+                })
+            }) {
         Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 modifier = Modifier

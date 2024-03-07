@@ -3,8 +3,10 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -35,6 +38,9 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.theme.ColorGreen
+import com.mastrosql.app.ui.theme.ColorOrange
+import com.mastrosql.app.ui.theme.ColorRed
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
@@ -78,17 +84,18 @@ fun OrderCard(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     OrderDescriptionAndId(
-                        id = order.id, description = order.description
+                        id = order.id,
+                        description = order.description,
+                        insertDate = order.insertDate,
+                        businessName = order.businessName,
+                        deliveryType = order.deliveryType
                     )
                     if (expanded) {
                         OrderInfo(
-                            id = order.id,
-                            sku = order.clientId.toString(),
-                            vendorSku = order.businessName,
-                            description = order.description,
-                            vat = order.date,
-                            measureUnit = order.city,
-                            price = order.weight
+                            destinationName = order.destinationName,
+                            deliveryDate = order.deliveryDate,
+                            carrierName = order.carrierName,
+                            notes = order.notes
                         )
                     }
                 }
@@ -141,13 +148,7 @@ private fun OrderDetailsEditButton(
     onEditClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    //
-    val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
-
-    IconButton(onClick = {
-        appNavigationViewModel.setGesturesEnabled(false)
-        onEditClick(orderId, orderDescription )
-    }) {
+    IconButton(onClick = { onEditClick(orderId, orderDescription) }) {
         Icon(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
@@ -167,16 +168,94 @@ private fun OrderDetailsEditButton(
 
 @Composable
 fun OrderDescriptionAndId(
-    id: Int, description: String?, modifier: Modifier = Modifier
+    id: Int,
+    insertDate: String,
+    deliveryType: Int,
+    businessName: String?,
+    description: String?,
+    modifier: Modifier = Modifier
 ) {
     Column {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_id),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Text(
+                text = id.toString(),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Spacer(modifier = Modifier.weight(0.5f))
+
+            Text(
+                text = stringResource(R.string.order_insertDate),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Text(
+                text = insertDate,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.order_deliveryType),
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            when (deliveryType) {
+                1 -> Text(
+                    text = stringResource(R.string.order_deliveryType_value1),
+                    color = ColorRed,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
+                2 -> Text(
+                    text = stringResource(R.string.order_deliveryType_value2),
+                    color = ColorGreen,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
+                3 -> Text(
+                    text = stringResource(R.string.order_deliveryType_value3),
+                    //TODO(aggiungere colore appropriato per stato di consegna "caricato")
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
+                4 -> Text(
+                    text = stringResource(R.string.order_deliveryType_value4),
+                    color = ColorOrange,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+
         Text(
-            text = stringResource(R.string.order_id, id),
-            style = MaterialTheme.typography.bodySmall,
+            text = businessName?.take(50) ?: "",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = modifier.padding(top = 4.dp)
         )
+
         Text(
             text = description?.take(50) ?: "",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             modifier = modifier.padding(top = 4.dp)
         )
     }
@@ -189,13 +268,10 @@ fun OrderDescriptionAndId(
  */
 @Composable
 fun OrderInfo(
-    id: Int,
-    sku: String?,
-    vendorSku: String?,
-    description: String?,
-    vat: String?,
-    measureUnit: String?,
-    price: Double,
+    destinationName: String?,
+    deliveryDate: String?,
+    carrierName: String?,
+    notes: String?,
     modifier: Modifier = Modifier
 
 ) {
@@ -204,29 +280,84 @@ fun OrderInfo(
             top = 4.dp
         )
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = description ?: "", style = MaterialTheme.typography.bodySmall
-            )
-        }
 
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$id $sku $measureUnit $price", style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.vat, vat ?: ""),
+                text = stringResource(R.string.order_destinationName),
                 style = MaterialTheme.typography.bodySmall
             )
+
+            Text(
+                text = destinationName ?: "",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.order_deliveryDate),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = deliveryDate ?: "",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.order_carrierName),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        if(carrierName != ""){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = carrierName ?: "",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+
+        if (notes != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.order_notes),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = notes,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
@@ -238,41 +369,41 @@ fun OrderCardPreview() {
     MastroAndroidTheme {
         OrderCard(
             order = Order(
-            id = 1,
-            clientId = 1,
-            businessName = "businessName",
-            street = "street",
-            postalCode = "postalCode",
-            city = "city",
-            province = "province",
-            nation = "nation",
-            destinationId = 1,
-            destinationName = "destinationName",
-            description = "description",
-            sequence = 1,
-            insertDate = "",
-            agent = "agent",
-            transportHandler = "transportHandler",
-            parcels = 1,
-            carrierId = 1,
-            carrierName = "carrierName",
-            weight = 1.0,
-            port = "port",
-            date = "2023-01-01",
-            notes = "notes",
-            deliveryDate = "2023-01-0",
-            deliveryDeadline = true,
-            deliveryType = 1,
-            deliveryState = 1,
-            urgent = true,
-            partial = 1,
-            number = 1,
+                id = 1,
+                clientId = 1,
+                businessName = "businessName",
+                street = "street",
+                postalCode = "postalCode",
+                city = "city",
+                province = "province",
+                nation = "nation",
+                destinationId = 1,
+                destinationName = "destinationName",
+                description = "description",
+                sequence = 1,
+                insertDate = "insertDate",
+                agent = "agent",
+                transportHandler = "transportHandler",
+                parcels = 1,
+                carrierId = 1,
+                carrierName = "carrierName",
+                weight = 1.0,
+                port = "port",
+                date = "2023-01-01",
+                notes = "notes",
+                deliveryDate = "2023-01-0",
+                deliveryDeadline = true,
+                deliveryType = 1,
+                deliveryState = 1,
+                urgent = true,
+                partial = 1,
+                number = 1,
 
-            links = emptyList(),
-            metadata = Metadata("etag"),
-            page = 0,
-            lastUpdated = System.currentTimeMillis()
-        ), modifier = Modifier, navController = NavController(LocalContext.current)
+                links = emptyList(),
+                metadata = Metadata("etag"),
+                page = 0,
+                lastUpdated = System.currentTimeMillis()
+            ), modifier = Modifier, navController = NavController(LocalContext.current)
         ) { _, _ -> }
     }
 
@@ -283,13 +414,10 @@ fun OrderCardPreview() {
 fun OrderInfoPreview() {
     MastroAndroidTheme {
         OrderInfo(
-            id = 1,
-            sku = "sku",
-            vendorSku = "vendorSku",
-            description = "description",
-            vat = "vat",
-            measureUnit = "measureUnit",
-            price = 1.0,
+            destinationName = "destinationName",
+            deliveryDate = "deliveryDate",
+            carrierName = "carrierName",
+            notes = "notes",
             modifier = Modifier
         )
     }
