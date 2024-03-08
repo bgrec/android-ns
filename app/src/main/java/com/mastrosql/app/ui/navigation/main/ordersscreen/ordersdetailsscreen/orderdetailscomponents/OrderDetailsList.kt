@@ -36,9 +36,6 @@ fun OrderDetailList(
             //update this for fields to search
             orderDetailList.filter {
                 it.description.contains(searchedText, ignoreCase = true)
-                        ||
-                        it.sku.contains(searchedText, ignoreCase = true)
-
             }
         }
 

@@ -14,10 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -27,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
@@ -96,6 +100,14 @@ fun OrdersResultScreen(
 ) {
     //val itemsUiState by viewModel.itemsUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showToast by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    if (showToast) {
+        ShowToast(context, "Navigating to Order Entry")
+        // Reset the showToast value after showing the toast
+        showToast = false
+    }
 
     Scaffold(
         topBar = {
@@ -115,7 +127,10 @@ fun OrdersResultScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = navigateToOrderEntry,
+                onClick = {
+                    navigateToOrderEntry()
+                    showToast = true
+                },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
             ) {

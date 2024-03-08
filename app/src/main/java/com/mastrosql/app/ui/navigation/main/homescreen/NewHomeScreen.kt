@@ -155,12 +155,12 @@ fun HomeButtons(
                 })
         }
 
-        if (activeButtonsUiState[MainNavOption.OrdersComposable] == true) {
+        if (activeButtonsUiState[MainNavOption.OrdersScreen] == true) {
             Spacer(modifier = Modifier.height(10.dp))
             AppButton(modifier = buttonsModifier, text = R.string.drawer_orders, onClick = {
-                navController.navigate(MainNavOption.OrdersComposable.name) {
+                navController.navigate(MainNavOption.OrdersScreen.name) {
                     popUpTo(MainNavOption.NewHomeScreen.name)
-                    appNavigationViewModel.setCurrentScreen(MainNavOption.OrdersComposable)
+                    appNavigationViewModel.setCurrentScreen(MainNavOption.OrdersScreen)
                 }
             })
         }
