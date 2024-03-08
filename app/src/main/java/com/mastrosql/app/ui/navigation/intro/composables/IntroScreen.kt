@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -312,7 +313,7 @@ fun ConfigContent(
         }
 
         OutlinedTextField(value = urlState,
-            singleLine = true,
+            singleLine = false,
             onValueChange = { newValue -> urlState = newValue },
             leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -363,13 +364,11 @@ fun ConfigContent(
 
 
         if (showDialog) {
-            AlertDialog(modifier = Modifier
-                .size(425.dp)
-                .padding(8.dp),
+            AlertDialog(modifier = Modifier.wrapContentSize(),
                 onDismissRequest = { showDialog = false },
                 title = { Text(stringResource(R.string.dialog_title)) },
                 text = {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(modifier = Modifier.wrapContentSize()) {
 
                         items(MainNavOption.entries.toList()) {
                             if ((stringResMap[it] != null)) {

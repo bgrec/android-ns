@@ -191,9 +191,9 @@
     <string name="order_detail_batch">"Lotto: "</string>
     <string name="order_detail_articleId">"Codice: "</string>
     <string name="order_detail_sku">"Articolo: "</string>
-    <string name="order_detail_quantity">"Quantità: "</string>
-    <string name="order_detail_orderedQuantity">"Ordinata: "</string>
-    <string name="order_detail_shippedQuantity">"Consegnata: "</string>
+    <string name="order_detail_quantity">"Quant."</string>
+    <string name="order_detail_orderedQuantity">"Ord."</string>
+    <string name="order_detail_shippedQuantity">"Cons."</string>
     <string name="order_detail_expirationDate">"Scadenza: "</string>
     <string name="order_detail_completeDescription">"Note: "</string>
 
