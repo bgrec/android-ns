@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -28,6 +29,7 @@ import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
 
 @Composable
 fun MainCompose(
@@ -67,6 +69,7 @@ fun MainCompose(
     }
 
     // Update current screen when navigating
+    // Update current screen when navigating because of deep links and nested navigation graphs
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when (destination.route) {
             MainNavOption.LoginScreen.name,
@@ -76,33 +79,23 @@ fun MainCompose(
             MainNavOption.CustomersPagedScreen.name,
             MainNavOption.ArticlesScreen.name,
             MainNavOption.ItemsScreen.name,
-            MainNavOption.OrdersComposable.name,
+            MainNavOption.OrdersScreen.name,
             MainNavOption.SettingsScreen.name,
             MainNavOption.CartScreen.name,
             MainNavOption.AboutScreen.name,
-            MainNavOption.Logout.name,
-            -> {
-                appNavigationViewModel
-                    .setCurrentScreen(MainNavOption.valueOf(destination.route!!))
+            MainNavOption.Logout.name -> {
+                appNavigationViewModel.setCurrentScreen(MainNavOption.valueOf(destination.route!!))
             }
-
             else -> {
-                appNavigationViewModel.setGesturesEnabled(false)
+                // If the destination is not a main screen we need to handle gestures differently for each screen
+                if (destination.route == OrdersResultDestination.route) {
+                    appNavigationViewModel.setGesturesEnabled(true)
+                } else {
+                    appNavigationViewModel.setGesturesEnabled(false)
+                }
             }
         }
-
     }
-
-    /*val defaultPick = when {
-        isLoggedIn -> MainNavOption.NewHomeScreen
-        else -> MainNavOption.LoginScreen
-    }*/
-
-    /*if (isLoggedIn) {
-        appNavigationViewModel.setCurrentScreen(MainNavOption.NewHomeScreen)
-    } else {
-        appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
-    }*/
 
     ModalNavigationDrawer(drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
@@ -166,7 +159,7 @@ fun MainCompose(
                         }
                     }
 
-                    MainNavOption.OrdersComposable -> {
+                    MainNavOption.OrdersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.NewHomeScreen.name)
                         }
@@ -289,10 +282,10 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.OrdersComposable] == true) {
+        if (activeButtonsUiState[MainNavOption.OrdersScreen] == true) {
             buttons.add(
                 AppDrawerItemInfo(
-                    MainNavOption.OrdersComposable,
+                    MainNavOption.OrdersScreen,
                     R.string.drawer_orders,
                     Icons.Default.Description,
                     R.string.drawer_home_description

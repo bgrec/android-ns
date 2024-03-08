@@ -2,27 +2,44 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.FloatingActionButton
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,16 +54,16 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.Ord
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination.titleRes
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.SearchView
 
 
 object OrderDetailsDestination : NavigationDestination {
     override val route = "order_details"
     override val titleRes = R.string.order_details_edit
-    const val orderIdArg = "orderId"
-    const val orderDescriptionArg = "orderDescription"
-    val routeWithArgs = "$route/{$orderIdArg}?orderDescription={$orderDescriptionArg}"
+    const val ORDER_ID_ARG = "orderId"
+    const val ORDER_DESCRIPTION_ARG = "orderDescription"
+    val routeWithArgs = "$route/{$ORDER_ID_ARG}?orderDescription={$ORDER_DESCRIPTION_ARG}"
 }
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
@@ -87,8 +104,8 @@ fun OrderDetailsScreen(
             orderId = orderDetailsUiState.orderId,
             orderDescription = orderDetailsUiState.orderDescription,
             modifier = modifier.fillMaxWidth(),
-            drawerState = drawerState,
-            navController = navController
+            navController = navController,
+            viewModel = viewModel
         )
 
         is OrderDetailsUiState.Error -> ErrorScreen(
@@ -114,10 +131,31 @@ fun OrderDetailResultScreen(
     orderId: Int?,
     orderDescription: String?,
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
     navController: NavController,
+    viewModel: OrderDetailsViewModel
 ) {
     //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
+
+    var scannedCode by remember { mutableStateOf("") }
+
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    // State to control the focus of the text input
+    var isTextInputFocused by remember { mutableStateOf(false) }
+
+    // Create a FocusRequester
+    val focusRequester = remember { FocusRequester() }
+
+    val focusManager = LocalFocusManager.current
+
+    // Function to set focus on the text input
+    LaunchedEffect(Unit) {
+        if (showBottomSheet) {
+            isTextInputFocused = true
+        }
+    }
 
     Scaffold(
 
@@ -133,66 +171,89 @@ fun OrderDetailResultScreen(
             )
         },
         floatingActionButton = {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                //verticalArrangement = Arrangement.Bottom
-            ) {
-                /*FloatingActionButton(
-                    onClick = {},//{ navigateToEditItem(orderDetailId!!) },
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.order_details_entry_title),
-                    )
-                }*/
-
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                FloatingActionButton(
-                    onClick = {
-
-                    },//{ navigateToEditItem(orderDetailId!!) },
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.QrCodeScanner,
-                        contentDescription = stringResource(R.string.order_details_qrscan_title),
-                    )
+            ExtendedFloatingActionButton(
+                text = { Text(stringResource(R.string.open_scanner)) },
+                icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scanner") },
+                onClick = {
+                    showBottomSheet = true
                 }
-            }
+            )
         },
-        /*bottomBar = {
-            BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                items.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                        label = { Text(stringResource(screen.resourceId)) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
+    ) { innerPadding ->
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Icon button to hide the bottom sheet
+                        IconButton(
+                            onClick = {
+                                showBottomSheet = false
                             }
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Close")
                         }
-                    )
+
+                        // Text input to read scanned codes
+                        TextField(
+                            value = scannedCode,
+                            onValueChange = { scannedCode = it },
+                            label = { Text("Scanned Code") },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    // Call ViewModel method to send scanned code to server
+                                    viewModel.sendScannedCode(scannedCode)
+                                    // Clear the scanned code after sending
+                                    scannedCode = ""
+
+                                }
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
+                                // Set focus when isTextInputFocused is true
+                                .onFocusChanged { focusState ->
+                                    if (focusState.isFocused) {
+                                        isTextInputFocused = true
+                                    }
+                                }
+                                .focusRequester(focusRequester)
+                        )
+
+                        // Button to send the scanned code to the server
+                        IconButton(
+                            onClick = {
+                                // Call ViewModel method to send scanned code to server
+                                viewModel.sendScannedCode(scannedCode)
+                                // Clear the scanned code after sending
+                                scannedCode = ""
+                            }
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                        }
+                    }
                 }
             }
-        },*/
-    ) { innerPadding ->
+        }
+
+
+        // Screen content
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -201,7 +262,7 @@ fun OrderDetailResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
-            SearchView(state = textState)
+            OrderDetailsSearchView(state = textState)
             OrderDetailList(
                 orderDetailList = orderDetailList,
                 state = textState,

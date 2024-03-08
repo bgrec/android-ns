@@ -198,6 +198,9 @@
     <string name="order_detail_completeDescription">"Note: "</string>
 
     <string name="test_retrofit_button">"Test conessione "</string>
+    <string name="open_scanner">Apri il scanner</string>
+    <string name="hide_scanner">Nascondi il scanner</string>
+    <string name="barcode">barcode</string>
 
 
 </resources>

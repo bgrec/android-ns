@@ -11,7 +11,6 @@ class AppNavigationViewModel() : ViewModel() {
     val gesturesEnabled: State<Boolean> = _gesturesEnabled
 
     fun setGesturesEnabled(enabled: Boolean) {
-        Log.d("AppNavigationViewModel", "setGesturesEnabled: $enabled")
         _gesturesEnabled.value = enabled
     }
 
@@ -30,12 +29,14 @@ class AppNavigationViewModel() : ViewModel() {
             MainNavOption.CustomersPagedScreen -> true
             MainNavOption.ArticlesScreen -> true
             MainNavOption.ItemsScreen -> true
-            MainNavOption.OrdersComposable -> true
+            MainNavOption.OrdersScreen -> true
             MainNavOption.SettingsScreen -> false
             MainNavOption.CartScreen -> true
             MainNavOption.AboutScreen -> false
             MainNavOption.Logout -> false
-            else -> false
+            // Removed the "else" case to avoid cases where the value is another screen that is not handled here
+            //else -> false
+            null -> false
         }
     }
 

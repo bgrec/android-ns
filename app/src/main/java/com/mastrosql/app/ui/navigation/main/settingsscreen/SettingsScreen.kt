@@ -81,7 +81,7 @@ fun SettingsScreen(
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
-                MainNavOption.OrdersComposable to R.string.drawer_orders
+                MainNavOption.OrdersScreen to R.string.drawer_orders
             )
         )
     }
