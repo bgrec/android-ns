@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -56,6 +57,12 @@ fun AboutScreen(navController: NavController = rememberNavController(), context:
                 }
             })
     }) {
+        BackHandler(true) {
+            navController.navigate(MainNavOption.SettingsScreen.name) {
+                popUpTo(MainNavOption.LoginScreen.name)
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -11,13 +11,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -46,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -208,17 +213,36 @@ private fun OrderDetailsItemContent(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            modifier = Modifier
+                .padding(10.dp)
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
+
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    OrderDetailDescriptionAndId(
+                        articleId = orderDetail.articleId,
+                        sku = orderDetail.sku,
+                        description = orderDetail.description
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
@@ -235,18 +259,15 @@ private fun OrderDetailsItemContent(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    OrderDetailDescriptionAndId(
-                        articleId = orderDetail.articleId,
-                        sku = orderDetail.sku,
+                    OrderDetailDescriptionAndId2(
                         batch = orderDetail.batch,
-                        description = orderDetail.description,
+                        expirationDate = orderDetail.expirationDate,
                         quantity = orderDetail.quantity,
                         orderedQuantity = orderDetail.orderedQuantity,
                         shippedQuantity = orderDetail.shippedQuantity
                     )
                     if (expanded) {
                         OrderDetailInfo(
-                            expirationDate = orderDetail.expirationDate,
                             completeDescription = orderDetail.completeDescription
                         )
                     }
@@ -323,18 +344,15 @@ private fun ItemEditButton(
 fun OrderDetailDescriptionAndId(
     articleId: Int,
     sku: String?,
-    batch: String?,
     description: String?,
-    quantity: Double,
-    orderedQuantity: Double,
-    shippedQuantity: Double,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
+
             Text(
                 text = stringResource(R.string.order_detail_articleId),
                 style = MaterialTheme.typography.bodySmall,
@@ -364,6 +382,31 @@ fun OrderDetailDescriptionAndId(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
+
+            Text(
+                text = description?.take(50) ?: "",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+        }
+
+    }
+}
+
+@Composable
+fun OrderDetailDescriptionAndId2(
+    batch: String?,
+    expirationDate: String?,
+    quantity: Double,
+    orderedQuantity: Double,
+    shippedQuantity: Double,
+    modifier: Modifier = Modifier
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
             Text(
                 text = stringResource(R.string.order_detail_batch),
                 style = MaterialTheme.typography.bodyLarge,
@@ -376,60 +419,24 @@ fun OrderDetailDescriptionAndId(
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
+
+            Spacer(Modifier.weight(0.5f))
+
+            Text(
+                text = stringResource(R.string.order_detail_expirationDate),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            if (expirationDate != null) {
+                Text(
+                    text = expirationDate,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
         }
 
-        Text(
-            text = description?.take(50) ?: "",
-            style = MaterialTheme.typography.titleMedium,
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = stringResource(R.string.order_detail_quantity),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-
-            Text(
-                text = quantity.toString(),
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = stringResource(R.string.order_detail_orderedQuantity),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-
-            Text(
-                text = orderedQuantity.toString(),
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = stringResource(R.string.order_detail_shippedQuantity),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-
-            Text(
-                text = shippedQuantity.toString(),
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
+        QuantityTable(quantity, orderedQuantity, shippedQuantity)
     }
 }
 
@@ -440,7 +447,6 @@ fun OrderDetailDescriptionAndId(
  */
 @Composable
 fun OrderDetailInfo(
-    expirationDate: String?,
     completeDescription: String?,
     modifier: Modifier = Modifier
 
@@ -450,25 +456,7 @@ fun OrderDetailInfo(
             top = 4.dp
         )
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = stringResource(R.string.order_detail_expirationDate),
-                style = MaterialTheme.typography.bodySmall,
-            )
-
-            if (expirationDate != null) {
-                Text(
-                    text = expirationDate,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-
-        if (completeDescription != null){
+        if (completeDescription != null) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
@@ -488,6 +476,143 @@ fun OrderDetailInfo(
             }
         }
     }
+}
+
+
+@Composable
+fun QuantityTable(
+    quantity: Double,
+    orderedQuantity: Double,
+    shippedQuantity: Double
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            Row(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Divider(
+                    color = Color.Black, modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+                QuantityText(
+                    stringResource(R.string.order_detail_quantity),
+                    false,
+                    Modifier.weight(1f)
+                )
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+                QuantityText(
+                    stringResource(R.string.order_detail_orderedQuantity),
+                    false,
+                    Modifier.weight(1f)
+                )
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+                QuantityText(
+                    stringResource(R.string.order_detail_shippedQuantity),
+                    false,
+                    Modifier.weight(1f)
+                )
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+            }
+
+            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+
+            Row(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+                QuantityText(quantity.toString(), true, Modifier.weight(1f))
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+                QuantityText(orderedQuantity.toString(), true, Modifier.weight(1f))
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+                QuantityText(shippedQuantity.toString(), true, Modifier.weight(1f))
+
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+
+            }
+
+            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+        }
+    }
+}
+
+@Composable
+fun QuantityText(
+    text: String,
+    bold: Boolean = false,
+    modifier: Modifier
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+        style = MaterialTheme.typography.bodyLarge,
+        textAlign = TextAlign.Center
+    )
 }
 
 
@@ -544,7 +669,6 @@ fun OrderDetailCardPreview() {
 fun OrderDetailInfoPreview() {
     MastroAndroidTheme {
         OrderDetailInfo(
-            expirationDate = "expirationDate",
             completeDescription = "completeDescription",
             modifier = Modifier
         )
