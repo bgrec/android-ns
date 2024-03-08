@@ -191,13 +191,16 @@
     <string name="order_detail_batch">"Lotto: "</string>
     <string name="order_detail_articleId">"Codice: "</string>
     <string name="order_detail_sku">"Articolo: "</string>
-    <string name="order_detail_quantity">"Quantità: "</string>
-    <string name="order_detail_orderedQuantity">"Ordinata: "</string>
-    <string name="order_detail_shippedQuantity">"Consegnata: "</string>
+    <string name="order_detail_quantity">"Quant."</string>
+    <string name="order_detail_orderedQuantity">"Ord."</string>
+    <string name="order_detail_shippedQuantity">"Cons."</string>
     <string name="order_detail_expirationDate">"Scadenza: "</string>
     <string name="order_detail_completeDescription">"Note: "</string>
 
     <string name="test_retrofit_button">"Test conessione "</string>
+    <string name="open_scanner">Apri il scanner</string>
+    <string name="hide_scanner">Nascondi il scanner</string>
+    <string name="barcode">barcode</string>
 
 
 </resources>

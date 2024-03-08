@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -81,7 +82,7 @@ fun SettingsScreen(
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
-                MainNavOption.OrdersComposable to R.string.drawer_orders
+                MainNavOption.OrdersScreen to R.string.drawer_orders
             )
         )
     }
@@ -118,6 +119,11 @@ fun SettingsScreen(
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            BackHandler(true) {
+                navController.navigate(MainNavOption.LoginScreen.name) {
+                    popUpTo(NavRoutes.MainRoute.name)
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,7 +151,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .focusRequester(focusRequester)
                 )
-                BackHandler(true) { navController.navigateUp() }
+
             }
 
             Row(
@@ -161,17 +167,13 @@ fun SettingsScreen(
                     Text(stringResource(R.string.dialog_button))
                 }
             }
-            Spacer(modifier = Modifier)
 
             if (showDialog) {
-
-
                 AlertDialog(
-
                     onDismissRequest = { showDialog = false },
                     title = { Text(stringResource(R.string.dialog_button)) },
                     text = {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(modifier = Modifier.wrapContentSize()) {
                             items(MainNavOption.entries.toList()) {
                                 if ((stringResMap[it] != null)) {
                                     Row(
@@ -188,7 +190,6 @@ fun SettingsScreen(
                                                 val updatedState = EnumMap(activeButtonsUiState)
                                                 updatedState[it] = isChecked
                                                 viewModel.updateActiveButtons(updatedState)
-
                                             })
                                     }
                                 }
@@ -201,7 +202,9 @@ fun SettingsScreen(
                         }) {
                             Text(stringResource(R.string.close_button))
                         }
-                    })
+                    },
+                    modifier = Modifier.wrapContentSize()
+                )
             }
 
             Row(

@@ -32,12 +32,12 @@ data class Article(
     @SerializedName("REPA") val department: String,
     @SerializedName("repaSotto") val subDepartment: String,
     @SerializedName("TIPO") val family: String,
-    @SerializedName("TIPO_SOTTO") val subFamily: String,
+    @SerializedName("tipoSotto") val subFamily: String,
     @SerializedName("VEND") val price: Double,
     @SerializedName("GRUPPO") val group: String,
-    @SerializedName("EAN_8") val ean8: String,
-    @SerializedName("EAN_13") val ean13: String?,
-    @SerializedName("EAN_ALT") val eanAlt: String?,
+    @SerializedName("ean_8") val ean8: String,
+    @SerializedName("ean_13") val ean13: String?,
+    @SerializedName("eanAlt") val eanAlt: String?,
 
     @TypeConverters(ArticleMetadataTypeConverter::class)
     @SerializedName("_metadata") val metadata: Metadata,

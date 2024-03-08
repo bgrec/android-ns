@@ -42,12 +42,12 @@ class OrderDetailsViewModel(
 
     //private val orderId: Int = checkNotNull(savedStateHandle[OrderDetailsDestination.orderIdArg])
     private val _orderId: MutableStateFlow<Int?> = MutableStateFlow(
-        savedStateHandle.get<Int?>(OrderDetailsDestination.orderIdArg)
+        savedStateHandle.get(OrderDetailsDestination.ORDER_ID_ARG)
     )
     val orderId: StateFlow<Int?> = _orderId
 
     private val _orderDescription: MutableStateFlow<String?> = MutableStateFlow(
-        savedStateHandle.get<String?>(OrderDetailsDestination.orderDescriptionArg)
+        savedStateHandle.get<String?>(OrderDetailsDestination.ORDER_DESCRIPTION_ARG)
     )
     private val orderDescription: StateFlow<String?> = _orderDescription
 
@@ -89,5 +89,9 @@ class OrderDetailsViewModel(
                 OrderDetailsUiState.Error(e)
             }
         }
+    }
+
+    fun sendScannedCode(scannedCode: String) {
+
     }
 }
