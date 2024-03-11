@@ -16,13 +16,13 @@
 
 package com.mastrosql.app.testdi
 
+import com.mastrosql.app.data.local.database.MastroDbRepository
+import com.mastrosql.app.data.local.di.DataModule
+import com.mastrosql.app.data.local.di.FakeMastroDbRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import com.mastrosql.app.data.local.database.MastroDbRepository
-import com.mastrosql.app.data.local.di.DataModule
-import com.mastrosql.app.data.local.di.FakeMastroDbRepository
 
 @Module
 @TestInstallIn(

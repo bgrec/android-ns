@@ -15,10 +15,10 @@
  */
 package com.mastrosql.app.rules
 
-import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersMasterDataViewModel
-import com.mastrosql.app.ui.navigation.main.customersScreen.CustomersUiState
 import com.mastrosql.app.fake.FakeDataSource
 import com.mastrosql.app.fake.FakeNetworkCustomersMasterDataRepository
+import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
+import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersUiState
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule

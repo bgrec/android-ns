@@ -9,11 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,10 +19,10 @@ import kotlinx.coroutines.launch
 fun <T : Enum<T>> AppDrawerContent(
     drawerState: DrawerState,
     menuItems: List<AppDrawerItemInfo<T>>,
-    defaultPick: T,
+    currentPick: T,
+    onCurrentPickChange: (T) -> Unit,
     onClick: (T) -> Unit
 ) {
-    var currentPick by remember { mutableStateOf(defaultPick) }
     val coroutineScope = rememberCoroutineScope()
 
     ModalDrawerSheet {
@@ -35,7 +31,7 @@ fun <T : Enum<T>> AppDrawerContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LazyColumn(
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier.padding(horizontal = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(menuItems) { item ->
@@ -48,7 +44,8 @@ fun <T : Enum<T>> AppDrawerContent(
                                 return@AppDrawerItem
                             }
 
-                            currentPick = navOption
+                            onCurrentPickChange(navOption)
+                            
                             coroutineScope.launch {
                                 drawerState.close()
                             }

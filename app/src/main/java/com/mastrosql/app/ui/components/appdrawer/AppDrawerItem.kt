@@ -1,18 +1,28 @@
 package com.mastrosql.app.ui.components.appdrawer
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.DrawerParams
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -23,7 +33,7 @@ fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit)
         color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
             .width(200.dp)
-            .padding(16.dp),
+            .padding(6.dp),
         onClick = { onClick(item.drawerOption) },
         shape = RoundedCornerShape(50),
     ) {
@@ -34,7 +44,7 @@ fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit)
                 .padding(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = item.drawableId),
+                item.icon,
                 contentDescription = stringResource(id = item.descriptionId),
                 modifier = Modifier
                     .size(24.dp)
@@ -48,16 +58,15 @@ fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit)
         }
     }
 
-
 class MainStateProvider : PreviewParameterProvider<AppDrawerItemInfo<MainNavOption>> {
     override val values = sequence {
-        DrawerParams.drawerButtons.forEach { element ->
+        DrawerParams.createDrawerButtons(emptyMap()).forEach { element ->
             yield(element)
         }
     }
 }
 
-@Preview
+@Preview(apiLevel = 33)
 @Composable
 fun AppDrawerItemPreview(@PreviewParameter(MainStateProvider::class) state: AppDrawerItemInfo<MainNavOption>) {
     MastroAndroidTheme {

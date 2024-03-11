@@ -1,13 +1,11 @@
 package com.mastrosql.app
+
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
-import androidx.work.*
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.workDataOf
-import com.mastrosql.app.worker.CleanupWorker
 import com.mastrosql.app.worker_example.BlurWorker
-
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before

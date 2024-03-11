@@ -21,25 +21,64 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemoteKeysDao
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataDao
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerLinksTypeConverter
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMetadataTypeConverter
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersRemoteKeys
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticleLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticleMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesDao
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesRemoteKeys
+import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataDao
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemoteKeys
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemoteKeysDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeys
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeys
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeysDao
 
 
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [Item::class, CustomerMasterData::class, CustomersRemoteKeys::class], version = 1, exportSchema = false)
+
+/*if */
+@Database(
+    entities = [
+        Item::class,
+        Article::class,
+        ArticlesRemoteKeys::class,
+        CustomersRemoteKeys::class,
+        CustomerMasterData::class,
+        Order::class,
+        OrdersRemoteKeys::class,
+        OrderDetailsItem::class,
+        OrderDetailsRemoteKeys::class
+    ],
+    version = 1, exportSchema = true // false
+)
 @TypeConverters(
     ItemMetadataTypeConverter::class,
+    CustomerLinksTypeConverter::class,
     CustomerMetadataTypeConverter::class,
-    CustomerLinksTypeConverter::class
+    ArticleMetadataTypeConverter::class,
+    ArticleLinksTypeConverter::class,
+    OrderMetadataTypeConverter::class,
+    OrderLinksTypeConverter::class,
+    OrderDetailsMetadataTypeConverter::class,
+    OrderDetailLinksTypeConverter::class,
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -49,6 +88,13 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun customersMasterDataDao(): CustomersMasterDataDao
     abstract fun customersRemoteKeysDao(): CustomersRemoteKeysDao
+    abstract fun articlesDao(): ArticlesDao
+    abstract fun articlesRemoteKeysDao(): ArticlesRemoteKeysDao
+    abstract fun ordersDao(): OrdersDao
+    abstract fun ordersRemoteKeysDao(): OrdersRemoteKeysDao
+    abstract fun orderDetailsDao(): OrderDetailsDao
+    abstract fun orderDetailRemoteKeysDao(): OrderDetailsRemoteKeysDao
+
 
     companion object {
         @Volatile
@@ -57,39 +103,23 @@ abstract class AppDatabase : RoomDatabase() {
         fun getInstance(context: Context): AppDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
-                    /**
-                     * Setting this option in your app's database builder means that Room
-                     * permanently deletes all data from the tables in your database when it
-                     * attempts to perform a migration with no defined migration path.
-                     */
-                    .fallbackToDestructiveMigration()
-                    .build()
-                    .also { Instance = it }
-
-            }
-        }
-    }
-}
-
-/*
-* fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
                 Room.databaseBuilder(
                     context,
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .createFromAsset("database/bus_schedule.db")
-                    // Wipes and rebuilds instead of migrating if no Migration object.
-                    // Migration is not part of this codelab.
-                    .fallbackToDestructiveMigration()
+                    /**
+                     * Setting this option in your app's database builder means that Room
+                     * permanently deletes all data from the tables in your database when it
+                     * attempts to perform a migration with no defined migration path.
+                     */
+                    .fallbackToDestructiveMigration() //wipe and rebuild instead of migrating
                     .build()
                     .also {
-                        INSTANCE = it
+                        Instance = it
                     }
+
             }
         }
     }
-*
-* */
+}

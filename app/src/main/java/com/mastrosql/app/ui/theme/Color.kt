@@ -15,6 +15,19 @@ val ColorChineseBlack = Color(0xFF161616)
 val ColorWhiteCultured = Color(0xFFF4F4F4)
 val ColorRedFleryRose = Color(0xFFF45B69)
 val ColorBlueIceberg = Color(0xFF8BAED0)
+val ColorBlueIcebergLight = Color(0xFFC3FBFF)
+val ColorBlueIcebergDark = Color(0xFF00373A)
+val ColorBlueIcebergVariant = Color(0xFF6B3DD4)
+val ColorBlueIcebergVariantLight = Color(0xFFE9DDFF)
+val ColorLightBlue = Color(0xFF33ADFF)
+
+val ColorGreenLight = Color(0xFFC3FBFF)
+val ColorGreen = Color(0xFF13A808)
+
+val ColorOrange = Color(0xFFF77605)
+
+
+val ColorRed = Color(0xFFFF0000)
 
 val md_theme_light_primary = Color(0xFF6B3DD4)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

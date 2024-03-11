@@ -1,6 +1,9 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
+import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.DrawerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,104 +30,145 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.appbar.AppBar
+import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.components.AppButton
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 
 @Composable
 fun LoginScreen(
-    drawerState: DrawerState,
     navController: NavController,
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { AppBar(drawerState = drawerState) }
-    ) { it ->
+        topBar = {
+            LoginAppBar(onClick = {
+                navController.navigate(MainNavOption.SettingsScreen.name) {
+                    // Configure the navigation action
+                    popUpTo(MainNavOption.LoginScreen.name)
+                }
+            })
+        },
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(24.dp)
+                .padding(innerPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Login Screen test")
             Box(
-                modifier = Modifier.offset(y = 30.dp)
+                modifier = Modifier.offset(y = 50.dp)
             )
             {
                 LogoImage()
             }// Show the logo in the center below the TopAppBar
+
             Spacer(modifier = Modifier.height(16.dp)) // Add some space between the logo and the text fields
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center
             ) {
                 // TextField for Username
-                Spacer(modifier = Modifier.weight(0.5f))
-                TextField(
-                    value = username, // Set your initial value here or use a state variable to manage it
-                    onValueChange = { username = it },
-                    label = { Text("Username") },
+                Spacer(modifier = Modifier.weight(1f))
+
+                LoginFields(
+                    modifier = Modifier
+                        .padding(bottom = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    label = R.string.Username,
+                    value = username,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.AccountCircle,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChanged = { username = it },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
+                    keyboardAction = KeyboardActions(
+                        onNext = {
+                            focusManager.clearFocus()
+                        }
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
-
+                //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
+                Spacer(modifier = Modifier.weight(0.1f))
                 // TextField for Password
-                TextField(
-                    value = password, // Set your initial value here or use a state variable to manage it
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
+                LoginFields(
+                    modifier = Modifier
+                        .padding(bottom = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    isPassword = true,
+                    label = R.string.Password,
+                    value = password,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Lock,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChanged = { password = it },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
+
                     ),
-                    keyboardActions = KeyboardActions(
+                    keyboardAction = KeyboardActions(
                         onDone = {
+                            viewModel.loginCompleted(true)
                             focusManager.clearFocus()
-                            // Handle login button click here
-                            navController.navigate(MainNavOption.HomeScreen.name)
+
                         }
-                    ),
-
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
+                    )
                 )
-                Spacer(modifier = Modifier.height(50.dp))
-
-                LoginButton(onClick = {
-                    //navController.navigate(MainNavOption.HomeScreen.name)
-                    navController.navigate(MainNavOption.CustomersScreen.name)
-                }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    // Handle login button click here
-                }
-
+                //Spacer(modifier = Modifier.height(50.dp))
                 Spacer(modifier = Modifier.weight(1f))
-                // ModalNavigationDrawerSample(drawerState = drawerState, scope = scope){
-                //}
+
+                AppButton(
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                        .align(Alignment.CenterHorizontally),
+                    text = R.string.login,
+                    onClick = {
+                        viewModel.loginCompleted(true)
+                    }
+                )
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
@@ -138,7 +184,7 @@ fun LogoImage() {
     )
 }
 
-@Composable
+/*@Composable
 fun LoginButton(onClick: () -> Unit, modifier: Modifier, function: () -> Unit) {
     Button(
         onClick = onClick,
@@ -146,19 +192,134 @@ fun LoginButton(onClick: () -> Unit, modifier: Modifier, function: () -> Unit) {
     ) {
         Text("Login")
     }
-}
+}*/
 
 @Composable
-fun LoginFields(modifier: Modifier) {
+fun LoginFields(
+    @StringRes label: Int,
+    value: String,
+    isPassword: Boolean = false,
+    icon: @Composable (() -> Unit),
+    onValueChanged: (String) -> Unit,
+    keyboardOptions: KeyboardOptions,
+    keyboardAction: KeyboardActions,
+    modifier: Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+) {
 
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+  
+    OutlinedTextField(
+        leadingIcon = icon,
+        value = value,
+        singleLine = true,
+        onValueChange = onValueChanged,
+        label = { Text(stringResource(label)) },
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardAction,
+        modifier = modifier
+            .focusRequester(focusRequester),
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
+    )
 }
 
-@Preview
+@Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    Button(
-        onClick = {},
-    ) {
-        Text("Login")
+    MastroAndroidTheme {
+        var username by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier.offset(y = 50.dp)
+            )
+            {
+                LogoImage()
+            }// Show the logo in the center below the TopAppBar
+
+            Spacer(modifier = Modifier.height(16.dp)) // Add some space between the logo and the text fields
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center
+            ) {
+                // TextField for Username
+                Spacer(modifier = Modifier.weight(1f))
+
+                LoginFields(
+                    modifier = Modifier
+                        .padding(bottom = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    label = R.string.Username,
+                    value = username,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.AccountCircle,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChanged = { username = it },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardAction = KeyboardActions(
+                        onNext = {
+                            //focusManager.clearFocus()
+                        }
+                    )
+                )
+
+                //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
+                Spacer(modifier = Modifier.weight(0.1f))
+
+
+                LoginFields(
+                    modifier = Modifier
+                        .padding(bottom = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    isPassword = true,
+                    label = R.string.Password,
+                    value = password,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Lock,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChanged = { password = it },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardAction = KeyboardActions(
+                        onDone = {
+                            //focusManager.clearFocus()
+                        }
+                    )
+                )
+                //Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.weight(1f))
+
+                AppButton(
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                        .align(Alignment.CenterHorizontally),
+                    text = R.string.login,
+                    onClick = { println("prova") }
+
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
     }
 }

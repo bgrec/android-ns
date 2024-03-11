@@ -17,13 +17,13 @@
 package com.mastrosql.app.ui.mastrodb
 
 
+import com.mastrosql.app.data.local.database.MastroDbRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import com.mastrosql.app.data.local.database.MastroDbRepository
 
 /**
  * Example local unit test, which will execute on the development machine (host).

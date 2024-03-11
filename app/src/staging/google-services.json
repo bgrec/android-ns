@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "420662124721",
+    "project_id": "bgrec-ns",
+    "storage_bucket": "bgrec-ns.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420662124721:android:d72e279c4b39221851c290",
+        "android_client_info": {
+          "package_name": "com.mastrosql.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwB1NVdwIBJGTTqGJsI3qt-GzziwKHkfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420662124721:android:9ea8abc04ae7950651c290",
+        "android_client_info": {
+          "package_name": "com.mastrosql.app.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwB1NVdwIBJGTTqGJsI3qt-GzziwKHkfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420662124721:android:a99303c52f65395951c290",
+        "android_client_info": {
+          "package_name": "com.mastrosql.app.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwB1NVdwIBJGTTqGJsI3qt-GzziwKHkfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

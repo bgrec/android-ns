@@ -1,8 +1,9 @@
 package com.mastrosql.app.data.customers
 
 import androidx.work.WorkInfo
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.worker.DataSyncOperations
 import kotlinx.coroutines.flow.Flow
 
@@ -16,4 +17,5 @@ interface CustomersMasterDataRepository : DataSyncOperations<CustomerMasterData>
     suspend fun getCustomersMasterData(): CustomersMasterDataResponse
     suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }

@@ -16,8 +16,8 @@
 package com.mastrosql.app.fake
 
 
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.data.customers.CustomersMasterDataRepository
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 
 class FakeNetworkCustomersMasterDataRepository : CustomersMasterDataRepository {
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse {

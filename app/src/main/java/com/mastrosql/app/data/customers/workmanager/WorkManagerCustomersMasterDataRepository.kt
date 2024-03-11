@@ -5,18 +5,16 @@ import androidx.lifecycle.asFlow
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.mastrosql.app.IMAGE_MANIPULATION_WORK_NAME
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.customers.CustomersMasterDataRepository
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersScreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.worker.CleanupWorker
 import com.mastrosql.app.worker.CustomersMasterDataWorker
 import com.mastrosql.app.worker.DataSyncWorker
@@ -26,10 +24,14 @@ import java.util.concurrent.TimeUnit
 
 
 class WorkManagerCustomersMasterDataRepository(
-    private val mastroAndroidApiService: MastroAndroidApiService,
+    private var mastroAndroidApiService: MastroAndroidApiService,
     context: Context
 
 ) : CustomersMasterDataRepository {
+
+    override fun updateMastroAndroidApiService (newMastroAndroidApiService: MastroAndroidApiService){
+        this.mastroAndroidApiService = newMastroAndroidApiService
+    }
 
     private val workManager = WorkManager.getInstance(context)
     val applicationContext = context

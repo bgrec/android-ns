@@ -1,6 +1,10 @@
+import java.io.File
+import java.util.Properties
+
 
 /*
-@Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
+//@Suppress("DSL_SCOPE_VIOLATION")
+// Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 */
 
 plugins {
@@ -10,6 +14,9 @@ plugins {
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.google.services)
+    //alias(libs.plugins.firebase.app.distribution)
+
 }
 
 /*
@@ -26,7 +33,7 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "com.mastrosql.app.HiltTestRunner"
         vectorDrawables {
@@ -42,83 +49,157 @@ android {
 
     buildTypes {
         getByName("release") {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+
+            // Load properties from the file
+            val propertiesFile = file("../app/config/release.properties")
+            val props = loadProperties(propertiesFile)
+
+            // Configure properties from the file
+            props.forEach { (key, value) ->
+                when (key) {
+                    "APPNAME" -> resValue("string", "app_name", value.toString())
+                    "APPLICATION_ID_SUFFIX" -> applicationIdSuffix = value.toString()
+                    "API_URL" -> buildConfigField("String", key.toString(), value as String)
+                    else -> buildConfigField("String", key.toString(), value as String)
+
+                }
+            }
+        }
+
+        getByName("debug") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isDebuggable = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            )
+
+
+            // Load properties from the file
+            val propertiesFile = file("../app/config/development.properties")
+            val props = loadProperties(propertiesFile)
+
+            // Configure properties from the file
+            props.forEach { (key, value) ->
+                when (key) {
+                    "APPNAME" -> resValue("string", "app_name", value.toString())
+                    "APPLICATION_ID_SUFFIX" -> applicationIdSuffix = value.toString()
+                    "API_URL" -> buildConfigField("String", key.toString(), value as String)
+                    else -> buildConfigField("String", key.toString(), value as String)
+                }
+            }
         }
-    }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+        create("staging") {
+            initWith(getByName("debug"))
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-/*
-* compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }*/
-    buildFeatures {
-        compose = true
-        aidl = false
-        buildConfig = false
-        renderScript = false
-        shaders = false
-    }
+            // Load properties from the file
+            val propertiesFile = file("../app/config/staging.properties")
+            val props = loadProperties(propertiesFile)
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // Configure properties from the file
+            props.forEach { (key, value) ->
+                when (key) {
+                    "APPNAME" -> resValue("string", "app_name", value.toString())
+                    "APPLICATION_ID_SUFFIX" -> applicationIdSuffix = value.toString()
+                    "API_URL" -> buildConfigField("String", key.toString(), value as String)
+                    else -> buildConfigField("String", key.toString(), value as String)
+                }
+            }
         }
+
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+        /*
+          * compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }*/
+        buildFeatures {
+            compose = true
+            aidl = false
+            buildConfig = true
+            renderScript = false
+            shaders = false
+
+        }
+
+        composeOptions {
+            kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
+        }
+
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+                excludes += "/META-INF/DEPENDENCIES"
+            }
+        }
+
     }
 }
 
+// Function to load properties from a file
+fun loadProperties(propertiesFile: File): Properties {
+    val props = Properties()
+    try {
+        props.load(propertiesFile.inputStream())
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return props
+}
+
+
 dependencies {
 
-    // Compose
+// Compose
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    // Core Android dependencies
+// Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    // Hilt Dependency Injection
+// Hilt Dependency Injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    // Hilt and instrumented tests.
+// Hilt and instrumented tests.
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.android.compiler)
 
-    // Hilt and Robolectric tests.
+// Hilt and Robolectric tests.
     testImplementation(libs.hilt.android.testing)
     kaptTest(libs.hilt.android.compiler)
 
-    // Arch Components
+// Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // Room
+// Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
 
-    // Compose
+// Compose
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
@@ -128,82 +209,82 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.work.runtime)
 
-    //implementation(libs.androidx.compose.material.pullrefresh)
+//implementation(libs.androidx.compose.material.pullrefresh)
 
 
-    //Paging
+//Paging
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 
-    //Retrofit
+//Retrofit
     implementation(libs.retrofit)
 
-    // Retrofit with Gson Converter
+// Retrofit with Gson Converter
     implementation(libs.retrofit.gson)
 
-    // Retrofit with Scalar Converter
-    //implementation(libs.retrofit.scalars) removed because of use of jakeWharton converter below
+// Retrofit with Scalar Converter
+//implementation(libs.retrofit.scalars) removed because of use of jakeWharton converter below
 
-    // OkHttp
+// OkHttp
     implementation(libs.squareup.okhttp3)
     implementation(libs.squareup.okhttp3.logging.interceptor)
 
-    // jakeWharton
+// jakeWharton
     implementation(libs.jakewharton.retrofit2.kotlinx.serialization.converter)
 
 
-    // Kotlinx Serialization
+// Kotlinx Serialization
     implementation(libs.kotlinx.serialization)
 
-    //DataStore
+//DataStore
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
 
-    //Coil
+//Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
 
-    //Accompanist
+//Accompanist
     implementation(libs.accompanist.permissions)
-    
 
-    // Instrumented tests
+//Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.app.distribution)
+
+// Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.squareup.leakcanary.android)
 
-    //WorkManager testing
+//WorkManager testing
     androidTestImplementation(libs.androidx.work.testing)
 
-    // Local tests: jUnit, coroutines, Android runner
+// Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
-    //testImplementation(libs.robolectric)
+//testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.androidx.test.ext.junit.ktx)
     testImplementation(libs.androidx.test.runner)
-    //testImplementation(libs.androidx.test.rules)
+//testImplementation(libs.androidx.test.rules)
     testImplementation(libs.androidx.test.espresso.core)
     testImplementation(libs.androidx.work.testing)
     testImplementation(libs.hilt.android.testing)
 
-
-
-    // Instrumented tests: jUnit rules and runners
+// Instrumented tests: jUnit rules and runners
 
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
-    //androidTestImplementation(libs.androidx.test.rules)
+//androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
 
-
-
-
-    // Coil
-    //implementation("io.coil-kt:coil-compose:2.4.0")
+// Coil
+//implementation("io.coil-kt:coil-compose:2.4.0")
 }
