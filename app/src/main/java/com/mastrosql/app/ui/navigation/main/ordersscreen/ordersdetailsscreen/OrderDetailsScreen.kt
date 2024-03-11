@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -19,9 +20,9 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,11 +33,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -141,24 +144,21 @@ fun OrderDetailResultScreen(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
-
     // State to control the focus of the text input
     var isTextInputFocused by remember { mutableStateOf(false) }
 
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
 
-    val focusManager = LocalFocusManager.current
-
     // Function to set focus on the text input
-    LaunchedEffect(Unit) {
+    LaunchedEffect(showBottomSheet) {
         if (showBottomSheet) {
             isTextInputFocused = true
+            focusRequester.requestFocus()
         }
     }
 
     Scaffold(
-
         topBar = {
             OrderDetailsTopAppBar(
                 title = stringResource(
@@ -176,7 +176,7 @@ fun OrderDetailResultScreen(
                 icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scanner") },
                 onClick = {
                     showBottomSheet = true
-                }
+                },
             )
         },
     ) { innerPadding ->
@@ -196,20 +196,20 @@ fun OrderDetailResultScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Icon button to hide the bottom sheet
+                        // Icon button to show keyboard
                         IconButton(
                             onClick = {
-                                showBottomSheet = false
+                                //show keyboard
                             }
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
+                            Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
                         }
 
                         // Text input to read scanned codes
-                        TextField(
+                        OutlinedTextField(
                             value = scannedCode,
                             onValueChange = { scannedCode = it },
-                            label = { Text("Scanned Code") },
+                            label = { Text(stringResource(R.string.order_details_qrscan_text)) },
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done
@@ -227,12 +227,6 @@ fun OrderDetailResultScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 8.dp)
-                                // Set focus when isTextInputFocused is true
-                                .onFocusChanged { focusState ->
-                                    if (focusState.isFocused) {
-                                        isTextInputFocused = true
-                                    }
-                                }
                                 .focusRequester(focusRequester)
                         )
 
