@@ -158,7 +158,7 @@ private fun CustomerNewOrderButton(
         Icon(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = stringResource(R.string.new_order),
+            contentDescription = stringResource(R.string.insert_article),
             modifier = Modifier.size(35.dp)
         )
     }

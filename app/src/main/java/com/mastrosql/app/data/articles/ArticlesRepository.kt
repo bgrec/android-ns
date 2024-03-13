@@ -2,10 +2,12 @@ package com.mastrosql.app.data.articles
 
 
 import androidx.work.WorkInfo
+import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 /**
  * Repository that provides insert, update, delete, and retrieve of [Article] from a given data source.
@@ -40,5 +42,11 @@ interface ArticlesRepository {
      * Update article in the data source
      */
     suspend fun updateArticle(article: Article)
+
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
+    suspend fun insertArticleIntoDocument(
+        documentId: Int,
+        documentType: String,
+        articleId: Int
+    ): Response<JsonObject>
 }

@@ -12,8 +12,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +36,7 @@ import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
-import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchView
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchViewOrders
 
 object OrdersResultDestination : NavigationDestination {
     override val route = "orders_list"
@@ -68,6 +68,7 @@ fun OrdersScreen(
             navigateToOrderDetails = navigateToOrderDetails,
             navigateToOrderEntry = navigateToOrderEntry,
             ordersUiState.ordersList,
+            ordersUiState.modifiedOrderId,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
             navController = navController
@@ -94,12 +95,14 @@ fun OrdersResultScreen(
     navigateToOrderDetails: (Int, String) -> Unit,
     navigateToOrderEntry: () -> Unit,
     ordersList: List<Order>,
+    modifiedOrderId: MutableState<Int>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController
 ) {
     //val itemsUiState by viewModel.itemsUiState.collectAsState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    //val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     var showToast by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -150,10 +153,11 @@ fun OrdersResultScreen(
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
 
-            SearchView(state = textState)
+            SearchViewOrders(state = textState)
 
             OrdersList(
                 ordersList = ordersList,
+                modifiedOrderId = modifiedOrderId,
                 state = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController,

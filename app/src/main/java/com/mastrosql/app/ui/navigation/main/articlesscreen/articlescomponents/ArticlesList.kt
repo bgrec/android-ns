@@ -23,9 +23,12 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun ArticlesList(
     articlesList: List<Article>,
+    documentId: Int?,
+    documentType: String?,
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    onInsertArticleClick: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -51,11 +54,14 @@ fun ArticlesList(
         items(filteredList) { article ->
             ArticleCard(
                 article = article,
+                documentId = documentId,
+                documentType = documentType,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
                 //.focusable(),
-                navController = navController
+                navController = navController,
+                onInsertArticleClick = onInsertArticleClick
             )
         }
     }
@@ -112,9 +118,12 @@ fun ItemsListPreview() {
                     lastUpdated = 1L
                 )
             ),
+            documentId = null,
+            documentType = null,
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
-            navController = NavController(LocalContext.current)
+            navController = NavController(LocalContext.current),
+            onInsertArticleClick = {}
         )
     }
 }

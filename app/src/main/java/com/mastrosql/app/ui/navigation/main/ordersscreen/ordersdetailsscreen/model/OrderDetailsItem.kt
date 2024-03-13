@@ -19,7 +19,8 @@ import java.util.Locale
 @Serializable
 data class OrderDetailsItem(
 
-    @PrimaryKey(autoGenerate = false) @SerializedName("NUMEPRO") val id: Int,
+    @PrimaryKey(autoGenerate = false)
+    @SerializedName("numePro") val id: Int,
     @SerializedName("NUME") val orderId: Int,
     @SerializedName("RIGA") val orderRow: Int,
     @SerializedName("ELABORATA") val confirmed: Boolean,

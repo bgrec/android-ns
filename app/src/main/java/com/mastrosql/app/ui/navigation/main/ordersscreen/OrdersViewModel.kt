@@ -1,6 +1,8 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -14,7 +16,8 @@ import java.io.IOException
 sealed interface OrdersUiState {
 
     data class Success(
-        val ordersList: List<Order>
+        val ordersList: List<Order>,
+        val modifiedOrderId: MutableState<Int>
     ) : OrdersUiState
 
     data class Error(val exception: Exception) : OrdersUiState
@@ -47,7 +50,11 @@ class OrdersViewModel(
                 try {
                     val ordersListResult =
                         ordersRepository.getOrders().items
-                    OrdersUiState.Success(ordersListResult)
+                    OrdersUiState
+                        .Success(
+                            ordersListResult,
+                            modifiedOrderId = mutableIntStateOf(-1)
+                        )
                 } catch (e: IOException) {
                     OrdersUiState.Error(e)
                 } catch (e: HttpException) {
@@ -57,4 +64,11 @@ class OrdersViewModel(
                 }
         }
     }
+
+//    fun setEditIndex(index: Int) {
+//        ordersUiState = when (val currentState = ordersUiState) {
+//            is OrdersUiState.Success -> currentState.copy(modifiedOrderId = mutableStateOf(index))
+//            else -> currentState
+//        }
+//    }
 }

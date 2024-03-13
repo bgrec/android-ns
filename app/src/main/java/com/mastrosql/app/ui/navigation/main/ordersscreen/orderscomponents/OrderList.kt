@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,15 +24,27 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun OrdersList(
+    modifier: Modifier,
     ordersList: List<Order>,
+    modifiedOrderId: MutableState<Int>,
     state: MutableState<TextFieldValue>,
-    modifier: Modifier = Modifier,
     navController: NavController,
     navigateToOrderDetails: (Int, String) -> Unit,
 
     ) {
+    val listState = rememberLazyListState()
+    // Scroll to the modified item when the list changes
+    LaunchedEffect(ordersList) {
+        //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
+        modifiedOrderId?.value.let { index ->
+            if (index != null) {
+                listState.animateScrollToItem(index)
+            }
+        }
+    }
+
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .background(MaterialTheme.colorScheme.background)
         //.focusable()
     )
@@ -45,7 +59,8 @@ fun OrdersList(
             ordersList.filter {
                 it.description.contains(searchedText, ignoreCase = true)
                         ||
-                        it.city.contains(searchedText, ignoreCase = true)
+                        it.businessName.contains(searchedText, ignoreCase = true)
+                        || it.city.contains(searchedText, ignoreCase = true)
 
             }
         }
@@ -58,8 +73,8 @@ fun OrdersList(
                     .fillMaxWidth(),
                 //.focusable(),
                 navController = navController,
-                navigateToOrderDetails = navigateToOrderDetails
-
+                navigateToOrderDetails = navigateToOrderDetails,
+                modifiedOrderId = modifiedOrderId
             )
         }
     }
@@ -148,6 +163,7 @@ fun OrdersListPreview() {
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current),
+            modifiedOrderId = remember { mutableStateOf(0) },
             navigateToOrderDetails = { _, _ -> }
         )
     }
