@@ -164,14 +164,14 @@ fun SettingsScreen(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showDialog = true }) {
-                    Text(stringResource(R.string.dialog_button))
+                    Text(stringResource(R.string.dialog_button_settings))
                 }
             }
 
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
-                    title = { Text(stringResource(R.string.dialog_button)) },
+                    title = { Text(stringResource(R.string.dialog_button_settings)) },
                     text = {
                         LazyColumn(modifier = Modifier.wrapContentSize()) {
                             items(MainNavOption.entries.toList()) {

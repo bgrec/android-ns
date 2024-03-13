@@ -1,5 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -38,6 +40,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.components.formatDate
+import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.ColorGreen
@@ -45,6 +49,7 @@ import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRed
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderCard(
     order: Order,
@@ -89,14 +94,14 @@ fun OrderCard(
                     OrderDescriptionAndId(
                         id = order.id,
                         description = order.description,
-                        insertDate = order.insertDate,
+                        insertDate = formatDate(order.insertDate),
                         businessName = order.businessName,
                         deliveryType = order.deliveryType
                     )
                     if (expanded) {
                         OrderInfo(
                             destinationName = order.destinationName,
-                            deliveryDate = order.deliveryDate,
+                            deliveryDate = formatDate(order.deliveryDate),
                             carrierName = order.carrierName,
                             notes = order.notes
                         )
@@ -252,7 +257,7 @@ fun OrderDescriptionAndId(
 
                 3 -> Text(
                     text = stringResource(R.string.order_deliveryType_value3),
-                    //TODO(aggiungere colore appropriato per stato di consegna "caricato")
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -382,6 +387,7 @@ fun OrderInfo(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun OrderCardPreview() {

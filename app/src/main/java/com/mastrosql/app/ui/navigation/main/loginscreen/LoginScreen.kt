@@ -119,11 +119,7 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    keyboardAction = KeyboardActions(
-                        onNext = {
-                            focusManager.clearFocus()
-                        }
-                    )
+                    keyboardAction = KeyboardActions()
                 )
 
                 //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields

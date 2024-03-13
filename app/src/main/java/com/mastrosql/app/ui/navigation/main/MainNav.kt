@@ -1,5 +1,7 @@
 package com.mastrosql.app.ui.navigation.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -24,6 +26,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.Ord
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
 
     navigation(
