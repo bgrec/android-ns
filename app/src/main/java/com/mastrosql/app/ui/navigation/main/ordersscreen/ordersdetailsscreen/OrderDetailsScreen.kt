@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
@@ -200,6 +201,8 @@ fun OrderDetailResultScreen(
         }
     }
 
+    Log.d("returnedFromNewItem", "returnedFromNewItem: $returnedFromNewItem")
+
     // Trigger getOrderDetails when we return from the NewItemScreen
     LaunchedEffect(returnedFromNewItem) {
         if (returnedFromNewItem) {
@@ -232,8 +235,9 @@ fun OrderDetailResultScreen(
                 canNavigateBack = true,
                 navigateUp = navigateBack,
                 onAddItemClick = {
-                    navigateToNewItem(orderId ?: 0)
                     returnedFromNewItem = true
+                    navigateToNewItem(orderId ?: 0)
+
                 },
             )
         },
