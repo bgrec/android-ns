@@ -1,12 +1,14 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,33 +23,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,27 +64,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.ShowToast
+import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.ColorLightBlue
+import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import com.mastrosql.app.ui.theme.Purple40
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailsItem(
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
-    onRemove: (OrderDetailsItem) -> Boolean
+    onRemove: (OrderDetailsItem) -> Boolean,
+    showEditDialog: MutableState<Boolean>,
+    snackbarHostState: SnackbarHostState
 ) {
+
     val visibleState = remember { MutableTransitionState(true) }
-    val context = LocalContext.current
 
     AnimatedVisibility(
-        visibleState = visibleState, exit = fadeOut(spring())
+        visibleState = visibleState, enter = fadeIn(spring()),exit = fadeOut(spring())
     ) {
         SwipeToDismissItem(
             visibleState = visibleState,
@@ -83,13 +95,37 @@ fun OrderDetailsItem(
             modifier = modifier,
             navController = navController,
             navigateToEditItem = navigateToEditItem,
-            onRemove = onRemove
+            onRemove = onRemove,
+            showEditDialog = showEditDialog
         )
     }
-    if (!visibleState.targetState) {
-        ShowToast(context = context, text = "item removed")
 
+    val scope = rememberCoroutineScope()
+
+    val messageText = stringResource(R.string.deleted_item_snackbar_text)
+    val dismissText = stringResource(R.string.dismiss_button)
+
+    LaunchedEffect(visibleState.targetState) {
+        if (!visibleState.targetState) {
+            scope.launch {
+                val result = snackbarHostState.showSnackbar(
+                    message = messageText,
+                    actionLabel = dismissText,
+                    duration = SnackbarDuration.Short
+                )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> {
+                        visibleState.targetState = true
+                    }
+
+                    SnackbarResult.Dismissed -> {
+
+                    }
+                }
+            }
+        }
     }
+
 }
 /*
 // Call the SwipeToDismissItem function with an implementation of onRemove
@@ -109,6 +145,7 @@ SwipeToDismissItem(
 )
  */
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun SwipeToDismissItem(
@@ -117,9 +154,9 @@ private fun SwipeToDismissItem(
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
-    onRemove: (OrderDetailsItem) -> Boolean
+    onRemove: (OrderDetailsItem) -> Boolean,
+    showEditDialog: MutableState<Boolean>
 ) {
-
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
         /*
         Only for end to start action
@@ -141,14 +178,13 @@ private fun SwipeToDismissItem(
             SwipeToDismissBackground(
                 dismissState = dismissState,
             )
-
-
         }, content = {
             OrderDetailsItemContent(
                 orderDetail = orderDetailsItem,
                 modifier = modifier,
                 navController = navController,
-                navigateToEditItem = navigateToEditItem
+                navigateToEditItem = navigateToEditItem,
+                showEditDialog = showEditDialog
             )
         })
 }
@@ -162,7 +198,7 @@ private fun SwipeToDismissBackground(
     val color by animateColorAsState(
         when (dismissState.targetValue) {
             SwipeToDismissBoxValue.Settled -> Color.Transparent//colorScheme.background
-            SwipeToDismissBoxValue.StartToEnd -> Purple40
+            SwipeToDismissBoxValue.StartToEnd -> ColorOrange
             SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose
         }, label = "swipe_color"
     )
@@ -177,7 +213,7 @@ private fun SwipeToDismissBackground(
     ) {
         if (direction == SwipeToDismissBoxValue.StartToEnd) {
             Icon(
-                imageVector = Icons.Default.Edit,
+                imageVector = Icons.Default.EditNote,
                 tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = stringResource(id = R.string.delete),
                 modifier = Modifier.fillMaxHeight()
@@ -195,15 +231,16 @@ private fun SwipeToDismissBackground(
             )
         }
     }
-
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun OrderDetailsItemContent(
     orderDetail: OrderDetailsItem,
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
+    showEditDialog: MutableState<Boolean>
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -223,7 +260,6 @@ private fun OrderDetailsItemContent(
                 ),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -261,7 +297,7 @@ private fun OrderDetailsItemContent(
                 ) {
                     OrderDetailDescriptionAndId2(
                         batch = orderDetail.batch,
-                        expirationDate = orderDetail.expirationDate,
+                        expirationDate = formatDate(orderDetail.expirationDate),
                         quantity = orderDetail.quantity,
                         orderedQuantity = orderDetail.orderedQuantity,
                         shippedQuantity = orderDetail.shippedQuantity
@@ -280,8 +316,7 @@ private fun OrderDetailsItemContent(
                 ) {
                     ItemEditButton(
                         onClick = {
-                            //Id = orderDetail.id,
-                            // onEditClick = navigateToEditItem
+                            showEditDialog.value = true
                         },
                     )
                 }
@@ -409,14 +444,14 @@ fun OrderDetailDescriptionAndId2(
         ) {
             Text(
                 text = stringResource(R.string.order_detail_batch),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
             )
             if (batch != null) {
                 Text(
                     text = batch,
                     color = ColorLightBlue,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
 
@@ -424,14 +459,14 @@ fun OrderDetailDescriptionAndId2(
 
             Text(
                 text = stringResource(R.string.order_detail_expirationDate),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
             )
 
             if (expirationDate != null) {
                 Text(
                     text = expirationDate,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -497,14 +532,14 @@ fun QuantityTable(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
             Row(
                 Modifier
                     .weight(1f)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Divider(
+                VerticalDivider(
                     color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
@@ -515,7 +550,7 @@ fun QuantityTable(
                     Modifier.weight(1f)
                 )
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -528,7 +563,7 @@ fun QuantityTable(
                     Modifier.weight(1f)
                 )
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -541,7 +576,7 @@ fun QuantityTable(
                     Modifier.weight(1f)
                 )
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -550,16 +585,17 @@ fun QuantityTable(
 
             }
 
-            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
 
             Row(
                 Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -568,7 +604,7 @@ fun QuantityTable(
 
                 QuantityText(quantity.toString(), true, Modifier.weight(1f))
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -577,7 +613,7 @@ fun QuantityTable(
 
                 QuantityText(orderedQuantity.toString(), true, Modifier.weight(1f))
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -586,7 +622,7 @@ fun QuantityTable(
 
                 QuantityText(shippedQuantity.toString(), true, Modifier.weight(1f))
 
-                Divider(
+                VerticalDivider(
                     color = Color.Black,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -595,7 +631,7 @@ fun QuantityTable(
 
             }
 
-            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
         }
     }
 }

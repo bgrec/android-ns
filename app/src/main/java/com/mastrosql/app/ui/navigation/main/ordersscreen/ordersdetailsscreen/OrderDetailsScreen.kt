@@ -1,18 +1,22 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
+
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,21 +26,25 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -50,6 +58,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
@@ -79,6 +88,7 @@ val items = listOf(
     Screen.Edit,
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsScreen(
@@ -124,6 +134,7 @@ fun OrderDetailsScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
 fun OrderDetailResultScreen(
@@ -139,13 +150,25 @@ fun OrderDetailResultScreen(
 ) {
     //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
 
+
+    var batch by remember { mutableStateOf("") }
+    var quantity by remember { mutableDoubleStateOf(0.0) }
+    var quantityString by remember { mutableStateOf(quantity.toString()) }
+    var expirationDate by remember { mutableStateOf(formatDate("")) }
+
     var scannedCode by remember { mutableStateOf("") }
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showSnackbar by remember { mutableStateOf(false) }
+    val showEditDialog = remember { mutableStateOf(false) }
     // State to control the focus of the text input
     var isTextInputFocused by remember { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
@@ -155,6 +178,7 @@ fun OrderDetailResultScreen(
         if (showBottomSheet) {
             isTextInputFocused = true
             focusRequester.requestFocus()
+            keyboardController?.hide()
         }
     }
 
@@ -170,16 +194,80 @@ fun OrderDetailResultScreen(
                 navigateUp = navigateBack
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text(stringResource(R.string.open_scanner)) },
                 icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scanner") },
                 onClick = {
+
                     showBottomSheet = true
+
                 },
             )
-        },
+        }
     ) { innerPadding ->
+
+        if (showEditDialog.value) {
+            AlertDialog(
+                modifier = Modifier.wrapContentSize(),
+                onDismissRequest = { showEditDialog.value = false },
+                title = { Text(stringResource(R.string.order_details_dialog_edit_title)) },
+                text = {
+                    val focusManager = LocalFocusManager.current
+
+                    Column(modifier = Modifier.wrapContentSize()) {
+                        OutlinedTextField(
+                            value = batch ?: "",
+                            label = { Text(stringResource(R.string.order_details_dialog_edit_batch)) },
+                            onValueChange = { batch = it },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        OutlinedTextField(
+                            value = quantityString,
+                            label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
+                            onValueChange = { quantityString = it },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+
+                        OutlinedTextField(
+                            value = expirationDate,
+                            label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
+                            onValueChange = { expirationDate = it },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Uri,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                //fare stessa cosa fatta nel bottone di conferma del dialog
+                                focusManager.clearFocus()
+                            })
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showEditDialog.value = false
+                    }) {
+                        Text(stringResource(R.string.dismiss_button))
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showEditDialog.value = false
+                    }) {
+                        Text(stringResource(R.string.confirm_button))
+                    }
+                }
+            )
+        }
 
         if (showBottomSheet) {
             ModalBottomSheet(
@@ -199,7 +287,8 @@ fun OrderDetailResultScreen(
                         // Icon button to show keyboard
                         IconButton(
                             onClick = {
-                                //show keyboard
+                                focusRequester.requestFocus()
+                                keyboardController?.show()
                             }
                         ) {
                             Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
@@ -213,7 +302,6 @@ fun OrderDetailResultScreen(
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done
-
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
@@ -261,14 +349,15 @@ fun OrderDetailResultScreen(
                 orderDetailList = orderDetailList,
                 state = textState,
                 modifier = Modifier.padding(4.dp),
-                navController = navController
+                navController = navController,
+                showEditDialog = showEditDialog,
+                snackbarHostState = snackbarHostState
             )
         }
-
     }
 }
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun OrdersScreenPreview() {

@@ -26,6 +26,7 @@ val ColorGreen = Color(0xFF13A808)
 
 val ColorOrange = Color(0xFFF77605)
 
+val Lavender = Color(0xFFDBE1FF)
 
 val ColorRed = Color(0xFFFF0000)
 

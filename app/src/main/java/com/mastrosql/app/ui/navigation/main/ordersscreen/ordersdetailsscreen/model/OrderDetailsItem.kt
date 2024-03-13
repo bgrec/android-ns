@@ -46,8 +46,8 @@ data class OrderDetailsItem(
     @SerializedName("qtConf") val packSize: String,
     @SerializedName("ordQtOrd") val orderedQuantity: Double,
     @SerializedName("ordQtCon") val shippedQuantity: Double,
-    @SerializedName("LOTTO") val batch: String,
-    @SerializedName("dataSca") val expirationDate: String,
+    @SerializedName("LOTTO") val batch: String?,
+    @SerializedName("dataSca") val expirationDate: String?, //use formatDate(expirationDate)
 
     @TypeConverters(OrderDetailsMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata?,
 

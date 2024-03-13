@@ -133,7 +133,7 @@
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="label_url">Inserire URL</string>
-    <string name="dialog_button">Gestisci sezioni</string>
+    <string name="dialog_button_settings">Gestisci sezioni</string>
     <string name="dialog_title">Sezioni</string>
     <string name="close_button">Chiudi</string>
 
@@ -201,6 +201,13 @@
     <string name="open_scanner">Apri lo scanner</string>
     <string name="hide_scanner">Nascondi il scanner</string>
     <string name="barcode">barcode</string>
+    <string name="order_details_dialog_edit_title">Modifica riga</string>
+    <string name="confirm_button">Conferma</string>
+    <string name="dismiss_button">Annulla</string>
+    <string name="order_details_dialog_edit_batch">Lotto</string>
+    <string name="order_details_dialog_edit_Quantity">Quantità</string>
+    <string name="order_details_dialog_edit_expirationDate">Data scadenza</string>
+    <string name="deleted_item_snackbar_text">"Riga dell'ordine rimossa"</string>
 
 
 </resources>

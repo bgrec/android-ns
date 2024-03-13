@@ -358,7 +358,7 @@ fun ConfigContent(
             modifier = Modifier.padding(top = 10.dp)
         ) {
             Button(onClick = { showDialog = true }) {
-                Text(stringResource(R.string.dialog_button))
+                Text(stringResource(R.string.dialog_button_settings))
             }
         }
 

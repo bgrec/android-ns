@@ -1,25 +1,36 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    showEditDialog: MutableState<Boolean>,
+    snackbarHostState: SnackbarHostState
 ) {
     LazyColumn(
         modifier = Modifier
@@ -48,7 +59,9 @@ fun OrderDetailList(
                 //.focusable(),
                 navController = navController,
                 navigateToEditItem = {},
-                onRemove = {true}
+                onRemove = { true },
+                showEditDialog = showEditDialog,
+                snackbarHostState = snackbarHostState
             )
         }
     }
