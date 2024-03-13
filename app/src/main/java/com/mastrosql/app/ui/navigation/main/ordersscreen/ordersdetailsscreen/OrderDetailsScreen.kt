@@ -175,7 +175,6 @@ fun OrderDetailResultScreen(
     // State to track keyboard visibility
     var isKeyboardVisible by remember { mutableStateOf(false) }
 
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var returnedFromNewItem by remember { mutableStateOf(false) }
@@ -204,10 +203,11 @@ fun OrderDetailResultScreen(
     // Trigger getOrderDetails when we return from the NewItemScreen
     LaunchedEffect(returnedFromNewItem) {
         if (returnedFromNewItem) {
-            // Delay for 1 second
-            delay(1000L)
-            viewModel.getOrderDetails()
-            returnedFromNewItem = false // Reset the flag
+            coroutineScope.launch {
+                delay(5000L)
+                viewModel.getOrderDetails()
+                returnedFromNewItem = false // Reset the flag
+            }
         }
     }
 
