@@ -1,8 +1,13 @@
 package com.mastrosql.app.ui.navigation.main.articlesscreen
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +37,7 @@ fun ArticlesScreen(
 ) {
     val articlesUiState = viewModel.articlesUiState
     val modifier = Modifier.fillMaxSize()
+    val context = LocalContext.current
 
     when (articlesUiState) {
         is ArticlesUiState.Loading -> LoadingScreen(
@@ -43,10 +49,20 @@ fun ArticlesScreen(
 
         is ArticlesUiState.Success -> ArticlesResultScreen(
             articlesUiState.articlesList,
+            articlesUiState.documentType,
+            articlesUiState.documentId,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
             navController = navController
-        )
+        ) { articleId ->
+            viewModel.insertArticleIntoDocument(
+                context = context,
+                documentId = articlesUiState.documentId,
+                documentType = articlesUiState.documentType,
+                articleId = articleId,
+                onInsertionComplete = { navController.popBackStack() }
+            )
+        }
 
         is ArticlesUiState.Error -> ErrorScreen(
             articlesUiState.exception,
@@ -63,13 +79,26 @@ fun ArticlesScreen(
 @Composable
 fun ArticlesResultScreen(
     articlesList: List<Article>,
+    documentType: String?,
+    documentId: Int?,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
-    navController: NavController
+    navController: NavController,
+    onInsertArticleClick: (Int) -> Unit
 ) {
+    //Change the backNavigationAction to null if you want to hide the back button
+    var backNavigationAction: (() -> Unit)? = null
+    if (documentId != null) {
+        backNavigationAction = {
+            navController.popBackStack()
+        }
+    }
+
     Scaffold(topBar = {
         AppBar(
             drawerState = drawerState, title = R.string.drawer_articles,
+            showDrawerIconButton = documentId == null,
+            backNavigationAction = backNavigationAction
         )
     }) {
         Column(
@@ -83,9 +112,13 @@ fun ArticlesResultScreen(
             SearchView(state = textState)
             ArticlesList(
                 articlesList = articlesList,
+                documentId = documentId,
+                documentType = documentType,
                 state = textState,
                 modifier = Modifier.padding(4.dp),
-                navController = navController
+                navController = navController,
+                onInsertArticleClick = onInsertArticleClick
+
             )
         }
 

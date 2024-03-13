@@ -72,6 +72,7 @@ object AppViewModelProvider {
         // Initializer for ArticlesViewModel
         initializer {
             ArticlesViewModel(
+                this.createSavedStateHandle(),
                 mastroAndroidApplication().appContainer.articlesRepository
             )
         }

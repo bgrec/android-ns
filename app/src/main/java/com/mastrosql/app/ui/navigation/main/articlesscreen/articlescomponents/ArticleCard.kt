@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -43,7 +44,12 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun ArticleCard(
-    article: Article, modifier: Modifier, navController: NavController
+    article: Article,
+    documentId: Int?,
+    documentType: String?,
+    modifier: Modifier,
+    navController: NavController,
+    onInsertArticleClick: (Int) -> Unit
 ) {
     var showToast by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -108,11 +114,19 @@ fun ArticleCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    ArticleNewOrderButton(
-                        onClick = {
-                            showToast = true
-                        },
-                    )
+                    if (documentId != null && documentType != null && documentId > 0) {
+                        ArticleInsertIntoDocumentButton(
+                            onClick = {
+                                onInsertArticleClick(article.id)
+                            }
+                        )
+                    } else {
+                        ArticleEditButton(
+                            onClick = {
+                                showToast = true
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -145,8 +159,9 @@ private fun ArticleExpandButton(
 }
 
 @Composable
-private fun ArticleNewOrderButton(
-    onClick: () -> Unit, modifier: Modifier = Modifier
+private fun ArticleEditButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -154,7 +169,24 @@ private fun ArticleNewOrderButton(
         Icon(
             Icons.Default.Edit,
             tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = stringResource(R.string.new_order),
+            contentDescription = stringResource(R.string.insert_article),
+            modifier = Modifier.size(35.dp)
+        )
+    }
+}
+
+@Composable
+private fun ArticleInsertIntoDocumentButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick
+    ) {
+        Icon(
+            Icons.Default.AddShoppingCart,
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = stringResource(R.string.insert_article),
             modifier = Modifier.size(35.dp)
         )
     }

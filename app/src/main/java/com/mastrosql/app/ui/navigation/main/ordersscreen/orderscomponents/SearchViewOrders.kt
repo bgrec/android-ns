@@ -38,7 +38,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchView(state: MutableState<TextFieldValue>) {
+fun SearchViewOrders(state: MutableState<TextFieldValue>) {
 
     var isEditing by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -129,7 +129,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     MastroAndroidTheme {
-        SearchView(
+        SearchViewOrders(
             textState
         )
     }

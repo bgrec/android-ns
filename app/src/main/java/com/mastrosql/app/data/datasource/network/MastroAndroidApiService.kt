@@ -4,10 +4,12 @@ import com.google.gson.JsonObject
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 /**
@@ -67,7 +69,7 @@ interface MastroAndroidApiService {
     @GET("rigOrdc")
     suspend fun getOrderDetails(
         @Query("q") filter: String,  //"{\"NUME\": 4}" rigOrdc/?q={"NUME": 4}
-        @Query("orderby") order : String = "{\"RIGA\": \"ASC\"}"
+        @Query("orderby") order: String = "{\"RIGA\": \"ASC\"}"
     ): OrderDetailsResponse
 
     @GET("rigOrdc")
@@ -80,6 +82,16 @@ interface MastroAndroidApiService {
     suspend fun testApiCall(
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1
+    ): Response<JsonObject>
+
+    @PUT("OrderBarcodeReader")
+    suspend fun sendScannedCode(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    @PUT("InsertArticleIntoDocument")
+    suspend fun insertArticleIntoDocument(
+        @Body body: JsonObject
     ): Response<JsonObject>
 
 }

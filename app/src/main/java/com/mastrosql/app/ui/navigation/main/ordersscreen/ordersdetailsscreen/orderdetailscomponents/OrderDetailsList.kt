@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.material3.SnackbarHostState
+
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -23,6 +29,7 @@ import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 
 @RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
@@ -31,11 +38,24 @@ fun OrderDetailList(
     navController: NavController,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState
+    modifiedIndex: Int?,
+
 ) {
+
+    val listState = rememberLazyListState()
+    // Scroll to the modified item when the list changes
+    LaunchedEffect(orderDetailList) {
+        //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
+        modifiedIndex?.let { index ->
+            listState.animateScrollToItem(index)
+        }
+    }
+
     LazyColumn(
-        modifier = Modifier
+        state = listState,
+        modifier = modifier
             .background(MaterialTheme.colorScheme.background)
-        //.focusable()
+            .fillMaxWidth()
     )
     {
         val filteredList: List<OrderDetailsItem>
@@ -54,7 +74,7 @@ fun OrderDetailList(
             OrderDetailsItem(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
-                    .padding(4.dp)
+                    .padding(2.dp)
                     .fillMaxWidth(),
                 //.focusable(),
                 navController = navController,
@@ -62,10 +82,12 @@ fun OrderDetailList(
                 onRemove = { true },
                 showEditDialog = showEditDialog,
                 snackbarHostState = snackbarHostState
+
             )
         }
     }
 }
+
 /*
 @Preview
 @Composable

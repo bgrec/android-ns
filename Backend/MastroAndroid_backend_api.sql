@@ -280,3 +280,187 @@ BEGIN
     RETURN lastDigit;
 END;
 */
+
+DROP PROCEDURE IF EXISTS OrderBarcodeReader;
+CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
+BEGIN
+    DECLARE articleId VARCHAR(6);
+    DECLARE rowExists INT;
+
+    -- Extract the first four characters from the scanned code
+    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
+
+    -- Check if a row with the given conditions exists
+    SELECT COUNT(*)
+    INTO rowExists
+    FROM rig_ordc
+    WHERE NUME = orderId
+      AND CORTO = articleId;
+
+    -- If the row does not exist, insert a new row into the rig_ordc table
+    IF rowExists = 0 THEN
+        -- Insert a new row into the rig_ordc table with the scanned code
+        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
+    ELSE
+        -- Update the row in the rig_ordc table with the scanned code
+        UPDATE rig_ordc
+        SET QUAN = QUAN + 1
+        WHERE NUME = orderId
+          AND CORTO = articleId;
+    END IF;
+END;
+
+DROP PROCEDURE IF EXISTS OrderBarcodeReader;
+CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
+BEGIN
+    DECLARE articleId VARCHAR(6);
+    DECLARE rowExists INT;
+
+    -- Extract the first four characters from the scanned code
+    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
+
+    -- Check if a row with the given conditions exists
+    SELECT COUNT(*)
+    INTO rowExists
+    FROM rig_ordc
+    WHERE NUME = orderId
+      AND CORTO = articleId;
+
+    -- If the row does not exist, insert a new row into the rig_ordc table
+    IF rowExists = 0 THEN
+        -- Insert a new row into the rig_ordc table with the scanned code
+        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
+    ELSE
+        -- Update the row in the rig_ordc table with the scanned code
+        UPDATE rig_ordc
+        SET QUAN = QUAN + 1
+        WHERE NUME = orderId
+          AND CORTO = articleId;
+    END IF;
+
+END;
+
+### Insert a new row into the rig_ordc table
+DROP PROCEDURE IF EXISTS InsertRowIntoRigOrdC;
+CREATE PROCEDURE InsertRowIntoRigOrdC(
+    IN orderId INT,
+    IN articleId INT,
+    IN quantity DECIMAL(11, 5),
+    IN orderedQuantity DECIMAL(11, 5),
+    IN batch VARCHAR(255),
+    IN expiryDate DATE
+)
+BEGIN
+    DECLARE lastRow INT;
+    DECLARE docDate DATE;
+    DECLARE docNumber INT;
+    DECLARE clientId INT;
+    DECLARE agentId INT;
+    DECLARE agentPerc1 DECIMAL(11, 5);
+    DECLARE agentPerc2 DECIMAL(11, 5);
+
+    DECLARE articleCode VARCHAR(100);
+    DECLARE articleSupplierCode VARCHAR(100);
+    DECLARE articleDescription VARCHAR(255);
+    DECLARE articlePrice DECIMAL(11, 5);
+    DECLARE articleDiscount1 DECIMAL(11, 5);
+    DECLARE articleDiscount2 DECIMAL(11, 5);
+    DECLARE articleCost DECIMAL(11, 5);
+    DECLARE articleVat VARCHAR(100);
+    DECLARE articleVatPercentage DECIMAL(11, 5);
+    DECLARE articleDiscount DECIMAL(11, 5);
+    DECLARE articleUnitOfMeasure VARCHAR(255);
+    DECLARE articleCounterParty VARCHAR(255);
+    DECLARE articleSector VARCHAR(255);
+    DECLARE articleDepartment VARCHAR(255);
+    DECLARE articleQuantityPerPackage DECIMAL(11, 5);
+    DECLARE articlePosVat INT;
+    DECLARE articleListPrice DECIMAL(11, 5);
+
+
+    DECLARE rowNumber INT;
+
+    -- Find the last row number for the given order
+    SELECT MAX(RIGA) INTO lastRow FROM rig_ordc WHERE NUME = orderId;
+
+    -- Retrieve DOC_DATA, DOC_NUME, and CODI based on the order ID
+    SELECT TRIM(rig_ordc.DOC_DATA),
+           rig_ordc.DOC_NUME,
+           rig_ordc.CODI,
+           rig_ordc.AGENTE,
+           rig_ordc.PROV_1,
+           rig_ordc.PROV_2
+    INTO docDate, docNumber, clientId, agentId, agentPerc1, agentPerc2
+    FROM rig_ordc
+    WHERE NUME = orderId
+    LIMIT 1;
+
+    -- Retrieve article data based on the article ID
+    SELECT arti.CODI,
+           arti.CFOR,
+           TRIM(arti.DESCRI),
+           CASE
+               WHEN arti.CORTO IN (SELECT CORTO FROM clienti_pre WHERE CODI = clientId)
+                   THEN (SELECT PREZZO FROM clienti_pre WHERE CODI = clientId AND CORTO = arti.CORTO)
+               WHEN arti.CORTO IN (SELECT art_lis.CORTO
+                                   FROM art_lis
+                                   WHERE
+                                       art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId LIMIT 1))
+                   THEN (SELECT art_lis.VEND
+                         FROM art_lis
+                         WHERE art_lis.CORTO = arti.CORTO
+                           AND art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId))
+               ELSE arti.VEND
+               END AS 'VEND',
+           CASE
+               WHEN arti.CORTO IN (SELECT CORTO FROM clienti_pre WHERE CODI = clientId)
+                   THEN (SELECT SCON_1 FROM clienti_pre WHERE CODI = clientId AND CORTO = arti.CORTO)
+               WHEN arti.CORTO IN (SELECT art_lis.CORTO
+                                   FROM art_lis
+                                   WHERE art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId))
+                   THEN (SELECT clienti.SCONTO FROM clienti WHERE clienti.CODI = clientId)
+               ELSE arti.SCON_1
+               END AS 'SCON_1',
+           CASE
+               WHEN arti.CORTO IN (SELECT CORTO FROM clienti_pre WHERE CODI = clientId)
+                   THEN (SELECT SCON_2 FROM clienti_pre WHERE CODI = clientId AND CORTO = arti.CORTO)
+               WHEN arti.CORTO IN (SELECT art_lis.CORTO
+                                   FROM art_lis
+                                   WHERE art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId))
+                   THEN (SELECT clienti.SCONTO2 FROM clienti WHERE clienti.CODI = clientId)
+               ELSE arti.SCON_2
+               END AS 'SCON_2',
+
+           arti.COST,
+           arti.IVA,
+           iva.PERCE,
+           arti.SCON,
+           arti.MISU,
+           arti.CONTRO,
+           arti.SETTORE,
+           arti.REPA,
+           arti.QT_CONF,
+           arti.CASSA,
+           arti.LISTINO
+    INTO articleCode, articleSupplierCode, articleDescription, articlePrice, articleDiscount1, articleDiscount2,
+        articleCost, articleVat, articleVatPercentage, articleDiscount, articleUnitOfMeasure, articleCounterParty,
+        articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleListPrice
+    FROM arti
+             LEFT JOIN iva ON iva.CODICE = arti.IVA
+    WHERE arti.CORTO = articleId;
+    END;
+
+####################################################################################################
+
+DROP PROCEDURE IF EXISTS InsertArticleIntoDocument;
+CREATE PROCEDURE InsertArticleIntoDocument(
+    IN documentId INT,
+    IN documentType VARCHAR(20),
+    IN articleId INT
+)
+BEGIN
+    IF TRIM(documentType) = 'order' THEN
+         CALL InsertRowIntoRigOrdC(documentId, articleId, 1, 1, '', NULL);
+    END IF;
+
+END;

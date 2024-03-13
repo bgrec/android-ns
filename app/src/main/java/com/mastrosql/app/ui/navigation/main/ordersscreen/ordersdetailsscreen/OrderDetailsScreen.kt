@@ -3,7 +3,10 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,11 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.QrCodeScanner
+
 import androidx.compose.material3.AlertDialog
+
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,10 +36,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -45,9 +60,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+
+
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -68,6 +88,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 object OrderDetailsDestination : NavigationDestination {
@@ -89,10 +111,12 @@ val items = listOf(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+
 @Composable
 fun OrderDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
+    navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
@@ -112,8 +136,10 @@ fun OrderDetailsScreen(
 
         is OrderDetailsUiState.Success -> OrderDetailResultScreen(
             navigateToEditItem = navigateToEditItem,
+            navigateToNewItem = navigateToNewItem,
             navigateBack = navigateBack,
             orderDetailList = orderDetailsUiState.orderDetailsList,
+            modifiedIndex = orderDetailsUiState.modifiedIndex,
             orderId = orderDetailsUiState.orderId,
             orderDescription = orderDetailsUiState.orderDescription,
             modifier = modifier.fillMaxWidth(),
@@ -135,13 +161,16 @@ fun OrderDetailsScreen(
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterialApi::class)
+
 @ExperimentalMaterial3Api
 @Composable
 fun OrderDetailResultScreen(
-    //backStackEntry: NavBackStackEntry,
     navigateToEditItem: (Int) -> Unit,
+    navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     orderDetailList: List<OrderDetailsItem>,
+    modifiedIndex: Int?,
     orderId: Int?,
     orderDescription: String?,
     modifier: Modifier = Modifier,
@@ -149,29 +178,59 @@ fun OrderDetailResultScreen(
     viewModel: OrderDetailsViewModel
 ) {
     //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
-
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var batch by remember { mutableStateOf("") }
     var quantity by remember { mutableDoubleStateOf(0.0) }
     var quantityString by remember { mutableStateOf(quantity.toString()) }
     var expirationDate by remember { mutableStateOf(formatDate("")) }
 
+
+    // State to hold the scanned code
     var scannedCode by remember { mutableStateOf("") }
 
+    // State to control the bottom sheet
     val sheetState = rememberModalBottomSheetState()
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+
+    // State to control the bottom sheet visibility
+
     var showBottomSheet by remember { mutableStateOf(false) }
     var showSnackbar by remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf(false) }
     // State to control the focus of the text input
     var isTextInputFocused by remember { mutableStateOf(false) }
 
+    // Get the keyboard controller
     val keyboardController = LocalSoftwareKeyboardController.current
-
 
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
+
+    // State to track keyboard visibility
+    var isKeyboardVisible by remember { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    var returnedFromNewItem by remember { mutableStateOf(false) }
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            coroutineScope.launch {
+                viewModel.getOrderDetails()
+                isRefreshing = false
+            }
+        }
+
+    )
 
     // Function to set focus on the text input
     LaunchedEffect(showBottomSheet) {
@@ -182,16 +241,44 @@ fun OrderDetailResultScreen(
         }
     }
 
+    Log.d("returnedFromNewItem", "returnedFromNewItem: $returnedFromNewItem")
+
+    // Trigger getOrderDetails when we return from the NewItemScreen
+    LaunchedEffect(returnedFromNewItem) {
+        if (returnedFromNewItem) {
+            coroutineScope.launch {
+                delay(5000L)
+                viewModel.getOrderDetails()
+                returnedFromNewItem = false // Reset the flag
+            }
+        }
+    }
+
+    // Handle back button press
+    BackHandler {
+        if (showBottomSheet) {
+            showBottomSheet = false
+            isTextInputFocused = false
+        } else {
+            navigateBack()
+        }
+    }
+
     Scaffold(
         topBar = {
             OrderDetailsTopAppBar(
                 title = stringResource(
-                    OrderDetailsDestination.titleRes,
+                    titleRes,
                     orderId ?: 0,
                     orderDescription ?: ""
                 ),
                 canNavigateBack = true,
-                navigateUp = navigateBack
+                navigateUp = navigateBack,
+                onAddItemClick = {
+                    returnedFromNewItem = true
+                    navigateToNewItem(orderId ?: 0)
+
+                },
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -202,11 +289,36 @@ fun OrderDetailResultScreen(
                 onClick = {
 
                     showBottomSheet = true
-
                 },
             )
         }
     ) { innerPadding ->
+        //Box used for pull to refresh
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+                 ) {
+            Column(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+               // Screen content
+                val textState = remember { mutableStateOf(TextFieldValue("")) }
+                OrderDetailsSearchView(state = textState)
+                
+                 OrderDetailList(
+                    orderDetailList = orderDetailList,
+                    modifiedIndex = modifiedIndex,
+                    state = textState,
+                    modifier = Modifier
+                        .padding(0.dp, 8.dp)
+                        .weight(if (showBottomSheet) 0.5f else 1f),
+                    navController = navController,
+                   showEditDialog =  showEditDialog,
+                   snackbarHostState = snackbarHostState
+                )
 
         if (showEditDialog.value) {
             AlertDialog(
@@ -268,102 +380,141 @@ fun OrderDetailResultScreen(
                 }
             )
         }
-
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-                sheetState = sheetState
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Icon button to show keyboard
-                        IconButton(
-                            onClick = {
-                                focusRequester.requestFocus()
-                                keyboardController?.show()
-                            }
-                        ) {
-                            Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
-                        }
-
-                        // Text input to read scanned codes
-                        OutlinedTextField(
-                            value = scannedCode,
-                            onValueChange = { scannedCode = it },
-                            label = { Text(stringResource(R.string.order_details_qrscan_text)) },
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    // Call ViewModel method to send scanned code to server
-                                    viewModel.sendScannedCode(scannedCode)
-                                    // Clear the scanned code after sending
-                                    scannedCode = ""
-
-                                }
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 8.dp)
-                                .focusRequester(focusRequester)
+         if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            showBottomSheet = false
+                            isTextInputFocused = false
+                        },
+                        sheetState = sheetState,
+                        modifier = Modifier.nestedScroll(
+                            connection = rememberNestedScrollInteropConnection()
                         )
-
-                        // Button to send the scanned code to the server
-                        IconButton(
-                            onClick = {
-                                // Call ViewModel method to send scanned code to server
-                                viewModel.sendScannedCode(scannedCode)
-                                // Clear the scanned code after sending
-                                scannedCode = ""
-                            }
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (isTextInputFocused) {
+                                    keyboardController?.hide()
+                                }
+
+                                val rowKeyboardController = LocalSoftwareKeyboardController.current
+                                rowKeyboardController?.hide()
+                                // Icon button to show keyboard
+                                IconButton(
+                                    onClick = {
+                                        // Toggle keyboard visibility
+                                        isKeyboardVisible = if (isKeyboardVisible) {
+                                            rowKeyboardController?.hide()
+                                            false
+                                        } else {
+                                            rowKeyboardController?.show()
+                                            true
+                                        }
+                                    }
+                                ) {
+                                    Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
+                                }
+
+                                // Text input to read scanned codes
+                                OutlinedTextField(
+                                    value = scannedCode,
+                                    onValueChange = {
+                                        scannedCode = it
+                                        // Check if the last character is a newline character
+                                        if (it.endsWith("\n")) {
+                                            // Call ViewModel method to send scanned code to server
+                                            if (orderId != null && orderId > 0 && scannedCode.isNotEmpty()) {
+                                                viewModel.sendScannedCode(
+                                                    context,
+                                                    orderId,
+                                                    scannedCode
+                                                )
+                                            }
+                                            // Clear the scanned code after sending
+                                            scannedCode = ""
+                                        }
+                                    },
+                                    label = { Text(stringResource(R.string.order_details_qrscan_text)) },
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Send,
+
+
+                                        ),
+                                    keyboardActions = KeyboardActions(
+                                        onSend = {
+                                            // Call ViewModel method to send scanned code to server
+                                            if (orderId != null && orderId > 0 && scannedCode.isNotEmpty()) {
+                                                viewModel.sendScannedCode(
+                                                    context,
+                                                    orderId,
+                                                    scannedCode
+                                                )
+                                            }
+                                            // Clear the scanned code after sending
+                                            scannedCode = ""
+                                            rowKeyboardController?.hide()
+
+                                        }
+                                    ),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(horizontal = 8.dp)
+                                        .focusRequester(focusRequester)
+                                        .onFocusChanged {
+                                            if (it.isFocused) {
+                                                keyboardController?.hide()
+                                            }
+                                        }
+
+                                )
+
+                                // Button to send the scanned code to the server
+                                IconButton(
+                                    onClick = {
+                                        // Call ViewModel method to send scanned code to server
+                                        rowKeyboardController?.hide()
+                                        if (orderId != null && orderId > 0 && scannedCode.isNotEmpty()) {
+                                            viewModel.sendScannedCode(context, orderId, scannedCode)
+                                        }
+                                        // Clear the scanned code after sending
+                                        scannedCode = ""
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.Send,
+                                        contentDescription = "Send Scanned Code"
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+
             }
-        }
-
-
-        // Screen content
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            // verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val textState = remember { mutableStateOf(TextFieldValue("")) }
-            OrderDetailsSearchView(state = textState)
-            OrderDetailList(
-                orderDetailList = orderDetailList,
-                state = textState,
-                modifier = Modifier.padding(4.dp),
-                navController = navController,
-                showEditDialog = showEditDialog,
-                snackbarHostState = snackbarHostState
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
             )
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)    
 @Preview
 @Composable
 fun OrdersScreenPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
     OrderDetailsScreen(
         navigateToEditItem = {},
+        navigateToNewItem = {},
         navigateBack = {},
         drawerState = DrawerState(DrawerValue.Closed),
         navController = NavController(LocalContext.current)
@@ -442,3 +593,110 @@ fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = 
  *     }
  * }
  */
+/*ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet = false
+                        isTextInputFocused = false
+                    },
+                    sheetState = sheetState,
+                    modifier = Modifier.nestedScroll(
+                        connection = rememberNestedScrollInteropConnection()
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isTextInputFocused) {
+                                keyboardController?.hide()
+                            }
+
+                            val rowKeyboardController = LocalSoftwareKeyboardController.current
+                            rowKeyboardController?.hide()
+                            // Icon button to show keyboard
+                            IconButton(
+                                onClick = {
+                                    // Toggle keyboard visibility
+                                    isKeyboardVisible = if (isKeyboardVisible) {
+                                        rowKeyboardController?.hide()
+                                        false
+                                    } else {
+                                        rowKeyboardController?.show()
+                                        true
+                                    }
+                                }
+                            ) {
+                                Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
+                            }
+
+                            // Text input to read scanned codes
+                            OutlinedTextField(
+                                value = scannedCode,
+                                onValueChange = {
+                                    scannedCode = it
+                                    // Check if the last character is a newline character
+                                    if (it.endsWith("\n")) {
+                                        // Call ViewModel method to send scanned code to server
+                                        if (orderId != null && orderId > 0 && scannedCode.isNotEmpty()) {
+                                            viewModel.sendScannedCode(context, orderId, scannedCode)
+                                        }
+                                        // Clear the scanned code after sending
+                                        scannedCode = ""
+                                    }
+                                },
+                                label = { Text(stringResource(R.string.order_details_qrscan_text)) },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Send,
+
+
+                                    ),
+                                keyboardActions = KeyboardActions(
+                                    onSend = {
+                                        // Call ViewModel method to send scanned code to server
+                                        if (orderId != null && orderId > 0 && scannedCode.isNotEmpty()) {
+                                            viewModel.sendScannedCode(context, orderId, scannedCode)
+                                        }
+                                        // Clear the scanned code after sending
+                                        scannedCode = ""
+                                        rowKeyboardController?.hide()
+
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 8.dp)
+                                    .focusRequester(focusRequester)
+                                    .onFocusChanged {
+                                        if (it.isFocused) {
+                                            keyboardController?.hide()
+                                        }
+                                    }
+
+                            )
+
+                            // Button to send the scanned code to the server
+                            IconButton(
+                                onClick = {
+                                    // Call ViewModel method to send scanned code to server
+                                    rowKeyboardController?.hide()
+                                    if (orderId != null && orderId > 0 && scannedCode.isNotEmpty()) {
+                                        viewModel.sendScannedCode(context, orderId, scannedCode)
+                                    }
+                                    // Clear the scanned code after sending
+                                    scannedCode = ""
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = "Send Scanned Code"
+                                )
+                            }
+                        }
+                    }
+                }
+            }*/
