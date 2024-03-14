@@ -84,7 +84,8 @@ fun OrderDetailsItem(
     onRemove: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
-    listState: LazyListState
+    listState: LazyListState,
+    modifiedItemId: Int?
 ) {
 
     val visibleState = remember { MutableTransitionState(true) }
@@ -105,7 +106,8 @@ fun OrderDetailsItem(
             navController = navController,
             navigateToEditItem = navigateToEditItem,
             onRemove = onRemove,
-            showEditDialog = showEditDialog
+            showEditDialog = showEditDialog,
+            modifiedItemId = modifiedItemId
         )
     }
 
@@ -139,8 +141,7 @@ fun OrderDetailsItem(
         }
     }
 
-}
-/*
+}/*
 // Call the SwipeToDismissItem function with an implementation of onRemove
 SwipeToDismissItem(
     visibleState = visibleState,
@@ -168,16 +169,17 @@ private fun SwipeToDismissItem(
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
     onRemove: (Int) -> Unit,
-    showEditDialog: MutableState<Boolean>
+    showEditDialog: MutableState<Boolean>,
+    modifiedItemId: Int?
 ) {
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
 
         //Only for end to start action
-
         if (it == SwipeToDismissBoxValue.EndToStart) {
             visibleState.targetState = false
             true
         } else false
+
     }, positionalThreshold = { distance -> distance * 0.5f })
 
     SwipeToDismissBox(state = dismissState,
@@ -188,13 +190,15 @@ private fun SwipeToDismissItem(
             SwipeToDismissBackground(
                 dismissState = dismissState,
             )
-        }, content = {
+        },
+        content = {
             OrderDetailsItemContent(
                 orderDetail = orderDetailsItem,
                 modifier = modifier,
                 navController = navController,
                 navigateToEditItem = navigateToEditItem,
-                showEditDialog = showEditDialog
+                showEditDialog = showEditDialog,
+                modifiedItemId = modifiedItemId
             )
         })
 }
@@ -250,7 +254,8 @@ private fun OrderDetailsItemContent(
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
-    showEditDialog: MutableState<Boolean>
+    showEditDialog: MutableState<Boolean>,
+    modifiedItemId: Int?,
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -267,13 +272,10 @@ private fun OrderDetailsItemContent(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
                         stiffness = Spring.StiffnessLow
                     )
-                ),
-            verticalArrangement = Arrangement.SpaceBetween
+                ), verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -287,9 +289,7 @@ private fun OrderDetailsItemContent(
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     modifier = Modifier.widthIn(60.dp),
@@ -302,8 +302,7 @@ private fun OrderDetailsItemContent(
                 }
                 //Spacer(Modifier.weight(0.5f))
                 Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.Start
+                    modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     OrderDetailDescriptionAndId2(
                         batch = orderDetail.batch,
@@ -324,10 +323,17 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
+                    var tint = MaterialTheme.colorScheme.secondary
+                    if (modifiedItemId == orderDetail.id) {
+                        tint = Color.Red
+                    }
+
                     ItemEditButton(
+                        tint = tint,
                         onClick = {
                             showEditDialog.value = true
                         },
+                        modifier = modifier,
                     )
                 }
             }
@@ -362,40 +368,27 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    onClick: () -> Unit, modifier: Modifier = Modifier
+    tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
-    IconButton(
-        onClick = onClick
-    ) {
+    IconButton(onClick = {
+        onClick()
+    }) {
         Icon(
             Icons.Default.Edit,
-            tint = MaterialTheme.colorScheme.secondary,
+            tint = tint,
             contentDescription = stringResource(R.string.edit_button_order_item),
             modifier = Modifier.fillMaxSize()
         )
     }
 }
 
-
-/**
- * Composable that displays a order business name and address.
- *
- * @param description is the resource ID for the string of the order description
- * @param id is the Int that represents the order id
- * @param modifier modifiers to set to this composable
- */
-
 @Composable
 fun OrderDetailDescriptionAndId(
-    articleId: Int,
-    sku: String?,
-    description: String?,
-    modifier: Modifier = Modifier
+    articleId: Int, sku: String?, description: String?, modifier: Modifier = Modifier
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
 
             Text(
@@ -424,17 +417,13 @@ fun OrderDetailDescriptionAndId(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
 
             Text(
-                text = description?.take(50) ?: "",
-                style = MaterialTheme.typography.titleMedium
+                text = description?.take(50) ?: "", style = MaterialTheme.typography.titleMedium
             )
-
         }
-
     }
 }
 
@@ -449,8 +438,7 @@ fun OrderDetailDescriptionAndId2(
 ) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.order_detail_batch),
@@ -480,20 +468,13 @@ fun OrderDetailDescriptionAndId2(
                 )
             }
         }
-
         QuantityTable(quantity, orderedQuantity, shippedQuantity)
     }
 }
 
-/**
- * Composable that displays a order info
- * @param id is the Int that represents the order id
- * @param sku is the String that represents the order sku
- */
 @Composable
 fun OrderDetailInfo(
-    completeDescription: String?,
-    modifier: Modifier = Modifier
+    completeDescription: String?, modifier: Modifier = Modifier
 
 ) {
     Column(
@@ -503,16 +484,12 @@ fun OrderDetailInfo(
     ) {
         if (completeDescription != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
             ) {
-
                 Text(
                     text = stringResource(R.string.order_detail_completeDescription),
                     style = MaterialTheme.typography.bodySmall,
                 )
-
-
                 Text(
                     text = completeDescription,
                     fontWeight = FontWeight.Bold,
@@ -526,9 +503,7 @@ fun OrderDetailInfo(
 
 @Composable
 fun QuantityTable(
-    quantity: Double,
-    orderedQuantity: Double,
-    shippedQuantity: Double
+    quantity: Double, orderedQuantity: Double, shippedQuantity: Double
 ) {
     Column(
         modifier = Modifier
@@ -546,8 +521,7 @@ fun QuantityTable(
             Row(
                 Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 VerticalDivider(
                     color = Color.Black, modifier = Modifier
@@ -555,14 +529,11 @@ fun QuantityTable(
                         .width(1.dp)
                 )
                 QuantityText(
-                    stringResource(R.string.order_detail_quantity),
-                    false,
-                    Modifier.weight(1f)
+                    stringResource(R.string.order_detail_quantity), false, Modifier.weight(1f)
                 )
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -574,8 +545,7 @@ fun QuantityTable(
                 )
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -587,12 +557,10 @@ fun QuantityTable(
                 )
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
-
             }
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
@@ -606,8 +574,7 @@ fun QuantityTable(
             ) {
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -615,8 +582,7 @@ fun QuantityTable(
                 QuantityText(quantity.toString(), true, Modifier.weight(1f))
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -624,8 +590,7 @@ fun QuantityTable(
                 QuantityText(orderedQuantity.toString(), true, Modifier.weight(1f))
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -633,14 +598,11 @@ fun QuantityTable(
                 QuantityText(shippedQuantity.toString(), true, Modifier.weight(1f))
 
                 VerticalDivider(
-                    color = Color.Black,
-                    modifier = Modifier
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
-
             }
-
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
         }
     }
@@ -648,9 +610,7 @@ fun QuantityTable(
 
 @Composable
 fun QuantityText(
-    text: String,
-    bold: Boolean = false,
-    modifier: Modifier
+    text: String, bold: Boolean = false, modifier: Modifier
 ) {
     Text(
         modifier = modifier,
@@ -715,8 +675,7 @@ fun OrderDetailCardPreview() {
 fun OrderDetailInfoPreview() {
     MastroAndroidTheme {
         OrderDetailInfo(
-            completeDescription = "completeDescription",
-            modifier = Modifier
+            completeDescription = "completeDescription", modifier = Modifier
         )
     }
 }

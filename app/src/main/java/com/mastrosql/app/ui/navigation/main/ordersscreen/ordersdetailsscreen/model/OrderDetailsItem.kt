@@ -27,7 +27,7 @@ data class OrderDetailsItem(
     @SerializedName("CORTO") val articleId: Int,
     @SerializedName("artCodi") val sku: String,
     @SerializedName("artCfor") val vendorSku: String,
-    @SerializedName("DESCRI") val description: String,
+    @SerializedName("DESCRI") val description: String?,
     @SerializedName("LIBE") val completeDescription: String,
     @SerializedName("QUAN") val quantity: Double,
     @SerializedName("quanT") val tmpQuantity: Double,

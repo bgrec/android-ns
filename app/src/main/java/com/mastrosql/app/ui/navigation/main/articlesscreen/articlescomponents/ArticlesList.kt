@@ -123,7 +123,7 @@ fun ItemsListPreview() {
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current),
-            onInsertArticleClick = {}
+            onInsertArticleClick = { }
         )
     }
 }

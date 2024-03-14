@@ -155,7 +155,7 @@ class OrderDetailsViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Collegamento riuscito ${response.code()}"
+                                "Collegamento riuscito ${response.message()}"
                             )
                             // Refresh the list
                             getOrderDetails()
@@ -293,7 +293,11 @@ class OrderDetailsViewModel(
 fun <T> List<T>.findModifiedItem(other: List<T>, comparator: (T, T) -> Boolean): Int? {
     // If sizes are different, there is a modification
     if (this.size != other.size) {
-        return other.lastIndex
+        return if (other.isEmpty()) {
+            0
+        } else {
+            other.lastIndex
+        }
     }
 
     // Check each element one by one

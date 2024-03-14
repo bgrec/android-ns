@@ -85,12 +85,17 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                 OrderDetailsScreen(
                     navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
                     navigateToNewItem = { orderId ->
-
-                        navController.navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
-                            //TODO verify if launchSigleTop is  needed
-                            launchSingleTop = true
-                        }
-
+                        //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "shouldRefresh",
+                            true
+                        )
+                        //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
+                        navController
+                            .navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
+                                //TODO verify if launchSigleTop is  needed
+                                launchSingleTop = true
+                            }
                     },
                     navigateBack = {
                         navController.navigateUp()
@@ -110,7 +115,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                 )
             ) { backStackEntry ->
                 val documentType = backStackEntry.arguments?.getString("documentType")
-                val orderId = backStackEntry.arguments?.getInt("documentId") ?: -1
+                val orderId = backStackEntry.arguments?.getInt("documentId") ?: 0
                 // You can pass documentType and orderId to ArticlesScreen
                 ArticlesScreen(
                     drawerState = drawerState,

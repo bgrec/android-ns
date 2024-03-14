@@ -31,8 +31,7 @@ fun OrderDetailList(
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     modifiedIndex: Int?,
-    onRemove: (Int) -> Unit,
-
+    onRemove: (Int) -> Unit
     ) {
 
     val listState = rememberLazyListState()
@@ -59,7 +58,7 @@ fun OrderDetailList(
         } else {
             //update this for fields to search
             orderDetailList.filter {
-                it.description.contains(searchedText, ignoreCase = true)
+                it.description?.contains(searchedText, ignoreCase = true) == true
             }
         }
 
@@ -76,14 +75,13 @@ fun OrderDetailList(
                 showEditDialog = showEditDialog,
                 snackbarHostState = snackbarHostState,
                 listState = listState,
-
+                modifiedItemId = if (orderDetailList.indexOf(orderDetail) == modifiedIndex) orderDetail.id else null
             )
         }
 
         item{
             Spacer(Modifier.height(70.dp))
         }
-
     }
 }
 

@@ -4,13 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -21,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,11 +25,11 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.ShowToast
-import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchViewOrders
 
 object OrdersResultDestination : NavigationDestination {
@@ -114,21 +108,19 @@ fun OrdersResultScreen(
 
     Scaffold(
         topBar = {
-            /*
-            Not used anymore
-             */
-//        OrdersTopAppBar(
-//            title = stringResource(OrdersResultDestination.titleRes),
-//            canNavigateBack = false,
-//            scrollBehavior = scrollBehavior
-//        )
 
-            AppBar(
+            OrdersTopAppBar(
                 drawerState = drawerState,
-                title = R.string.clients_orders_bar_title,
+                title = stringResource(R.string.clients_orders_bar_title),
+                canNavigateBack = false,
+                onAddOrderClick = {
+                    navigateToOrderEntry()
+                    showToast = true
+                }
             )
         },
-        floatingActionButton = {
+        //Not used for now, but it's a good example of how to use the FAB
+        /*floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     navigateToOrderEntry()
@@ -143,6 +135,7 @@ fun OrdersResultScreen(
                 )
             }
         },
+        floatingActionButtonPosition = FabPosition.Center,*/
     ) { innerPadding ->
         Column(
             modifier = Modifier

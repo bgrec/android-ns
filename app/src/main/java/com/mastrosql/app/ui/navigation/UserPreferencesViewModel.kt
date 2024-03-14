@@ -130,13 +130,13 @@ class UserPreferencesViewModel(
 
     fun setBaseUrl(baseUrl: String) {
         viewModelScope.launch {
-            if (try {
+            if ( try {
                     URL(baseUrl).toURI()
                     true
                 } catch (e: Exception) {
                     false
-                }
-            ) {
+                }) {
+
                 if (baseUrl.endsWith("/")) {
                     userPreferencesRepository.saveBaseUrl(baseUrl)
                 } else {

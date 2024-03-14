@@ -316,6 +316,9 @@ BEGIN
     DECLARE articleId VARCHAR(6);
     DECLARE rowExists INT;
 
+    IF LENGTH(scannedCode) < 8 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido';
+    END IF;
     -- Extract the first four characters from the scanned code
     SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
 
