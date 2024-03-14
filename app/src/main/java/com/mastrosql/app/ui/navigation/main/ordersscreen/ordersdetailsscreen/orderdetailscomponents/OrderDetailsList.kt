@@ -3,6 +3,7 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,6 +40,7 @@ fun OrderDetailList(
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     modifiedIndex: Int?,
+    onRemove: (Int) -> Unit
 
 ) {
 
@@ -66,7 +68,7 @@ fun OrderDetailList(
         } else {
             //update this for fields to search
             orderDetailList.filter {
-                it.description.contains(searchedText, ignoreCase = true)
+                it.description?.contains(searchedText, ignoreCase = true) == true
             }
         }
 
@@ -79,11 +81,16 @@ fun OrderDetailList(
                 //.focusable(),
                 navController = navController,
                 navigateToEditItem = {},
-                onRemove = { true },
+                onRemove = onRemove,
                 showEditDialog = showEditDialog,
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                modifiedItemId = if (orderDetailList.indexOf(orderDetail) == modifiedIndex) orderDetail.id else null
 
             )
+        }
+
+        item{
+            Spacer(modifier = Modifier.padding(40.dp))
         }
     }
 }

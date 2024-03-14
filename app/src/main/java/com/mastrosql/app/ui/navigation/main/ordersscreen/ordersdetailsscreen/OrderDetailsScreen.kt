@@ -28,9 +28,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -278,18 +280,25 @@ fun OrderDetailResultScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(stringResource(R.string.open_scanner)) },
-                icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scanner") },
+            FloatingActionButton(
+                // text = { Text(stringResource(R.string.open_scanner)) },
+                //icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scanner") },
                 onClick = {
                     showBottomSheet = true
                     isKeyboardVisible = false
 
                 },
-            )
-        }
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.QrCodeScanner,
+                    contentDescription = stringResource(id = R.string.open_scanner)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
 
-    ) { innerPadding ->
+        ) { innerPadding ->
         //Box used for pull to refresh
         Box(
             modifier = modifier
@@ -303,6 +312,7 @@ fun OrderDetailResultScreen(
             ) {
                 // Screen content
                 val textState = remember { mutableStateOf(TextFieldValue("")) }
+
                 OrderDetailsSearchView(state = textState)
 
                 OrderDetailList(
@@ -314,7 +324,10 @@ fun OrderDetailResultScreen(
                         .weight(if (showBottomSheet) 0.5f else 1f),
                     navController = navController,
                     showEditDialog = showEditDialog,
-                    snackbarHostState = snackbarHostState
+                    snackbarHostState = snackbarHostState,
+                    onRemove = { orderDetailItemId ->
+                        //viewModel.removeOrderDetailsItem(orderDetailItemId)
+                    },
                 )
 
                 if (showEditDialog.value) {

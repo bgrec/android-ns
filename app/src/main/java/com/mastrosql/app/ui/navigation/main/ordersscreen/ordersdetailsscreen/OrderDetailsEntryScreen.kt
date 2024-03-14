@@ -115,7 +115,7 @@ fun OrderDetailsItemInputForm(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         OutlinedTextField(
-            value = orderDetailsItem.description,
+            value = orderDetailsItem.description?:"",
             onValueChange = { onValueChange(orderDetailsItem.copy(description = it)) },
             label = { Text(stringResource(R.string.item_name_req)) },
             colors = OutlinedTextFieldDefaults.colors(

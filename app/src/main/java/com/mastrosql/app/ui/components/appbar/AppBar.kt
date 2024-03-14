@@ -57,7 +57,7 @@ fun AppBar(
 }
 
 @Composable
-private fun DrawerIcon(drawerState: DrawerState) {
+fun DrawerIcon(drawerState: DrawerState) {
     val coroutineScope = rememberCoroutineScope()
     IconButton(onClick = {
         coroutineScope.launch {
