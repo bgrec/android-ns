@@ -5,6 +5,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.cert.X509Certificate
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -62,6 +63,10 @@ object RetrofitInstance {
                     .sslSocketFactory(sslSocketFactory, trustAllCertificates[0] as X509TrustManager)
                     .hostnameVerifier { _, _ -> true }
                     .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                    //todo check/change timeout seconds
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
                     .build()
             )
             .build()

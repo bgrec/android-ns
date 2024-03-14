@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -144,6 +145,8 @@ class OrderDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.sendScannedCode(orderId, scannedCode)
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
 
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
@@ -153,6 +156,96 @@ class OrderDetailsViewModel(
                                 context,
                                 Toast.LENGTH_SHORT,
                                 "Collegamento riuscito ${response.code()}"
+                            )
+                            // Refresh the list
+                            getOrderDetails()
+                        }
+                        //TODO: Add other status codes and handle them
+                        404 -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "Collegamento riuscito, api not trovata ${response.code()}"
+                        )
+
+                        500 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
+
+                        503 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
+
+                        else -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "Errore api: ${response.code()}"
+                        )
+                    }
+                }
+
+            } catch (e: IOException) {
+                // Handle IOException (e.g., network error)
+                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+            } catch (e: HttpException) {
+                // Handle HttpException (e.g., non-2xx response)
+                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                showToast(
+                    context,
+                    Toast.LENGTH_LONG,
+                    "Connection timed out. Please try again later."
+                )
+            } catch (e: Exception) {
+                // Handle generic exception
+                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+            }
+        }
+    }
+
+    //Get the message in the body
+    private fun parseErrorMessage(errorBody: String?): String {
+            val jsonError = JSONObject(errorBody?: "null")
+            return jsonError.optString("message")
+    }
+
+
+     private fun showToast(context: Context, toastLength: Int, message: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (message.isNotEmpty()) {
+                val toast = Toast.makeText(context, message, toastLength)
+                //Error for toast gravity with message
+                //toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            } else {
+                // Hide loading message by not showing any toast
+            }
+        }
+    }
+
+
+    //delete the item of orderDetail
+    fun deleteDetailItem(context: Context, orderDetailId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = orderDetailsRepository.deleteDetailItem(orderDetailId)
+
+                // Handle the response status code
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        200 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Riga cancellata con successo ${response.code()}"
                             )
                             // Refresh the list
                             getOrderDetails()
@@ -192,18 +285,8 @@ class OrderDetailsViewModel(
         }
     }
 
-    private fun showToast(context: Context, toastLength: Int, message: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (message.isNotEmpty()) {
-                val toast = Toast.makeText(context, message, toastLength)
-                //Error for toast gravity with message
-                //toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            } else {
-                // Hide loading message by not showing any toast
-            }
-        }
-    }
+
+
 }
 
 //Function to find the modified item in the list

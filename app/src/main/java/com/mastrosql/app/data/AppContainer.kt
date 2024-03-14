@@ -100,7 +100,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override fun updateRetrofitService(newBaseUrl: String) {
         //Update the retrofit service in all the repositories
-        if (isValidUrl(newBaseUrl)) {
+        if (isValidUrl(newBaseUrl) && newBaseUrl.endsWith("/") && newBaseUrl != "/"){
             mastroAndroidApiService = RetrofitInstance.updateBaseUrl(newBaseUrl)
 
             customersMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)

@@ -77,4 +77,10 @@ class NetworkOrderDetailsRepository(
         return mastroAndroidApiService.sendScannedCode(body)
     }
 
+    override suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject> {
+        val filter = "{\"numePro\": $orderDetailId}"
+
+        return mastroAndroidApiService.deleteDetailItem(filter)
+    }
+
 }

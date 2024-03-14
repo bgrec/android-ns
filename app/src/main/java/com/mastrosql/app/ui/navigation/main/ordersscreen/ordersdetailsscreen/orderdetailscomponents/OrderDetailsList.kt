@@ -3,25 +3,18 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
-
 import androidx.compose.material3.SnackbarHostState
-
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -29,7 +22,6 @@ import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
@@ -37,10 +29,11 @@ fun OrderDetailList(
     modifier: Modifier = Modifier,
     navController: NavController,
     showEditDialog: MutableState<Boolean>,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
     modifiedIndex: Int?,
+    onRemove: (Int) -> Unit,
 
-) {
+    ) {
 
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
@@ -79,12 +72,18 @@ fun OrderDetailList(
                 //.focusable(),
                 navController = navController,
                 navigateToEditItem = {},
-                onRemove = { true },
+                onRemove = onRemove,
                 showEditDialog = showEditDialog,
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                listState = listState,
 
             )
         }
+
+        item{
+            Spacer(Modifier.height(70.dp))
+        }
+
     }
 }
 

@@ -8,8 +8,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -79,15 +81,22 @@ fun OrderDetailsItem(
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
-    onRemove: (OrderDetailsItem) -> Boolean,
+    onRemove: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    listState: LazyListState
 ) {
 
     val visibleState = remember { MutableTransitionState(true) }
 
     AnimatedVisibility(
-        visibleState = visibleState, enter = fadeIn(spring()),exit = fadeOut(spring())
+        visibleState = visibleState,
+        enter = slideInHorizontally(
+            animationSpec = tween(durationMillis = 500),
+            initialOffsetX = { distance -> distance * -2 }),
+        exit = slideOutHorizontally(
+            animationSpec = tween(durationMillis = 500),
+            targetOffsetX = { it / -96 })
     ) {
         SwipeToDismissItem(
             visibleState = visibleState,
@@ -116,10 +125,14 @@ fun OrderDetailsItem(
                 when (result) {
                     SnackbarResult.ActionPerformed -> {
                         visibleState.targetState = true
+
+                        if (listState.firstVisibleItemScrollOffset == 0) {
+                            listState.animateScrollToItem(listState.firstVisibleItemScrollOffset)
+                        }
                     }
 
                     SnackbarResult.Dismissed -> {
-
+                        onRemove(orderDetailsItem.id)
                     }
                 }
             }
@@ -154,19 +167,16 @@ private fun SwipeToDismissItem(
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
-    onRemove: (OrderDetailsItem) -> Boolean,
+    onRemove: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>
 ) {
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
-        /*
-        Only for end to start action
-         */
+
+        //Only for end to start action
+
         if (it == SwipeToDismissBoxValue.EndToStart) {
-            // Call onRemove and set the visible state based on its result
-            val shouldRemove = onRemove(orderDetailsItem)
-            visibleState.targetState = !shouldRemove
-            // Return true only if onRemove returns true
-            shouldRemove
+            visibleState.targetState = false
+            true
         } else false
     }, positionalThreshold = { distance -> distance * 0.5f })
 

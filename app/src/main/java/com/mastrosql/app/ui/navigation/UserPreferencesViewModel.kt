@@ -15,9 +15,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.net.URL
 import java.util.EnumMap
 
 class UserPreferencesViewModel(
@@ -128,7 +130,19 @@ class UserPreferencesViewModel(
 
     fun setBaseUrl(baseUrl: String) {
         viewModelScope.launch {
-            userPreferencesRepository.saveBaseUrl(baseUrl)
+            if (try {
+                    URL(baseUrl).toURI()
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            ) {
+                if (baseUrl.endsWith("/")) {
+                    userPreferencesRepository.saveBaseUrl(baseUrl)
+                } else {
+                    userPreferencesRepository.saveBaseUrl("$baseUrl/")
+                }
+            }
         }
     }
 
@@ -154,6 +168,8 @@ class UserPreferencesViewModel(
             try {
                 // Perform a test API call using the repository's service
                 val response = userPreferencesRepository.testApiCall()
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
 
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
@@ -161,8 +177,22 @@ class UserPreferencesViewModel(
                         200 -> showToast(context, "Collegamento riuscito ${response.code()}")
                         404 -> showToast(
                             context,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
+                            "Collegamento riuscito, api non trovata ${response.code()}"
                         )
+
+                        500 -> {
+                            showToast(
+                                context,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
+
+                        503 -> {
+                            showToast(
+                                context,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
 
                         else -> showToast(context, "Errore api: ${response.code()}")
                     }
@@ -181,6 +211,11 @@ class UserPreferencesViewModel(
                 showToast(context, "An unexpected error occurred: ${e.message}")
             }
         }
+    }
+
+    private fun parseErrorMessage(errorBody: String?): String {
+        val jsonError = JSONObject(errorBody?: "null")
+        return jsonError.optString("message")
     }
 
     private fun showToast(context: Context, message: String) {

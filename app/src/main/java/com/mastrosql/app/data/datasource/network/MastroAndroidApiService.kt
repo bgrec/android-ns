@@ -8,6 +8,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Query
@@ -87,6 +88,11 @@ interface MastroAndroidApiService {
     @PUT("OrderBarcodeReader")
     suspend fun sendScannedCode(
         @Body body: JsonObject
+    ): Response<JsonObject>
+
+    @DELETE("rigOrdc")
+    suspend fun deleteDetailItem(
+        @Query("q") filter: String,
     ): Response<JsonObject>
 
     @PUT("InsertArticleIntoDocument")
