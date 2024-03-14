@@ -117,7 +117,7 @@ class ArticlesViewModel(
                                 Toast.LENGTH_SHORT,
                                 "Collegamento riuscito ${response.code()}"
                             )
-                            delay(1000L)
+
                             onInsertionComplete()
                         }
                         //TODO: Add other status codes and handle them

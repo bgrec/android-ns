@@ -37,7 +37,7 @@ fun OrderDetailList(
     modifier: Modifier = Modifier,
     navController: NavController,
     showEditDialog: MutableState<Boolean>,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
     modifiedIndex: Int?,
 
 ) {

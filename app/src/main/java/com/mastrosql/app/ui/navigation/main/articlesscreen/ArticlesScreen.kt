@@ -60,7 +60,9 @@ fun ArticlesScreen(
                 documentId = articlesUiState.documentId,
                 documentType = articlesUiState.documentType,
                 articleId = articleId,
-                onInsertionComplete = { navController.popBackStack() }
+                onInsertionComplete = {
+                    navController.navigateUp()
+                }
             )
         }
 

@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.net.URL
 import java.util.EnumMap
 
 class UserPreferencesViewModel(
@@ -128,7 +129,18 @@ class UserPreferencesViewModel(
 
     fun setBaseUrl(baseUrl: String) {
         viewModelScope.launch {
-            userPreferencesRepository.saveBaseUrl(baseUrl)
+            if ( try {
+                    URL(baseUrl).toURI()
+                    true
+                } catch (e: Exception) {
+                    false
+                }) {
+                if (baseUrl.endsWith("/")) {
+                    userPreferencesRepository.saveBaseUrl(baseUrl)
+                } else {
+                    userPreferencesRepository.saveBaseUrl("$baseUrl/")
+                }
+            }
         }
     }
 

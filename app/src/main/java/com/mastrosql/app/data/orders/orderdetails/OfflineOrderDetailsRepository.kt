@@ -36,7 +36,6 @@ class OfflineOrderDetailsRepository(
         TODO()
     }
 
-
     override suspend fun deleteOrderDetails(orderDetail: OrderDetailsItem) =
         orderDetailDao.delete(orderDetail)
 
