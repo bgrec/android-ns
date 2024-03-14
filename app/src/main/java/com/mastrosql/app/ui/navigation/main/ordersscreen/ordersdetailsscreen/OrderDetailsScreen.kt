@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -281,8 +282,6 @@ fun OrderDetailResultScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                // text = { Text(stringResource(R.string.open_scanner)) },
-                //icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scanner") },
                 onClick = {
                     showBottomSheet = true
                     isKeyboardVisible = false
@@ -299,6 +298,7 @@ fun OrderDetailResultScreen(
         floatingActionButtonPosition = FabPosition.End,
 
         ) { innerPadding ->
+      
         //Box used for pull to refresh
         Box(
             modifier = modifier
@@ -325,9 +325,9 @@ fun OrderDetailResultScreen(
                     navController = navController,
                     showEditDialog = showEditDialog,
                     snackbarHostState = snackbarHostState,
-                    onRemove = { orderDetailItemId ->
-                        //viewModel.removeOrderDetailsItem(orderDetailItemId)
-                    },
+                    onRemove = {orderDetailsItemId -> 
+                      viewModel.deleteDetailItem(context, orderDetailsItemId) 
+                    }
                 )
 
                 if (showEditDialog.value) {

@@ -49,4 +49,8 @@ class OfflineOrderDetailsRepository(
     override suspend fun sendScannedCode(orderId: Int, scannedCode: String): Response<JsonObject> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
 }

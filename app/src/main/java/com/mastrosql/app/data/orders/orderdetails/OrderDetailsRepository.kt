@@ -55,4 +55,6 @@ interface OrderDetailsRepository {
      * Sends the scanned code to the server
      */
     suspend fun sendScannedCode(orderId: Int, scannedCode: String): Response<JsonObject>
+
+    suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject>
 }
