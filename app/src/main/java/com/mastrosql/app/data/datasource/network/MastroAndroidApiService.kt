@@ -100,6 +100,10 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    @PUT("duplicateOrderRow")
+    suspend fun duplicateDetailItem(
+        @Body body: JsonObject
+    ): Response<JsonObject>
 }
 
 

@@ -83,4 +83,11 @@ class NetworkOrderDetailsRepository(
         return mastroAndroidApiService.deleteDetailItem(filter)
     }
 
+    override suspend fun duplicateDetailItem(orderDetailId: Int): Response<JsonObject> {
+        val body = JsonObject().apply {
+            addProperty("orderDetailId", orderDetailId)
+        }
+        return mastroAndroidApiService.duplicateDetailItem(body)
+    }
+
 }
