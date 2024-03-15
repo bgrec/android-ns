@@ -72,7 +72,6 @@ import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -116,32 +115,34 @@ fun OrderDetailsItem(
     val messageText = stringResource(R.string.deleted_item_snackbar_text)
     val dismissText = stringResource(R.string.dismiss_button)
 
-    LaunchedEffect(visibleState.targetState) {
-        if (!visibleState.targetState) {
-            scope.launch {
-                val result = snackbarHostState.showSnackbar(
-                    message = messageText,
-                    actionLabel = dismissText,
-                    duration = SnackbarDuration.Short
-                )
-                when (result) {
-                    SnackbarResult.ActionPerformed -> {
-                        visibleState.targetState = true
+    if (!visibleState.targetState) {
+        LaunchedEffect(visibleState.targetState) {
+            val result = snackbarHostState.showSnackbar(
+                message = messageText,
+                actionLabel = dismissText,
+                duration = SnackbarDuration.Short
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> {
+                    visibleState.targetState = true
 
-                        if (listState.firstVisibleItemScrollOffset == 0) {
-                            listState.animateScrollToItem(listState.firstVisibleItemScrollOffset)
-                        }
+                    if (listState.firstVisibleItemScrollOffset == 0) {
+                        listState.animateScrollToItem(listState.firstVisibleItemScrollOffset)
                     }
+                }
 
-                    SnackbarResult.Dismissed -> {
+                SnackbarResult.Dismissed -> {
+                    // Ensure that removal only happens if the row is not visible
+                    if (!visibleState.currentState) {
                         onRemove(orderDetailsItem.id)
                     }
                 }
             }
         }
     }
+}
 
-}/*
+/*
 // Call the SwipeToDismissItem function with an implementation of onRemove
 SwipeToDismissItem(
     visibleState = visibleState,
@@ -180,7 +181,7 @@ private fun SwipeToDismissItem(
             true
         } else false
 
-    }, positionalThreshold = { distance -> distance * 0.5f })
+    }, positionalThreshold = { distance -> distance * 0.6f })
 
     SwipeToDismissBox(state = dismissState,
         modifier = Modifier,
@@ -323,7 +324,8 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    var tint = MaterialTheme.colorScheme.secondary
+                    val defaultTint = MaterialTheme.colorScheme.secondary
+                    var tint by remember { mutableStateOf(if (modifiedItemId == orderDetail.id) Color.Red else defaultTint) }
                     if (modifiedItemId == orderDetail.id) {
                         tint = Color.Red
                     }
@@ -332,6 +334,7 @@ private fun OrderDetailsItemContent(
                         tint = tint,
                         onClick = {
                             showEditDialog.value = true
+                            tint =Color.Red
                         },
                         modifier = modifier,
                     )
@@ -368,10 +371,13 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier
+    tint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(onClick = {
         onClick()
+
     }) {
         Icon(
             Icons.Default.Edit,

@@ -156,11 +156,11 @@ SELECT
      TRIM(arti.REPA_SOTTO) AS REPA_SOTTO,
      TRIM(arti.GRUPPO) AS GRUPPO,
      TRIM(arti.MISU) AS MISU,
-    CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'),  EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'))))  AS EAN_8,
-    CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'), EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0')))) AS EAN_13,
-    IFNULL(GROUP_CONCAT(TRIM(art_alt.COD_ALT), '|'), '') AS EAN_ALT
+    /*CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'),  EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'))))*/''  AS EAN_8,
+    /*CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'), EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'))))*/'' AS EAN_13,
+    /*IFNULL(GROUP_CONCAT(TRIM(art_alt.COD_ALT), '|'), '')*/'' AS EAN_ALT
 FROM arti
-LEFT JOIN (
+/*LEFT JOIN (
     SELECT
         CORTO,
         COD_ALT,
@@ -184,7 +184,7 @@ GROUP BY
     arti.REPA,
     arti.REPA_SOTTO,
     arti.GRUPPO,
-    arti.MISU;
+    arti.MISU*/;
 
 
 ####################################################################################################
@@ -287,37 +287,9 @@ BEGIN
     DECLARE articleId VARCHAR(6);
     DECLARE rowExists INT;
 
-    -- Extract the first four characters from the scanned code
-    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
-
-    -- Check if a row with the given conditions exists
-    SELECT COUNT(*)
-    INTO rowExists
-    FROM rig_ordc
-    WHERE NUME = orderId
-      AND CORTO = articleId;
-
-    -- If the row does not exist, insert a new row into the rig_ordc table
-    IF rowExists = 0 THEN
-        -- Insert a new row into the rig_ordc table with the scanned code
-        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
-    ELSE
-        -- Update the row in the rig_ordc table with the scanned code
-        UPDATE rig_ordc
-        SET QUAN = QUAN + 1
-        WHERE NUME = orderId
-          AND CORTO = articleId;
-    END IF;
-END;
-
-DROP PROCEDURE IF EXISTS OrderBarcodeReader;
-CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
-BEGIN
-    DECLARE articleId VARCHAR(6);
-    DECLARE rowExists INT;
-
     IF LENGTH(scannedCode) < 8 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido', MYSQL_ERRNO = 5400;
+
     END IF;
     -- Extract the first four characters from the scanned code
     SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
@@ -467,3 +439,48 @@ BEGIN
     END IF;
 
 END;
+
+CREATE TABLE IF NOT EXISTS user (
+  `id` BINARY(16) NOT NULL,
+  `nickname` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS DuplicateOrderRow;
+CREATE PROCEDURE DuplicateOrderRow(
+    IN orderDetailId INT
+)
+BEGIN
+    DECLARE orderId INT;
+    DECLARE articleId INT;
+    DECLARE quantity DECIMAL(11, 5);
+    DECLARE orderedQuantity DECIMAL(11, 5);
+    DECLARE batch VARCHAR(255);
+    DECLARE expiryDate DATE;
+
+    -- Retrieve the order ID, article ID, quantity, ordered quantity, batch, and expiry date
+    /*SELECT NUME, CORTO, QUAN, QTA, BATCH, SCADENZA
+    INTO orderId, articleId, quantity, orderedQuantity, batch, expiryDate
+    FROM rig_ordc
+    WHERE RIGA = orderDetailItemId;
+
+    -- Insert a new row into the rig_ordc table with the same details as the selected row
+    CALL InsertRowIntoRigOrdC(orderId, articleId, quantity, orderedQuantity, batch, expiryDate);*/
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not implemented', MYSQL_ERRNO = 5400;
+END;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS LoginConfirmation;
+CREATE PROCEDURE LoginConfirmation(
+    IN app varchar(255),
+    IN login varchar(255)
+)
+BEGIN
+    IF login <> 'succes' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+    END IF;
+
+END;
+

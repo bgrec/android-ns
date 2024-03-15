@@ -32,7 +32,7 @@ fun OrderDetailList(
     snackbarHostState: SnackbarHostState,
     modifiedIndex: Int?,
     onRemove: (Int) -> Unit
-    ) {
+) {
 
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
@@ -62,7 +62,12 @@ fun OrderDetailList(
             }
         }
 
-        items(filteredList) { orderDetail ->
+        items(
+            filteredList,
+            key = {
+                it.id
+            })
+        { orderDetail ->
             OrderDetailsItem(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
@@ -79,7 +84,7 @@ fun OrderDetailList(
             )
         }
 
-        item{
+        item {
             Spacer(Modifier.height(70.dp))
         }
     }
