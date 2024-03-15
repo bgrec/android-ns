@@ -221,7 +221,7 @@ class OrderDetailsViewModel(
     }
 
 
-     private fun showToast(context: Context, toastLength: Int, message: String) {
+    private fun showToast(context: Context, toastLength: Int, message: String) {
         CoroutineScope(Dispatchers.Main).launch {
             if (message.isNotEmpty()) {
                 val toast = Toast.makeText(context, message, toastLength)
@@ -288,7 +288,6 @@ class OrderDetailsViewModel(
         }
     }
 
-
     fun duplicateDetailItem(context: Context, orderDetailId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -341,20 +340,15 @@ class OrderDetailsViewModel(
             }
         }
     }
-
-
-
 }
 
 //Function to find the modified item in the list
 fun <T> List<T>.findModifiedItem(other: List<T>, comparator: (T, T) -> Boolean): Int? {
     // If sizes are different, there is a modification
-    if (this.size != other.size) {
-        return if (other.isEmpty()) {
-            0
-        } else {
-            other.lastIndex
-        }
+    if (this.size < other.size) {
+        return other.lastIndex
+    } else if (this.size > other.size) {
+        return null
     }
 
     // Check each element one by one

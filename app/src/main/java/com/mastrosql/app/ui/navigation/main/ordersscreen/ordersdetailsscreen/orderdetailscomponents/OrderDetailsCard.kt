@@ -74,7 +74,6 @@ import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -131,8 +130,11 @@ fun OrderDetailsItem(
                             listState.animateScrollToItem(0)
                         }
                     }
+                }
 
-                    SnackbarResult.Dismissed -> {
+                SnackbarResult.Dismissed -> {
+                    // Ensure that removal only happens if the row is not visible
+                    if (!visibleState.currentState) {
                         onRemove(orderDetailsItem.id)
                     }
                 }
@@ -140,6 +142,7 @@ fun OrderDetailsItem(
         }
     }
 }/*
+
 // Call the SwipeToDismissItem function with an implementation of onRemove
 SwipeToDismissItem(
     visibleState = visibleState,
@@ -186,6 +189,7 @@ private fun SwipeToDismissItem(
         }
 
     }, positionalThreshold = { distance -> distance * 0.4f })
+
 
     SwipeToDismissBox(
         state = dismissState,
@@ -331,7 +335,8 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    var tint = MaterialTheme.colorScheme.secondary
+                    val defaultTint = MaterialTheme.colorScheme.secondary
+                    var tint by remember { mutableStateOf(if (modifiedItemId == orderDetail.id) Color.Red else defaultTint) }
                     if (modifiedItemId == orderDetail.id) {
                         tint = Color.Red
                     }
@@ -340,6 +345,7 @@ private fun OrderDetailsItemContent(
                         tint = tint,
                         onClick = {
                             showEditDialog.value = true
+                            tint =Color.Red
                         },
                         modifier = modifier,
                     )
@@ -376,10 +382,13 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier
+    tint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(onClick = {
         onClick()
+
     }) {
         Icon(
             Icons.Default.Edit,

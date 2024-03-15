@@ -69,8 +69,10 @@ fun OrderDetailList(
 
         items(
             filteredList,
-            key = { it.id }
-        ) { orderDetail ->
+            key = {
+                it.id
+            })
+        { orderDetail ->
             OrderDetailsItem(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
@@ -88,6 +90,9 @@ fun OrderDetailList(
             )
         }
 
+        //item {
+            //Spacer(Modifier.height(70.dp))
+        //}
     }
 }
 
