@@ -3,9 +3,11 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +17,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -31,8 +34,9 @@ fun OrderDetailList(
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     modifiedIndex: Int?,
-    onRemove: (Int) -> Unit
-    ) {
+    onRemove: (Int) -> Unit,
+    onDuplicate: (Int) -> Unit
+) {
 
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
@@ -48,6 +52,7 @@ fun OrderDetailList(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth()
+            .fillMaxHeight()
     )
     {
         val filteredList: List<OrderDetailsItem>
@@ -62,7 +67,10 @@ fun OrderDetailList(
             }
         }
 
-        items(filteredList) { orderDetail ->
+        items(
+            filteredList,
+            key = { it.id }
+        ) { orderDetail ->
             OrderDetailsItem(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
@@ -75,15 +83,14 @@ fun OrderDetailList(
                 showEditDialog = showEditDialog,
                 snackbarHostState = snackbarHostState,
                 listState = listState,
-                modifiedItemId = if (orderDetailList.indexOf(orderDetail) == modifiedIndex) orderDetail.id else null
+                modifiedItemId = if (orderDetailList.indexOf(orderDetail) == modifiedIndex) orderDetail.id else null,
+                onDuplicate = onDuplicate
             )
         }
 
-        item{
-            Spacer(Modifier.height(70.dp))
-        }
     }
 }
+
 
 /*
 @Preview

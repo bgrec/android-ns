@@ -53,4 +53,8 @@ class OfflineOrderDetailsRepository(
     override suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun duplicateDetailItem(orderDetailId: Int): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
 }

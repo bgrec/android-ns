@@ -201,7 +201,7 @@
     <string name="open_scanner">Apri il scanner</string>
     <string name="hide_scanner">Nascondi il scanner</string>
     <string name="barcode">barcode</string>
-    <string name="order_details_dialog_edit_title">Modifica riga</string>
+    <string name="order_details_dialog_edit_title">Modifica riga ordine</string>
     <string name="confirm_button">Conferma</string>
     <string name="dismiss_button">Annulla</string>
     <string name="order_details_dialog_edit_batch">Lotto</string>

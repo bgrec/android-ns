@@ -155,7 +155,7 @@ class OrderDetailsViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Collegamento riuscito ${response.message()}"
+                                "Articolo inserito con successo " //${response.code()}
                             )
                             // Refresh the list
                             getOrderDetails()
@@ -213,8 +213,11 @@ class OrderDetailsViewModel(
 
     //Get the message in the body
     private fun parseErrorMessage(errorBody: String?): String {
-            val jsonError = JSONObject(errorBody?: "null")
-            return jsonError.optString("message")
+        if (errorBody != null) {
+            val jsonError = JSONObject(errorBody)
+            return jsonError.optString("message","{}")
+        }
+        return "{}"
     }
 
 
@@ -245,7 +248,7 @@ class OrderDetailsViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Riga cancellata con successo ${response.code()}"
+                                "Riga eliminata con successo ${response.code()}"
                             )
                             // Refresh the list
                             getOrderDetails()
@@ -255,6 +258,60 @@ class OrderDetailsViewModel(
                             context,
                             Toast.LENGTH_LONG,
                             "Collegamento riuscito, api not trovata ${response.code()}"
+                        )
+
+                        else -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "Errore api: ${response.code()}"
+                        )
+                    }
+                }
+
+            } catch (e: IOException) {
+                // Handle IOException (e.g., network error)
+                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+            } catch (e: HttpException) {
+                // Handle HttpException (e.g., non-2xx response)
+                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                showToast(
+                    context,
+                    Toast.LENGTH_LONG,
+                    "Connection timed out. Please try again later."
+                )
+            } catch (e: Exception) {
+                // Handle generic exception
+                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+            }
+        }
+    }
+
+
+    fun duplicateDetailItem(context: Context, orderDetailId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = orderDetailsRepository.duplicateDetailItem(orderDetailId)
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
+                // Handle the response status code
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        200 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "$errorMessage ${response.code()}"
+                            )
+                            // Refresh the list
+                            getOrderDetails()
+                        }
+                        //TODO: Add other status codes and handle them
+                        404 -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "errore ${response.code()}"
                         )
 
                         else -> showToast(

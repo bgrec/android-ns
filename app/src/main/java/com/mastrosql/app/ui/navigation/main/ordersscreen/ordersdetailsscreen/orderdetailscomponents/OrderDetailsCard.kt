@@ -9,8 +9,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListState
@@ -85,19 +87,16 @@ fun OrderDetailsItem(
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     listState: LazyListState,
-    modifiedItemId: Int?
+    modifiedItemId: Int?,
+    onDuplicate: (Int) -> Unit
 ) {
 
     val visibleState = remember { MutableTransitionState(true) }
 
     AnimatedVisibility(
         visibleState = visibleState,
-        enter = slideInHorizontally(
-            animationSpec = tween(durationMillis = 500),
-            initialOffsetX = { distance -> distance * -2 }),
-        exit = slideOutHorizontally(
-            animationSpec = tween(durationMillis = 500),
-            targetOffsetX = { it / -96 })
+        enter = expandIn(animationSpec = tween(700)),
+        exit = shrinkOut(animationSpec = tween(700)) + fadeOut(),
     ) {
         SwipeToDismissItem(
             visibleState = visibleState,
@@ -105,9 +104,9 @@ fun OrderDetailsItem(
             modifier = modifier,
             navController = navController,
             navigateToEditItem = navigateToEditItem,
-            onRemove = onRemove,
             showEditDialog = showEditDialog,
-            modifiedItemId = modifiedItemId
+            modifiedItemId = modifiedItemId,
+            onDuplicate = onDuplicate
         )
     }
 
@@ -116,20 +115,20 @@ fun OrderDetailsItem(
     val messageText = stringResource(R.string.deleted_item_snackbar_text)
     val dismissText = stringResource(R.string.dismiss_button)
 
-    LaunchedEffect(visibleState.targetState) {
-        if (!visibleState.targetState) {
+    if (!visibleState.targetState && visibleState.isIdle) {
+        LaunchedEffect(visibleState.targetState) {
             scope.launch {
                 val result = snackbarHostState.showSnackbar(
                     message = messageText,
                     actionLabel = dismissText,
                     duration = SnackbarDuration.Short
                 )
+
                 when (result) {
                     SnackbarResult.ActionPerformed -> {
                         visibleState.targetState = true
-
                         if (listState.firstVisibleItemScrollOffset == 0) {
-                            listState.animateScrollToItem(listState.firstVisibleItemScrollOffset)
+                            listState.animateScrollToItem(0)
                         }
                     }
 
@@ -140,7 +139,6 @@ fun OrderDetailsItem(
             }
         }
     }
-
 }/*
 // Call the SwipeToDismissItem function with an implementation of onRemove
 SwipeToDismissItem(
@@ -168,21 +166,29 @@ private fun SwipeToDismissItem(
     modifier: Modifier,
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
-    onRemove: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    modifiedItemId: Int?
+    modifiedItemId: Int?,
+    onDuplicate: (Int) -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
 
         //Only for end to start action
-        if (it == SwipeToDismissBoxValue.EndToStart) {
-            visibleState.targetState = false
-            true
-        } else false
+        when (it) {
+            SwipeToDismissBoxValue.EndToStart -> {
+                visibleState.targetState = false
+                true
+            }
+            SwipeToDismissBoxValue.StartToEnd -> {
+                onDuplicate(orderDetailsItem.id)
+                false
+            }
+            else -> false
+        }
 
-    }, positionalThreshold = { distance -> distance * 0.5f })
+    }, positionalThreshold = { distance -> distance * 0.4f })
 
-    SwipeToDismissBox(state = dismissState,
+    SwipeToDismissBox(
+        state = dismissState,
         modifier = Modifier,
         enableDismissFromEndToStart = true,
         enableDismissFromStartToEnd = true,
@@ -219,9 +225,7 @@ private fun SwipeToDismissBackground(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .background(color)
-            .padding(16.dp, 2.dp)
-            .fillMaxHeight(),
+            .background(color),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -229,19 +233,23 @@ private fun SwipeToDismissBackground(
             Icon(
                 imageVector = Icons.Default.EditNote,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(id = R.string.delete),
-                modifier = Modifier.fillMaxHeight()
+                contentDescription = stringResource(id = R.string.order_details_edit),
+                modifier = Modifier
+                    .weight(1f)
+                    .size(35.dp)
             )
         }
 
-        Spacer(Modifier)
+        Spacer(Modifier.weight(5f))
 
         if (direction == SwipeToDismissBoxValue.EndToStart) {
             Icon(
                 Icons.Default.Delete,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(id = R.string.order_details_edit),
-                modifier = Modifier.fillMaxHeight()
+                contentDescription = stringResource(id = R.string.delete),
+                modifier = Modifier
+                    .weight(1f)
+                    .size(28.dp)
             )
         }
     }

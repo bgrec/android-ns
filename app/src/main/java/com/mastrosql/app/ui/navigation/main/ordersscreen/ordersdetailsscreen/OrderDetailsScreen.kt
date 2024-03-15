@@ -327,7 +327,9 @@ fun OrderDetailResultScreen(
                     snackbarHostState = snackbarHostState,
                     onRemove = {orderDetailsItemId -> 
                       viewModel.deleteDetailItem(context, orderDetailsItemId) 
-                    }
+                    },
+                    onDuplicate = {orderDetailsItemId ->
+                        viewModel.duplicateDetailItem(context, orderDetailsItemId)}
                 )
 
                 if (showEditDialog.value) {

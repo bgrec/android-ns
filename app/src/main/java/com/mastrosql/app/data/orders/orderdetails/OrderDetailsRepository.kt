@@ -56,5 +56,10 @@ interface OrderDetailsRepository {
      */
     suspend fun sendScannedCode(orderId: Int, scannedCode: String): Response<JsonObject>
 
+    /**
+    * Delete an item in the order
+    */
     suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject>
+
+    suspend fun duplicateDetailItem(orderDetailId: Int): Response<JsonObject>
 }
