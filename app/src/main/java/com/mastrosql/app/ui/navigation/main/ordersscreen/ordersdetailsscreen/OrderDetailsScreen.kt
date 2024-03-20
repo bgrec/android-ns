@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
@@ -55,6 +56,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -201,6 +203,9 @@ fun OrderDetailResultScreen(
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
 
+    //create a FocusManager
+    val focusManager = LocalFocusManager.current
+
     // State to track keyboard visibility
     var isKeyboardVisible by remember { mutableStateOf(false) }
 
@@ -265,6 +270,12 @@ fun OrderDetailResultScreen(
     }
 
     Scaffold(
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            },
         topBar = {
             OrderDetailsTopAppBar(
                 title = stringResource(

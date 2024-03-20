@@ -1,11 +1,13 @@
 package com.mastrosql.app.data.orders
 
 import androidx.work.WorkInfo
+import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 class OfflineOrdersRepository(
     private val ordersDao: OrdersDao,
@@ -25,6 +27,10 @@ class OfflineOrdersRepository(
 
     override suspend fun updateOrder(order: Order) = ordersDao.update(order)
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 }

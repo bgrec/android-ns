@@ -10,6 +10,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Header
 import retrofit2.http.PUT
 import retrofit2.http.Query
@@ -109,6 +110,12 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    @PUT("lisOrdc")
+    suspend fun updateDeliveryState(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+  
+  
     // Login API call,  ...service... /authentication/
     @GET("authentication/login")
     suspend fun login(
@@ -124,6 +131,7 @@ interface MastroAndroidApiService {
 
     @GET("authentication/completed")
     suspend fun getLoginCompleted(): Response<JsonObject>
+  
 }
 
 

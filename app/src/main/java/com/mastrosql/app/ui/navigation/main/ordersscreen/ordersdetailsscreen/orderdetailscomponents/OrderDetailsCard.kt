@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -93,21 +94,26 @@ fun OrderDetailsItem(
 
     val visibleState = remember { MutableTransitionState(true) }
 
-    AnimatedVisibility(
-        visibleState = visibleState,
-        enter = expandIn(animationSpec = tween(700)),
-        exit = shrinkOut(animationSpec = tween(700)) + fadeOut(),
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        SwipeToDismissItem(
+        AnimatedVisibility(
             visibleState = visibleState,
-            orderDetailsItem = orderDetailsItem,
-            modifier = modifier,
-            navController = navController,
-            navigateToEditItem = navigateToEditItem,
-            showEditDialog = showEditDialog,
-            modifiedItemId = modifiedItemId,
-            onDuplicate = onDuplicate
-        )
+            enter = expandIn(animationSpec = tween(700)),
+            exit = shrinkOut(animationSpec = tween(700)) + fadeOut(),
+        ) {
+            SwipeToDismissItem(
+                visibleState = visibleState,
+                orderDetailsItem = orderDetailsItem,
+                modifier = modifier,
+                navController = navController,
+                navigateToEditItem = navigateToEditItem,
+                showEditDialog = showEditDialog,
+                modifiedItemId = modifiedItemId,
+                onDuplicate = onDuplicate
+            )
+        }
     }
 
     val scope = rememberCoroutineScope()
@@ -128,7 +134,7 @@ fun OrderDetailsItem(
                     SnackbarResult.ActionPerformed -> {
                         visibleState.targetState = true
                         if (listState.firstVisibleItemScrollOffset == 0) {
-                            listState.animateScrollToItem(0)
+                            listState.animateScrollToItem(listState.firstVisibleItemScrollOffset)
                         }
                     }
 

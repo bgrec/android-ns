@@ -182,10 +182,10 @@
     <string name="order_deliveryDate">"Data di consegna: "</string>
     <string name="order_notes">Note:</string>
     <string name="order_deliveryType">"Stato Consegna: "</string>
-    <string name="order_deliveryType_value1">in preparazione</string>
-    <string name="order_deliveryType_value2">pronto</string>
-    <string name="order_deliveryType_value3">caricato</string>
-    <string name="order_deliveryType_value4">da confermare</string>
+    <string name="order_deliveryType_value1">In preparazione</string>
+    <string name="order_deliveryType_value2">Pronto</string>
+    <string name="order_deliveryType_value3">Caricato</string>
+    <string name="order_deliveryType_value4">Da confermare</string>
     <string name="order_destinationName">"Destinazione:"</string>
     <string name="order_carrierName">"Vettore: "</string>
     <string name="order_detail_batch">"Lotto: "</string>
@@ -209,6 +209,7 @@
     <string name="order_details_dialog_edit_expirationDate">Data scadenza</string>
     <string name="deleted_item_snackbar_text">"Riga dell'ordine rimossa"</string>
     <string name="add_new_order">Aggiungi ordine</string>
+    <string name="order_dialog_delivery_title">Modifica stato di consegna</string>
 
 
 </resources>

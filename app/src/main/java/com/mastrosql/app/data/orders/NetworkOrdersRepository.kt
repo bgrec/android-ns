@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.asFlow
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.google.gson.JsonObject
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
@@ -11,6 +12,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
+import retrofit2.Response
 
 /**
  * Network and database Implementation of Repository that fetch orders data list from mastroAndroidApi.
@@ -58,6 +60,14 @@ class NetworkOrdersRepository(
 
     override suspend fun updateOrder(order: Order) {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject> {
+        val body = JsonObject().apply {
+            addProperty("NUME", orderId)
+            addProperty("statoCons", deliveryState)
+        }
+        return mastroAndroidApiService.updateDeliveryState(body)
     }
 
     //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }
