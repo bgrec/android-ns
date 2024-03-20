@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
-import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -33,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,7 +47,6 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
@@ -55,8 +54,10 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    //viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -146,7 +147,9 @@ fun LoginScreen(
                     ),
                     keyboardAction = KeyboardActions(
                         onDone = {
-                            viewModel.loginCompleted(true)
+                            //viewModel.loginCompleted(true)
+                            //viewModel.login(context, username, password)
+                            //viewModel.logout()
                             focusManager.clearFocus()
 
                         }
@@ -161,7 +164,8 @@ fun LoginScreen(
                         .align(Alignment.CenterHorizontally),
                     text = R.string.login,
                     onClick = {
-                        viewModel.loginCompleted(true)
+                        //viewModel.loginCompleted(true)
+                        viewModel.login(context, username, password)
                     }
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -205,7 +209,7 @@ fun LoginFields(
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-  
+
     OutlinedTextField(
         leadingIcon = icon,
         value = value,

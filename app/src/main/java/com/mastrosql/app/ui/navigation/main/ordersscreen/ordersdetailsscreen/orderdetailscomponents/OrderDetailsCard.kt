@@ -138,14 +138,19 @@ fun OrderDetailsItem(
                         }
                     }
 
+
                     SnackbarResult.Dismissed -> {
-                        onRemove(orderDetailsItem.id)
+                        // Ensure that removal only happens if the row is not visible
+                        if (!visibleState.currentState) {
+                            onRemove(orderDetailsItem.id)
+                        }
                     }
                 }
             }
         }
     }
 }/*
+
 // Call the SwipeToDismissItem function with an implementation of onRemove
 SwipeToDismissItem(
     visibleState = visibleState,
@@ -194,6 +199,7 @@ private fun SwipeToDismissItem(
         }
 
     }, positionalThreshold = { distance -> distance * 0.4f })
+
 
     SwipeToDismissBox(
         state = dismissState,
@@ -339,7 +345,8 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    var tint = MaterialTheme.colorScheme.secondary
+                    val defaultTint = MaterialTheme.colorScheme.secondary
+                    var tint by remember { mutableStateOf(if (modifiedItemId == orderDetail.id) Color.Red else defaultTint) }
                     if (modifiedItemId == orderDetail.id) {
                         tint = Color.Red
                     }
@@ -348,6 +355,7 @@ private fun OrderDetailsItemContent(
                         tint = tint,
                         onClick = {
                             showEditDialog.value = true
+                            tint = Color.Red
                         },
                         modifier = modifier,
                     )
@@ -384,10 +392,13 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier
+    tint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(onClick = {
         onClick()
+
     }) {
         Icon(
             Icons.Default.Edit,

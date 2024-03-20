@@ -11,6 +11,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Header
 import retrofit2.http.PUT
 import retrofit2.http.Query
 
@@ -38,6 +39,8 @@ interface MastroAndroidApiService {
 
     @GET("clientsview")
     suspend fun getAllCustomersMasterData(
+        //@Header("Authorization") authorization: String = "Basic bWFzdHJvOm1hc3Rybw==",
+        //@Header("Cookie") cookie: String = "session_11eeda4470830af4a032408d5c759f7c=2024-03-20 14:06:19-274",
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1000000
     ): CustomersMasterDataResponse
@@ -80,6 +83,7 @@ interface MastroAndroidApiService {
         @Query("limit") pageSize: Int = 1000
     ): OrderDetailsResponse
 
+
     @GET("clientsview")
     suspend fun testApiCall(
         @Query("offset") offset: Int = 0,
@@ -110,6 +114,24 @@ interface MastroAndroidApiService {
     suspend fun updateDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
+  
+  
+    // Login API call,  ...service... /authentication/
+    @GET("authentication/login")
+    suspend fun login(
+        @Query("app") appName: String,
+        @Header("Authorization") authorization: String
+    ): Response<JsonObject>
+
+    @GET("authentication/logout")
+    suspend fun logout(): Response<JsonObject>
+
+    @GET("authentication/status")
+    suspend fun getLoginStatus(): Response<JsonObject>
+
+    @GET("authentication/completed")
+    suspend fun getLoginCompleted(): Response<JsonObject>
+  
 }
 
 

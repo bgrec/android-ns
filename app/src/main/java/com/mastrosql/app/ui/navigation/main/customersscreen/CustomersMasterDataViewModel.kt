@@ -1,5 +1,3 @@
-@file:Suppress("EmptyMethod")
-
 package com.mastrosql.app.ui.navigation.main.customersscreen
 
 import android.util.Log
@@ -51,13 +49,13 @@ class CustomersMasterDataViewModel(
                 try {
                     val customerMasterDataListResult =
                         customersMasterDataRepository.getCustomersMasterData().items
-
                     val trimmedCustomerList =
                         customerMasterDataListResult.map { it.trimAllStrings() }
                     CustomersUiState.Success(trimmedCustomerList)
                 } catch (e: IOException) {
                     CustomersUiState.Error(e)
                 } catch (e: HttpException) {
+
                     CustomersUiState.Error(e)
                 } catch (e: Exception) {
                     CustomersUiState.Error(e)
