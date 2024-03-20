@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.settingsscreen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -177,6 +178,14 @@ fun SettingsScreen(
                             items(MainNavOption.entries.toList()) {
                                 if ((stringResMap[it] != null)) {
                                     Row(
+                                        modifier = Modifier.clickable(
+                                            onClick = {
+                                                val isChecked = !(activeButtonsUiState[it] ?: false)
+                                                val updatedState = EnumMap(activeButtonsUiState)
+                                                updatedState[it] = isChecked
+                                                viewModel.updateActiveButtons(updatedState)
+                                            }
+                                        ),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {

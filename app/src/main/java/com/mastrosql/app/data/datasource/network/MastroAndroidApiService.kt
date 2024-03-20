@@ -10,6 +10,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
 
@@ -102,6 +103,11 @@ interface MastroAndroidApiService {
 
     @PUT("duplicateOrderRow")
     suspend fun duplicateDetailItem(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    @PUT("lisOrdc")
+    suspend fun updateDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
 }

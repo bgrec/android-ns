@@ -5,6 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,16 +17,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -41,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.formatDate
-import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.ColorGreen
@@ -57,12 +65,14 @@ fun OrderCard(
     navController: NavController,
     navigateToOrderDetails: (Int, String) -> Unit,
     modifiedOrderId: MutableState<Int>,
+    showDeliveryDialog: MutableState<Boolean>
 
     ) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier.padding(4.dp),
+        modifier = modifier
+            .padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -96,7 +106,9 @@ fun OrderCard(
                         description = order.description,
                         insertDate = formatDate(order.insertDate),
                         businessName = order.businessName,
-                        deliveryType = order.deliveryType
+                        deliveryType = order.deliveryType,
+                        showDeliveryDialog = showDeliveryDialog,
+                        modifiedOrderId = modifiedOrderId
                     )
                     if (expanded) {
                         OrderInfo(
@@ -197,9 +209,14 @@ fun OrderDescriptionAndId(
     deliveryType: Int,
     businessName: String?,
     description: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showDeliveryDialog: MutableState <Boolean>,
+    modifiedOrderId: MutableState<Int>
 ) {
-    Column {
+
+    Column(
+        modifier = Modifier
+    ) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -232,7 +249,12 @@ fun OrderDescriptionAndId(
 
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        showDeliveryDialog.value = true
+                        modifiedOrderId.value = id
+                    }),
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
@@ -432,7 +454,8 @@ fun OrderCardPreview() {
             modifier = Modifier,
             navController = NavController(LocalContext.current),
             navigateToOrderDetails = { _, _ -> },
-            modifiedOrderId = remember { mutableIntStateOf(0) }
+            modifiedOrderId = remember { mutableIntStateOf(0) },
+            showDeliveryDialog = remember { mutableStateOf(false) }
         )
     }
 }

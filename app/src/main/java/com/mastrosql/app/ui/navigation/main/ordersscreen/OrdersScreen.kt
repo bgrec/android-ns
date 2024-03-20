@@ -1,20 +1,34 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -37,6 +51,7 @@ object OrdersResultDestination : NavigationDestination {
     override val titleRes = R.string.clients_orders_bar_title
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
@@ -65,7 +80,8 @@ fun OrdersScreen(
             ordersUiState.modifiedOrderId,
             modifier = modifier.fillMaxWidth(),
             drawerState = drawerState,
-            navController = navController
+            navController = navController,
+            viewModel = viewModel
         )
 
         is OrdersUiState.Error -> ErrorScreen(
@@ -76,13 +92,11 @@ fun OrdersScreen(
             navController = navController
         )
 
-        else -> {
-
-        }
     }
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
 fun OrdersResultScreen(
@@ -92,13 +106,16 @@ fun OrdersResultScreen(
     modifiedOrderId: MutableState<Int>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
-    navController: NavController
+    navController: NavController,
+    viewModel: OrdersViewModel,
 ) {
     //val itemsUiState by viewModel.itemsUiState.collectAsState()
     //val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showToast by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val showDeliveryDialog = remember { mutableStateOf(false) }
+
 
     if (showToast) {
         ShowToast(context, "Navigating to Order Entry")
@@ -154,10 +171,92 @@ fun OrdersResultScreen(
                 state = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController,
-                navigateToOrderDetails = navigateToOrderDetails
+                navigateToOrderDetails = navigateToOrderDetails,
+                showDeliveryDialog = showDeliveryDialog
             )
         }
 
+
+        //dialog to update delivery state
+
+        val modifiedOrderDeliveryState =
+            ordersList.firstOrNull { it.id == modifiedOrderId.value }?.deliveryState
+        var selectedDeliveryState by remember { mutableIntStateOf(1) }
+
+
+        if (showDeliveryDialog.value) {
+            AlertDialog(
+                modifier = Modifier.wrapContentSize(),
+                onDismissRequest = { showDeliveryDialog.value = false },
+                title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
+                text = {
+                    Log.d("modifiedOrderId", "modifiedOrderId: ${modifiedOrderId.value}")
+                    Log.d("selectedDeliveryState", "selectedDeliveryState: $selectedDeliveryState")
+                    Log.d(
+                        "OrderDeliveryState",
+                        "modifiedOrderDeliveryState: $modifiedOrderDeliveryState"
+                    )
+
+                    Column(modifier = Modifier.wrapContentSize()) {
+
+                        //dialog delivery types
+                        data class DeliveryState(
+                            val state: Int,
+                            val nameState: Int,
+                            val color: Color
+                        )
+
+                        // List of delivery types
+                        val deliveryStates = listOf(
+                            DeliveryState(1, R.string.order_deliveryType_value1, Color.Red),
+                            DeliveryState(2, R.string.order_deliveryType_value2, Color.Green),
+                            DeliveryState(3, R.string.order_deliveryType_value3, Color.Black),
+                            DeliveryState(4, R.string.order_deliveryType_value4, Color(0xFFFFA500))//orange
+                        )
+
+                        deliveryStates.forEach { deliveryState ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        onClick = {
+                                            selectedDeliveryState = deliveryState.state //deve fare stessa cosa del onClick RadioButton
+                                        }
+                                    ),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = selectedDeliveryState == deliveryState.state,
+                                    onClick = { selectedDeliveryState = deliveryState.state },
+                                    colors = RadioButtonDefaults.colors(deliveryState.color),
+                                )
+                                Text(text = stringResource(deliveryState.nameState))
+                            }
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showDeliveryDialog.value = false
+                    }) {
+                        Text(stringResource(R.string.dismiss_button))
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDeliveryDialog.value = false
+                        viewModel.updateDeliveryState(
+                            context,
+                            modifiedOrderId.value,
+                            selectedDeliveryState
+                        )
+                    }) {
+                        Text(stringResource(R.string.confirm_button))
+                    }
+                }
+            )
+        }
     }
 }
 

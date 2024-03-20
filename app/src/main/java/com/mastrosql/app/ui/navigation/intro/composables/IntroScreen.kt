@@ -312,7 +312,8 @@ fun ConfigContent(
             urlState = baseUrlUiState
         }
 
-        OutlinedTextField(value = urlState,
+        OutlinedTextField(
+            value = urlState,
             singleLine = false,
             onValueChange = { newValue -> urlState = newValue },
             leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
@@ -373,6 +374,14 @@ fun ConfigContent(
                         items(MainNavOption.entries.toList()) {
                             if ((stringResMap[it] != null)) {
                                 Row(
+                                    modifier = Modifier.clickable(
+                                        onClick = {
+                                            val isChecked = !(activeButtonsUiState[it] ?: false)
+                                            val updatedState = EnumMap(activeButtonsUiState)
+                                            updatedState[it] = isChecked
+                                            viewModel.updateActiveButtons(updatedState)
+                                        }
+                                    ),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {

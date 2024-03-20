@@ -2,10 +2,12 @@ package com.mastrosql.app.data.orders
 
 
 import androidx.work.WorkInfo
+import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 /**
  * Repository that provides insert, update, delete, and retrieve of [Order] from a given data source.
@@ -41,4 +43,6 @@ interface OrdersRepository {
      */
     suspend fun updateOrder(order: Order)
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
+
+    suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject>
 }
