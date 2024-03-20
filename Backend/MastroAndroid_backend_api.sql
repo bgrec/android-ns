@@ -479,7 +479,8 @@ CREATE PROCEDURE LoginConfirmation(
 )
 BEGIN
     IF login <> 'succes' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+        #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+        SELECT 'Login failed' AS message;
     END IF;
 
 END;

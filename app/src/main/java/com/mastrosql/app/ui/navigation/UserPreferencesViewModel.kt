@@ -157,6 +157,9 @@ class UserPreferencesViewModel(
             }
             loginCompleted(false)
             //onBoardingCompleted(false)
+
+            // Logout from the app server
+            userPreferencesRepository.logoutFromServer()
         }
     }
 
@@ -175,6 +178,9 @@ class UserPreferencesViewModel(
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> showToast(context, "Collegamento riuscito ${response.code()}")
+
+                        401 -> showToast(context, "Collegamento riuscito, non autorizzato ${response.code()}")
+
                         404 -> showToast(
                             context,
                             "Collegamento riuscito, api non trovata ${response.code()}"

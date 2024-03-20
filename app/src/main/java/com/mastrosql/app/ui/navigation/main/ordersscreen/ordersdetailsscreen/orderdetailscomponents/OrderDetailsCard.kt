@@ -74,6 +74,7 @@ import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -130,12 +131,13 @@ fun OrderDetailsItem(
                             listState.animateScrollToItem(0)
                         }
                     }
-                }
 
-                SnackbarResult.Dismissed -> {
-                    // Ensure that removal only happens if the row is not visible
-                    if (!visibleState.currentState) {
-                        onRemove(orderDetailsItem.id)
+
+                    SnackbarResult.Dismissed -> {
+                        // Ensure that removal only happens if the row is not visible
+                        if (!visibleState.currentState) {
+                            onRemove(orderDetailsItem.id)
+                        }
                     }
                 }
             }
@@ -181,10 +183,12 @@ private fun SwipeToDismissItem(
                 visibleState.targetState = false
                 true
             }
+
             SwipeToDismissBoxValue.StartToEnd -> {
                 onDuplicate(orderDetailsItem.id)
                 false
             }
+
             else -> false
         }
 
@@ -345,7 +349,7 @@ private fun OrderDetailsItemContent(
                         tint = tint,
                         onClick = {
                             showEditDialog.value = true
-                            tint =Color.Red
+                            tint = Color.Red
                         },
                         modifier = modifier,
                     )

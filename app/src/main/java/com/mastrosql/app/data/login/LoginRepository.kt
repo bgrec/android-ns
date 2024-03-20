@@ -1,12 +1,14 @@
 package com.mastrosql.app.data.login
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import com.mastrosql.app.data.AppContainer
-import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import javax.inject.Inject
+import com.google.gson.JsonObject
+import retrofit2.Response
 
-class LoginRepository (
-    private var mastroAndroidApiService: MastroAndroidApiService) {
+interface LoginRepository {
+    suspend fun login(username: String, password: String): Response<JsonObject>
+    suspend fun logout(): Response<JsonObject>
+
+    suspend fun getLoginStatus(): Response<JsonObject>
+
+    suspend fun loginCompleted(): Response<JsonObject>
 }
 

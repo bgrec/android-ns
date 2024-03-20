@@ -1,9 +1,12 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mastrosql.app.data.datasource.network.AppCookieJar
+import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,68 +17,40 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 
-//https://194.32.172.237:8443/mastrosqlService/authentication/login
-
-/*
-basic auth
-
-GET https://194.32.172.237:8443/LoginConfirmation?app=MySQL%20Internal&login=success
-404
-7 ms
-GET https://194.32.172.237:8443/mastrosqlService/authentication/login
-307
-GET https://194.32.172.237:8443/LoginConfirmation?app=MySQL%20Internal&login=success
-404
-9 ms
-Warning: Unable to verify the first certificate
-Network
-Request Headers
-Authorization: Basic bWFzdHJvOm1hc3Rybw==
-User-Agent: PostmanRuntime/7.36.3
-Accept: *//*
-Cache-Control: no-cache
-Postman-Token: 58af0dce-d5f7-4c44-9b92-456f3682864a
-Accept-Encoding: gzip, deflate, br
-Connection: keep-alive
-Host: 194.32.172.237:8443
-Request Body
-Response Headers
-Content-Type: text/html
-Connection: close
-Date: Fri, 15 Mar 2024 16:46:58 GMT
-Content-Length: 90
-Response Body
-GET https://194.32.172.237:8443/LoginConfirmation?app=MySQL%20Internal&login=success
-404
-98 ms
-GET https://194.32.172.237:8443/LoginConfirmation
-404
-20 ms
-
- */
 class LoginViewModel(
     private val loginRepository: LoginRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     fun login(context: Context, username: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                /*val response = orderDetailsRepository.sendScannedCode(orderId, scannedCode)
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorMessage(errorBody)
+                // Perform the login request
+                val response = loginRepository.login(username, password)
 
-                // Handle the response status code
-                withContext(Dispatchers.Main) {
+                //The server responds with a temporary redirect that is ../authentication/status
+                //but the session cookie is set before redirect so in RetrofitInstance
+                if (response.code() == 307) {
+                    val cookies = response.headers().values("Set-Cookie")
+                    val sessionCookie = extractSessionCookie(cookies)
+
+                    Log.d("LoginViewModel", "Session cookie: $sessionCookie")
+
+                    // Set the session cookie in the AppCookieJar singleton
+                    if (sessionCookie.isNotEmpty()) {
+                        AppCookieJar.setSessionCookie(sessionCookie)
+
+                    }
+                    userPreferencesRepository.saveLoggedIn(true)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = parseErrorMessage(errorBody)
+
                     when (response.code()) {
-                        200 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Collegamento riuscito ${response.message()}"
-                            )
-                            // Refresh the list
-                            getOrderDetails()
+
+                        401 -> {
+                            showToast(context, Toast.LENGTH_LONG, errorMessage)
                         }
-                        //TODO: Add other status codes and handle them
+
                         404 -> showToast(
                             context,
                             Toast.LENGTH_LONG,
@@ -98,13 +73,13 @@ class LoginViewModel(
                             )
                         }
 
-                        else -> showToast(
-                            context,
-                            Toast.LENGTH_LONG,
-                            "Errore api: ${response.code()}"
-                        )
+                        else -> {
+                            showToast(context, Toast.LENGTH_LONG, "Errore api: ${response.code()}")
+                        }
                     }
-                }*/
+
+                    userPreferencesRepository.saveLoggedIn(false)
+                }
 
             } catch (e: IOException) {
                 // Handle IOException (e.g., network error)
@@ -126,6 +101,13 @@ class LoginViewModel(
         }
     }
 
+    // Extract the session cookie from the response headers
+    private fun extractSessionCookie(cookies: List<String>): String {
+        // You may need to extract the correct cookie value based on your server's response
+        // This is just a simple example, you may need to parse the cookies properly
+        return cookies.firstOrNull { it.startsWith("session_") } ?: ""
+    }
+
     //Get the message in the body
     private fun parseErrorMessage(errorBody: String?): String {
         val jsonError = JSONObject(errorBody ?: "{}")
@@ -145,6 +127,62 @@ class LoginViewModel(
             }
         }
     }
+
+    fun extractSessionToken(sessionCookie: String?): String? {
+        // Parse session token from cookie header
+        if (sessionCookie != null) {
+            val cookieParts = sessionCookie.split(";")
+            for (part in cookieParts) {
+                if (part.startsWith("session_")) {
+                    val tokenParts = part.split("=")
+                    if (tokenParts.size == 2) {
+                        return tokenParts[1]
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = loginRepository.logout()
+                userPreferencesRepository.saveLoggedIn(false)
+                // Handle the response status code
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        200 -> {
+                            // Refresh the list
+                            //getOrderDetails()
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                // Handle IOException (e.g., network error)
+            } catch (e: HttpException) {
+                // Handle HttpException (e.g., non-2xx response)
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+            } catch (e: Exception) {
+                // Handle generic exception
+            }
+
+        }
+    }
+    /*
+    package khttp.structures.authorization
+
+import java.util.Base64
+
+data class BasicAuthorization(val user: String, val password: String) : Authorization {
+    override val header: Pair<String, String>
+        get() {
+            val b64 = Base64.getEncoder().encode("${this.user}:${this.password}".toByteArray()).toString(Charsets.UTF_8)
+            return "Authorization" to "Basic $b64"
+        }
+}
+     */
 
 }
 /*2024-03-15 17:36:34 mysql_rest_service DEBUG [39ac] HTTP Request parameters: Postman-Token=1f173aa1-8d6b-4358-a6c4-6853089c513f

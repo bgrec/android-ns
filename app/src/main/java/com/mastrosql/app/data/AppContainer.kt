@@ -1,10 +1,8 @@
 package com.mastrosql.app.data
 
-import RetrofitInstance
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.mastrosql.app.BuildConfig
@@ -15,20 +13,23 @@ import com.mastrosql.app.data.customers.NetworkCustomersMasterDataRepository
 import com.mastrosql.app.data.customers.paged.CustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customers.paged.NetworkDbCustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customers.workmanager.WorkManagerCustomersMasterDataRepository
+import com.mastrosql.app.data.datasource.network.AppCookieJar
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
+import com.mastrosql.app.data.datasource.network.RetrofitInstance
+import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.item.ItemsRepository
 import com.mastrosql.app.data.item.OfflineItemsRepository
 import com.mastrosql.app.data.local.UserPreferencesKeys
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.local.database.AppDatabase
+import com.mastrosql.app.data.login.LoginRepository
+import com.mastrosql.app.data.login.NetworkLoginRepository
 import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.net.MalformedURLException
-import java.net.URISyntaxException
 import java.net.URL
 
 /**
@@ -38,9 +39,8 @@ import java.net.URL
  * App container for Dependency injection.
  *
  */
-
 interface AppContainer {
-
+    val loginRepository: LoginRepository
     val customersMasterDataRepository: CustomersMasterDataRepository
     val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository
     val customerMasterDataWorkManagerRepository: CustomersMasterDataRepository
@@ -49,15 +49,11 @@ interface AppContainer {
     val ordersRepository: OrdersRepository
     val orderDetailsRepository: OrderDetailsRepository
     val userPreferencesRepository: UserPreferencesRepository
-
     val mastroAndroidApiService: MastroAndroidApiService
+    val sessionManager: SessionManager
+
     fun updateRetrofitService(newBaseUrl: String)
-
 }
-
-/**
- * Variables are initialized lazily and the same instance is shared across the whole app.
- */
 
 private const val APP_PREFERENCES_SETTINGS = "mastroandroid_preferences"
 
@@ -65,23 +61,14 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = APP_PREFERENCES_SETTINGS
 )
 
-/**
- * Base URL for the MastroAndroid API
- */
-
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override lateinit var mastroAndroidApiService: MastroAndroidApiService
+    override lateinit var sessionManager: SessionManager
 
     private val defaultBaseUrl = if (isDevBuild()) {
-        if (isValidUrl(BuildConfig.API_URL)) {
-            BuildConfig.API_URL
-        } else {
-            Log.e("AppContainer", "BuildConfig.API_URL is not a valid URL. Using default URL.")
-            "https://nipeservice.com"
-        }
+        BuildConfig.API_URL.takeIf { isValidUrl(it) }
     } else {
-        // Use a default value for release builds
         "https://nipeservice.com"
     }
 
@@ -91,6 +78,9 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     private fun initializeRetrofitService() {
         val baseUrl = runBlocking { readBaseUrlFromDataStore(context) }
+
+        AppCookieJar.setDataStore(context.dataStore)
+
         mastroAndroidApiService = if (isValidUrl(baseUrl)) {
             RetrofitInstance.getRetrofitInstance(baseUrl)
         } else {
@@ -99,39 +89,34 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override fun updateRetrofitService(newBaseUrl: String) {
-        //Update the retrofit service in all the repositories
         if (isValidUrl(newBaseUrl) && newBaseUrl.endsWith("/") && newBaseUrl != "/") {
-          
             mastroAndroidApiService = RetrofitInstance.updateBaseUrl(newBaseUrl)
-
-            customersMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)
-            customersPagedMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)
-            customerMasterDataWorkManagerRepository.updateMastroAndroidApiService(
-                mastroAndroidApiService
-            )
-            articlesRepository.updateMastroAndroidApiService(mastroAndroidApiService)
-            ordersRepository.updateMastroAndroidApiService(mastroAndroidApiService)
-            orderDetailsRepository.updateMastroAndroidApiService(mastroAndroidApiService)
-            userPreferencesRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+            updateRepositories()
         } else {
             Log.e("AppContainer", "Invalid base URL provided: $newBaseUrl")
         }
     }
 
-    // Function to check if the build is .dev
-    private fun isDevBuild(): Boolean {
-        return BuildConfig.BUILD_TYPE == "debug"
+    private fun updateRepositories() {
+        customersMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        customersPagedMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        customerMasterDataWorkManagerRepository.updateMastroAndroidApiService(
+            mastroAndroidApiService
+        )
+        articlesRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        ordersRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        orderDetailsRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        userPreferencesRepository.updateMastroAndroidApiService(mastroAndroidApiService)
     }
 
-    // Function to read BASE_URL from datastore
+    private fun isDevBuild() = BuildConfig.BUILD_TYPE == "debug"
+
     private suspend fun readBaseUrlFromDataStore(context: Context): String {
-        val dataStore: DataStore<Preferences> = context.dataStore
         return try {
-            val preferences = dataStore.data.first()
-            preferences[UserPreferencesKeys.BASE_URL] ?: defaultBaseUrl
-        } catch (e: IOException) {
-            Log.d("baseUrl", "IOException while reading BASE_URL from DataStore: ${e.message}")
-            defaultBaseUrl
+            context.dataStore.data.first()[UserPreferencesKeys.BASE_URL] ?: defaultBaseUrl!!
+        } catch (e: Exception) {
+            Log.d("baseUrl", "Exception while reading BASE_URL from DataStore: ${e.message}")
+            defaultBaseUrl!!
         }
     }
 
@@ -139,30 +124,25 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         return try {
             URL(url).toURI()
             true
-        } catch (e: MalformedURLException) {
-            false
-        } catch (e: URISyntaxException) {
+        } catch (e: Exception) {
             false
         }
     }
 
-    override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
+    override val loginRepository: NetworkLoginRepository by lazy {
+        NetworkLoginRepository(mastroAndroidApiService)
+    }
 
+    override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
         NetworkCustomersMasterDataRepository(
             mastroAndroidApiService,
             AppDatabase.getInstance(context).customersMasterDataDao(),
             context
         )
-        // trying with the worker version
-        //WorkManagerCustomersMasterDataRepository(retrofitService, context)
     }
 
-    /**
-     * DI implementation for Customer Master Data repository
-     */
     override val customersPagedMasterDataRepository: CustomersPagedMasterDataRepository by lazy {
         NetworkDbCustomersPagedMasterDataRepository(mastroAndroidApiService)
-
     }
 
     override val itemsRepository: ItemsRepository by lazy {
@@ -175,7 +155,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
             AppDatabase.getInstance(context).articlesDao(),
             context
         )
-        //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
     }
 
     override val ordersRepository: OrdersRepository by lazy {
@@ -184,7 +163,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
             AppDatabase.getInstance(context).ordersDao(),
             context
         )
-        //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
     }
 
     override val orderDetailsRepository: OrderDetailsRepository by lazy {
@@ -193,7 +171,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
             AppDatabase.getInstance(context).orderDetailsDao(),
             context
         )
-        //OfflineOrdersRepository(AppDatabase.getInstance(context).articlesDao())
     }
 
     override val userPreferencesRepository: UserPreferencesRepository by lazy {
@@ -208,11 +185,16 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         WorkManagerCustomersMasterDataRepository(mastroAndroidApiService, context)
     }
 
+    /*override var sessionManager: SessionManager by lazy {
+        SessionManager(context.dataStore)
+    }*/
+
     /*private val retrofitService: MastroAndroidApiService by lazy {
-        RetrofitInstance.getRetrofitInstance(baseUrl)
+        com.mastrosql.app.data.RetrofitInstance.getRetrofitInstance(baseUrl)
     }*/
 
 }
+
 
 /*class ImgurApi private constructor() {
 

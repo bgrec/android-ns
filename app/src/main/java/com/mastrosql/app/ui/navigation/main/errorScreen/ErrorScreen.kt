@@ -17,10 +17,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.R.string.retry
+import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import retrofit2.HttpException
 
 /**
  * The home screen displaying error message with re-attempt button.
@@ -32,7 +36,8 @@ fun ErrorScreen(
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
-    navController: NavController
+    navController: NavController,
+    preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
         modifier = modifier,
@@ -46,6 +51,9 @@ fun ErrorScreen(
         Text(text = exception.message.toString(), modifier = Modifier.padding(16.dp))
         Button(onClick = retryAction) {
             Text(stringResource(retry))
+        }
+        if (exception is HttpException && exception.code() == 401) {
+            preferencesViewModel.logout(navController)
         }
     }
 }

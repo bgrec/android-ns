@@ -53,11 +53,12 @@ fun NewHomeScreen(
                 showDrawerIconButton = false
             )
         }
-    ) { innerPadding->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()) {
+                .fillMaxSize()
+        ) {
             CenteredLogoImage()
             HomeButtons(
                 activeButtonsUiState,
@@ -65,7 +66,6 @@ fun NewHomeScreen(
                 appNavigationViewModel,
                 logout = {
                     preferencesViewModel.logout(navController)
-                    //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
                 }
             )
         }
@@ -172,8 +172,6 @@ fun HomeButtons(
             text = R.string.drawer_logout_description,
             onClick = {
                 logout()
-                //preferencesViewModel.logout(navController)
-                //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
             })
     }
 }

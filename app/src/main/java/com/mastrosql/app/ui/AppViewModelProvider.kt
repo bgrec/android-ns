@@ -16,6 +16,7 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
+import com.mastrosql.app.ui.navigation.main.loginscreen.LoginViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
 
@@ -97,6 +98,12 @@ object AppViewModelProvider {
             UserPreferencesViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
+        }
+
+        initializer {
+            LoginViewModel(
+                mastroAndroidApplication().appContainer.loginRepository,
+                mastroAndroidApplication().appContainer.userPreferencesRepository)
         }
     }
 }
