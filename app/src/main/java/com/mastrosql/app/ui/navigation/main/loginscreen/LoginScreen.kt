@@ -147,10 +147,8 @@ fun LoginScreen(
                     ),
                     keyboardAction = KeyboardActions(
                         onDone = {
-                            //viewModel.loginCompleted(true)
-                            //viewModel.login(context, username, password)
-                            //viewModel.logout()
                             focusManager.clearFocus()
+                            viewModel.login(context, username, password)
 
                         }
                     )
@@ -164,7 +162,6 @@ fun LoginScreen(
                         .align(Alignment.CenterHorizontally),
                     text = R.string.login,
                     onClick = {
-                        //viewModel.loginCompleted(true)
                         viewModel.login(context, username, password)
                     }
                 )
@@ -183,16 +180,6 @@ fun LogoImage() {
         modifier = Modifier.size(150.dp)
     )
 }
-
-/*@Composable
-fun LoginButton(onClick: () -> Unit, modifier: Modifier, function: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Text("Login")
-    }
-}*/
 
 @Composable
 fun LoginFields(

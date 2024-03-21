@@ -13,7 +13,6 @@ import com.mastrosql.app.data.customers.NetworkCustomersMasterDataRepository
 import com.mastrosql.app.data.customers.paged.CustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customers.paged.NetworkDbCustomersPagedMasterDataRepository
 import com.mastrosql.app.data.customers.workmanager.WorkManagerCustomersMasterDataRepository
-import com.mastrosql.app.data.datasource.network.AppCookieJar
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.data.datasource.network.RetrofitInstance
 import com.mastrosql.app.data.datasource.network.SessionManager
@@ -50,7 +49,6 @@ interface AppContainer {
     val orderDetailsRepository: OrderDetailsRepository
     val userPreferencesRepository: UserPreferencesRepository
     val mastroAndroidApiService: MastroAndroidApiService
-    val sessionManager: SessionManager
 
     fun updateRetrofitService(newBaseUrl: String)
 }
@@ -64,7 +62,6 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override lateinit var mastroAndroidApiService: MastroAndroidApiService
-    override lateinit var sessionManager: SessionManager
 
     private val defaultBaseUrl = if (isDevBuild()) {
         BuildConfig.API_URL.takeIf { isValidUrl(it) }
@@ -79,7 +76,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     private fun initializeRetrofitService() {
         val baseUrl = runBlocking { readBaseUrlFromDataStore(context) }
 
-        AppCookieJar.setDataStore(context.dataStore)
+        SessionManager.setDataStore(context.dataStore)
 
         mastroAndroidApiService = if (isValidUrl(baseUrl)) {
             RetrofitInstance.getRetrofitInstance(baseUrl)
@@ -184,10 +181,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val customerMasterDataWorkManagerRepository: CustomersMasterDataRepository by lazy {
         WorkManagerCustomersMasterDataRepository(mastroAndroidApiService, context)
     }
-
-    /*override var sessionManager: SessionManager by lazy {
-        SessionManager(context.dataStore)
-    }*/
 
     /*private val retrofitService: MastroAndroidApiService by lazy {
         com.mastrosql.app.data.RetrofitInstance.getRetrofitInstance(baseUrl)
