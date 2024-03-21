@@ -5,25 +5,51 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.mastrosql.app.data.local.UserPreferencesKeys
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-class SessionManager(private val dataStore: DataStore<Preferences>) {
+object SessionManager {
 
+    private val SESSION_KEY = stringPreferencesKey(UserPreferencesKeys.SESSION_KEY.name)
     private var sessionCookie: String? = null
-    companion object {
-        val SESSION_KEY = stringPreferencesKey(UserPreferencesKeys.SESSION_KEY.name)
+    private var dataStore: DataStore<Preferences>? = null
+
+    fun setDataStore(dataStore: DataStore<Preferences>) {
+        this.dataStore = dataStore
     }
 
-    fun getSession(): Flow<String?> {
-        return dataStore.data.map { preferences ->
-            preferences[SESSION_KEY]
+    fun setSessionCookie(cookieSession: String) {
+        sessionCookie = cookieSession
+        CoroutineScope(Dispatchers.IO).launch {
+            saveSession(cookieSession)
+        }
+
+    }
+
+    fun getSessionCookie(): String? {
+        return sessionCookie ?: runBlocking {
+            getSessionFromDataStore()
         }
     }
 
-    suspend fun saveSession(session: String) {
-        dataStore.edit { preferences ->
+    private suspend fun getSessionFromDataStore(): String? {
+        return dataStore?.data?.firstOrNull()?.get(SESSION_KEY)
+    }
+
+    private suspend fun saveSession(session: String) {
+        dataStore?.edit { preferences ->
             preferences[SESSION_KEY] = session
+        }
+    }
+    fun clearSession() {
+        sessionCookie = null
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore?.edit { preferences ->
+                preferences.remove(SESSION_KEY)
+            }
         }
     }
 }

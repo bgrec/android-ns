@@ -1,7 +1,6 @@
 package com.mastrosql.app.data.datasource.network
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.mastrosql.app.BuildConfig
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
@@ -98,7 +97,7 @@ object RetrofitInstance {
             builder.followRedirects(false)
             builder.followSslRedirects(false)
 
-            // Add interceptor for adding cookies to request headers whith the session cookie
+            // Add interceptor for adding cookies to request headers with the session cookie
             builder.addInterceptor(AddCookieInterceptor())
 
             return builder

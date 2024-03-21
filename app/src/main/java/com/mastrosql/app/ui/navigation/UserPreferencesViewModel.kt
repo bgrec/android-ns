@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
@@ -72,40 +73,6 @@ class UserPreferencesViewModel(
         }
     }
 
-    fun setUserIsOnboarded() {
-        viewModelScope.launch {
-            userPreferencesRepository.saveOnBoardingCompleted(true)
-        }
-    }
-
-    // Function to set user not onboarded
-    fun setUserIsNotOnboarded() {
-        viewModelScope.launch {
-            userPreferencesRepository.saveOnBoardingCompleted(false)
-        }
-    }
-
-    /*
-    // UI states access for various [DessertReleaseUiState]
-    val isLinearLayoutUiState: StateFlow<DessertReleaseUiState> =
-        userPreferencesRepository.isLinearLayout.map { isLinearLayout ->
-            DessertReleaseUiState(isLinearLayout)
-        }.stateIn(
-            scope = viewModelScope,
-            // Flow is set to emits value for when app is on the foreground
-            // 5 seconds stop delay is added to ensure it flows continuously
-            // for cases such as configuration change
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = DessertReleaseUiState()
-        )
-
-     */
-
-
-    /*
-     * [selectLayout] change the layout and icons accordingly and
-     * save the selection in DataStore through [userPreferencesRepository]
-     */
     fun selectLayout(isLinearLayout: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveLayoutPreference(isLinearLayout)
@@ -122,7 +89,7 @@ class UserPreferencesViewModel(
         }
     }
 
-    fun loginCompleted(isLoggedIn: Boolean) {
+    private fun loginCompleted(isLoggedIn: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveLoggedIn(isLoggedIn)
         }
@@ -130,12 +97,13 @@ class UserPreferencesViewModel(
 
     fun setBaseUrl(baseUrl: String) {
         viewModelScope.launch {
-            if ( try {
+            if (try {
                     URL(baseUrl).toURI()
                     true
                 } catch (e: Exception) {
                     false
-                }) {
+                }
+            ) {
 
                 if (baseUrl.endsWith("/")) {
                     userPreferencesRepository.saveBaseUrl(baseUrl)
@@ -156,10 +124,12 @@ class UserPreferencesViewModel(
                 }
             }
             loginCompleted(false)
+
             //onBoardingCompleted(false)
 
-            // Logout from the app server
+            // Logout from the app webserver
             userPreferencesRepository.logoutFromServer()
+            SessionManager.clearSession()
         }
     }
 
@@ -179,7 +149,10 @@ class UserPreferencesViewModel(
                     when (response.code()) {
                         200 -> showToast(context, "Collegamento riuscito ${response.code()}")
 
-                        401 -> showToast(context, "Collegamento riuscito, non autorizzato ${response.code()}")
+                        401 -> showToast(
+                            context,
+                            "Collegamento riuscito, non autorizzato ${response.code()}"
+                        )
 
                         404 -> showToast(
                             context,
@@ -220,7 +193,7 @@ class UserPreferencesViewModel(
     }
 
     private fun parseErrorMessage(errorBody: String?): String {
-        val jsonError = JSONObject(errorBody?: "null")
+        val jsonError = JSONObject(errorBody ?: "null")
         return jsonError.optString("message")
     }
 
