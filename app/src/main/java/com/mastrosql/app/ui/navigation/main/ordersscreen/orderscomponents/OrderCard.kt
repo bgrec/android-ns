@@ -5,10 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,21 +14,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -102,7 +94,7 @@ fun OrderCard(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     OrderDescriptionAndId(
-                        id = order.id,
+                        orderId = order.id,
                         description = order.description,
                         insertDate = formatDate(order.insertDate),
                         businessName = order.businessName,
@@ -198,13 +190,13 @@ private fun OrderDetailsEditButton(
  * Composable that displays a order business name and address.
  *
  * @param description is the resource ID for the string of the order description
- * @param id is the Int that represents the order id
+ * @param orderId is the Int that represents the order id
  * @param modifier modifiers to set to this composable
  */
 
 @Composable
 fun OrderDescriptionAndId(
-    id: Int,
+    orderId: Int,
     insertDate: String,
     deliveryType: Int,
     businessName: String?,
@@ -228,7 +220,7 @@ fun OrderDescriptionAndId(
             )
 
             Text(
-                text = id.toString(),
+                text = orderId.toString(),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -252,8 +244,10 @@ fun OrderDescriptionAndId(
             modifier = Modifier
                 .clickable(
                     onClick = {
+                        //Setting the modifiedOrderId to the id of the order that was clicked
+                        //and showing the delivery dialog
+                        modifiedOrderId.value = orderId
                         showDeliveryDialog.value = true
-                        modifiedOrderId.value = id
                     }),
             horizontalArrangement = Arrangement.Start
         ) {

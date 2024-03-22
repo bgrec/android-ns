@@ -2,6 +2,7 @@ package com.mastrosql.app.data.datasource.network
 
 import android.annotation.SuppressLint
 import com.mastrosql.app.BuildConfig
+import okhttp3.CookieJar
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -91,6 +92,9 @@ object RetrofitInstance {
                 val newRequest = modifyRequestUrl(originalRequest)
                 chain.proceed(newRequest)
             }
+
+            //TODO: Remove the cookieJar when the session management is implemented in the app
+            //builder.cookieJar(CookieJar.NO_COOKIES)
 
             // Disable automatic redirects because the login endpoint makes a redirect to the status page
             // but we want to capture the Set-Cookie header from the response, the session cookie
