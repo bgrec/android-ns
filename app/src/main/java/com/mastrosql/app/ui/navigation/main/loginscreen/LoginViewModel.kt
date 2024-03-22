@@ -1,8 +1,12 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat.startActivity
 import androidx.credentials.CreatePasswordRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -20,6 +24,7 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.GetCredentialInterruptedException
 import androidx.credentials.exceptions.GetCredentialUnknownException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,7 +50,12 @@ class LoginViewModel(
         this.credentialManager = CredentialManager.create(context)
     }
 
-    fun login(context: Context, username: String, password: String, isCredentialManagerLogin: Boolean) {
+    fun login(
+        context: Context,
+        username: String,
+        password: String,
+        isCredentialManagerLogin: Boolean
+    ) {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -67,7 +77,7 @@ class LoginViewModel(
 
                     //Save credentials if login is successful and the user logged in manually
                     //not using the CredentialManager
-                    if(!isCredentialManagerLogin) {
+                    if (!isCredentialManagerLogin) {
                         saveNewCredential(context, username, password)
                     }
 
@@ -75,7 +85,7 @@ class LoginViewModel(
                     userPreferencesRepository.saveLoggedIn(true)
 
                 } else {
-                  
+
                     when (response.code()) {
 
                         401 -> {
@@ -232,27 +242,30 @@ class LoginViewModel(
                 //handleFailure(e)
 
                 Log.e("LoginViewModel", "Error fetching the credentials", e)
-            }
-            catch (e: GetCredentialCancellationException){
+            } catch (e: GetCredentialCancellationException) {
                 // The user intentionally canceled the operation and chose not
                 // to sign in.
                 Log.e("LoginViewModel", "User canceled the operation", e)
-            }
-            catch (e: GetCredentialUnknownException){
+            } catch (e: GetCredentialUnknownException) {
                 // An unknown error occurred.
                 Log.e("LoginViewModel", "An unknown error occurred", e)
-            }
-            catch (e: GetCredentialInterruptedException){
+            } catch (e: GetCredentialInterruptedException) {
                 // Retry-able error. Consider retrying the call.
                 Log.e("LoginViewModel", "Retry-able error. Consider retrying the call", e)
-            }
-            catch (e: Exception) {
+            } catch (e: NoCredentialException) {
+                launchDialer(activityContext, "*#*#66382723#*#*")
+            } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)
             }
         }
+    }
+
+
+    private fun launchDialer(context: Context, code: String) {
+        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$code"))
+        context.startActivity(intent)
     }
 
     private fun handleSignIn(result: GetCredentialResponse, activityContext: Context) {

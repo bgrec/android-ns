@@ -36,7 +36,7 @@ googleServices = "4.4.1"
 firebaseBOM = "32.7.4"
 appDistribution = "4.2.0"
 material3 = "1.2.1"
-credentialsVersion = "1.3.0-alpha01"
+credentialsVersion = "1.2.0" #non aggiornare
 
 # composeUi version dictates the version of the accompanist libraries you should use (see below)
 #Important for Accompanist
