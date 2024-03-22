@@ -60,7 +60,8 @@ class OrdersViewModel(
                     OrdersUiState
                         .Success(
                             ordersListResult,
-                            modifiedOrderId = mutableIntStateOf(-1)
+                            //Not -1 to avoid the crash because of the index out of bound
+                            modifiedOrderId = mutableIntStateOf(0)
                         )
                 } catch (e: IOException) {
                     OrdersUiState.Error(e)

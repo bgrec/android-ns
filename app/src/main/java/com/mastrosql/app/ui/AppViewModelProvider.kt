@@ -103,7 +103,8 @@ object AppViewModelProvider {
         initializer {
             LoginViewModel(
                 mastroAndroidApplication().appContainer.loginRepository,
-                mastroAndroidApplication().appContainer.userPreferencesRepository)
+                mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
         }
     }
 }

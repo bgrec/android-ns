@@ -3,6 +3,8 @@ package com.mastrosql.app.ui.navigation.main.loginscreen
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +64,11 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
+    var isFirstClick by remember { mutableStateOf(true) }
+
+    //Initialize the CredentialManager in the ViewModel with the context
+    viewModel.initCredentialManager(context)
 
     Scaffold(
         topBar = {
@@ -120,7 +128,18 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    keyboardAction = KeyboardActions()
+                    keyboardAction = KeyboardActions(),
+                    interactionSource = interactionSource
+                        .also { interactionSource ->
+                            LaunchedEffect(interactionSource) {
+                                interactionSource.interactions.collect {
+                                    if (it is PressInteraction.Release && isFirstClick) {
+                                        isFirstClick = false
+                                        viewModel.getCredentials(context)
+                                    }
+                                }
+                            }
+                        }
                 )
 
                 //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
@@ -148,10 +167,14 @@ fun LoginScreen(
                     keyboardAction = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            viewModel.login(context, username, password)
-
+                            viewModel.login(
+                                context = context,
+                                username = username,
+                                password = password,
+                                isCredentialManagerLogin = false
+                            )
                         }
-                    )
+                    ),
                 )
                 //Spacer(modifier = Modifier.height(50.dp))
                 Spacer(modifier = Modifier.weight(1f))
@@ -162,7 +185,12 @@ fun LoginScreen(
                         .align(Alignment.CenterHorizontally),
                     text = R.string.login,
                     onClick = {
-                        viewModel.login(context, username, password)
+                        viewModel.login(
+                            context = context,
+                            username = username,
+                            password = password,
+                            isCredentialManagerLogin = false
+                        )
                     }
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -170,7 +198,6 @@ fun LoginScreen(
         }
     }
 }
-
 
 @Composable
 fun LogoImage() {
@@ -192,10 +219,13 @@ fun LoginFields(
     keyboardAction: KeyboardActions,
     modifier: Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    interactionSource: MutableInteractionSource = remember {
+        MutableInteractionSource()
+    },
 ) {
 
     val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
+    //val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
         leadingIcon = icon,
@@ -208,6 +238,7 @@ fun LoginFields(
         modifier = modifier
             .focusRequester(focusRequester),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
+        interactionSource = interactionSource
     )
 }
 

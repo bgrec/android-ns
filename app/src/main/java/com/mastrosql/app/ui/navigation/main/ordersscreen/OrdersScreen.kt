@@ -103,7 +103,7 @@ fun OrdersResultScreen(
     navigateToOrderDetails: (Int, String) -> Unit,
     navigateToOrderEntry: () -> Unit,
     ordersList: List<Order>,
-    modifiedOrderId: MutableState<Int>,
+    modifiedOrderId: MutableState<Int> ,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
@@ -191,21 +191,9 @@ fun OrdersResultScreen(
                 title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
                 text = {
                     Log.d("modifiedOrderId", "modifiedOrderId: ${modifiedOrderId.value}")
-                    Log.d("selectedDeliveryState", "selectedDeliveryState: $selectedDeliveryState")
-                    Log.d(
-                        "OrderDeliveryState",
-                        "modifiedOrderDeliveryState: $modifiedOrderDeliveryState"
-                    )
 
                     Column(modifier = Modifier.wrapContentSize()) {
-
-                        //dialog delivery types
-                        data class DeliveryState(
-                            val state: Int,
-                            val nameState: Int,
-                            val color: Color
-                        )
-
+                        
                         // List of delivery types
                         val deliveryStates = listOf(
                             DeliveryState(1, R.string.order_deliveryType_value1, Color.Red),
@@ -259,6 +247,15 @@ fun OrdersResultScreen(
         }
     }
 }
+
+
+//dialog delivery types
+data class DeliveryState(
+    val state: Int,
+    val nameState: Int,
+    val color: Color
+)
+
 
 /*
 @Preview

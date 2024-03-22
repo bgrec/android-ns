@@ -33,7 +33,7 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "com.mastrosql.app.HiltTestRunner"
         vectorDrawables {
@@ -251,6 +251,12 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.app.distribution)
+
+//Credentials
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+
+
 
 // Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

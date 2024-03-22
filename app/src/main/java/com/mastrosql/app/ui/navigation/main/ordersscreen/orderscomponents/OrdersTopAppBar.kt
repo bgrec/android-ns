@@ -18,7 +18,6 @@ import com.mastrosql.app.ui.components.appbar.DrawerIcon
 /**
  * App bar to display title and conditionally display the back navigation.
  */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersTopAppBar(

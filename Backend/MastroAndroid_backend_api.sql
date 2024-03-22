@@ -476,15 +476,7 @@ BEGIN
 END;
 
 ####################################################################################################
-DROP PROCEDURE IF EXISTS AddNewUser;
-CREATE PROCEDURE AddNewUser(
-    IN username VARCHAR(255),
-    IN password VARCHAR(255))
-BEGIN
-    CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
-    GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;
-END;
+
 
 CREATE USER 'bogdan'@'%' IDENTIFIED BY '85000aab';
 GRANT ALL PRIVILEGES ON *.* TO 'bogdan'@'%' WITH GRANT OPTION;
@@ -494,3 +486,11 @@ CREATE USER 'apptest'@'%' IDENTIFIED BY 'apptest';
 GRANT ALL PRIVILEGES ON *.* TO 'apptest'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 
+CREATE USER 'android'@'%' IDENTIFIED BY 'android';
+GRANT ALL PRIVILEGES ON *.* TO 'android'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+
+
+CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
+GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
