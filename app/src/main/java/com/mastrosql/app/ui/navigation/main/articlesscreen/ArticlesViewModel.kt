@@ -115,7 +115,7 @@ class ArticlesViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Collegamento riuscito ${response.code()}"
+                                "Articolo inserito con successo"
                             )
 
                             onInsertionComplete()

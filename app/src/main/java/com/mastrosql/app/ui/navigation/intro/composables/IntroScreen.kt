@@ -55,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -102,7 +103,6 @@ fun IntroScreen(
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
-                    viewModel.onBoardingCompleted(false)
                 })
             }) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -325,7 +325,11 @@ fun ConfigContent(
                 focusManager.clearFocus()
             }),
             label = { Text(stringResource(R.string.label_url)) },
-            modifier = Modifier.focusRequester(focusRequester)
+            modifier = Modifier.focusRequester(focusRequester).onFocusChanged {
+                if(!it.isFocused) {
+                    viewModel.setBaseUrl(urlState)
+                }
+            }
         )
 
         //fine TextField per inserire url

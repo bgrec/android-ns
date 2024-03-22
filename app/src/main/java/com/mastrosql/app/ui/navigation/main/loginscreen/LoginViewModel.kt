@@ -43,13 +43,16 @@ class LoginViewModel(
                     userPreferencesRepository.saveLoggedIn(true)
 
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    val errorMessage = parseErrorMessage(errorBody)
+
 
                     when (response.code()) {
 
                         401 -> {
-                            showToast(context, Toast.LENGTH_LONG, errorMessage)
+                            showToast(
+                                context,
+                                Toast.LENGTH_LONG,
+                                " Credenziali non valide o errate ${response.code()}"
+                            )
                         }
 
                         404 -> showToast(
@@ -62,7 +65,7 @@ class LoginViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
+                                "${response.code()}"
                             )
                         }
 
@@ -70,7 +73,7 @@ class LoginViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
+                                " ${response.code()}"
                             )
                         }
 
