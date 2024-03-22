@@ -55,7 +55,6 @@ class CustomersMasterDataViewModel(
                 } catch (e: IOException) {
                     CustomersUiState.Error(e)
                 } catch (e: HttpException) {
-
                     CustomersUiState.Error(e)
                 } catch (e: Exception) {
                     CustomersUiState.Error(e)

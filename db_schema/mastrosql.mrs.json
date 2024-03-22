@@ -1729,8 +1729,8 @@
                 "auto_detect_media_type": 0,
                 "requires_auth": 1,
                 "auth_stored_procedure": "",
-                "row_user_ownership_enforced": 0,
-                "row_user_ownership_column": null,
+                "row_user_ownership_enforced": 1,
+                "row_user_ownership_column": "NUME",
                 "options": null,
                 "details": null,
                 "comments": "",
@@ -6227,6 +6227,81 @@
                                     "in": true,
                                     "out": false,
                                     "name": "documentId",
+                                    "datatype": "int",
+                                    "not_null": true,
+                                    "is_unique": false,
+                                    "is_primary": false,
+                                    "is_generated": false
+                                },
+                                "enabled": true,
+                                "allow_filtering": true,
+                                "allow_sorting": false,
+                                "no_check": false,
+                                "no_update": false
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "0x11eee84f12624acc98a4408d5c759f7c",
+                "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+                "name": "ModifyOrderDeliveryState",
+                "request_path": "/ModifyOrderDeliveryState",
+                "enabled": 1,
+                "object_type": "PROCEDURE",
+                "crud_operations": [
+                    "UPDATE"
+                ],
+                "format": "FEED",
+                "items_per_page": null,
+                "media_type": null,
+                "auto_detect_media_type": 0,
+                "requires_auth": 1,
+                "auth_stored_procedure": "",
+                "row_user_ownership_enforced": 0,
+                "row_user_ownership_column": null,
+                "options": null,
+                "details": null,
+                "comments": "",
+                "objects": [
+                    {
+                        "id": "0x7f4403ef3a724741e7187e0d634f826f",
+                        "db_object_id": "0x11eee84f12624acc98a4408d5c759f7c",
+                        "name": "MastrosqlServiceMastrosqlModifyOrderDeliveryStateParams",
+                        "kind": "PARAMETERS",
+                        "position": 0,
+                        "fields": [
+                            {
+                                "position": 2,
+                                "id": "0x2dc93282ca4e46e4e339262e8145ff36",
+                                "object_id": "0x7f4403ef3a724741e7187e0d634f826f",
+                                "name": "deliveryState",
+                                "db_column": {
+                                    "in": true,
+                                    "out": false,
+                                    "name": "deliveryState",
+                                    "datatype": "int",
+                                    "not_null": true,
+                                    "is_unique": false,
+                                    "is_primary": false,
+                                    "is_generated": false
+                                },
+                                "enabled": true,
+                                "allow_filtering": true,
+                                "allow_sorting": false,
+                                "no_check": false,
+                                "no_update": false
+                            },
+                            {
+                                "position": 1,
+                                "id": "0xf08f3c6111f448a7efcb3fe0ee2d35c8",
+                                "object_id": "0x7f4403ef3a724741e7187e0d634f826f",
+                                "name": "orderId",
+                                "db_column": {
+                                    "in": true,
+                                    "out": false,
+                                    "name": "orderId",
                                     "datatype": "int",
                                     "not_null": true,
                                     "is_unique": false,

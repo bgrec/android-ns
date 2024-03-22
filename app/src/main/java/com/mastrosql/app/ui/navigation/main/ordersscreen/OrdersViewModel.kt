@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 
@@ -87,10 +88,21 @@ class OrdersViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Articolo inserito con successo " //${response.code()}
+                                "Modifica salvata con successo" //${response.code()}
                             )
-                            // Refresh the list
-                            getOrders()
+
+                            //If the response is successful, update the delivery state of the order
+                            //without refreshing the list
+                            updateOrdersItem(orderId, deliveryState)
+                        }
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Modifiche non salvate, non autorizzato"
+                            )
+                            ordersUiState = OrdersUiState.Error(HttpException(response))
                         }
                         //TODO: Add other status codes and handle them
                         404 -> showToast(
@@ -147,7 +159,7 @@ class OrdersViewModel(
     private fun parseErrorMessage(errorBody: String?): String {
         if (errorBody != null) {
             val jsonError = JSONObject(errorBody)
-            return jsonError.optString("message","{}")
+            return jsonError.optString("message", "{}")
         }
         return "{}"
     }
@@ -161,6 +173,18 @@ class OrdersViewModel(
                 toast.show()
             } else {
                 // Hide loading message by not showing any toast
+            }
+        }
+    }
+
+    //Function to update the delivery state of the order in the list
+    private fun updateOrdersItem(orderId: Int, deliveryState: Int) {
+        if (ordersUiState is OrdersUiState.Success) {
+            val ordersList = (ordersUiState as OrdersUiState.Success).ordersList.toMutableList()
+            val index = ordersList.indexOfFirst { it.id == orderId }
+            if (index != -1) {
+                ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
+                ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(orderId))
             }
         }
     }

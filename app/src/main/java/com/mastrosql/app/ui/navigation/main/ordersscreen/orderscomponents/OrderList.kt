@@ -33,17 +33,15 @@ fun OrdersList(
     modifiedOrderId: MutableState<Int>,
     state: MutableState<TextFieldValue>,
     navController: NavController,
-    navigateToOrderDetails: (Int, String) -> Unit,
+    navigateToOrderDetails: (Int, String?) -> Unit,
     showDeliveryDialog: MutableState<Boolean>
-    ) {
+) {
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
     LaunchedEffect(ordersList) {
         //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
-        modifiedOrderId?.value.let { index ->
-            if (index != null) {
-                listState.animateScrollToItem(index)
-            }
+        modifiedOrderId.value.let { index ->
+            listState.animateScrollToItem(index)
         }
     }
 
@@ -61,15 +59,20 @@ fun OrdersList(
         } else {
             //update this for fields to search
             ordersList.filter {
-                it.description.contains(searchedText, ignoreCase = true)
+                it.description?.contains(searchedText, ignoreCase = true) ?: true
                         ||
-                        it.businessName.contains(searchedText, ignoreCase = true)
-                        || it.city.contains(searchedText, ignoreCase = true)
+                        it.businessName?.contains(searchedText, ignoreCase = true) ?: true
+                        || it.city?.contains(searchedText, ignoreCase = true) ?: true
 
             }
         }
 
-        items(filteredList) { order ->
+        items(
+            filteredList,
+            key = {
+                it.id
+            })
+        { order ->
 
             OrderCard(
                 order = order,

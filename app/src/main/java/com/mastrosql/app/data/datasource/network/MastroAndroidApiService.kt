@@ -13,6 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Header
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -80,14 +81,14 @@ interface MastroAndroidApiService {
     @GET("rigOrdc")
     suspend fun getAllOrderDetails(
         @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000
+        @Query("limit") pageSize: Int = 1000000
     ): OrderDetailsResponse
 
 
     @GET("clientsview")
     suspend fun testApiCall(
         @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1
+        @Query("limit") pageSize: Int = 1000000
     ): Response<JsonObject>
 
     @PUT("OrderBarcodeReader")
@@ -110,7 +111,8 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
-    @PUT("lisOrdc")
+    //@PUT("lisOrdc/{NUME}")
+    @PUT ("ModifyOrderDeliveryState")
     suspend fun updateDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>

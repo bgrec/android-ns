@@ -64,8 +64,8 @@ class NetworkOrdersRepository(
 
     override suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject> {
         val body = JsonObject().apply {
-            addProperty("NUME", orderId)
-            addProperty("statoCons", deliveryState)
+            addProperty("orderId", orderId)
+            addProperty("deliveryState", deliveryState)
         }
         return mastroAndroidApiService.updateDeliveryState(body)
     }

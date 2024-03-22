@@ -476,6 +476,21 @@ BEGIN
 END;
 
 ####################################################################################################
+####################################################################################################
+DROP PROCEDURE IF EXISTS ModifyOrderDeliveryState;
+CREATE PROCEDURE ModifyOrderDeliveryState(
+    IN orderId INT,
+    IN deliveryState INT
+)
+    BEGIN
+    UPDATE lis_ordc
+    SET STATO_CONS = deliveryState
+    WHERE NUME = orderId;
+
+    SELECT * FROM ordersview WHERE NUME = orderId;
+
+END;
+
 
 
 CREATE USER 'bogdan'@'%' IDENTIFIED BY '85000aab';

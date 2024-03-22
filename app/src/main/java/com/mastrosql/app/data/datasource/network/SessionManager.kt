@@ -52,4 +52,10 @@ object SessionManager {
             }
         }
     }
+
+    suspend fun logoutNotAuthorized() {
+        dataStore?.edit { preferences ->
+            preferences[UserPreferencesKeys.IS_LOGGED_IN] = false
+        }
+    }
 }
