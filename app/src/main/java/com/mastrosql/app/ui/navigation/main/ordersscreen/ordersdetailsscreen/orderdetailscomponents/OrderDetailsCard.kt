@@ -53,6 +53,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,7 +80,7 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun OrderDetailsItem(
+fun OrderDetailsCard(
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
     navController: NavController,
@@ -88,8 +89,9 @@ fun OrderDetailsItem(
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     listState: LazyListState,
-    modifiedItemId:  MutableState<Int?>,
-    onDuplicate: (Int) -> Unit
+    modifiedItemId: MutableIntState?,
+    onDuplicate: (Int) -> Unit,
+    itemEditButtonTint: MutableState<Color>
 ) {
 
     val visibleState = remember { MutableTransitionState(true) }
@@ -107,11 +109,12 @@ fun OrderDetailsItem(
                 visibleState = visibleState,
                 orderDetailsItem = orderDetailsItem,
                 modifier = modifier,
-                navController = navController,
-                navigateToEditItem = navigateToEditItem,
+                //navController = navController,
+                //navigateToEditItem = navigateToEditItem,
                 showEditDialog = showEditDialog,
                 modifiedItemId = modifiedItemId,
-                onDuplicate = onDuplicate
+                onDuplicate = onDuplicate,
+                itemEditButtonTint = itemEditButtonTint
             )
         }
     }
@@ -149,24 +152,7 @@ fun OrderDetailsItem(
             }
         }
     }
-}/*
-
-// Call the SwipeToDismissItem function with an implementation of onRemove
-SwipeToDismissItem(
-    visibleState = visibleState,
-    orderDetailsItem = orderDetailsItem,
-    modifier = modifier,
-    navController = navController,
-    navigateToEditItem = navigateToEditItem,
-    onRemove = { item ->
-        // Implement the logic to remove the item
-        // If the item is successfully removed, return true, otherwise return false
-        // For example:
-        // val removedSuccessfully = removeItemFromServer(item)
-        // removedSuccessfully
-    }
-)
- */
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -175,15 +161,16 @@ private fun SwipeToDismissItem(
     visibleState: MutableTransitionState<Boolean>,
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    navController: NavController,
-    navigateToEditItem: (Int) -> Unit,
+    //navController: NavController,
+    //navigateToEditItem: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    modifiedItemId: MutableState<Int?>,
-    onDuplicate: (Int) -> Unit
+    modifiedItemId: MutableIntState?,
+    onDuplicate: (Int) -> Unit,
+    itemEditButtonTint: MutableState<Color>
 ) {
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
 
-        //Only for end to start action
+        //Swipe actions
         when (it) {
             SwipeToDismissBoxValue.EndToStart -> {
                 visibleState.targetState = false
@@ -200,7 +187,6 @@ private fun SwipeToDismissItem(
 
     }, positionalThreshold = { distance -> distance * 0.4f })
 
-
     SwipeToDismissBox(
         state = dismissState,
         modifier = Modifier,
@@ -213,12 +199,13 @@ private fun SwipeToDismissItem(
         },
         content = {
             OrderDetailsItemContent(
-                orderDetail = orderDetailsItem,
+                orderDetailsItem = orderDetailsItem,
                 modifier = modifier,
-                navController = navController,
-                navigateToEditItem = navigateToEditItem,
+                //navController = navController,
+                //navigateToEditItem = navigateToEditItem,
                 showEditDialog = showEditDialog,
-                modifiedItemId = modifiedItemId
+                modifiedItemId = modifiedItemId,
+                itemEditButtonTint = itemEditButtonTint
             )
         })
 }
@@ -272,12 +259,13 @@ private fun SwipeToDismissBackground(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun OrderDetailsItemContent(
-    orderDetail: OrderDetailsItem,
+    orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    navController: NavController,
-    navigateToEditItem: (Int) -> Unit,
+    //navController: NavController,
+    //navigateToEditItem: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    modifiedItemId: MutableState<Int?>,
+    modifiedItemId: MutableIntState?,
+    itemEditButtonTint: MutableState<Color>
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -303,9 +291,9 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OrderDetailDescriptionAndId(
-                        articleId = orderDetail.articleId,
-                        sku = orderDetail.sku,
-                        description = orderDetail.description
+                        articleId = orderDetailsItem.articleId,
+                        sku = orderDetailsItem.sku,
+                        description = orderDetailsItem.description
                     )
                 }
             }
@@ -327,15 +315,15 @@ private fun OrderDetailsItemContent(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     OrderDetailDescriptionAndId2(
-                        batch = orderDetail.batch,
-                        expirationDate = formatDate(orderDetail.expirationDate),
-                        quantity = orderDetail.quantity,
-                        orderedQuantity = orderDetail.orderedQuantity,
-                        shippedQuantity = orderDetail.shippedQuantity
+                        batch = orderDetailsItem.batch,
+                        expirationDate = formatDate(orderDetailsItem.expirationDate),
+                        quantity = orderDetailsItem.quantity,
+                        orderedQuantity = orderDetailsItem.orderedQuantity,
+                        shippedQuantity = orderDetailsItem.shippedQuantity
                     )
                     if (expanded) {
                         OrderDetailInfo(
-                            completeDescription = orderDetail.completeDescription
+                            completeDescription = orderDetailsItem.completeDescription
                         )
                     }
                 }
@@ -345,20 +333,14 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    val defaultTint = MaterialTheme.colorScheme.secondary
-                    var tint by remember { mutableStateOf(if (modifiedItemId.value == orderDetail.id) Color.Red else defaultTint) }
-                    if (modifiedItemId.value == orderDetail.id) {
-                        tint = Color.Red
-                    }
 
                     ItemEditButton(
-                        tint = tint,
                         onClick = {
                             showEditDialog.value = true
+                            modifiedItemId?.intValue = orderDetailsItem.id
                         },
-                        modifier = modifier,
-                        modifiedOrderId = modifiedItemId,
-                        orderDetailsId = orderDetail.id
+                        itemEditButtonTint = itemEditButtonTint,
+                        modifier = modifier
                     )
                 }
             }
@@ -393,19 +375,16 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    orderDetailsId: Int,
-    tint: Color,
+    itemEditButtonTint: MutableState<Color>,
     onClick: () -> Unit,
-    modifiedOrderId: MutableState<Int?>,
     modifier: Modifier = Modifier
 ) {
     IconButton(onClick = {
         onClick()
-        modifiedOrderId.value = orderDetailsId
     }) {
         Icon(
             Icons.Default.Edit,
-            tint = tint,
+            tint = itemEditButtonTint.value,
             contentDescription = stringResource(R.string.edit_button_order_item),
             modifier = Modifier.fillMaxSize()
         )

@@ -44,6 +44,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +55,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -162,7 +162,7 @@ fun OrderDetailResultScreen(
     navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     orderDetailList: List<OrderDetailsItem>,
-    modifiedIndex: Int?,
+    modifiedIndex: MutableIntState?,
     orderId: Int?,
     orderDescription: String?,
     modifier: Modifier = Modifier,
@@ -185,13 +185,11 @@ fun OrderDetailResultScreen(
     // State to control the bottom sheet
     val sheetState = rememberModalBottomSheetState()
 
+    // State to control the snackbar visibility
     val snackbarHostState = remember { SnackbarHostState() }
 
     // State to control the bottom sheet visibility
     var showBottomSheet by remember { mutableStateOf(false) }
-
-    // State to control the snackbar visibility
-    var showSnackbar by remember { mutableStateOf(false) }
 
     val showEditDialog = remember { mutableStateOf(false) }
     // State to control the focus of the text input
@@ -309,7 +307,7 @@ fun OrderDetailResultScreen(
         floatingActionButtonPosition = FabPosition.End,
 
         ) { innerPadding ->
-      
+
         //Box used for pull to refresh
         Box(
             modifier = modifier
@@ -336,11 +334,12 @@ fun OrderDetailResultScreen(
                     navController = navController,
                     showEditDialog = showEditDialog,
                     snackbarHostState = snackbarHostState,
-                    onRemove = {orderDetailsItemId -> 
-                      viewModel.deleteDetailItem(context, orderDetailsItemId) 
+                    onRemove = { orderDetailsItemId ->
+                        viewModel.deleteDetailItem(context, orderDetailsItemId)
                     },
-                    onDuplicate = {orderDetailsItemId ->
-                        viewModel.duplicateDetailItem(context, orderDetailsItemId)}
+                    onDuplicate = { orderDetailsItemId ->
+                        viewModel.duplicateDetailItem(context, orderDetailsItemId)
+                    }
                 )
 
                 if (showEditDialog.value) {
@@ -349,7 +348,8 @@ fun OrderDetailResultScreen(
                         onDismissRequest = { showEditDialog.value = false },
                         title = { Text(stringResource(R.string.order_details_dialog_edit_title)) },
                         text = {
-                            val focusManager = LocalFocusManager.current
+
+                            //val focusManager = LocalFocusManager.current
 
                             Column(modifier = Modifier.wrapContentSize()) {
                                 OutlinedTextField(
@@ -397,6 +397,9 @@ fun OrderDetailResultScreen(
                         confirmButton = {
                             TextButton(onClick = {
                                 showEditDialog.value = false
+                                //viewModel
+
+
                             }) {
                                 Text(stringResource(R.string.confirm_button))
                             }

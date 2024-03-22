@@ -476,7 +476,6 @@ BEGIN
 END;
 
 ####################################################################################################
-####################################################################################################
 DROP PROCEDURE IF EXISTS ModifyOrderDeliveryState;
 CREATE PROCEDURE ModifyOrderDeliveryState(
     IN orderId INT,
@@ -491,7 +490,7 @@ CREATE PROCEDURE ModifyOrderDeliveryState(
 
 END;
 
-
+#
 
 CREATE USER 'bogdan'@'%' IDENTIFIED BY '85000aab';
 GRANT ALL PRIVILEGES ON *.* TO 'bogdan'@'%' WITH GRANT OPTION;

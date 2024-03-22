@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -190,7 +189,7 @@ fun OrdersResultScreen(
                     }
                 }
             }
-            Log.d("modifiedOrderId", modifiedOrderId.value.toString())
+
             AlertDialog(
                 modifier = Modifier.wrapContentSize(),
                 onDismissRequest = { showDeliveryDialog.value = false },
@@ -202,12 +201,12 @@ fun OrdersResultScreen(
 
                         // List of delivery types
                         val deliveryStates = listOf(
-                            DeliveryState(0, R.string.order_deliveryType_value1, Color.Red),
-                            DeliveryState(1, R.string.order_deliveryType_value2, Color.Green),
-                            DeliveryState(2, R.string.order_deliveryType_value3, Color.Black),
+                            DeliveryState(0, R.string.order_deliveryState_value0, Color.Red),
+                            DeliveryState(1, R.string.order_deliveryState_value1, Color.Green),
+                            DeliveryState(2, R.string.order_deliveryState_value2, Color.Black),
                             DeliveryState(
                                 3,
-                                R.string.order_deliveryType_value4,
+                                R.string.order_deliveryState_value3,
                                 Color(0xFFFFA500)
                             )//orange
                         )

@@ -2,7 +2,10 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -25,7 +28,7 @@ sealed interface OrderDetailsUiState {
 
     data class Success(
         val orderDetailsList: List<OrderDetailsItem>,
-        val modifiedIndex: Int? = null,
+        val modifiedIndex: MutableIntState? = null,
         val orderId: Int? = null,
         val orderDescription: String? = null
     ) : OrderDetailsUiState
@@ -90,10 +93,10 @@ class OrderDetailsViewModel(
 
                 // Update the UI state with the new list
                 OrderDetailsUiState.Success(
-                    orderDetailsListResult,
-                    modifiedIndex,
-                    orderId.value,
-                    orderDescription.value
+                    orderDetailsList = orderDetailsListResult,
+                    modifiedIndex = modifiedIndex?.let{ mutableIntStateOf(it)},
+                    orderId = orderId.value,
+                    orderDescription = orderDescription.value
                 )
             } catch (e: IOException) {
                 OrderDetailsUiState.Error(e)
@@ -126,10 +129,10 @@ class OrderDetailsViewModel(
 
                 // Update the UI state with the new list
                 OrderDetailsUiState.Success(
-                    orderDetailsListResult,
-                    modifiedIndex,
-                    orderId.value,
-                    orderDescription.value
+                    orderDetailsList = orderDetailsListResult,
+                    modifiedIndex = modifiedIndex?.let{ mutableIntStateOf(it)} ,
+                    orderId = orderId.value,
+                    orderDescription = orderDescription.value
                 )
             } catch (e: IOException) {
                 OrderDetailsUiState.Error(e)
@@ -215,7 +218,7 @@ class OrderDetailsViewModel(
     private fun parseErrorMessage(errorBody: String?): String {
         if (errorBody != null) {
             val jsonError = JSONObject(errorBody)
-            return jsonError.optString("message","{}")
+            return jsonError.optString("message", "{}")
         }
         return "{}"
     }

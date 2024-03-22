@@ -258,28 +258,28 @@ fun OrderDescriptionAndId(
 
             when (deliveryState) {
                 0 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value1),
+                    text = stringResource(R.string.order_deliveryState_value0),
                     color = ColorRed,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
 
                 1 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value2),
+                    text = stringResource(R.string.order_deliveryState_value1),
                     color = ColorGreen,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
 
                 2 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value3),
+                    text = stringResource(R.string.order_deliveryState_value2),
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
 
                 3 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value4),
+                    text = stringResource(R.string.order_deliveryState_value3),
                     color = ColorOrange,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,

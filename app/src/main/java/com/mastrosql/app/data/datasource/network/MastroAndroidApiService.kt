@@ -111,7 +111,14 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
-    //@PUT("lisOrdc/{NUME}")
+    /* Example of PATH parameter
+    @PUT("lisOrdc/{NUME}")
+    suspend fun updateDeliveryState(
+        @Path("NUME") orderNumber: Int,
+        @Body body: JsonObject
+    ): Response<JsonObject>
+    */
+
     @PUT ("ModifyOrderDeliveryState")
     suspend fun updateDeliveryState(
         @Body body: JsonObject

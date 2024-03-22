@@ -3,10 +3,8 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,11 +15,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -36,19 +36,30 @@ fun OrderDetailList(
     navController: NavController,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
-    modifiedIndex: Int?,
+    modifiedIndex: MutableIntState?,
     onRemove: (Int) -> Unit,
     onDuplicate: (Int) -> Unit
 ) {
+    val defaultTint = MaterialTheme.colorScheme.secondary
+    val itemEditTint = remember { mutableStateOf(defaultTint) }
+    var modifiedItemId = remember { mutableIntStateOf(0) }
 
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
     LaunchedEffect(orderDetailList) {
         //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
         modifiedIndex?.let { index ->
-            listState.animateScrollToItem(index)
+            if (index.intValue >= 0) {
+                listState.animateScrollToItem(index.intValue)
+            }
         }
     }
+
+
+//    // Launch recomposition when the edit dialog state changes
+//    LaunchedEffect(showEditDialog.value) {
+//        listState.scrollToItem(0) // Scroll to the top of the list
+//    }
 
     LazyColumn(
         state = listState,
@@ -76,7 +87,15 @@ fun OrderDetailList(
                 it.id
             })
         { orderDetail ->
-            OrderDetailsItem(
+
+            if (orderDetailList.indexOf(orderDetail) == modifiedIndex?.intValue) {
+                itemEditTint.value = Color.Red
+                modifiedItemId = remember { mutableIntStateOf(orderDetail.id) }
+            } else {
+                itemEditTint.value = defaultTint
+            }
+
+            OrderDetailsCard(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
                     .padding(2.dp)
@@ -88,8 +107,9 @@ fun OrderDetailList(
                 showEditDialog = showEditDialog,
                 snackbarHostState = snackbarHostState,
                 listState = listState,
-                modifiedItemId = remember { mutableStateOf(if (orderDetailList.indexOf(orderDetail) == modifiedIndex) orderDetail.id else null) },
-                onDuplicate = onDuplicate
+                modifiedItemId = modifiedItemId,
+                onDuplicate = onDuplicate,
+                itemEditButtonTint = itemEditTint
             )
         }
 
