@@ -1,6 +1,8 @@
 package com.mastrosql.app.ui.navigation.main
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -30,7 +32,9 @@ import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
+import java.lang.Thread.sleep
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
@@ -317,6 +321,7 @@ object DrawerParams {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun MainActivityPreview() {

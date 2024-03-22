@@ -88,7 +88,7 @@ fun OrderDetailsItem(
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     listState: LazyListState,
-    modifiedItemId: Int?,
+    modifiedItemId:  MutableState<Int?>,
     onDuplicate: (Int) -> Unit
 ) {
 
@@ -178,7 +178,7 @@ private fun SwipeToDismissItem(
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    modifiedItemId: Int?,
+    modifiedItemId: MutableState<Int?>,
     onDuplicate: (Int) -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
@@ -277,7 +277,7 @@ private fun OrderDetailsItemContent(
     navController: NavController,
     navigateToEditItem: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    modifiedItemId: Int?,
+    modifiedItemId: MutableState<Int?>,
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -346,8 +346,8 @@ private fun OrderDetailsItemContent(
 
                 ) {
                     val defaultTint = MaterialTheme.colorScheme.secondary
-                    var tint by remember { mutableStateOf(if (modifiedItemId == orderDetail.id) Color.Red else defaultTint) }
-                    if (modifiedItemId == orderDetail.id) {
+                    var tint by remember { mutableStateOf(if (modifiedItemId.value == orderDetail.id) Color.Red else defaultTint) }
+                    if (modifiedItemId.value == orderDetail.id) {
                         tint = Color.Red
                     }
 
@@ -355,9 +355,10 @@ private fun OrderDetailsItemContent(
                         tint = tint,
                         onClick = {
                             showEditDialog.value = true
-                            tint = Color.Red
                         },
                         modifier = modifier,
+                        modifiedOrderId = modifiedItemId,
+                        orderDetailsId = orderDetail.id
                     )
                 }
             }
@@ -392,13 +393,15 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
+    orderDetailsId: Int,
     tint: Color,
     onClick: () -> Unit,
+    modifiedOrderId: MutableState<Int?>,
     modifier: Modifier = Modifier
 ) {
     IconButton(onClick = {
         onClick()
-
+        modifiedOrderId.value = orderDetailsId
     }) {
         Icon(
             Icons.Default.Edit,
