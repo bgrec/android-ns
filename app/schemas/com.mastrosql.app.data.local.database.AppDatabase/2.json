@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "1451e7b5db3a019c3d6859680f258d24",
+    "identityHash": "9408f2f84b9258fad807fb2e2599728d",
     "entities": [
       {
         "tableName": "items",
@@ -496,7 +496,7 @@
       },
       {
         "tableName": "orders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `clientId` INTEGER NOT NULL, `businessName` TEXT NOT NULL, `street` TEXT NOT NULL, `postalCode` TEXT NOT NULL, `city` TEXT NOT NULL, `province` TEXT NOT NULL, `nation` TEXT NOT NULL, `destinationId` INTEGER NOT NULL, `destinationName` TEXT NOT NULL, `description` TEXT NOT NULL, `sequence` INTEGER NOT NULL, `insertDate` TEXT NOT NULL, `agent` TEXT NOT NULL, `transportHandler` TEXT NOT NULL, `parcels` INTEGER NOT NULL, `carrierId` INTEGER NOT NULL, `carrierName` TEXT NOT NULL, `weight` REAL NOT NULL, `port` TEXT NOT NULL, `date` TEXT NOT NULL, `notes` TEXT NOT NULL, `deliveryDate` TEXT NOT NULL, `deliveryDeadline` INTEGER NOT NULL, `deliveryType` INTEGER NOT NULL, `deliveryState` INTEGER NOT NULL, `urgent` INTEGER NOT NULL, `partial` INTEGER NOT NULL, `number` INTEGER NOT NULL, `metadata` TEXT NOT NULL, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `clientId` INTEGER, `businessName` TEXT, `street` TEXT, `postalCode` TEXT, `city` TEXT, `province` TEXT, `nation` TEXT, `destinationId` INTEGER, `destinationName` TEXT, `description` TEXT, `sequence` INTEGER, `insertDate` TEXT, `agent` TEXT, `transportHandler` TEXT, `parcels` INTEGER, `carrierId` INTEGER, `carrierName` TEXT, `weight` REAL, `port` TEXT, `date` TEXT, `notes` TEXT, `deliveryDate` TEXT, `deliveryDeadline` INTEGER, `deliveryType` INTEGER, `deliveryState` INTEGER, `urgent` INTEGER, `partial` INTEGER, `number` INTEGER, `metadata` TEXT NOT NULL, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -508,169 +508,169 @@
             "fieldPath": "clientId",
             "columnName": "clientId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "businessName",
             "columnName": "businessName",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "street",
             "columnName": "street",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "postalCode",
             "columnName": "postalCode",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "city",
             "columnName": "city",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "province",
             "columnName": "province",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "nation",
             "columnName": "nation",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "destinationId",
             "columnName": "destinationId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "destinationName",
             "columnName": "destinationName",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "description",
             "columnName": "description",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "sequence",
             "columnName": "sequence",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "insertDate",
             "columnName": "insertDate",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "agent",
             "columnName": "agent",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "transportHandler",
             "columnName": "transportHandler",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "parcels",
             "columnName": "parcels",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "carrierId",
             "columnName": "carrierId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "carrierName",
             "columnName": "carrierName",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "weight",
             "columnName": "weight",
             "affinity": "REAL",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "port",
             "columnName": "port",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "date",
             "columnName": "date",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "notes",
             "columnName": "notes",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "deliveryDate",
             "columnName": "deliveryDate",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "deliveryDeadline",
             "columnName": "deliveryDeadline",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "deliveryType",
             "columnName": "deliveryType",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "deliveryState",
             "columnName": "deliveryState",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "urgent",
             "columnName": "urgent",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "partial",
             "columnName": "partial",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "number",
             "columnName": "number",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "metadata",
@@ -1010,7 +1010,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1451e7b5db3a019c3d6859680f258d24')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9408f2f84b9258fad807fb2e2599728d')"
     ]
   }
 }

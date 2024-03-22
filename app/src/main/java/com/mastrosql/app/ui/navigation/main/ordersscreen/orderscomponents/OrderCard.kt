@@ -55,11 +55,11 @@ fun OrderCard(
     order: Order,
     modifier: Modifier,
     navController: NavController,
-    navigateToOrderDetails: (Int, String) -> Unit,
+    navigateToOrderDetails: (Int, String?) -> Unit,
     modifiedOrderId: MutableState<Int>,
     showDeliveryDialog: MutableState<Boolean>
 
-    ) {
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -98,7 +98,7 @@ fun OrderCard(
                         description = order.description,
                         insertDate = formatDate(order.insertDate),
                         businessName = order.businessName,
-                        deliveryType = order.deliveryType,
+                        deliveryState = order.deliveryState,
                         showDeliveryDialog = showDeliveryDialog,
                         modifiedOrderId = modifiedOrderId
                     )
@@ -164,8 +164,8 @@ private fun OrderExpandButton(
 @Composable
 private fun OrderDetailsEditButton(
     orderId: Int,
-    orderDescription: String,
-    onEditClick: (Int, String) -> Unit,
+    orderDescription: String?,
+    onEditClick: (Int, String?) -> Unit,
     modifier: Modifier = Modifier,
     modifiedOrderId: MutableState<Int>,
     tint: Color
@@ -197,12 +197,12 @@ private fun OrderDetailsEditButton(
 @Composable
 fun OrderDescriptionAndId(
     orderId: Int,
-    insertDate: String,
-    deliveryType: Int,
+    insertDate: String?,
+    deliveryState: Int?,
     businessName: String?,
     description: String?,
     modifier: Modifier = Modifier,
-    showDeliveryDialog: MutableState <Boolean>,
+    showDeliveryDialog: MutableState<Boolean>,
     modifiedOrderId: MutableState<Int>
 ) {
 
@@ -233,7 +233,7 @@ fun OrderDescriptionAndId(
             )
 
             Text(
-                text = insertDate,
+                text = insertDate ?: "",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -256,29 +256,29 @@ fun OrderDescriptionAndId(
                 style = MaterialTheme.typography.bodySmall,
             )
 
-            when (deliveryType) {
-                1 -> Text(
+            when (deliveryState) {
+                0 -> Text(
                     text = stringResource(R.string.order_deliveryType_value1),
                     color = ColorRed,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
 
-                2 -> Text(
+                1 -> Text(
                     text = stringResource(R.string.order_deliveryType_value2),
                     color = ColorGreen,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
 
-                3 -> Text(
+                2 -> Text(
                     text = stringResource(R.string.order_deliveryType_value3),
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
 
-                4 -> Text(
+                3 -> Text(
                     text = stringResource(R.string.order_deliveryType_value4),
                     color = ColorOrange,
                     fontWeight = FontWeight.Bold,

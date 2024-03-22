@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -55,7 +56,7 @@ object OrdersResultDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
-    navigateToOrderDetails: (Int, String) -> Unit,
+    navigateToOrderDetails: (Int, String?) -> Unit,
     navigateToOrderEntry: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
@@ -93,17 +94,16 @@ fun OrdersScreen(
         )
 
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
 fun OrdersResultScreen(
-    navigateToOrderDetails: (Int, String) -> Unit,
+    navigateToOrderDetails: (Int, String?) -> Unit,
     navigateToOrderEntry: () -> Unit,
     ordersList: List<Order>,
-    modifiedOrderId: MutableState<Int> ,
+    modifiedOrderId: MutableState<Int>,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
@@ -115,6 +115,7 @@ fun OrdersResultScreen(
     var showToast by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val showDeliveryDialog = remember { mutableStateOf(false) }
+    val selectedDeliveryState = remember { mutableIntStateOf(0) }
 
 
     if (showToast) {
@@ -136,6 +137,7 @@ fun OrdersResultScreen(
                 }
             )
         },
+        //Floating action button
         //Not used for now, but it's a good example of how to use the FAB
         /*floatingActionButton = {
             FloatingActionButton(
@@ -176,30 +178,38 @@ fun OrdersResultScreen(
             )
         }
 
-
-        //dialog to update delivery state
-
-        val modifiedOrderDeliveryState =
-            ordersList.firstOrNull { it.id == modifiedOrderId.value }?.deliveryState
-        var selectedDeliveryState by remember { mutableIntStateOf(1) }
-
-
         if (showDeliveryDialog.value) {
+
+            // LaunchedEffect to set the initial value when the dialog is opened
+            LaunchedEffect(showDeliveryDialog) {
+                if (showDeliveryDialog.value) {
+                    val modifiedOrder = ordersList.find { it.id == modifiedOrderId.value }
+                    val modifiedOrderDeliveryState = modifiedOrder?.deliveryState
+                    if (modifiedOrderDeliveryState != null) {
+                        selectedDeliveryState.intValue = modifiedOrderDeliveryState
+                    }
+                }
+            }
+            Log.d("modifiedOrderId", modifiedOrderId.value.toString())
             AlertDialog(
                 modifier = Modifier.wrapContentSize(),
                 onDismissRequest = { showDeliveryDialog.value = false },
                 title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
                 text = {
-                    Log.d("modifiedOrderId", "modifiedOrderId: ${modifiedOrderId.value}")
+
 
                     Column(modifier = Modifier.wrapContentSize()) {
-                        
+
                         // List of delivery types
                         val deliveryStates = listOf(
-                            DeliveryState(1, R.string.order_deliveryType_value1, Color.Red),
-                            DeliveryState(2, R.string.order_deliveryType_value2, Color.Green),
-                            DeliveryState(3, R.string.order_deliveryType_value3, Color.Black),
-                            DeliveryState(4, R.string.order_deliveryType_value4, Color(0xFFFFA500))//orange
+                            DeliveryState(0, R.string.order_deliveryType_value1, Color.Red),
+                            DeliveryState(1, R.string.order_deliveryType_value2, Color.Green),
+                            DeliveryState(2, R.string.order_deliveryType_value3, Color.Black),
+                            DeliveryState(
+                                3,
+                                R.string.order_deliveryType_value4,
+                                Color(0xFFFFA500)
+                            )//orange
                         )
 
                         deliveryStates.forEach { deliveryState ->
@@ -208,15 +218,18 @@ fun OrdersResultScreen(
                                     .fillMaxWidth()
                                     .clickable(
                                         onClick = {
-                                            selectedDeliveryState = deliveryState.state //deve fare stessa cosa del onClick RadioButton
+                                            selectedDeliveryState.intValue =
+                                                deliveryState.state //deve fare stessa cosa del onClick RadioButton
                                         }
                                     ),
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    selected = selectedDeliveryState == deliveryState.state,
-                                    onClick = { selectedDeliveryState = deliveryState.state },
+                                    selected = selectedDeliveryState.intValue == deliveryState.state,
+                                    onClick = {
+                                        selectedDeliveryState.intValue = deliveryState.state
+                                    },
                                     colors = RadioButtonDefaults.colors(deliveryState.color),
                                 )
                                 Text(text = stringResource(deliveryState.nameState))
@@ -234,10 +247,11 @@ fun OrdersResultScreen(
                 confirmButton = {
                     TextButton(onClick = {
                         showDeliveryDialog.value = false
+
                         viewModel.updateDeliveryState(
                             context,
                             modifiedOrderId.value,
-                            selectedDeliveryState
+                            selectedDeliveryState.intValue
                         )
                     }) {
                         Text(stringResource(R.string.confirm_button))
