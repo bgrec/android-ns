@@ -269,6 +269,7 @@ BEGIN
 END;
 */
 
+####################################################################################################
 DROP PROCEDURE IF EXISTS OrderBarcodeReader;
 CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
 BEGIN
@@ -303,6 +304,7 @@ BEGIN
 
 END;
 
+####################################################################################################
 ### Insert a new row into the rig_ordc table
 DROP PROCEDURE IF EXISTS InsertRowIntoRigOrdC;
 CREATE PROCEDURE InsertRowIntoRigOrdC(
@@ -443,35 +445,39 @@ CREATE PROCEDURE DuplicateOrderRow(
     IN orderDetailId INT
 )
 BEGIN
-    DECLARE orderId INT;
-    DECLARE articleId INT;
-    DECLARE quantity DECIMAL(11, 5);
-    DECLARE orderedQuantity DECIMAL(11, 5);
-    DECLARE batch VARCHAR(255);
-    DECLARE expiryDate DATE;
 
-    -- Retrieve the order ID, article ID, quantity, ordered quantity, batch, and expiry date
-    /*SELECT NUME, CORTO, QUAN, QTA, BATCH, SCADENZA
-    INTO orderId, articleId, quantity, orderedQuantity, batch, expiryDate
-    FROM rig_ordc
-    WHERE RIGA = orderDetailItemId;
+    DECLARE rowNumber INT;
+    DECLARE orderId INT;
+    SET rowNumber = (SELECT RIGA FROM rig_ordc WHERE NUME_PRO = orderDetailId);
+    SET orderId = (SELECT NUME FROM rig_ordc WHERE NUME_PRO = orderDetailId LIMIT 1);
+
+
+    START TRANSACTION;
+
+    -- First update RIGA column for all rows after the selected row
+    UPDATE rig_ordc SET RIGA = RIGA + 1 WHERE RIGA > rowNumber AND NUME = orderId;
 
     -- Insert a new row into the rig_ordc table with the same details as the selected row
-    CALL InsertRowIntoRigOrdC(orderId, articleId, quantity, orderedQuantity, batch, expiryDate);*/
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not implemented', MYSQL_ERRNO = 5400;
-END;
+    INSERT INTO rig_ordc (NUME, N_TIPO, DOC_DATA, DOC_NUME, DOC_BARRA, CODI, NUME_DIS, RIGA, ELABORATA, CORTO, ART_CODI,
+                          ART_CFOR, DESCRI, QUAN, PROV_1, PROV_2, AGENTE, COLLI, PESO, VEND, COSTO, IVA,
+                          IVA_PERC, SCON, SCON_1, SCON_2, LISTINO, MISU, DATA, STAM, SELE, LIBE, COLL, SETTORE, REPA,
+                          QT_CONF, REPA_CAS, CONAI_L, CONAI, ESE_CONAI, CONTRO, ORD_QT_ORD, ORD_QT_CON, DESTINA, LOTTO,
+                          DATA_SCA, RAEE, DATA_LOTTO, PADRE_DIST, EXTRA)
+    SELECT NUME, N_TIPO, DOC_DATA, DOC_NUME, DOC_BARRA, CODI, NUME_DIS, RIGA + 1, ELABORATA, CORTO, ART_CODI,
+                          ART_CFOR, DESCRI, QUAN, PROV_1, PROV_2, AGENTE, COLLI, PESO, VEND, COSTO, IVA,
+                          IVA_PERC, SCON, SCON_1, SCON_2, LISTINO, MISU, DATA, STAM, SELE, LIBE, COLL, SETTORE, REPA,
+                          QT_CONF, REPA_CAS, CONAI_L, CONAI, ESE_CONAI, CONTRO,
+                          ORD_QT_ORD - ORD_QT_CON - QUAN AS ORD_QT_ORD, 0 AS  ORD_QT_CON, DESTINA,
+                          '' AS LOTTO, NULL AS DATA_SCA, RAEE, NULL AS DATA_LOTTO, PADRE_DIST, EXTRA
+    FROM rig_ordc
+    WHERE NUME_PRO = orderDetailId LIMIT 1;
 
-####################################################################################################
-DROP PROCEDURE IF EXISTS LoginConfirmation;
-CREATE PROCEDURE LoginConfirmation(
-    IN app varchar(255),
-    IN login varchar(255)
-)
-BEGIN
-    IF login <> 'succes' THEN
-        #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
-        SELECT 'Login failed' AS message;
-    END IF;
+    -- Update the quantity of the selected row
+    UPDATE rig_ordc SET ORD_QT_ORD = QUAN  WHERE NUME_PRO = orderDetailId;
+
+    COMMIT;
+
+    SELECT * FROM ordersview WHERE NUME = (SELECT NUME FROM rig_ordc WHERE RIGA = orderDetailId);
 
 END;
 
@@ -490,8 +496,9 @@ CREATE PROCEDURE ModifyOrderDeliveryState(
 
 END;
 
-#
+####################################################################################################
 
+-- Create a new user
 CREATE USER 'bogdan'@'%' IDENTIFIED BY '85000aab';
 GRANT ALL PRIVILEGES ON *.* TO 'bogdan'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;

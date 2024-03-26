@@ -331,7 +331,6 @@ fun OrderDetailResultScreen(
                     modifier = Modifier
                         .padding(0.dp, 8.dp)
                         .weight(if (showBottomSheet) 0.5f else 1f),
-                    navController = navController,
                     showEditDialog = showEditDialog,
                     snackbarHostState = snackbarHostState,
                     onRemove = { orderDetailsItemId ->

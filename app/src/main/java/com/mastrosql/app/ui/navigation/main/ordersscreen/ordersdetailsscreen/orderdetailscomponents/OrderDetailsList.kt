@@ -18,10 +18,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -33,16 +31,13 @@ fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
-    navController: NavController,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     modifiedIndex: MutableIntState?,
     onRemove: (Int) -> Unit,
     onDuplicate: (Int) -> Unit
 ) {
-    val defaultTint = MaterialTheme.colorScheme.secondary
-    val itemEditTint = remember { mutableStateOf(defaultTint) }
-    var modifiedItemId = remember { mutableIntStateOf(0) }
+    val modifiedItemId = remember { mutableIntStateOf(0) }
 
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
@@ -51,6 +46,7 @@ fun OrderDetailList(
         modifiedIndex?.let { index ->
             if (index.intValue >= 0) {
                 listState.animateScrollToItem(index.intValue)
+                modifiedItemId.intValue = orderDetailList[index.intValue].id
             }
         }
     }
@@ -88,33 +84,23 @@ fun OrderDetailList(
             })
         { orderDetail ->
 
-            if (orderDetailList.indexOf(orderDetail) == modifiedIndex?.intValue) {
-                itemEditTint.value = Color.Red
-                modifiedItemId = remember { mutableIntStateOf(orderDetail.id) }
-            } else {
-                itemEditTint.value = defaultTint
-            }
-
             OrderDetailsCard(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
                     .padding(2.dp)
                     .fillMaxWidth(),
                 //.focusable(),
-                navController = navController,
-                navigateToEditItem = {},
                 onRemove = onRemove,
                 showEditDialog = showEditDialog,
                 snackbarHostState = snackbarHostState,
                 listState = listState,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
-                itemEditButtonTint = itemEditTint
             )
         }
 
         item {
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(70.dp))
         }
     }
 }

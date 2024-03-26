@@ -68,7 +68,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
@@ -83,19 +82,15 @@ import kotlinx.coroutines.launch
 fun OrderDetailsCard(
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    navController: NavController,
-    navigateToEditItem: (Int) -> Unit,
     onRemove: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     listState: LazyListState,
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
-    itemEditButtonTint: MutableState<Color>
 ) {
 
     val visibleState = remember { MutableTransitionState(true) }
-
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -109,12 +104,9 @@ fun OrderDetailsCard(
                 visibleState = visibleState,
                 orderDetailsItem = orderDetailsItem,
                 modifier = modifier,
-                //navController = navController,
-                //navigateToEditItem = navigateToEditItem,
                 showEditDialog = showEditDialog,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
-                itemEditButtonTint = itemEditButtonTint
             )
         }
     }
@@ -141,7 +133,6 @@ fun OrderDetailsCard(
                         }
                     }
 
-
                     SnackbarResult.Dismissed -> {
                         // Ensure that removal only happens if the row is not visible
                         if (!visibleState.currentState) {
@@ -161,12 +152,9 @@ private fun SwipeToDismissItem(
     visibleState: MutableTransitionState<Boolean>,
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    //navController: NavController,
-    //navigateToEditItem: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
-    itemEditButtonTint: MutableState<Color>
 ) {
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
 
@@ -201,11 +189,8 @@ private fun SwipeToDismissItem(
             OrderDetailsItemContent(
                 orderDetailsItem = orderDetailsItem,
                 modifier = modifier,
-                //navController = navController,
-                //navigateToEditItem = navigateToEditItem,
                 showEditDialog = showEditDialog,
                 modifiedItemId = modifiedItemId,
-                itemEditButtonTint = itemEditButtonTint
             )
         })
 }
@@ -261,11 +246,8 @@ private fun SwipeToDismissBackground(
 private fun OrderDetailsItemContent(
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    //navController: NavController,
-    //navigateToEditItem: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
-    modifiedItemId: MutableIntState?,
-    itemEditButtonTint: MutableState<Color>
+    modifiedItemId: MutableIntState?
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -335,11 +317,12 @@ private fun OrderDetailsItemContent(
                 ) {
 
                     ItemEditButton(
+                        modifiedItemId = modifiedItemId?.intValue,
+                        orderDetailsItemId = orderDetailsItem.id,
                         onClick = {
                             showEditDialog.value = true
                             modifiedItemId?.intValue = orderDetailsItem.id
                         },
-                        itemEditButtonTint = itemEditButtonTint,
                         modifier = modifier
                     )
                 }
@@ -375,10 +358,21 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    itemEditButtonTint: MutableState<Color>,
+    modifiedItemId: Int?,
+    orderDetailsItemId: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val defaultTint = MaterialTheme.colorScheme.secondary
+    val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
+
+    LaunchedEffect(modifiedItemId, orderDetailsItemId) {
+        // Update the tint color based on the comparison between modifiedItemId and itemId
+        val tint = if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint
+        // Update the state of the tint color
+        itemEditButtonTint.value = tint
+    }
+
     IconButton(onClick = {
         onClick()
     }) {
@@ -390,6 +384,7 @@ private fun ItemEditButton(
         )
     }
 }
+
 
 @Composable
 fun OrderDetailDescriptionAndId(
@@ -484,7 +479,6 @@ fun OrderDetailDescriptionAndId2(
 @Composable
 fun OrderDetailInfo(
     completeDescription: String?, modifier: Modifier = Modifier
-
 ) {
     Column(
         modifier = modifier.padding(
@@ -629,7 +623,6 @@ fun QuantityText(
         textAlign = TextAlign.Center
     )
 }
-
 
 /*@Preview
 @Composable
