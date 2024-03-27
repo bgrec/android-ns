@@ -672,7 +672,7 @@ fun OrderDetailCardPreview() {
 
 }*/
 
-@Preview(apiLevel = 33, showBackground = true)
+@Preview(apiLevel = 34, showBackground = true)
 @Composable
 fun OrderDetailInfoPreview() {
     MastroAndroidTheme {
