@@ -9,6 +9,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
+import java.util.Date
 
 class OfflineOrderDetailsRepository(
     private val orderDetailDao: OrderDetailsDao, override val outputWorkInfo: Flow<WorkInfo>
@@ -55,6 +56,15 @@ class OfflineOrderDetailsRepository(
     }
 
     override suspend fun duplicateDetailItem(orderDetailId: Int): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateDetailItem(
+        orderDetailId: Int,
+        quantity: Double,
+        batch: String,
+        expirationDate: String
+    ): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 }

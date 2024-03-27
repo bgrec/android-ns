@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel

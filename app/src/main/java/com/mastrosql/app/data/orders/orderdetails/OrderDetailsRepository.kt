@@ -9,6 +9,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
+import java.util.Date
 
 /**
  * Repository that provides insert, update, delete, and retrieve of [OrderDetailsItem] from a given data source.
@@ -17,7 +18,14 @@ interface OrderDetailsRepository {
 
     val outputWorkInfo: Flow<WorkInfo>
 
+    /**
+     * Retrieve an Order from the given data source that matches with the [orderId].
+     */
     suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse
+
+    /**
+     * Retrieve all the Orders from the the given data source.
+     */
     suspend fun getAllOrderDetails(): OrderDetailsResponse
     //suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 
@@ -57,9 +65,23 @@ interface OrderDetailsRepository {
     suspend fun sendScannedCode(orderId: Int, scannedCode: String): Response<JsonObject>
 
     /**
-    * Delete an item in the order
-    */
+     * Delete an item in the order
+     */
     suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject>
 
+    /**
+     * Duplicate an item in the order
+     */
     suspend fun duplicateDetailItem(orderDetailId: Int): Response<JsonObject>
+
+    /**
+     * Update an item in the order
+     */
+    suspend fun updateDetailItem(
+        orderDetailId: Int,
+        quantity: Double,
+        batch: String,
+        expirationDate: String
+    ): Response<JsonObject>
+
 }

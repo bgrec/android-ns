@@ -3,7 +3,6 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -85,16 +84,19 @@ class OrderDetailsViewModel(
 
                 //
                 val modifiedIndex =
-                    orderDetailsListOld?.findModifiedItem(orderDetailsListResult) { oldItem, newItem ->
+                    orderDetailsListOld?.findModifiedItem(
+                        orderDetailsListResult,
+                        OrderDetailsItem::id
+                    ) { oldItem, newItem ->
                         // If the item id and quantity are the same, the item is not modified
                         oldItem.id == newItem.id && oldItem.quantity == newItem.quantity
                         //oldItem != newItem
-                    }
+                    } ?: -1
 
                 // Update the UI state with the new list
                 OrderDetailsUiState.Success(
                     orderDetailsList = orderDetailsListResult,
-                    modifiedIndex = modifiedIndex?.let{ mutableIntStateOf(it)},
+                    modifiedIndex = mutableIntStateOf(modifiedIndex),
                     orderId = orderId.value,
                     orderDescription = orderDescription.value
                 )
@@ -122,15 +124,19 @@ class OrderDetailsViewModel(
 
                 // Find the modified item in the list
                 val modifiedIndex =
-                    orderDetailsListOld?.findModifiedItem(orderDetailsListResult) { oldItem, newItem ->
+                    orderDetailsListOld?.findModifiedItem(
+                        orderDetailsListResult,
+                        OrderDetailsItem::id
+                    ) { oldItem, newItem ->
                         // If the item id is the same but the quantity is different, the item is modified
                         oldItem.id == newItem.id && oldItem.quantity != newItem.quantity
-                    }
+                    } ?: -1
 
                 // Update the UI state with the new list
                 OrderDetailsUiState.Success(
                     orderDetailsList = orderDetailsListResult,
-                    modifiedIndex = modifiedIndex?.let{ mutableIntStateOf(it)} ,
+                    //modifiedIndex = modifiedIndex?.let { mutableIntStateOf(it) },
+                    modifiedIndex = mutableIntStateOf(modifiedIndex),
                     orderId = orderId.value,
                     orderDescription = orderDescription.value
                 )
@@ -162,6 +168,15 @@ class OrderDetailsViewModel(
                             )
                             // Refresh the list
                             getOrderDetails()
+                        }
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Modifiche non salvate, non autorizzato"
+                            )
+                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
                         }
                         //TODO: Add other status codes and handle them
                         404 -> showToast(
@@ -256,6 +271,16 @@ class OrderDetailsViewModel(
                             // Refresh the list
                             getOrderDetails()
                         }
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Modifiche non salvate, non autorizzato"
+                            )
+                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
+                        }
+
                         //TODO: Add other status codes and handle them
                         404 -> showToast(
                             context,
@@ -308,7 +333,122 @@ class OrderDetailsViewModel(
                             )
                             // Refresh the list
                             getOrderDetails()
+
+
                         }
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Modifiche non salvate, non autorizzato"
+                            )
+                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
+                        }
+
+                        //TODO: Add other status codes and handle them
+                        404 -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "errore ${response.code()}"
+                        )
+
+                        else -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "Errore api: ${response.code()}"
+                        )
+                    }
+                }
+
+            } catch (e: IOException) {
+                // Handle IOException (e.g., network error)
+                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+            } catch (e: HttpException) {
+                // Handle HttpException (e.g., non-2xx response)
+                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                showToast(
+                    context,
+                    Toast.LENGTH_LONG,
+                    "Connection timed out. Please try again later."
+                )
+            } catch (e: Exception) {
+                // Handle generic exception
+                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+            }
+        }
+    }
+
+    private fun updateDetailsItem(
+        orderDetailsItemId: Int, quantity: Double,
+        batch: String,
+        expirationDate: String
+    ) {
+        if (orderDetailsUiState is OrderDetailsUiState.Success) {
+            val orderDetailsList =
+                (orderDetailsUiState as OrderDetailsUiState.Success).orderDetailsList.toMutableList()
+            val index = orderDetailsList.indexOfFirst { it.id == orderDetailsItemId }
+            if (index != -1) {
+                orderDetailsList[index] = orderDetailsList[index].copy(
+                    quantity = quantity,
+                    batch = batch,
+                    expirationDate = expirationDate
+                )
+                orderDetailsUiState = OrderDetailsUiState.Success(
+                    orderDetailsList = orderDetailsList,
+                    modifiedIndex = mutableIntStateOf(index),
+                    orderId = orderId.value,
+                    orderDescription = orderDescription.value
+                )
+            }
+        }
+    }
+
+    fun updateDetailsItemData(
+        context: Context,
+        orderDetailsItemId: Int,
+        quantity: Double,
+        batch: String,
+        expirationDate: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = orderDetailsRepository.updateDetailItem(
+                    orderDetailsItemId,
+                    quantity,
+                    batch,
+                    expirationDate
+                )
+
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
+                // Handle the response status code
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        200 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "$errorMessage ${response.code()}"
+                            )
+                            // Refresh the list
+                            //getOrderDetails()
+
+                            updateDetailsItem(orderDetailsItemId, quantity, batch, expirationDate)
+                            //getOrderDetails()
+                        }
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Modifiche non salvate, non autorizzato"
+                            )
+                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
+                        }
+
                         //TODO: Add other status codes and handle them
                         404 -> showToast(
                             context,
@@ -346,7 +486,31 @@ class OrderDetailsViewModel(
 }
 
 //Function to find the modified item in the list
-fun <T> List<T>.findModifiedItem(other: List<T>, comparator: (T, T) -> Boolean): Int? {
+fun <T, K : Comparable<K>> List<T>.findModifiedItem(
+    other: List<T>,
+    idExtractor: (T) -> K,
+    comparator: (T, T) -> Boolean
+): Int? {
+    // If sizes are different, there is a modification
+    if (this.size < other.size) {
+        // Find the index of the order with the greatest id in the other list
+        return other.indexOf(other.maxByOrNull { idExtractor(it) })
+    } else if (this.size > other.size) {
+        return null
+    }
+
+    // Check each element one by one
+    for (i in this.indices) {
+        if (!comparator(this[i], other[i])) {
+            return i
+        }
+    }
+    return null
+}
+
+
+//Old function to find the modified item in the list
+fun <T> List<T>.findModifiedItemOld(other: List<T>, comparator: (T, T) -> Boolean): Int? {
     // If sizes are different, there is a modification
     if (this.size < other.size) {
         return other.lastIndex
@@ -362,3 +526,5 @@ fun <T> List<T>.findModifiedItem(other: List<T>, comparator: (T, T) -> Boolean):
     }
     return null
 }
+
+

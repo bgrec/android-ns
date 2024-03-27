@@ -190,7 +190,7 @@ private fun SwipeToDismissItem(
                 orderDetailsItem = orderDetailsItem,
                 modifier = modifier,
                 showEditDialog = showEditDialog,
-                modifiedItemId = modifiedItemId,
+                modifiedItemId = modifiedItemId
             )
         })
 }
@@ -273,7 +273,7 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OrderDetailDescriptionAndId(
-                        articleId = orderDetailsItem.articleId,
+                        articleId = orderDetailsItem.articleId ?: 0,
                         sku = orderDetailsItem.sku,
                         description = orderDetailsItem.description
                     )
@@ -299,9 +299,9 @@ private fun OrderDetailsItemContent(
                     OrderDetailDescriptionAndId2(
                         batch = orderDetailsItem.batch,
                         expirationDate = formatDate(orderDetailsItem.expirationDate),
-                        quantity = orderDetailsItem.quantity,
-                        orderedQuantity = orderDetailsItem.orderedQuantity,
-                        shippedQuantity = orderDetailsItem.shippedQuantity
+                        quantity = orderDetailsItem.quantity ?: 0.0,
+                        orderedQuantity = orderDetailsItem.orderedQuantity ?: 0.0,
+                        shippedQuantity = orderDetailsItem.shippedQuantity ?: 0.0
                     )
                     if (expanded) {
                         OrderDetailInfo(

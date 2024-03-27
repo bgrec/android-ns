@@ -37,11 +37,22 @@ class NetworkOrderDetailsRepository(
             if (it.isNotEmpty()) it.first() else null
         }
 
+
     override suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse {
-        val filter = "{\"NUME\": $orderId}"
+        //val filter = "{\"NUME\": $orderId}"
+        //added order by RIGA ASC
+        val filter = "{\"\$orderby\": {\"RIGA\": \"ASC\"}, \"NUME\" : {\"\$eq\": $orderId}}"
 
         return mastroAndroidApiService.getOrderDetails(filter)
     }
+
+    //Not used
+    /*override suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse {
+        val body = JsonObject().apply {
+            addProperty("orderId", orderId)
+        }
+        return mastroAndroidApiService.getOrderDetails(body)
+    }*/
 
     override suspend fun getAllOrderDetails(): OrderDetailsResponse =
         mastroAndroidApiService.getAllOrderDetails()
@@ -88,6 +99,28 @@ class NetworkOrderDetailsRepository(
             addProperty("orderDetailId", orderDetailId)
         }
         return mastroAndroidApiService.duplicateDetailItem(body)
+    }
+
+    override suspend fun updateDetailItem(
+        orderDetailId: Int,
+        quantity: Double,
+        batch: String,
+        expirationDate: String
+    ): Response<JsonObject> {
+
+        val expirationDateFormated = if (expirationDate == "") {
+            "null"
+        } else {
+            expirationDate
+        }
+
+        val body = JsonObject().apply {
+            addProperty("orderDetailId", orderDetailId)
+            addProperty("quantity", quantity)
+            addProperty("batch", batch)
+            addProperty("expirationDate", expirationDateFormated)
+        }
+        return mastroAndroidApiService.updateDetailItem(body)
     }
 
 }

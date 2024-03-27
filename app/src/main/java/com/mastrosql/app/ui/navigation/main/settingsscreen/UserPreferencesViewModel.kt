@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation
+package com.mastrosql.app.ui.navigation.main.settingsscreen
 
 import android.content.Context
 import android.widget.Toast

@@ -28,7 +28,7 @@ import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 import java.util.EnumMap

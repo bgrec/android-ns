@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -65,7 +66,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
-    var isFirstClick by remember { mutableStateOf(true) }
+    var timesClicked by remember { mutableIntStateOf(0) }
 
     //Initialize the CredentialManager in the ViewModel with the context
     viewModel.initCredentialManager(context)
@@ -133,8 +134,8 @@ fun LoginScreen(
                         .also { interactionSource ->
                             LaunchedEffect(interactionSource) {
                                 interactionSource.interactions.collect {
-                                    if (it is PressInteraction.Release && isFirstClick) {
-                                        isFirstClick = false
+                                    if (it is PressInteraction.Release && timesClicked <= 2) {
+                                        timesClicked++
                                         viewModel.getCredentials(context)
                                     }
                                 }

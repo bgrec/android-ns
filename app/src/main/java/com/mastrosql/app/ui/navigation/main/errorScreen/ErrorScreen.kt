@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.R.string.retry
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import retrofit2.HttpException
 

@@ -206,10 +206,11 @@
     <string name="dismiss_button">Annulla</string>
     <string name="order_details_dialog_edit_batch">Lotto</string>
     <string name="order_details_dialog_edit_Quantity">Quantità</string>
-    <string name="order_details_dialog_edit_expirationDate">Data scadenza</string>
+    <string name="order_details_dialog_edit_expirationDate">gg/mm/aaaa</string>
     <string name="deleted_item_snackbar_text">"Riga dell'ordine rimossa"</string>
     <string name="add_new_order">Aggiungi ordine</string>
     <string name="order_dialog_delivery_title">Modifica stato di consegna</string>
+    <string name="order_details_dialog_edit_title_row">Riga %1$d corto %2$d codice %3$s</string>
 
 
 </resources>

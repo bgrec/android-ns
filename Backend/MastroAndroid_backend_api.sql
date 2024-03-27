@@ -270,42 +270,12 @@ END;
 */
 
 ####################################################################################################
-DROP PROCEDURE IF EXISTS OrderBarcodeReader;
-CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
-BEGIN
-    DECLARE articleId VARCHAR(6);
-    DECLARE rowExists INT;
-
-    IF LENGTH(scannedCode) < 8 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido', MYSQL_ERRNO = 5400;
-
-    END IF;
-    -- Extract the first four characters from the scanned code
-    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
-
-    -- Check if a row with the given conditions exists
-    SELECT COUNT(*)
-    INTO rowExists
-    FROM rig_ordc
-    WHERE NUME = orderId
-      AND CORTO = articleId;
-
-    -- If the row does not exist, insert a new row into the rig_ordc table
-    IF rowExists = 0 THEN
-        -- Insert a new row into the rig_ordc table with the scanned code
-        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
-    ELSE
-        -- Update the row in the rig_ordc table with the scanned code
-        UPDATE rig_ordc
-        SET QUAN = QUAN + 1
-        WHERE NUME = orderId
-          AND CORTO = articleId;
-    END IF;
-
-END;
+-- Modify the rig_ordc table, the column REPA should be the same as the column REPA in the arti table
+ALTER TABLE rig_ordc
+    MODIFY COLUMN REPA VARCHAR(10) DEFAULT NULL;
 
 ####################################################################################################
-### Insert a new row into the rig_ordc table
+### Insert a new row into the rig_ordc table, used by the OrderBarcodeReader procedure
 DROP PROCEDURE IF EXISTS InsertRowIntoRigOrdC;
 CREATE PROCEDURE InsertRowIntoRigOrdC(
     IN orderId INT,
@@ -342,22 +312,20 @@ BEGIN
     DECLARE articlePosVat INT;
     DECLARE articleListPrice DECIMAL(11, 5);
 
-
-    DECLARE rowNumber INT;
-
     -- Find the last row number for the given order
-    SELECT MAX(RIGA) INTO lastRow FROM rig_ordc WHERE NUME = orderId;
+    SELECT IFNULL(MAX(RIGA), 0) INTO lastRow FROM rig_ordc WHERE NUME = orderId;
 
     -- Retrieve DOC_DATA, DOC_NUME, and CODI based on the order ID
-    SELECT TRIM(rig_ordc.DOC_DATA),
-           rig_ordc.DOC_NUME,
-           rig_ordc.CODI,
-           rig_ordc.AGENTE,
+    SELECT lis_ordc.DATAI,
+           lis_ordc.NUMERO,
+           lis_ordc.CODI,
+           lis_ordc.AGENTE,
            rig_ordc.PROV_1,
            rig_ordc.PROV_2
     INTO docDate, docNumber, clientId, agentId, agentPerc1, agentPerc2
-    FROM rig_ordc
-    WHERE NUME = orderId
+    FROM lis_ordc
+             LEFT JOIN rig_ordc ON lis_ordc.NUME = rig_ordc.NUME
+    WHERE lis_ordc.NUME = orderId
     LIMIT 1;
 
     -- Retrieve article data based on the article ID
@@ -413,6 +381,56 @@ BEGIN
     FROM arti
              LEFT JOIN iva ON iva.CODICE = arti.IVA
     WHERE arti.CORTO = articleId;
+
+    INSERT INTO rig_ordc (NUME, N_TIPO, DOC_DATA, DOC_NUME, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
+                          QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
+                          LISTINO, MISU, DATA, STAM, COLL, SETTORE, REPA, QT_CONF, REPA_CAS, CONTRO,
+                          ORD_QT_ORD, LOTTO, DATA_SCA)
+    VALUES (orderId, 6, docDate, docNumber, clientId, lastRow + 1, articleId, articleCode, articleSupplierCode,
+            articleDescription, quantity, agentId, agentPerc1, agentPerc2, articlePrice, articleCost, articleVat,
+            articleVatPercentage,
+            articleDiscount, articleDiscount1, articleDiscount2, 0, articleListPrice, articleUnitOfMeasure,
+            CURRENT_DATE(), 1, 1,
+            articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleCounterParty,
+            orderedQuantity, batch, expiryDate);
+END;
+
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS OrderBarcodeReader;
+CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
+BEGIN
+    DECLARE articleId VARCHAR(6);
+    DECLARE rowExists INT;
+
+    IF LENGTH(scannedCode) < 8 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido', MYSQL_ERRNO = 5400;
+
+    END IF;
+    -- Extract the first four characters from the scanned code
+    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
+
+    -- Check if a row with the given conditions exists
+    SELECT COUNT(*)
+    INTO rowExists
+    FROM rig_ordc
+    WHERE NUME = orderId
+      AND CORTO = articleId;
+
+    -- If the row does not exist, insert a new row into the rig_ordc table
+    IF rowExists = 0 THEN
+        -- Insert a new row into the rig_ordc table with the scanned code
+        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
+    ELSE
+        -- Update the row in the rig_ordc table with the scanned code
+        UPDATE rig_ordc
+        SET QUAN = QUAN + 1
+        WHERE NUME = orderId
+          AND CORTO = articleId
+        ORDER BY NUME_PRO
+        LIMIT 1;
+    END IF;
+
 END;
 
 ####################################################################################################
@@ -430,14 +448,6 @@ BEGIN
 
 END;
 
-CREATE TABLE IF NOT EXISTS user
-(
-    `id`       BINARY(16)   NOT NULL,
-    `nickname` VARCHAR(255) NOT NULL,
-    `email`    VARCHAR(255) NULL,
-    PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
 
 ####################################################################################################
 DROP PROCEDURE IF EXISTS DuplicateOrderRow;
@@ -463,18 +473,62 @@ BEGIN
                           IVA_PERC, SCON, SCON_1, SCON_2, LISTINO, MISU, DATA, STAM, SELE, LIBE, COLL, SETTORE, REPA,
                           QT_CONF, REPA_CAS, CONAI_L, CONAI, ESE_CONAI, CONTRO, ORD_QT_ORD, ORD_QT_CON, DESTINA, LOTTO,
                           DATA_SCA, RAEE, DATA_LOTTO, PADRE_DIST, EXTRA)
-    SELECT NUME, N_TIPO, DOC_DATA, DOC_NUME, DOC_BARRA, CODI, NUME_DIS, RIGA + 1, ELABORATA, CORTO, ART_CODI,
-                          ART_CFOR, DESCRI, QUAN, PROV_1, PROV_2, AGENTE, COLLI, PESO, VEND, COSTO, IVA,
-                          IVA_PERC, SCON, SCON_1, SCON_2, LISTINO, MISU, DATA, STAM, SELE, LIBE, COLL, SETTORE, REPA,
-                          QT_CONF, REPA_CAS, CONAI_L, CONAI, ESE_CONAI, CONTRO,
-                          ORD_QT_ORD - ORD_QT_CON - QUAN AS ORD_QT_ORD, 0 AS  ORD_QT_CON, DESTINA,
-                          '' AS LOTTO, NULL AS DATA_SCA, RAEE, NULL AS DATA_LOTTO, PADRE_DIST, EXTRA
+    SELECT NUME,
+           N_TIPO,
+           DOC_DATA,
+           DOC_NUME,
+           DOC_BARRA,
+           CODI,
+           NUME_DIS,
+           RIGA + 1,
+           ELABORATA,
+           CORTO,
+           ART_CODI,
+           ART_CFOR,
+           DESCRI,
+           QUAN,
+           PROV_1,
+           PROV_2,
+           AGENTE,
+           COLLI,
+           PESO,
+           VEND,
+           COSTO,
+           IVA,
+           IVA_PERC,
+           SCON,
+           SCON_1,
+           SCON_2,
+           LISTINO,
+           MISU,
+           DATA,
+           STAM,
+           SELE,
+           LIBE,
+           COLL,
+           SETTORE,
+           REPA,
+           QT_CONF,
+           REPA_CAS,
+           CONAI_L,
+           CONAI,
+           ESE_CONAI,
+           CONTRO,
+           ORD_QT_ORD - ORD_QT_CON - QUAN AS ORD_QT_ORD,
+           0                              AS ORD_QT_CON,
+           DESTINA,
+           ''                             AS LOTTO,
+           NULL                           AS DATA_SCA,
+           RAEE,
+           NULL                           AS DATA_LOTTO,
+           PADRE_DIST,
+           EXTRA
     FROM rig_ordc
-    WHERE NUME_PRO = orderDetailId LIMIT 1;
+    WHERE NUME_PRO = orderDetailId
+    LIMIT 1;
 
     -- Update the quantity of the selected row
-    UPDATE rig_ordc SET ORD_QT_ORD = QUAN  WHERE NUME_PRO = orderDetailId;
-
+    UPDATE rig_ordc SET ORD_QT_ORD = QUAN WHERE NUME_PRO = orderDetailId;
     COMMIT;
 
     SELECT * FROM ordersview WHERE NUME = (SELECT NUME FROM rig_ordc WHERE RIGA = orderDetailId);
@@ -487,7 +541,7 @@ CREATE PROCEDURE ModifyOrderDeliveryState(
     IN orderId INT,
     IN deliveryState INT
 )
-    BEGIN
+BEGIN
     UPDATE lis_ordc
     SET STATO_CONS = deliveryState
     WHERE NUME = orderId;
@@ -497,21 +551,63 @@ CREATE PROCEDURE ModifyOrderDeliveryState(
 END;
 
 ####################################################################################################
+DROP PROCEDURE IF EXISTS UpdateOrderRow;
+CREATE PROCEDURE UpdateOrderRow(
+    IN orderDetailId INT,
+    IN quantity DECIMAL(11, 5),
+    IN batch VARCHAR(255),
+    IN expirationDate VARCHAR(255)
+)
+BEGIN
+    DECLARE updatedDate DATE;
+    SET updatedDate = STR_TO_DATE(expirationDate, '%d%m%Y');
+
+    IF updatedDate IS NOT NULL THEN
+        SET expirationDate = updatedDate;
+    ELSE
+        SET expirationDate = NULL;
+    END IF;
+
+    UPDATE rig_ordc
+    SET QUAN = quantity,
+        LOTTO = batch,
+        DATA_SCA = expirationDate
+    WHERE NUME_PRO = orderDetailId;
+
+    SELECT * FROM ordersview WHERE NUME = (SELECT NUME FROM rig_ordc WHERE NUME_PRO = orderDetailId);
+
+END;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS RigOrdcFilteredList;
+CREATE PROCEDURE RigOrdcFilteredList(
+    IN orderId INT
+)
+    BEGIN
+    SELECT * FROM rig_ordc
+             WHERE NUME = orderId
+             ORDER BY RIGA;
+END;
+
+
+####################################################################################################
 
 -- Create a new user
 CREATE USER 'bogdan'@'%' IDENTIFIED BY '85000aab';
 GRANT ALL PRIVILEGES ON *.* TO 'bogdan'@'%' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;
+FLUSH PRIVILEGES;
 
 CREATE USER 'apptest'@'%' IDENTIFIED BY 'apptest';
 GRANT ALL PRIVILEGES ON *.* TO 'apptest'@'%' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;
+FLUSH PRIVILEGES;
 
 CREATE USER 'android'@'%' IDENTIFIED BY 'android';
 GRANT ALL PRIVILEGES ON *.* TO 'android'@'%' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;
+FLUSH PRIVILEGES;
 
 
 CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
 GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;
+FLUSH PRIVILEGES;
+
+ #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;

@@ -10,10 +10,8 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Header
 import retrofit2.http.PUT
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -38,6 +36,9 @@ interface MastroAndroidApiService {
         @Query("limit") pageSize: Int = 1000000
     ): CustomersMasterDataResponse*/
 
+    /*
+    Returns a [List] of [CustomerMasterData].
+     */
     @GET("clientsview")
     suspend fun getAllCustomersMasterData(
         //@Header("Authorization") authorization: String = "Basic bWFzdHJvOm1hc3Rybw==",
@@ -54,6 +55,9 @@ interface MastroAndroidApiService {
      */
 
     // @GET("movie/popular?api_key=${MOVIE_API_KEY}&language=en-US")
+    /*
+    Returns a [List] of [CustomerMasterData]
+     */
     @GET("clientsview")
     suspend fun getCustomersMasterDataPage(
         @Query("offset") offset: Int = 0,
@@ -75,7 +79,6 @@ interface MastroAndroidApiService {
     @GET("rigOrdc")
     suspend fun getOrderDetails(
         @Query("q") filter: String,  //"{\"NUME\": 4}" rigOrdc/?q={"NUME": 4}
-        @Query("orderby") order: String = "{\"RIGA\": \"ASC\"}"
     ): OrderDetailsResponse
 
     @GET("rigOrdc")
@@ -83,7 +86,6 @@ interface MastroAndroidApiService {
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1000000
     ): OrderDetailsResponse
-
 
     @GET("clientsview")
     suspend fun testApiCall(
@@ -111,6 +113,11 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    @PUT("UpdateOrderRow")
+    suspend fun updateDetailItem(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
     /* Example of PATH parameter
     @PUT("lisOrdc/{NUME}")
     suspend fun updateDeliveryState(
@@ -119,12 +126,12 @@ interface MastroAndroidApiService {
     ): Response<JsonObject>
     */
 
-    @PUT ("ModifyOrderDeliveryState")
+    @PUT("ModifyOrderDeliveryState")
     suspend fun updateDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
-  
-  
+
+    //------------------------------------------------------------------------------------------
     // Login API call,  ...service... /authentication/
     @GET("authentication/login")
     suspend fun login(
@@ -140,7 +147,7 @@ interface MastroAndroidApiService {
 
     @GET("authentication/completed")
     suspend fun getLoginCompleted(): Response<JsonObject>
-  
+
 }
 
 

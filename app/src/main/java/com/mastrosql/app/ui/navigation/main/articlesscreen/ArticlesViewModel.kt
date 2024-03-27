@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.articles.ArticlesRepository
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -120,6 +121,17 @@ class ArticlesViewModel(
 
                             onInsertionComplete()
                         }
+
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Modifiche non salvate, non autorizzato"
+                            )
+                            articlesUiState = ArticlesUiState.Error(HttpException(response))
+                        }
+
                         //TODO: Add other status codes and handle them
                         404 -> showToast(
                             context,

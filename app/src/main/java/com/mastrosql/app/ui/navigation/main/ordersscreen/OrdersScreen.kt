@@ -43,8 +43,8 @@ import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
-import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.SearchViewOrders
 
 object OrdersResultDestination : NavigationDestination {
     override val route = "orders_list"
@@ -164,7 +164,7 @@ fun OrdersResultScreen(
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
 
-            SearchViewOrders(state = textState)
+            OrdersSearchView(state = textState)
 
             OrdersList(
                 ordersList = ordersList,

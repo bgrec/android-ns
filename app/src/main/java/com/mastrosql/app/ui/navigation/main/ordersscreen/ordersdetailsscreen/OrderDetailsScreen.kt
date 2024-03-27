@@ -2,6 +2,7 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
@@ -82,6 +83,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
+import com.mastrosql.app.utils.DateTransformation
 import kotlinx.coroutines.launch
 
 
@@ -173,11 +175,10 @@ fun OrderDetailResultScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    //State to hold the modified order details item
     var batch by remember { mutableStateOf("") }
     var quantity by remember { mutableDoubleStateOf(0.0) }
-    var quantityString by remember { mutableStateOf(quantity.toString()) }
     var expirationDate by remember { mutableStateOf(formatDate("")) }
-
 
     // State to hold the scanned code
     var scannedCode by remember { mutableStateOf("") }
@@ -191,7 +192,9 @@ fun OrderDetailResultScreen(
     // State to control the bottom sheet visibility
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    // State to control the edit dialog visibility
     val showEditDialog = remember { mutableStateOf(false) }
+
     // State to control the focus of the text input
     var isTextInputFocused by remember { mutableStateOf(false) }
 
@@ -266,6 +269,13 @@ fun OrderDetailResultScreen(
             navigateBack()
         }
     }
+
+    // Get the modified order details item
+    var modifiedOrderDetailsItem: OrderDetailsItem? = null
+    if (modifiedIndex?.intValue!! >= 0 && modifiedIndex.intValue < orderDetailList.size) {
+        modifiedOrderDetailsItem = orderDetailList[modifiedIndex.intValue]
+    }
+
 
     Scaffold(
         modifier = Modifier
@@ -342,17 +352,55 @@ fun OrderDetailResultScreen(
                 )
 
                 if (showEditDialog.value) {
+
+                    // LaunchedEffect to set the initial value when the dialog is opened
+                    LaunchedEffect(showEditDialog) {
+                        if (showEditDialog.value) {
+                            // Ensure modifiedIndex is not null and within range
+                            val index = modifiedIndex?.intValue ?: -1
+                            if (index >= 0 && index < orderDetailList.size) {
+
+                                modifiedOrderDetailsItem = orderDetailList[index]
+                                batch = modifiedOrderDetailsItem!!.batch ?: ""
+                                quantity = modifiedOrderDetailsItem!!.quantity ?: 0.0
+                                expirationDate =
+                                    formatDate(modifiedOrderDetailsItem!!.expirationDate ?: "")
+
+
+                                //Log.d("dialogDescription", dialogDescription)
+                            } else {
+                                Log.e("OrderDetailsScreen", "Invalid index: $index")
+                            }
+
+                            focusRequester.requestFocus()
+                            // Hide the keyboard when focusing on the quantity field
+                            //keyboardController?.hide()
+                        }
+                    }
+
+                    var dialogDescription = stringResource(
+                        R.string.order_details_dialog_edit_title
+                    )
+                    if (modifiedOrderDetailsItem != null) {
+                        dialogDescription = stringResource(
+                            R.string.order_details_dialog_edit_title_row,
+                            modifiedOrderDetailsItem?.orderRow ?: 0,
+                            modifiedOrderDetailsItem?.articleId ?: 0,
+                            modifiedOrderDetailsItem?.sku ?: ""
+                        )
+                    }
+
                     AlertDialog(
                         modifier = Modifier.wrapContentSize(),
                         onDismissRequest = { showEditDialog.value = false },
-                        title = { Text(stringResource(R.string.order_details_dialog_edit_title)) },
+                        title = { Text(dialogDescription) },
                         text = {
 
                             //val focusManager = LocalFocusManager.current
 
                             Column(modifier = Modifier.wrapContentSize()) {
                                 OutlinedTextField(
-                                    value = batch ?: "",
+                                    value = batch,
                                     label = { Text(stringResource(R.string.order_details_dialog_edit_batch)) },
                                     onValueChange = { batch = it },
                                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -361,28 +409,48 @@ fun OrderDetailResultScreen(
                                     )
                                 )
 
+                                val maxChar = 8
                                 OutlinedTextField(
-                                    value = quantityString,
-                                    label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
-                                    onValueChange = { quantityString = it },
+                                    singleLine = true,
+                                    value = expirationDate,
+                                    label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
+                                    onValueChange = { if (it.length <= maxChar) expirationDate = it },
+                                    visualTransformation = DateTransformation(),
                                     keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number,
+                                        keyboardType = KeyboardType.Uri,
                                         imeAction = ImeAction.Next
                                     )
                                 )
 
                                 OutlinedTextField(
-                                    value = expirationDate,
-                                    label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
-                                    onValueChange = { expirationDate = it },
+                                    value = quantity.toString(),
+                                    label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
+                                    onValueChange = {
+                                        quantity = try {
+                                            it.toDouble()
+                                        } catch (e: NumberFormatException) {
+                                            // Handle the case where parsing fails, e.g., set a default value
+                                            0.0
+                                        }
+                                    },
                                     keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Uri,
+                                        keyboardType = KeyboardType.Number,
                                         imeAction = ImeAction.Done
                                     ),
                                     keyboardActions = KeyboardActions(onDone = {
                                         //fare stessa cosa fatta nel bottone di conferma del dialog
+                                        viewModel.updateDetailsItemData(
+                                            context = context,
+                                            orderDetailsItemId = modifiedOrderDetailsItem?.id ?: 0,
+                                            quantity = quantity,
+                                            batch = batch,
+                                            expirationDate = expirationDate
+                                        )
+
                                         focusManager.clearFocus()
-                                    })
+                                    }),
+                                    modifier = Modifier.focusRequester(focusRequester)
+
                                 )
                             }
                         },
@@ -396,8 +464,13 @@ fun OrderDetailResultScreen(
                         confirmButton = {
                             TextButton(onClick = {
                                 showEditDialog.value = false
-                                //viewModel
-
+                                viewModel.updateDetailsItemData(
+                                    context = context,
+                                    orderDetailsItemId = modifiedOrderDetailsItem?.id ?: 0,
+                                    quantity = quantity,
+                                    batch = batch,
+                                    expirationDate = expirationDate
+                                )
 
                             }) {
                                 Text(stringResource(R.string.confirm_button))

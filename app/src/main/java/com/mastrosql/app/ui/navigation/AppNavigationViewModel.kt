@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 
-class AppNavigationViewModel() : ViewModel() {
+class AppNavigationViewModel : ViewModel() {
     private val _gesturesEnabled = mutableStateOf(false)
     val gesturesEnabled: State<Boolean> = _gesturesEnabled
 

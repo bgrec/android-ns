@@ -94,9 +94,9 @@ data class OrderDetails(
 )
 
 /**
- * Extension function to convert [OrderDetailsItemUiState] to [Item]. If the value of [ItemDetails.price] is
+ * Extension function to convert  to [Item]. If the value of [] is
  * not a valid [Double], then the price will be set to 0.0. Similarly if the value of
- * [ItemUiState] is not a valid [Int], then the quantity will be set to 0
+ * [] is not a valid [Int], then the quantity will be set to 0
  */
 fun OrderDetails.toOrderDetailsItem(): OrderDetailsItem = OrderDetailsItem(
     id = id,

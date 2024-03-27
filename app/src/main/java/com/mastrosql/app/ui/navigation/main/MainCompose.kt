@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
@@ -29,10 +28,9 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerContent
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
-import java.lang.Thread.sleep
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

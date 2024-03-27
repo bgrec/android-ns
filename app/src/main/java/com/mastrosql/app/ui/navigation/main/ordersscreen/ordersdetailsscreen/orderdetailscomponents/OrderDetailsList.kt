@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -40,9 +41,9 @@ fun OrderDetailList(
     val modifiedItemId = remember { mutableIntStateOf(0) }
 
     val listState = rememberLazyListState()
+
     // Scroll to the modified item when the list changes
     LaunchedEffect(orderDetailList) {
-        //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
         modifiedIndex?.let { index ->
             if (index.intValue >= 0) {
                 listState.animateScrollToItem(index.intValue)
@@ -51,11 +52,13 @@ fun OrderDetailList(
         }
     }
 
-
-//    // Launch recomposition when the edit dialog state changes
-//    LaunchedEffect(showEditDialog.value) {
-//        listState.scrollToItem(0) // Scroll to the top of the list
-//    }
+    //Set the modifiedIndex to the index of the modified item when clicked on edit
+    LaunchedEffect(modifiedItemId.intValue) {
+        if (modifiedItemId.intValue > 0) {
+            modifiedIndex?.intValue =
+                orderDetailList.indexOfFirst { it.id == modifiedItemId.intValue }
+        }
+    }
 
     LazyColumn(
         state = listState,
@@ -71,12 +74,13 @@ fun OrderDetailList(
         filteredList = if (searchedText.isEmpty()) {
             orderDetailList
         } else {
-            //update this for fields to search
+            //Filter the list based on the search text on this fields
             orderDetailList.filter {
-                it.description?.contains(searchedText, ignoreCase = true) == true
+                (it.description?.contains(searchedText, ignoreCase = true) == true
+                        || it.articleId.toString()?.contains(searchedText, ignoreCase = true) == true
+                        || it.sku?.contains(searchedText, ignoreCase = true) == true)
             }
         }
-
         items(
             filteredList,
             key = {

@@ -33,6 +33,7 @@ import java.util.Locale
 
 object OrderDetailsEntryDestination : NavigationDestination {
     override val route = "orderdetails_entry"
+
     //override val titleRes = R.string.item_entry_title
     override val titleRes = R.string.edit_order_details_entry_title
 }
@@ -115,7 +116,7 @@ fun OrderDetailsItemInputForm(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         OutlinedTextField(
-            value = orderDetailsItem.description?:"",
+            value = orderDetailsItem.description ?: "",
             onValueChange = { onValueChange(orderDetailsItem.copy(description = it)) },
             label = { Text(stringResource(R.string.item_name_req)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -129,7 +130,7 @@ fun OrderDetailsItemInputForm(
         )
 
         OutlinedTextField(
-            value = orderDetailsItem.price,
+            value = orderDetailsItem.price ?: "0.00",
             onValueChange = { onValueChange(orderDetailsItem.copy(price = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             label = { Text(stringResource(R.string.item_price_req)) },
@@ -144,7 +145,7 @@ fun OrderDetailsItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = orderDetailsItem.cost,
+            value = orderDetailsItem.cost ?: "0.00",
             onValueChange = { onValueChange(orderDetailsItem.copy(cost = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.quantity_req)) },

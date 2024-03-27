@@ -36,7 +36,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
-fun SearchViewOrders(state: MutableState<TextFieldValue>) {
+fun OrdersSearchView(state: MutableState<TextFieldValue>) {
 
     var isEditing by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -127,7 +127,7 @@ fun SearchViewOrders(state: MutableState<TextFieldValue>) {
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     MastroAndroidTheme {
-        SearchViewOrders(
+        OrdersSearchView(
             textState
         )
     }

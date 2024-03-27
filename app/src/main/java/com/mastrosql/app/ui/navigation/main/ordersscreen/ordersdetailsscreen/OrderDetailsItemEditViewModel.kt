@@ -48,7 +48,7 @@ class OrderDetailsItemEditViewModel(
     }
 
     /**
-     * Updates the [itemUiState] with the value provided in the argument. This method also triggers
+     * Updates the  with the value provided in the argument. This method also triggers
      * a validation for input values.
      */
     fun updateUiState(orderDetails: OrderDetails) {
