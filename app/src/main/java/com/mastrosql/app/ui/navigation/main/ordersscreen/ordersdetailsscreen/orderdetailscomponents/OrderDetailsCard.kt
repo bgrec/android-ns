@@ -69,12 +69,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -298,7 +298,7 @@ private fun OrderDetailsItemContent(
                 ) {
                     OrderDetailDescriptionAndId2(
                         batch = orderDetailsItem.batch,
-                        expirationDate = formatDate(orderDetailsItem.expirationDate),
+                        expirationDate = DateHelper.formatDateToDisplay(orderDetailsItem.expirationDate),
                         quantity = orderDetailsItem.quantity ?: 0.0,
                         orderedQuantity = orderDetailsItem.orderedQuantity ?: 0.0,
                         shippedQuantity = orderDetailsItem.shippedQuantity ?: 0.0

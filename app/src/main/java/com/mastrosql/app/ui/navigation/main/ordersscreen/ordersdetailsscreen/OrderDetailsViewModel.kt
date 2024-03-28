@@ -1,7 +1,9 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -12,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -381,6 +384,7 @@ class OrderDetailsViewModel(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateDetailsItem(
         orderDetailsItemId: Int, quantity: Double,
         batch: String,
@@ -391,10 +395,12 @@ class OrderDetailsViewModel(
                 (orderDetailsUiState as OrderDetailsUiState.Success).orderDetailsList.toMutableList()
             val index = orderDetailsList.indexOfFirst { it.id == orderDetailsItemId }
             if (index != -1) {
+                val formattedExpirationDate = DateHelper.formatDateToInput(expirationDate)
+
                 orderDetailsList[index] = orderDetailsList[index].copy(
                     quantity = quantity,
                     batch = batch,
-                    expirationDate = expirationDate
+                    expirationDate = formattedExpirationDate
                 )
                 orderDetailsUiState = OrderDetailsUiState.Success(
                     orderDetailsList = orderDetailsList,

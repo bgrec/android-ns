@@ -5,7 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -21,12 +21,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,12 +45,13 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,18 +77,19 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.NavigationDestination
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination.route
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination.titleRes
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
-import com.mastrosql.app.utils.DateTransformation
+import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 object OrderDetailsDestination : NavigationDestination {
@@ -94,16 +99,6 @@ object OrderDetailsDestination : NavigationDestination {
     const val ORDER_DESCRIPTION_ARG = "orderDescription"
     val routeWithArgs = "$route/{$ORDER_ID_ARG}?orderDescription={$ORDER_DESCRIPTION_ARG}"
 }
-
-sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Edit : Screen(route, titleRes)
-    object Add : Screen(route, titleRes)
-}
-
-val items = listOf(
-    Screen.Edit,
-    Screen.Edit,
-)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -130,7 +125,7 @@ fun OrderDetailsScreen(
         )
 
         is OrderDetailsUiState.Success -> OrderDetailResultScreen(
-            navigateToEditItem = navigateToEditItem,
+            //navigateToEditItem = navigateToEditItem,
             navigateToNewItem = navigateToNewItem,
             navigateBack = navigateBack,
             orderDetailList = orderDetailsUiState.orderDetailsList,
@@ -160,7 +155,6 @@ fun OrderDetailsScreen(
 @ExperimentalMaterial3Api
 @Composable
 fun OrderDetailResultScreen(
-    navigateToEditItem: (Int) -> Unit,
     navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     orderDetailList: List<OrderDetailsItem>,
@@ -171,14 +165,20 @@ fun OrderDetailResultScreen(
     navController: NavController,
     viewModel: OrderDetailsViewModel
 ) {
+
+    /*val orderDetailList = orderDetailsUiState.orderDetailsList
+    val modifiedIndex = orderDetailsUiState.modifiedIndex
+    val orderId = orderDetailsUiState.orderId
+    val orderDescription = orderDetailsUiState.orderDescription*/
+
     //val orderId = backStackEntry.arguments?.getInt(OrderDetailsDestination.orderIdArg)
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     //State to hold the modified order details item
     var batch by remember { mutableStateOf("") }
-    var quantity by remember { mutableDoubleStateOf(0.0) }
-    var expirationDate by remember { mutableStateOf(formatDate("")) }
+    var quantity by remember { mutableStateOf(TextFieldValue("")) }
+    var expirationDate by remember { mutableStateOf(TextFieldValue("")) }
 
     // State to hold the scanned code
     var scannedCode by remember { mutableStateOf("") }
@@ -361,23 +361,28 @@ fun OrderDetailResultScreen(
                             if (index >= 0 && index < orderDetailList.size) {
 
                                 modifiedOrderDetailsItem = orderDetailList[index]
+
                                 batch = modifiedOrderDetailsItem!!.batch ?: ""
-                                quantity = modifiedOrderDetailsItem!!.quantity ?: 0.0
-                                expirationDate =
-                                    formatDate(modifiedOrderDetailsItem!!.expirationDate ?: "")
 
+                                val initialQuantity = modifiedOrderDetailsItem!!.quantity ?: 0.0
+                                quantity = TextFieldValue(initialQuantity.toString())
 
-                                //Log.d("dialogDescription", dialogDescription)
+                                val initialExpirationDate = DateHelper.formatDateToDisplay(
+                                    modifiedOrderDetailsItem!!.expirationDate ?: ""
+                                )
+                                expirationDate = TextFieldValue(initialExpirationDate)
+
                             } else {
                                 Log.e("OrderDetailsScreen", "Invalid index: $index")
                             }
 
                             focusRequester.requestFocus()
-                            // Hide the keyboard when focusing on the quantity field
+                            // Hide the keyboard when focusing on the quantity field if needed
                             //keyboardController?.hide()
                         }
                     }
 
+                    //Description of the dialog, if the item is not null, show the row details
                     var dialogDescription = stringResource(
                         R.string.order_details_dialog_edit_title
                     )
@@ -390,13 +395,12 @@ fun OrderDetailResultScreen(
                         )
                     }
 
+                    // Show the edit dialog when the state is true
                     AlertDialog(
                         modifier = Modifier.wrapContentSize(),
                         onDismissRequest = { showEditDialog.value = false },
                         title = { Text(dialogDescription) },
                         text = {
-
-                            //val focusManager = LocalFocusManager.current
 
                             Column(modifier = Modifier.wrapContentSize()) {
                                 OutlinedTextField(
@@ -409,30 +413,111 @@ fun OrderDetailResultScreen(
                                     )
                                 )
 
-                                val maxChar = 8
+                                val showDatePickerDialog = remember { mutableStateOf(false) }
+
                                 OutlinedTextField(
                                     singleLine = true,
                                     value = expirationDate,
                                     label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
-                                    onValueChange = { if (it.length <= maxChar) expirationDate = it },
-                                    visualTransformation = DateTransformation(),
+                                    onValueChange = {
+                                        expirationDate = it
+                                    },
+                                    modifier = Modifier
+                                        .clickable(onClick = {
+                                            showDatePickerDialog.value = true
+                                        }),//not working
+                                    readOnly = true,
+                                    //visualTransformation = DateTransformation(),
                                     keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Uri,
+                                        keyboardType = KeyboardType.Number,
                                         imeAction = ImeAction.Next
-                                    )
+                                    ),
+                                    trailingIcon = {
+                                        IconButton(onClick = {
+                                            showDatePickerDialog.value = true
+                                        }) {
+                                            Icon(
+                                                Icons.Default.DateRange,
+                                                contentDescription = "Select Date"
+                                            )
+                                        }
+                                    }
                                 )
 
-                                OutlinedTextField(
-                                    value = quantity.toString(),
-                                    label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
-                                    onValueChange = {
-                                        quantity = try {
-                                            it.toDouble()
-                                        } catch (e: NumberFormatException) {
-                                            // Handle the case where parsing fails, e.g., set a default value
-                                            0.0
+                                // Decoupled snackbar host state from scaffold state for demo purposes.
+                                val snackState = remember { SnackbarHostState() }
+                                val snackScope = rememberCoroutineScope()
+                                SnackbarHost(hostState = snackState, Modifier)
+
+                                // TODO demo how to read the selected date from the state.
+                                if (showDatePickerDialog.value) {
+                                    val datePickerState = rememberDatePickerState()
+                                    val confirmEnabled = remember {
+                                        derivedStateOf { datePickerState.selectedDateMillis != null }
+                                    }
+                                    DatePickerDialog(
+                                        onDismissRequest = {
+                                            showDatePickerDialog.value = false
+                                        },
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    showDatePickerDialog.value = false
+                                                    snackScope.launch {
+                                                        snackState.showSnackbar(
+                                                            "Selected date timestamp: ${datePickerState.selectedDateMillis}"
+                                                        )
+                                                    }
+                                                    val selectedDate =
+                                                        datePickerState.selectedDateMillis?.let {
+                                                            Date(it)
+                                                        }
+                                                    val dateFormat = SimpleDateFormat(
+                                                        "yyyy-MM-dd",
+                                                        Locale.getDefault()
+                                                    )
+                                                    val formattedDate =
+                                                        selectedDate?.let { dateFormat.format(it) }
+
+                                                    // Update the expirationDate state
+                                                    expirationDate = formattedDate?.let {
+                                                        TextFieldValue(
+                                                            DateHelper.formatDateToDisplay(it)
+                                                        )
+                                                    }!!
+
+                                                    // Dismiss the dialog
+                                                    showDatePickerDialog.value = false
+                                                },
+                                                enabled = confirmEnabled.value
+                                            ) {
+                                                Text("OK")
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    showDatePickerDialog.value = false
+                                                }
+                                            ) {
+                                                Text("Cancel")
+                                            }
                                         }
+                                    ) {
+                                        DatePicker(state = datePickerState)
+                                    }
+                                }
+
+
+                                OutlinedTextField(
+                                    value = quantity,
+                                    label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
+                                    onValueChange = { input ->
+                                        quantity = input
                                     },
+                                    isError = quantity.text.isEmpty()
+                                            || quantity.text.toDoubleOrNull() == null
+                                            || quantity.text.toDouble() <= 0,
                                     keyboardOptions = KeyboardOptions.Default.copy(
                                         keyboardType = KeyboardType.Number,
                                         imeAction = ImeAction.Done
@@ -442,9 +527,9 @@ fun OrderDetailResultScreen(
                                         viewModel.updateDetailsItemData(
                                             context = context,
                                             orderDetailsItemId = modifiedOrderDetailsItem?.id ?: 0,
-                                            quantity = quantity,
+                                            quantity = if (quantity.text.toDoubleOrNull() == null || quantity.text.toDouble() <= 0) 0.0 else quantity.text.toDouble(),
                                             batch = batch,
-                                            expirationDate = expirationDate
+                                            expirationDate = expirationDate.text
                                         )
 
                                         focusManager.clearFocus()
@@ -467,9 +552,9 @@ fun OrderDetailResultScreen(
                                 viewModel.updateDetailsItemData(
                                     context = context,
                                     orderDetailsItemId = modifiedOrderDetailsItem?.id ?: 0,
-                                    quantity = quantity,
+                                    quantity = if (quantity.text.toDoubleOrNull() == null || quantity.text.toDouble() <= 0) 0.0 else quantity.text.toDouble(),
                                     batch = batch,
-                                    expirationDate = expirationDate
+                                    expirationDate = expirationDate.text
                                 )
 
                             }) {

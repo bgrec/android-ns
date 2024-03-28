@@ -51,14 +51,13 @@ data class OrderDetailsItem(
     @SerializedName("dataSca") val expirationDate: String?, //use formatDate(expirationDate)
 
     @TypeConverters(OrderDetailsMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata?,
-
     @TypeConverters(OrderDetailLinksTypeConverter::class) @SerializedName("links") val links: List<Link>,
 
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
 ) {
     val expirationDate2: Date?
-        get() = SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(expirationDate)
+        get() = expirationDate?.let { SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(it) }
 }
 
 @Serializable

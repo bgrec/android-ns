@@ -560,7 +560,7 @@ CREATE PROCEDURE UpdateOrderRow(
 )
 BEGIN
     DECLARE updatedDate DATE;
-    SET updatedDate = STR_TO_DATE(expirationDate, '%d%m%Y');
+    SET updatedDate = STR_TO_DATE(expirationDate, '%d/%m/%Y');
 
     IF updatedDate IS NOT NULL THEN
         SET expirationDate = updatedDate;
