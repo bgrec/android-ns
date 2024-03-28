@@ -136,7 +136,12 @@ fun SettingsScreen(
                     value = urlState,
                     singleLine = false,
                     onValueChange = { newValue -> urlState = newValue },
-                    leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(R.drawable.bring_your_own_ip),
+                            null
+                        )
+                    },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
@@ -241,6 +246,22 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.testRetrofitConnection(context) }
                 ) {
+                    Text(text = stringResource(R.string.private_webserver))
+                }
+            }
+
+            Spacer(modifier = Modifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.testRetrofitConnection(context) }
+                ) {
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
             }
@@ -248,7 +269,7 @@ fun SettingsScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 34)
 @Composable
 fun SettingsScreenPreview() {
     MastroAndroidTheme {
