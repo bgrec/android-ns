@@ -42,6 +42,21 @@ class DateHelper {
                 "" // Return empty string if expirationDate is not in the expected format
             }
         }
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun isDateBeforeToday(date: String?): Boolean {
+            if (date.isNullOrEmpty()) {
+                return false // Return false if Date is null or empty
+            }
+
+            return try {
+                val inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                val parsedDate = LocalDate.parse(date, inputFormatter)
+                val today = LocalDate.now()
+                parsedDate.isBefore(today)
+            } catch (ex: DateTimeParseException) {
+                false // Return false if the date is not in the expected format
+            }
+        }
     }
 }
 

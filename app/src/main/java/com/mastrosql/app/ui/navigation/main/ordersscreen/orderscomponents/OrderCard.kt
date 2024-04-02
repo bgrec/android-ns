@@ -58,7 +58,6 @@ fun OrderCard(
     navigateToOrderDetails: (Int, String?) -> Unit,
     modifiedOrderId: MutableState<Int>,
     showDeliveryDialog: MutableState<Boolean>
-
 ) {
     var expanded by remember { mutableStateOf(false) }
 

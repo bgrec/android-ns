@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ sealed interface OrderDetailsUiState {
 
     data class Success(
         val orderDetailsList: List<OrderDetailsItem>,
+        var modifiedOrderDetailsItem: OrderDetailsItem? = null,
         val modifiedIndex: MutableIntState? = null,
         val orderId: Int? = null,
         val orderDescription: String? = null
@@ -65,7 +67,6 @@ class OrderDetailsViewModel(
     )
     private val orderDescription: StateFlow<String?> = _orderDescription
 
-
     init {
         getOrderDetails()
     }
@@ -96,10 +97,17 @@ class OrderDetailsViewModel(
                         //oldItem != newItem
                     } ?: -1
 
+                // Get the modified order details item
+                var modifiedOrderDetailsItem: OrderDetailsItem? = null
+                if (modifiedIndex >= 0 && modifiedIndex < orderDetailsListResult.size) {
+                    modifiedOrderDetailsItem = orderDetailsListResult[modifiedIndex]
+                }
+
                 // Update the UI state with the new list
                 OrderDetailsUiState.Success(
                     orderDetailsList = orderDetailsListResult,
                     modifiedIndex = mutableIntStateOf(modifiedIndex),
+                    modifiedOrderDetailsItem = modifiedOrderDetailsItem,
                     orderId = orderId.value,
                     orderDescription = orderDescription.value
                 )
@@ -332,7 +340,8 @@ class OrderDetailsViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
+                                //"$errorMessage ${response.code()}"
+                                "Riga duplicata con successo ${response.code()}"
                             )
                             // Refresh the list
                             getOrderDetails()
@@ -412,6 +421,7 @@ class OrderDetailsViewModel(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun updateDetailsItemData(
         context: Context,
         orderDetailsItemId: Int,
@@ -437,7 +447,8 @@ class OrderDetailsViewModel(
                             showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
+                                //"$errorMessage ${response.code()}"
+                                "Modifiche salvate con successo ${response.code()}"
                             )
                             // Refresh the list
                             //getOrderDetails()
@@ -515,7 +526,7 @@ fun <T, K : Comparable<K>> List<T>.findModifiedItem(
 }
 
 
-//Old function to find the modified item in the list
+//Old function to find the modified item in the list not used anymore
 fun <T> List<T>.findModifiedItemOld(other: List<T>, comparator: (T, T) -> Boolean): Int? {
     // If sizes are different, there is a modification
     if (this.size < other.size) {
