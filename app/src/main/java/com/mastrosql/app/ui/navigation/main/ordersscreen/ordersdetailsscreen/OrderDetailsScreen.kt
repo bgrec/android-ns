@@ -59,7 +59,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.ord
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun OrderDetailsScreen(
@@ -202,10 +202,10 @@ fun OrderDetailResultScreen(
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            },
+            detectTapGestures(onTap = {
+                focusManager.clearFocus()
+            })
+        },
         topBar = {
             OrderDetailsTopAppBar(
                 title = stringResource(
@@ -307,7 +307,8 @@ fun OrderDetailResultScreen(
 @Preview
 @Composable
 fun OrdersScreenPreview() {
-    OrderDetailsScreen(navigateToNewItem = {},
+    OrderDetailsScreen(
+        navigateToNewItem = {},
         navigateBack = {},
         drawerState = DrawerState(DrawerValue.Closed),
         navController = NavController(LocalContext.current)

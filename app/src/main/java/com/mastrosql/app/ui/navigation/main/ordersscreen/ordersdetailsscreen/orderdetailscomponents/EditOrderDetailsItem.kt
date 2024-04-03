@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -151,7 +152,8 @@ fun EditOrderDetailsItem(
                                 showDatePickerDialog.value = true
                             }) {
                                 Icon(
-                                    Icons.Default.DateRange, contentDescription = "Select Date"
+                                    Icons.Default.DateRange,
+                                    contentDescription = "Select Date"
                                 )
                             }
                         })
@@ -172,16 +174,25 @@ fun EditOrderDetailsItem(
                     IconButton(
                         modifier = Modifier.weight(0.2f),
                         onClick = {
-                            if (getOrderQuantity(orderDetailsItemState) > 0) orderDetailsItemState.quantity.value =
-                                orderDetailsItemState.quantity.value.copy(
-                                    text = (orderDetailsItemState.quantity.value.text.toDouble() - 1).toString()
-                                )
+                            if (getOrderQuantity(orderDetailsItemState) >= 1) {
+                                orderDetailsItemState.quantity.value =
+                                    orderDetailsItemState.quantity.value.copy(
+                                        text = (orderDetailsItemState.quantity.value.text.toDouble() - 1.00).toString()
+                                    )
+                            } else {
+                                orderDetailsItemState.quantity.value =
+                                    orderDetailsItemState.quantity.value.copy(
+                                        text = "0"
+                                    )
+                            }
                         },
                     ) {
                         Icon(
                             Icons.Default.RemoveCircle,
                             contentDescription = "Scala la quantità",
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            tint = if (getOrderQuantity(orderDetailsItemState) <= 0)
+                                Color.Gray else Color.Black
                         )
 
                     }
@@ -205,7 +216,6 @@ fun EditOrderDetailsItem(
 
                             //Used alone to focus on the text field when the dialog is opened
                             .onFocusEvent { focusState ->
-                                Log.d("isfirstTimeFocused", isFirstTimeFocused.value.toString())
                                 if (focusState.isFocused && isFirstTimeFocused.value) {
 
                                     val inputText = orderDetailsItemState.quantity.value.text
@@ -217,12 +227,10 @@ fun EditOrderDetailsItem(
                                         )
                                     isFirstTimeFocused.value = false
 
-
                                 } else {
-                                    isFirstTimeFocused.value = true
+                                    //isFirstTimeFocused.value = true
                                 }
                             }
-
                             // When using focusRequester, the text is selected when the dialog is opened
                             .onFocusChanged { focusState ->
                                 if (focusState.isFocused) {
@@ -235,20 +243,16 @@ fun EditOrderDetailsItem(
                                         )
                                     isFirstTimeFocused.value = false
                                 } else {
-                                    //isFirstTimeFocused.value = true
+                                    isFirstTimeFocused.value = true
                                 }
                             },
-
-
                         interactionSource = remember { MutableInteractionSource() }
                             .also { interactionSource ->
                                 LaunchedEffect(interactionSource) {
                                     interactionSource.interactions.collect {
                                         if (it is PressInteraction.Release) {
                                             // works like onClick for the text field
-                                            if (isFirstTimeFocused.value) {
-                                                //isFirstTimeFocused.value = false
-                                            }
+                                            isFirstTimeFocused.value = !isFirstTimeFocused.value
                                         }
                                     }
                                 }
