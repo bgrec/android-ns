@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -58,7 +61,6 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun LoginScreen(
     navController: NavController,
-    //viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
     viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
@@ -67,6 +69,7 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
     var timesClicked by remember { mutableIntStateOf(0) }
+    val focusRequester = remember { FocusRequester() }
 
     //Initialize the CredentialManager in the ViewModel with the context
     viewModel.initCredentialManager(context)
@@ -112,29 +115,32 @@ fun LoginScreen(
                 // TextField for Username
                 Spacer(modifier = Modifier.weight(1f))
 
-                LoginFields(
+                //TextField with the CredentialManager
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
                     modifier = Modifier
                         .padding(bottom = 32.dp)
-                        .align(Alignment.CenterHorizontally),
-                    label = R.string.Username,
-                    value = username,
-                    icon = {
+                        .align(Alignment.CenterHorizontally)
+                        .focusRequester(focusRequester),
+                    label = { Text(stringResource(R.string.Username)) },
+                    singleLine = true,
+                    leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.AccountCircle,
                             contentDescription = null
                         )
                     },
-                    onValueChanged = { username = it },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    keyboardAction = KeyboardActions(),
+                    keyboardActions = KeyboardActions(),
                     interactionSource = interactionSource
                         .also { interactionSource ->
                             LaunchedEffect(interactionSource) {
                                 interactionSource.interactions.collect {
-                                    if (it is PressInteraction.Release && timesClicked <= 2) {
+                                    if (it is PressInteraction.Release && timesClicked <= 1) {
                                         timesClicked++
                                         viewModel.getCredentials(context)
                                     }
@@ -143,29 +149,43 @@ fun LoginScreen(
                         }
                 )
 
-                //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
+                // Add some space between the text fields
+                //Spacer(modifier = Modifier.height(30.dp))
                 Spacer(modifier = Modifier.weight(0.1f))
                 // TextField for Password
-                LoginFields(
+                var isPasswordVisible by remember { mutableStateOf(false) }
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
                     modifier = Modifier
                         .padding(bottom = 32.dp)
                         .align(Alignment.CenterHorizontally),
-                    isPassword = true,
-                    label = R.string.Password,
-                    value = password,
-                    icon = {
+                    label = { Text(stringResource(R.string.Password)) },
+                    leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Lock,
                             contentDescription = null
                         )
                     },
-                    onValueChanged = { password = it },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            isPasswordVisible = !isPasswordVisible
+                        }) {
+                            Icon(
+                                imageVector = if (isPasswordVisible)
+                                    Icons.Filled.Visibility
+                                else
+                                    Icons.Filled.VisibilityOff,
+                                contentDescription = "Password Visibility"
+                            )
+                        }
+                    },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
-
                     ),
-                    keyboardAction = KeyboardActions(
+                    keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
                             viewModel.login(
@@ -176,8 +196,12 @@ fun LoginScreen(
                             )
                         }
                     ),
+                    visualTransformation = if (isPasswordVisible)
+                        VisualTransformation.None
+                    else
+                        PasswordVisualTransformation(),
                 )
-                //Spacer(modifier = Modifier.height(50.dp))
+
                 Spacer(modifier = Modifier.weight(1f))
 
                 AppButton(

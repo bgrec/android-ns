@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -69,12 +68,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -146,7 +145,7 @@ fun OrderDetailsCard(
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissItem(
     visibleState: MutableTransitionState<Boolean>,
@@ -298,7 +297,7 @@ private fun OrderDetailsItemContent(
                 ) {
                     OrderDetailDescriptionAndId2(
                         batch = orderDetailsItem.batch,
-                        expirationDate = formatDate(orderDetailsItem.expirationDate),
+                        expirationDate = DateHelper.formatDateToDisplay(orderDetailsItem.expirationDate),
                         quantity = orderDetailsItem.quantity ?: 0.0,
                         orderedQuantity = orderDetailsItem.orderedQuantity ?: 0.0,
                         shippedQuantity = orderDetailsItem.shippedQuantity ?: 0.0
@@ -442,36 +441,50 @@ fun OrderDetailDescriptionAndId2(
 ) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
-            Text(
-                text = stringResource(R.string.order_detail_batch),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            if (batch != null) {
-                Text(
-                    text = batch,
-                    color = ColorLightBlue,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            Column(
+                Modifier.weight(0.45f)
+            ) {
+                Row {
+                    Text(
+                        text = stringResource(R.string.order_detail_batch),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    if (batch != null) {
+                        Text(
+                            text = batch,
+                            color = ColorLightBlue,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
             }
 
-            Spacer(Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(0.1f))
 
-            Text(
-                text = stringResource(R.string.order_detail_expirationDate),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Column(
+                Modifier.weight(0.45f)
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.order_detail_expirationDate),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
 
-            if (expirationDate != null) {
-                Text(
-                    text = expirationDate,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    if (expirationDate != null) {
+                        Text(
+                            text = expirationDate,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
             }
         }
+        Spacer(modifier = Modifier.height(4.dp))
         QuantityTable(quantity, orderedQuantity, shippedQuantity)
     }
 }

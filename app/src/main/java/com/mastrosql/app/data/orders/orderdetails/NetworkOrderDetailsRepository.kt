@@ -7,7 +7,6 @@ import androidx.work.WorkManager
 import com.google.gson.JsonObject
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
@@ -62,11 +61,11 @@ class NetworkOrderDetailsRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getOrderDetailsStream(id: Int): Flow<OrderDetails?> {
+    override fun getOrderDetailsStream(id: Int): Flow<OrderDetailsItem?> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertOrderDetails(orderDetail: OrderDetails) {
+    override suspend fun insertOrderDetails(orderDetail: OrderDetailsItem) {
         TODO("Not yet implemented")
     }
 

@@ -20,10 +20,10 @@ import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.NewHomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -56,11 +56,11 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         *  Orders Screen navigation graph with nested navigation
          */
         navigation(
-            startDestination = OrdersResultDestination.route,
+            startDestination = OrdersDestination.route,
             route = MainNavOption.OrdersScreen.name
             //route = OrdersResultDestination.route
         ) {
-            composable(route = OrdersResultDestination.route) {
+            composable(route = OrdersDestination.route) {
                 OrdersScreen(
                     navigateToOrderEntry = {},// { navController.navigate(OrderEntryDestination.route) },
                     navigateToOrderDetails = { orderId, orderDescription ->
@@ -83,7 +83,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                 )
             ) {
                 OrderDetailsScreen(
-                    navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                    //navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
                     navigateToNewItem = { orderId ->
                         //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
                         navController.currentBackStackEntry?.savedStateHandle?.set(

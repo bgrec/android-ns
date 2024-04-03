@@ -560,7 +560,11 @@ CREATE PROCEDURE UpdateOrderRow(
 )
 BEGIN
     DECLARE updatedDate DATE;
-    SET updatedDate = STR_TO_DATE(expirationDate, '%d%m%Y');
+    IF expirationDate IS NULL OR expirationDate = '' OR expirationDate= 'null' THEN
+        SET expirationDate = NULL;
+    ELSE
+        SET updatedDate = STR_TO_DATE(expirationDate, '%d/%m/%Y');
+    END IF;
 
     IF updatedDate IS NOT NULL THEN
         SET expirationDate = updatedDate;
@@ -569,8 +573,8 @@ BEGIN
     END IF;
 
     UPDATE rig_ordc
-    SET QUAN = quantity,
-        LOTTO = batch,
+    SET QUAN     = quantity,
+        LOTTO    = batch,
         DATA_SCA = expirationDate
     WHERE NUME_PRO = orderDetailId;
 
@@ -583,10 +587,11 @@ DROP PROCEDURE IF EXISTS RigOrdcFilteredList;
 CREATE PROCEDURE RigOrdcFilteredList(
     IN orderId INT
 )
-    BEGIN
-    SELECT * FROM rig_ordc
-             WHERE NUME = orderId
-             ORDER BY RIGA;
+BEGIN
+    SELECT *
+    FROM rig_ordc
+    WHERE NUME = orderId
+    ORDER BY RIGA;
 END;
 
 
@@ -610,4 +615,4 @@ CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
 GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
- #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+#SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;

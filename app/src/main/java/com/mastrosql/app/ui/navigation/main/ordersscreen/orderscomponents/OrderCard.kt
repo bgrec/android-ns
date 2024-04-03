@@ -41,13 +41,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.formatDate
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
-import com.mastrosql.app.ui.theme.ColorGreen
-import com.mastrosql.app.ui.theme.ColorOrange
-import com.mastrosql.app.ui.theme.ColorRed
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.utils.DateHelper
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -58,7 +55,6 @@ fun OrderCard(
     navigateToOrderDetails: (Int, String?) -> Unit,
     modifiedOrderId: MutableState<Int>,
     showDeliveryDialog: MutableState<Boolean>
-
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -96,7 +92,7 @@ fun OrderCard(
                     OrderDescriptionAndId(
                         orderId = order.id,
                         description = order.description,
-                        insertDate = formatDate(order.insertDate),
+                        insertDate = DateHelper.formatDateToDisplay(order.insertDate),
                         businessName = order.businessName,
                         deliveryState = order.deliveryState,
                         showDeliveryDialog = showDeliveryDialog,
@@ -105,7 +101,7 @@ fun OrderCard(
                     if (expanded) {
                         OrderInfo(
                             destinationName = order.destinationName,
-                            deliveryDate = formatDate(order.deliveryDate),
+                            deliveryDate = DateHelper.formatDateToDisplay(order.deliveryDate),
                             carrierName = order.carrierName,
                             notes = order.notes
                         )
@@ -121,8 +117,6 @@ fun OrderCard(
                     if (modifiedOrderId.value == order.id) {
                         tint = Color.Red
                     }
-                    //Log.d("modifiedOrderId", "modifiedOrderId: $modifiedOrderId")
-                    //Log.d("order.id", "order.id: ${order.id}")
                     OrderDetailsEditButton(
                         orderId = order.id,
                         orderDescription = order.description,
@@ -205,6 +199,7 @@ fun OrderDescriptionAndId(
     showDeliveryDialog: MutableState<Boolean>,
     modifiedOrderId: MutableState<Int>
 ) {
+    val deliveryStateObj = DeliveryStates.deliveryStates.find { it.state == deliveryState }
 
     Column(
         modifier = Modifier
@@ -255,32 +250,10 @@ fun OrderDescriptionAndId(
                 text = stringResource(R.string.order_deliveryType),
                 style = MaterialTheme.typography.bodySmall,
             )
-
-            when (deliveryState) {
-                0 -> Text(
-                    text = stringResource(R.string.order_deliveryState_value0),
-                    color = ColorRed,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                1 -> Text(
-                    text = stringResource(R.string.order_deliveryState_value1),
-                    color = ColorGreen,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                2 -> Text(
-                    text = stringResource(R.string.order_deliveryState_value2),
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                3 -> Text(
-                    text = stringResource(R.string.order_deliveryState_value3),
-                    color = ColorOrange,
+            deliveryStateObj?.let { state ->
+                Text(
+                    text = stringResource(state.nameState),
+                    color = state.color,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
