@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -192,7 +193,7 @@ fun EditOrderDetailsItem(
                             contentDescription = "Scala la quantità",
                             modifier = Modifier.fillMaxSize(),
                             tint = if (getOrderQuantity(orderDetailsItemState) <= 0)
-                                Color.Gray else Color.Black
+                                Color.Gray else MaterialTheme.colorScheme.primary
                         )
 
                     }
@@ -286,7 +287,8 @@ fun EditOrderDetailsItem(
                         Icon(
                             Icons.Default.AddCircle,
                             contentDescription = "Scala la quantità",
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
