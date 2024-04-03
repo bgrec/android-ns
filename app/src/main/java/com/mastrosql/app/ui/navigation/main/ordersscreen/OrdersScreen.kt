@@ -2,25 +2,14 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -28,11 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -41,12 +28,12 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
 
-object OrdersResultDestination : NavigationDestination {
+object OrdersDestination : NavigationDestination {
     override val route = "orders_list"
     override val titleRes = R.string.clients_orders_bar_title
 }
@@ -62,8 +49,9 @@ fun OrdersScreen(
     viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val ordersUiState = viewModel.ordersUiState
-    //val ordersUiState by viewModel.ordersUiState.collectAsState()
-    val modifier = Modifier.fillMaxSize()
+    val modifier = Modifier
+        .fillMaxSize()
+        .fillMaxWidth()
 
     when (ordersUiState) {
         is OrdersUiState.Loading -> LoadingScreen(
@@ -76,9 +64,8 @@ fun OrdersScreen(
         is OrdersUiState.Success -> OrdersResultScreen(
             navigateToOrderDetails = navigateToOrderDetails,
             navigateToOrderEntry = navigateToOrderEntry,
-            ordersUiState.ordersList,
-            ordersUiState.modifiedOrderId,
-            modifier = modifier.fillMaxWidth(),
+            ordersUiState = ordersUiState,
+            modifier = modifier,
             drawerState = drawerState,
             navController = navController,
             viewModel = viewModel
@@ -91,7 +78,6 @@ fun OrdersScreen(
             drawerState = drawerState,
             navController = navController
         )
-
     }
 }
 
@@ -101,8 +87,7 @@ fun OrdersScreen(
 fun OrdersResultScreen(
     navigateToOrderDetails: (Int, String?) -> Unit,
     navigateToOrderEntry: () -> Unit,
-    ordersList: List<Order>,
-    modifiedOrderId: MutableState<Int>,
+    ordersUiState: OrdersUiState.Success,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
@@ -136,24 +121,26 @@ fun OrdersResultScreen(
                 }
             )
         },
+        /*
         //Floating action button
         //Not used for now, but it's a good example of how to use the FAB
-        /*floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navigateToOrderEntry()
-                    showToast = true
-                },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.order_entry_title)
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center,*/
+        floatingActionButton = {
+           FloatingActionButton(
+               onClick = {
+                   navigateToOrderEntry()
+                   showToast = true
+               },
+               shape = MaterialTheme.shapes.medium,
+               modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+           ) {
+               Icon(
+                   imageVector = Icons.Default.Add,
+                   contentDescription = stringResource(R.string.order_entry_title)
+               )
+           }
+       },
+       floatingActionButtonPosition = FabPosition.Center,
+       */
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -167,8 +154,8 @@ fun OrdersResultScreen(
             OrdersSearchView(state = textState)
 
             OrdersList(
-                ordersList = ordersList,
-                modifiedOrderId = modifiedOrderId,
+                ordersList = ordersUiState.ordersList,
+                modifiedOrderId = ordersUiState.modifiedOrderId,
                 state = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController,
@@ -178,178 +165,18 @@ fun OrdersResultScreen(
         }
 
         if (showDeliveryDialog.value) {
-
-            // LaunchedEffect to set the initial value when the dialog is opened
-            LaunchedEffect(showDeliveryDialog) {
-                if (showDeliveryDialog.value) {
-                    val modifiedOrder = ordersList.find { it.id == modifiedOrderId.value }
-                    val modifiedOrderDeliveryState = modifiedOrder?.deliveryState
-                    if (modifiedOrderDeliveryState != null) {
-                        selectedDeliveryState.intValue = modifiedOrderDeliveryState
-                    }
-                }
-            }
-
-            AlertDialog(
-                modifier = Modifier.wrapContentSize(),
-                onDismissRequest = { showDeliveryDialog.value = false },
-                title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
-                text = {
-
-
-                    Column(modifier = Modifier.wrapContentSize()) {
-
-                        // List of delivery types
-                        val deliveryStates = listOf(
-                            DeliveryState(0, R.string.order_deliveryState_value0, Color.Red),
-                            DeliveryState(1, R.string.order_deliveryState_value1, Color.Green),
-                            DeliveryState(2, R.string.order_deliveryState_value2, Color.Black),
-                            DeliveryState(
-                                3,
-                                R.string.order_deliveryState_value3,
-                                Color(0xFFFFA500)
-                            )//orange
-                        )
-
-                        deliveryStates.forEach { deliveryState ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable(
-                                        onClick = {
-                                            selectedDeliveryState.intValue =
-                                                deliveryState.state //deve fare stessa cosa del onClick RadioButton
-                                        }
-                                    ),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = selectedDeliveryState.intValue == deliveryState.state,
-                                    onClick = {
-                                        selectedDeliveryState.intValue = deliveryState.state
-                                    },
-                                    colors = RadioButtonDefaults.colors(deliveryState.color),
-                                )
-                                Text(text = stringResource(deliveryState.nameState))
-                            }
-                        }
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        showDeliveryDialog.value = false
-                    }) {
-                        Text(stringResource(R.string.dismiss_button))
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showDeliveryDialog.value = false
-
-                        viewModel.updateDeliveryState(
-                            context,
-                            modifiedOrderId.value,
-                            selectedDeliveryState.intValue
-                        )
-                    }) {
-                        Text(stringResource(R.string.confirm_button))
-                    }
+            EditDeliveryStateDialog(
+                showDeliveryDialog = showDeliveryDialog,
+                ordersUiState = ordersUiState,
+                selectedDeliveryState = selectedDeliveryState,
+                onUpdateDeliveryState = { orderId, deliveryState ->
+                    viewModel.updateDeliveryState(
+                        context = context,
+                        orderId = orderId,
+                        deliveryState = deliveryState
+                    )
                 }
             )
         }
     }
 }
-
-
-//dialog delivery types
-data class DeliveryState(
-    val state: Int,
-    val nameState: Int,
-    val color: Color
-)
-
-
-/*
-@Preview
-@Composable
-fun OrdersScreenPreview() {
-    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-    OrdersScreen(
-        drawerState = DrawerState(DrawerValue.Closed),
-        navController = NavController(LocalContext.current)
-    )
-}
-*/
-@Preview
-@Composable
-fun SearchBarPreview() {
-    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-}
-
-/*
-*  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { MarsTopAppBar(scrollBehavior = scrollBehavior) }
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            val marsViewModel: MarsViewModel = viewModel()
-            HomeScreen(marsUiState = marsViewModel.marsUiState)
-        }
-    }
-}
-
-@Composable
-fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
-    CenterAlignedTopAppBar(
-        scrollBehavior = scrollBehavior,
-        title = {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-        },
-        modifier = modifier
-    )
-}
-*
-* */
-
-
-/**
- * Versione con SearchBar diversa
- *
- * @ExperimentalMaterial3Api
- * @Composable
- * fun OrdersResultScreen(
- *     customerMasterDataList: List<CustomerMasterData>,
- *     modifier: Modifier = Modifier,
- *     drawerState: DrawerState,
- *     navController: NavController
- * ) {
- *     Scaffold(
- *         topBar = {
- *             //AppBar(drawerState = drawerState)
- *             SearchBar(
- *                 customerMasterDataList = customerMasterDataList,
- *                 navController = navController
- *             )
- *         },
- *         bottomBar = {
- *             // BottomBar(drawerState = drawerState, navController = navController)
- *         },
- *     ) {
- *         Surface(
- *             modifier = Modifier
- *                 .fillMaxSize()
- *                 .padding(it)
- *         ) {
- *         }
- *     }
- * }
- */
