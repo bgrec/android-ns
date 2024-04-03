@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel
@@ -16,6 +16,7 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
+import com.mastrosql.app.ui.navigation.main.loginscreen.LoginViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
 
@@ -72,6 +73,7 @@ object AppViewModelProvider {
         // Initializer for ArticlesViewModel
         initializer {
             ArticlesViewModel(
+                this.createSavedStateHandle(),
                 mastroAndroidApplication().appContainer.articlesRepository
             )
         }
@@ -94,6 +96,13 @@ object AppViewModelProvider {
         // Initializer for UserPreferencesViewModel
         initializer {
             UserPreferencesViewModel(
+                mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
+        }
+
+        initializer {
+            LoginViewModel(
+                mastroAndroidApplication().appContainer.loginRepository,
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }

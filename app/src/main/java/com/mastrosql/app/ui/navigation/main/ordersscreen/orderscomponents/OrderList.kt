@@ -1,13 +1,18 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,17 +25,28 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersList(
+    modifier: Modifier,
     ordersList: List<Order>,
+    modifiedOrderId: MutableState<Int>,
     state: MutableState<TextFieldValue>,
-    modifier: Modifier = Modifier,
     navController: NavController,
-    navigateToOrderDetails: (Int, String) -> Unit,
+    navigateToOrderDetails: (Int, String?) -> Unit,
+    showDeliveryDialog: MutableState<Boolean>
+) {
+    val listState = rememberLazyListState()
+    // Scroll to the modified item when the list changes
+    LaunchedEffect(ordersList) {
+        //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
+        modifiedOrderId.value.let { index ->
+            listState.animateScrollToItem(index)
+        }
+    }
 
-    ) {
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .background(MaterialTheme.colorScheme.background)
         //.focusable()
     )
@@ -43,14 +59,21 @@ fun OrdersList(
         } else {
             //update this for fields to search
             ordersList.filter {
-                it.description.contains(searchedText, ignoreCase = true)
+                it.description?.contains(searchedText, ignoreCase = true) ?: true
                         ||
-                        it.city.contains(searchedText, ignoreCase = true)
+                        it.businessName?.contains(searchedText, ignoreCase = true) ?: true
+                        || it.city?.contains(searchedText, ignoreCase = true) ?: true
 
             }
         }
 
-        items(filteredList) { order ->
+        items(
+            filteredList,
+            key = {
+                it.id
+            })
+        { order ->
+
             OrderCard(
                 order = order,
                 modifier = Modifier
@@ -58,13 +81,15 @@ fun OrdersList(
                     .fillMaxWidth(),
                 //.focusable(),
                 navController = navController,
-                navigateToOrderDetails = navigateToOrderDetails
-
+                navigateToOrderDetails = navigateToOrderDetails,
+                modifiedOrderId = modifiedOrderId,
+                showDeliveryDialog = showDeliveryDialog
             )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun OrdersListPreview() {
@@ -148,7 +173,9 @@ fun OrdersListPreview() {
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current),
-            navigateToOrderDetails = { _, _ -> }
+            modifiedOrderId = remember { mutableIntStateOf(0) },
+            navigateToOrderDetails = { _, _ -> },
+            showDeliveryDialog = remember { mutableStateOf(false) }
         )
     }
 }

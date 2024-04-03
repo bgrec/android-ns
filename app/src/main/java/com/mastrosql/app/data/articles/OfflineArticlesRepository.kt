@@ -1,11 +1,13 @@
 package com.mastrosql.app.data.articles
 
 import androidx.work.WorkInfo
+import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesDao
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 class OfflineArticlesRepository(
     private val articleDao: ArticlesDao,
@@ -27,4 +29,13 @@ class OfflineArticlesRepository(
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun insertArticleIntoDocument(
+        documentId: Int,
+        documentType: String,
+        articleId: Int
+    ): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
+
 }

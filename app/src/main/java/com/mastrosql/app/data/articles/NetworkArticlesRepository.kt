@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.asFlow
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.google.gson.JsonObject
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
@@ -11,6 +12,7 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesDao
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
+import retrofit2.Response
 
 /**
  * Network and database Implementation of Repository that fetch articles data list from mastroAndroidApi.
@@ -62,6 +64,17 @@ class NetworkArticlesRepository(
     }
 
     //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }
-
+    override suspend fun insertArticleIntoDocument(
+        documentId: Int,
+        documentType: String,
+        articleId: Int
+    ): Response<JsonObject> {
+        val body = JsonObject().apply {
+            addProperty("documentId", documentId)
+            addProperty("documentType", documentType)
+            addProperty("articleId", articleId)
+        }
+        return mastroAndroidApiService.insertArticleIntoDocument(body)
+    }
 
 }

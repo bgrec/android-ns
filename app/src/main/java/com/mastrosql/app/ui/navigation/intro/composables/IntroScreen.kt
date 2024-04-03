@@ -55,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -70,7 +71,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.IntroNavOption
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
@@ -102,7 +103,6 @@ fun IntroScreen(
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
-                    viewModel.onBoardingCompleted(false)
                 })
             }) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -312,7 +312,8 @@ fun ConfigContent(
             urlState = baseUrlUiState
         }
 
-        OutlinedTextField(value = urlState,
+        OutlinedTextField(
+            value = urlState,
             singleLine = false,
             onValueChange = { newValue -> urlState = newValue },
             leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
@@ -324,7 +325,11 @@ fun ConfigContent(
                 focusManager.clearFocus()
             }),
             label = { Text(stringResource(R.string.label_url)) },
-            modifier = Modifier.focusRequester(focusRequester)
+            modifier = Modifier.focusRequester(focusRequester).onFocusChanged {
+                if(!it.isFocused) {
+                    viewModel.setBaseUrl(urlState)
+                }
+            }
         )
 
         //fine TextField per inserire url
@@ -358,7 +363,7 @@ fun ConfigContent(
             modifier = Modifier.padding(top = 10.dp)
         ) {
             Button(onClick = { showDialog = true }) {
-                Text(stringResource(R.string.dialog_button))
+                Text(stringResource(R.string.dialog_button_settings))
             }
         }
 
@@ -373,6 +378,14 @@ fun ConfigContent(
                         items(MainNavOption.entries.toList()) {
                             if ((stringResMap[it] != null)) {
                                 Row(
+                                    modifier = Modifier.clickable(
+                                        onClick = {
+                                            val isChecked = !(activeButtonsUiState[it] ?: false)
+                                            val updatedState = EnumMap(activeButtonsUiState)
+                                            updatedState[it] = isChecked
+                                            viewModel.updateActiveButtons(updatedState)
+                                        }
+                                    ),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {

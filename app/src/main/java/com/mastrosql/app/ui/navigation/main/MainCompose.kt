@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -27,10 +28,11 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerContent
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
@@ -88,7 +90,7 @@ fun MainCompose(
             }
             else -> {
                 // If the destination is not a main screen we need to handle gestures differently for each screen
-                if (destination.route == OrdersResultDestination.route) {
+                if (destination.route == OrdersDestination.route) {
                     appNavigationViewModel.setGesturesEnabled(true)
                 } else {
                     appNavigationViewModel.setGesturesEnabled(false)
@@ -317,6 +319,7 @@ object DrawerParams {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun MainActivityPreview() {

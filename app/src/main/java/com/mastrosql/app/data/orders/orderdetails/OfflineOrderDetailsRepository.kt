@@ -1,12 +1,13 @@
 package com.mastrosql.app.data.orders.orderdetails
 
 import androidx.work.WorkInfo
+import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 class OfflineOrderDetailsRepository(
     private val orderDetailDao: OrderDetailsDao, override val outputWorkInfo: Flow<WorkInfo>
@@ -24,16 +25,15 @@ class OfflineOrderDetailsRepository(
         TODO()
     }
 
-    override fun getOrderDetailsStream(id: Int): Flow<OrderDetails?> {
+    override fun getOrderDetailsStream(id: Int): Flow<OrderDetailsItem?> {
         //orderDetailDao.getOrderDetailsItemById(id)
         TODO()
     }
 
-    override suspend fun insertOrderDetails(orderDetail: OrderDetails) {
+    override suspend fun insertOrderDetails(orderDetail: OrderDetailsItem) {
         //orderDetailDao.insert(orderDetailsItem)
         TODO()
     }
-
 
     override suspend fun deleteOrderDetails(orderDetail: OrderDetailsItem) =
         orderDetailDao.delete(orderDetail)
@@ -42,6 +42,27 @@ class OfflineOrderDetailsRepository(
         orderDetailDao.update(orderDetail)
 
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun sendScannedCode(orderId: Int, scannedCode: String): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun duplicateDetailItem(orderDetailId: Int): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateDetailItem(
+        orderDetailId: Int,
+        quantity: Double,
+        batch: String,
+        expirationDate: String
+    ): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 }

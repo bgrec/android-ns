@@ -1,8 +1,11 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,12 +25,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,26 +41,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
-import com.mastrosql.app.ui.theme.ColorGreen
-import com.mastrosql.app.ui.theme.ColorOrange
-import com.mastrosql.app.ui.theme.ColorRed
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.utils.DateHelper
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderCard(
     order: Order,
     modifier: Modifier,
     navController: NavController,
-    navigateToOrderDetails: (Int, String) -> Unit
-
+    navigateToOrderDetails: (Int, String?) -> Unit,
+    modifiedOrderId: MutableState<Int>,
+    showDeliveryDialog: MutableState<Boolean>
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier.padding(4.dp),
+        modifier = modifier
+            .padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -84,16 +90,18 @@ fun OrderCard(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     OrderDescriptionAndId(
-                        id = order.id,
+                        orderId = order.id,
                         description = order.description,
-                        insertDate = order.insertDate,
+                        insertDate = DateHelper.formatDateToDisplay(order.insertDate),
                         businessName = order.businessName,
-                        deliveryType = order.deliveryType
+                        deliveryState = order.deliveryState,
+                        showDeliveryDialog = showDeliveryDialog,
+                        modifiedOrderId = modifiedOrderId
                     )
                     if (expanded) {
                         OrderInfo(
                             destinationName = order.destinationName,
-                            deliveryDate = order.deliveryDate,
+                            deliveryDate = DateHelper.formatDateToDisplay(order.deliveryDate),
                             carrierName = order.carrierName,
                             notes = order.notes
                         )
@@ -105,10 +113,16 @@ fun OrderCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
+                    var tint = MaterialTheme.colorScheme.secondary
+                    if (modifiedOrderId.value == order.id) {
+                        tint = Color.Red
+                    }
                     OrderDetailsEditButton(
                         orderId = order.id,
                         orderDescription = order.description,
-                        onEditClick = navigateToOrderDetails
+                        onEditClick = navigateToOrderDetails,
+                        modifiedOrderId = modifiedOrderId,
+                        tint = tint
                     )
                 }
             }
@@ -144,15 +158,23 @@ private fun OrderExpandButton(
 @Composable
 private fun OrderDetailsEditButton(
     orderId: Int,
-    orderDescription: String,
-    onEditClick: (Int, String) -> Unit,
+    orderDescription: String?,
+    onEditClick: (Int, String?) -> Unit,
     modifier: Modifier = Modifier,
+    modifiedOrderId: MutableState<Int>,
+    tint: Color
 ) {
-    IconButton(onClick = { onEditClick(orderId, orderDescription) }) {
+    IconButton(onClick = {
+        onEditClick(orderId, orderDescription)
+        modifiedOrderId.value = orderId
+
+    }) {
+
         Icon(
             Icons.Default.Edit,
-            tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = stringResource(R.string.new_order),
+            //tint = MaterialTheme.colorScheme.secondary,
+            tint = tint,
+            contentDescription = stringResource(R.string.insert_article),
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -162,20 +184,26 @@ private fun OrderDetailsEditButton(
  * Composable that displays a order business name and address.
  *
  * @param description is the resource ID for the string of the order description
- * @param id is the Int that represents the order id
+ * @param orderId is the Int that represents the order id
  * @param modifier modifiers to set to this composable
  */
 
 @Composable
 fun OrderDescriptionAndId(
-    id: Int,
-    insertDate: String,
-    deliveryType: Int,
+    orderId: Int,
+    insertDate: String?,
+    deliveryState: Int?,
     businessName: String?,
     description: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showDeliveryDialog: MutableState<Boolean>,
+    modifiedOrderId: MutableState<Int>
 ) {
-    Column {
+    val deliveryStateObj = DeliveryStates.deliveryStates.find { it.state == deliveryState }
+
+    Column(
+        modifier = Modifier
+    ) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -187,7 +215,7 @@ fun OrderDescriptionAndId(
             )
 
             Text(
-                text = id.toString(),
+                text = orderId.toString(),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -200,7 +228,7 @@ fun OrderDescriptionAndId(
             )
 
             Text(
-                text = insertDate,
+                text = insertDate ?: "",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -208,39 +236,24 @@ fun OrderDescriptionAndId(
 
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        //Setting the modifiedOrderId to the id of the order that was clicked
+                        //and showing the delivery dialog
+                        modifiedOrderId.value = orderId
+                        showDeliveryDialog.value = true
+                    }),
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.order_deliveryType),
                 style = MaterialTheme.typography.bodySmall,
             )
-
-            when (deliveryType) {
-                1 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value1),
-                    color = ColorRed,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                2 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value2),
-                    color = ColorGreen,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                3 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value3),
-                    //TODO(aggiungere colore appropriato per stato di consegna "caricato")
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                4 -> Text(
-                    text = stringResource(R.string.order_deliveryType_value4),
-                    color = ColorOrange,
+            deliveryStateObj?.let { state ->
+                Text(
+                    text = stringResource(state.nameState),
+                    color = state.color,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -263,8 +276,8 @@ fun OrderDescriptionAndId(
 
 /**
  * Composable that displays a order info
- * @param id is the Int that represents the order id
- * @param sku is the String that represents the order sku
+ * @param  is the Int that represents the order id
+ * @param  is the String that represents the order sku
  */
 @Composable
 fun OrderInfo(
@@ -324,7 +337,7 @@ fun OrderInfo(
             )
         }
 
-        if(carrierName != ""){
+        if (carrierName != "") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -363,6 +376,7 @@ fun OrderInfo(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun OrderCardPreview() {
@@ -403,11 +417,16 @@ fun OrderCardPreview() {
                 metadata = Metadata("etag"),
                 page = 0,
                 lastUpdated = System.currentTimeMillis()
-            ), modifier = Modifier, navController = NavController(LocalContext.current)
-        ) { _, _ -> }
+            ),
+            modifier = Modifier,
+            navController = NavController(LocalContext.current),
+            navigateToOrderDetails = { _, _ -> },
+            modifiedOrderId = remember { mutableIntStateOf(0) },
+            showDeliveryDialog = remember { mutableStateOf(false) }
+        )
     }
-
 }
+
 
 @Preview(apiLevel = 33)
 @Composable

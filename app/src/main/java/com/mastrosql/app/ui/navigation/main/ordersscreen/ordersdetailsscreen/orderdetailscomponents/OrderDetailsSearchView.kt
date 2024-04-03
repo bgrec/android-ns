@@ -2,7 +2,6 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
@@ -10,24 +9,21 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -39,24 +35,23 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
 
     var isEditing by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
-    
-    TextField(
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(
         value = state.value,
         onValueChange = { value ->
             state.value = value
         },
         //enabled = isEditing,
-        placeholder = {
+        label = {
             Text(
                 text = stringResource(R.string.article_description),
-                modifier = Modifier.padding(2.dp)
             )
         },
         modifier = Modifier
@@ -65,8 +60,7 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
             .focusable()
             .onFocusChanged { focusState ->
                 isEditing = focusState.isFocused
-            }
-            .navigationBarsPadding(),
+            },
 
         textStyle = TextStyle.Default,
         visualTransformation = VisualTransformation.None,
@@ -86,18 +80,14 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
                     onClick = {
                         state.value =
                             TextFieldValue("") // Remove text from TextField when you press the 'X' icon
-                        keyboardController?.hide() // Hide the keyboard
-                        focusRequester.freeFocus() // Remove focus from the TextField
+                        focusManager.clearFocus() // Remove focus from the TextField
                         isEditing = false // Change the state to not editing
 
                     }
                 ) {
                     Icon(
                         Icons.Default.Close,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(15.dp)
-                            .size(24.dp)
+                        contentDescription = ""
                     )
                 }
             }
@@ -108,8 +98,7 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
-                keyboardController?.hide()
-                focusRequester.freeFocus()
+                focusManager.clearFocus()
                 isEditing = false
             }
         )

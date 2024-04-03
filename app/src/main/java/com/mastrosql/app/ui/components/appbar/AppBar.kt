@@ -3,6 +3,7 @@ package com.mastrosql.app.ui.components.appbar
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,13 +22,16 @@ fun AppBar(
     navigationIcon: (@Composable () -> Unit)? = null,
     @StringRes title: Int? = null,
     appBarActions: List<AppBarAction>? = null,
-    showDrawerIconButton: Boolean = true
+    showDrawerIconButton: Boolean = true,
+    backNavigationAction: (() -> Unit)? = null
 ) {
+
     CenterAlignedTopAppBar(
         // or TopAppBar
         title = {
             Text(
-                text = title?.let { stringResource(id = it) } ?: stringResource(id = R.string.app_name),
+                text = title?.let { stringResource(id = it) }
+                    ?: stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.titleMedium
             )
         },
@@ -39,7 +43,10 @@ fun AppBar(
             }
         },
         navigationIcon = {
-            if (drawerState != null && navigationIcon == null && showDrawerIconButton) {
+            if (backNavigationAction != null && backNavigationAction != {}) {
+                // Check if back navigation action is provided and not an empty lambda
+                BackNavigationIcon(backNavigationAction)
+            } else if (drawerState != null && navigationIcon == null && showDrawerIconButton) {
                 DrawerIcon(drawerState = drawerState)
             } else {
                 navigationIcon?.invoke()
@@ -49,7 +56,7 @@ fun AppBar(
 }
 
 @Composable
-private fun DrawerIcon(drawerState: DrawerState) {
+fun DrawerIcon(drawerState: DrawerState) {
     val coroutineScope = rememberCoroutineScope()
     IconButton(onClick = {
         coroutineScope.launch {
@@ -60,6 +67,17 @@ private fun DrawerIcon(drawerState: DrawerState) {
             Icons.Rounded.Menu,
             tint = MaterialTheme.colorScheme.onBackground,
             contentDescription = stringResource(id = R.string.drawer_menu_description)
+        )
+    }
+}
+
+@Composable
+private fun BackNavigationIcon(backNavigationAction: () -> Unit) {
+    IconButton(onClick = backNavigationAction) { // Execute the back navigation action
+        Icon(
+            Icons.AutoMirrored.Filled.ArrowBack,
+            tint = MaterialTheme.colorScheme.onBackground,
+            contentDescription = stringResource(id = R.string.back_button)
         )
     }
 }

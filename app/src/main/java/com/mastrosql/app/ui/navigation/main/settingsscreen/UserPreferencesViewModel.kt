@@ -1,10 +1,11 @@
-package com.mastrosql.app.ui.navigation
+package com.mastrosql.app.ui.navigation.main.settingsscreen
 
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
@@ -15,9 +16,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.net.URL
 import java.util.EnumMap
 
 class UserPreferencesViewModel(
@@ -70,40 +73,6 @@ class UserPreferencesViewModel(
         }
     }
 
-    fun setUserIsOnboarded() {
-        viewModelScope.launch {
-            userPreferencesRepository.saveOnBoardingCompleted(true)
-        }
-    }
-
-    // Function to set user not onboarded
-    fun setUserIsNotOnboarded() {
-        viewModelScope.launch {
-            userPreferencesRepository.saveOnBoardingCompleted(false)
-        }
-    }
-
-    /*
-    // UI states access for various [DessertReleaseUiState]
-    val isLinearLayoutUiState: StateFlow<DessertReleaseUiState> =
-        userPreferencesRepository.isLinearLayout.map { isLinearLayout ->
-            DessertReleaseUiState(isLinearLayout)
-        }.stateIn(
-            scope = viewModelScope,
-            // Flow is set to emits value for when app is on the foreground
-            // 5 seconds stop delay is added to ensure it flows continuously
-            // for cases such as configuration change
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = DessertReleaseUiState()
-        )
-
-     */
-
-
-    /*
-     * [selectLayout] change the layout and icons accordingly and
-     * save the selection in DataStore through [userPreferencesRepository]
-     */
     fun selectLayout(isLinearLayout: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveLayoutPreference(isLinearLayout)
@@ -120,7 +89,7 @@ class UserPreferencesViewModel(
         }
     }
 
-    fun loginCompleted(isLoggedIn: Boolean) {
+    private fun loginCompleted(isLoggedIn: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveLoggedIn(isLoggedIn)
         }
@@ -128,7 +97,20 @@ class UserPreferencesViewModel(
 
     fun setBaseUrl(baseUrl: String) {
         viewModelScope.launch {
-            userPreferencesRepository.saveBaseUrl(baseUrl)
+            if (try {
+                    URL(baseUrl).toURI()
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            ) {
+
+                if (baseUrl.endsWith("/")) {
+                    userPreferencesRepository.saveBaseUrl(baseUrl)
+                } else {
+                    userPreferencesRepository.saveBaseUrl("$baseUrl/")
+                }
+            }
         }
     }
 
@@ -142,7 +124,12 @@ class UserPreferencesViewModel(
                 }
             }
             loginCompleted(false)
+
             //onBoardingCompleted(false)
+
+            // Logout from the app webserver
+            userPreferencesRepository.logoutFromServer()
+            SessionManager.clearSession()
         }
     }
 
@@ -154,15 +141,37 @@ class UserPreferencesViewModel(
             try {
                 // Perform a test API call using the repository's service
                 val response = userPreferencesRepository.testApiCall()
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
 
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> showToast(context, "Collegamento riuscito ${response.code()}")
+
+                        401 -> showToast(
+                            context,
+                            "Collegamento riuscito, non autorizzato ${response.code()}"
+                        )
+
                         404 -> showToast(
                             context,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
+                            "Collegamento riuscito, api non trovata ${response.code()}"
                         )
+
+                        500 -> {
+                            showToast(
+                                context,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
+
+                        503 -> {
+                            showToast(
+                                context,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
 
                         else -> showToast(context, "Errore api: ${response.code()}")
                     }
@@ -181,6 +190,11 @@ class UserPreferencesViewModel(
                 showToast(context, "An unexpected error occurred: ${e.message}")
             }
         }
+    }
+
+    private fun parseErrorMessage(errorBody: String?): String {
+        val jsonError = JSONObject(errorBody ?: "null")
+        return jsonError.optString("message")
     }
 
     private fun showToast(context: Context, message: String) {

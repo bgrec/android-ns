@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1b0813a1fb170a18f3f05cbbdbf696a9",
+    "identityHash": "07cffdec6445e21243a35d05579d153d",
     "entities": [
       {
         "tableName": "items",
@@ -752,7 +752,7 @@
       },
       {
         "tableName": "order_details",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `orderRow` INTEGER NOT NULL, `confirmed` INTEGER NOT NULL, `articleId` INTEGER NOT NULL, `sku` TEXT NOT NULL, `vendorSku` TEXT NOT NULL, `description` TEXT NOT NULL, `completeDescription` TEXT NOT NULL, `quantity` REAL NOT NULL, `tmpQuantity` REAL NOT NULL, `returnedQuantity` REAL NOT NULL, `weight` REAL NOT NULL, `cost` TEXT NOT NULL, `price` TEXT NOT NULL, `vat` TEXT NOT NULL, `vatValue` REAL NOT NULL, `discount` REAL NOT NULL, `discount1` REAL NOT NULL, `discount2` REAL NOT NULL, `discount3` REAL NOT NULL, `catalogPrice` REAL NOT NULL, `measureUnit` TEXT NOT NULL, `rowType` INTEGER NOT NULL, `packSize` TEXT NOT NULL, `orderedQuantity` REAL NOT NULL, `shippedQuantity` REAL NOT NULL, `batch` TEXT NOT NULL, `expirationDate` TEXT NOT NULL, `metadata` TEXT, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `orderRow` INTEGER NOT NULL, `confirmed` INTEGER NOT NULL, `articleId` INTEGER NOT NULL, `sku` TEXT NOT NULL, `vendorSku` TEXT NOT NULL, `description` TEXT NOT NULL, `completeDescription` TEXT NOT NULL, `quantity` REAL NOT NULL, `tmpQuantity` REAL NOT NULL, `returnedQuantity` REAL NOT NULL, `weight` REAL NOT NULL, `cost` TEXT NOT NULL, `price` TEXT NOT NULL, `vat` TEXT NOT NULL, `vatValue` REAL NOT NULL, `discount` REAL NOT NULL, `discount1` REAL NOT NULL, `discount2` REAL NOT NULL, `discount3` REAL NOT NULL, `catalogPrice` REAL NOT NULL, `measureUnit` TEXT NOT NULL, `rowType` INTEGER NOT NULL, `packSize` TEXT NOT NULL, `orderedQuantity` REAL NOT NULL, `shippedQuantity` REAL NOT NULL, `batch` TEXT, `expirationDate` TEXT, `metadata` TEXT, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -920,13 +920,13 @@
             "fieldPath": "batch",
             "columnName": "batch",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "expirationDate",
             "columnName": "expirationDate",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "metadata",
@@ -1010,7 +1010,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1b0813a1fb170a18f3f05cbbdbf696a9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '07cffdec6445e21243a35d05579d153d')"
     ]
   }
 }

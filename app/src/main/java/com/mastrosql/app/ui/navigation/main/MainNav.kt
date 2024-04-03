@@ -1,5 +1,7 @@
 package com.mastrosql.app.ui.navigation.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -18,12 +20,13 @@ import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.NewHomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
 
     navigation(
@@ -53,11 +56,11 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         *  Orders Screen navigation graph with nested navigation
          */
         navigation(
-            startDestination = OrdersResultDestination.route,
+            startDestination = OrdersDestination.route,
             route = MainNavOption.OrdersScreen.name
             //route = OrdersResultDestination.route
         ) {
-            composable(route = OrdersResultDestination.route) {
+            composable(route = OrdersDestination.route) {
                 OrdersScreen(
                     navigateToOrderEntry = {},// { navController.navigate(OrderEntryDestination.route) },
                     navigateToOrderDetails = { orderId, orderDescription ->
@@ -80,7 +83,20 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                 )
             ) {
                 OrderDetailsScreen(
-                    navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                    //navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                    navigateToNewItem = { orderId ->
+                        //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "shouldRefresh",
+                            true
+                        )
+                        //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
+                        navController
+                            .navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
+                                //TODO verify if launchSigleTop is  needed
+                                launchSingleTop = true
+                            }
+                    },
                     navigateBack = {
                         navController.navigateUp()
                     },
@@ -88,6 +104,23 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                     drawerState = drawerState
                 )
 
+            }
+
+            // Composable for navigating to the ArticleScreen with parameters
+            composable(
+                route = "${MainNavOption.ArticlesScreen.name}/?documentType={documentType}?id={documentId}",
+                arguments = listOf(
+                    navArgument("documentType") { type = NavType.StringType },
+                    navArgument("documentId") { type = NavType.IntType },
+                )
+            ) { backStackEntry ->
+                val documentType = backStackEntry.arguments?.getString("documentType")
+                val orderId = backStackEntry.arguments?.getInt("documentId") ?: 0
+                // You can pass documentType and orderId to ArticlesScreen
+                ArticlesScreen(
+                    drawerState = drawerState,
+                    navController = navController
+                )
             }
 
             /*    NavHost(

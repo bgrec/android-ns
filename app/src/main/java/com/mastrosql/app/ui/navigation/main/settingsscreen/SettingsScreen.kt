@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.settingsscreen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -136,7 +136,12 @@ fun SettingsScreen(
                     value = urlState,
                     singleLine = false,
                     onValueChange = { newValue -> urlState = newValue },
-                    leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(R.drawable.bring_your_own_ip),
+                            null
+                        )
+                    },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
@@ -164,19 +169,27 @@ fun SettingsScreen(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showDialog = true }) {
-                    Text(stringResource(R.string.dialog_button))
+                    Text(stringResource(R.string.dialog_button_settings))
                 }
             }
 
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
-                    title = { Text(stringResource(R.string.dialog_button)) },
+                    title = { Text(stringResource(R.string.dialog_button_settings)) },
                     text = {
                         LazyColumn(modifier = Modifier.wrapContentSize()) {
                             items(MainNavOption.entries.toList()) {
                                 if ((stringResMap[it] != null)) {
                                     Row(
+                                        modifier = Modifier.clickable(
+                                            onClick = {
+                                                val isChecked = !(activeButtonsUiState[it] ?: false)
+                                                val updatedState = EnumMap(activeButtonsUiState)
+                                                updatedState[it] = isChecked
+                                                viewModel.updateActiveButtons(updatedState)
+                                            }
+                                        ),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
@@ -233,6 +246,22 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.testRetrofitConnection(context) }
                 ) {
+                    Text(text = stringResource(R.string.private_webserver))
+                }
+            }
+
+            Spacer(modifier = Modifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.testRetrofitConnection(context) }
+                ) {
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
             }
@@ -240,7 +269,7 @@ fun SettingsScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 34)
 @Composable
 fun SettingsScreenPreview() {
     MastroAndroidTheme {

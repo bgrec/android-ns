@@ -32,7 +32,9 @@ data class UserPreferences(
     val username: String = "",
     val userType: String = "",
     val userErpCode: Comparable<*> = 0,
-    val appVersion: String = ""
+    val appVersion: String = "",
+    val sessionToken: String = ""
+
 )
 
 object UserPreferencesKeys {
@@ -46,6 +48,7 @@ object UserPreferencesKeys {
     val USER_TYPE = stringPreferencesKey("user_type")
     val USER_ERP_CODE = stringPreferencesKey("user_erp_code")
     val APP_VERSION = stringPreferencesKey("app_version")
+    val SESSION_KEY = stringPreferencesKey("session_key")
 }
 
 /**
@@ -102,6 +105,7 @@ class UserPreferencesRepository @Inject constructor(
         val userType = preferences[UserPreferencesKeys.USER_TYPE] ?: ""
         val userErpCode = preferences[UserPreferencesKeys.USER_ERP_CODE] ?: 0
         val appVersion = preferences[UserPreferencesKeys.APP_VERSION] ?: ""
+        val sessionToken = preferences[UserPreferencesKeys.SESSION_KEY] ?: ""
 
         return UserPreferences(
             searchValue,
@@ -113,7 +117,8 @@ class UserPreferencesRepository @Inject constructor(
             username,
             userType,
             userErpCode,
-            appVersion
+            appVersion,
+            sessionToken
         )
     }
 
@@ -130,6 +135,7 @@ class UserPreferencesRepository @Inject constructor(
             preferences[UserPreferencesKeys.USER_TYPE] = userPreferences.userType
             preferences[UserPreferencesKeys.USER_ERP_CODE] = userPreferences.userErpCode.toString()
             preferences[UserPreferencesKeys.APP_VERSION] = userPreferences.appVersion
+            preferences[UserPreferencesKeys.SESSION_KEY] = userPreferences.sessionToken
 
         }
     }
@@ -272,5 +278,37 @@ class UserPreferencesRepository @Inject constructor(
 
     suspend fun testApiCall(): Response<JsonObject> {
         return mastroAndroidApiService.testApiCall()
+    }
+
+    suspend fun saveSessionToken(sessionToken: String) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.SESSION_KEY] = sessionToken
+        }
+    }
+
+    fun getSessionToken(): Flow<String> {
+        return userPreferencesFlow.map { it.sessionToken }
+    }
+
+    suspend fun saveLoggedIn(
+        isLoggedIn: Boolean,
+        username: String,
+        userType: String,
+        userErpCode: Comparable<*>,
+        sessionToken: String
+    ) {
+        dataStore.edit { preferences ->
+            // Save login status and user details
+            preferences[UserPreferencesKeys.IS_LOGGED_IN] = isLoggedIn
+            preferences[UserPreferencesKeys.USERNAME] = username
+            preferences[UserPreferencesKeys.USER_TYPE] = userType
+            preferences[UserPreferencesKeys.USER_ERP_CODE] = userErpCode.toString()
+            // Save session token
+            preferences[UserPreferencesKeys.SESSION_KEY] = sessionToken
+        }
+    }
+
+    suspend fun logoutFromServer(): Response<JsonObject> {
+        return mastroAndroidApiService.logout()
     }
 }

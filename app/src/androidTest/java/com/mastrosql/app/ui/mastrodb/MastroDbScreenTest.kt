@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * UI tests for [MastroDbScreen].
+ * UI tests for .
  */
 @RunWith(AndroidJUnit4::class)
 class MastroDbScreenTest {

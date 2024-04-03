@@ -42,7 +42,7 @@
 
     <string name="address">Indirizzo</string>
     <string name="customer_id">"Codice: "</string>
-    <string name="new_order">Crea ordine</string>
+    <string name="insert_article">Inserisci articolo</string>
     <string name="vat">P.IVA: %1$s</string>
     <string name="costumer_vat">"P.IVA: "</string>
     <string name="businessName">Ragione sociale</string>
@@ -122,7 +122,7 @@
     <string name="clients_orders_bar_title">Ordini clienti</string>
     <string name="drawer_orders">Ordini</string>
     <string name="login">Accedi</string>
-    <string name="orders_description">Descrizione ordine</string>
+    <string name="orders_description">Descrizione ordine o ragione sociale</string>
     <string name="edit_order_details_title">Modifica righe ordine</string>
     <string name="edit_order_details_entry_title">Modifica ordine</string>
 
@@ -133,7 +133,7 @@
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="label_url">Inserire URL</string>
-    <string name="dialog_button">Gestisci sezioni</string>
+    <string name="dialog_button_settings">Gestisci sezioni</string>
     <string name="dialog_title">Sezioni</string>
     <string name="close_button">Chiudi</string>
 
@@ -182,10 +182,10 @@
     <string name="order_deliveryDate">"Data di consegna: "</string>
     <string name="order_notes">Note:</string>
     <string name="order_deliveryType">"Stato Consegna: "</string>
-    <string name="order_deliveryType_value1">in preparazione</string>
-    <string name="order_deliveryType_value2">pronto</string>
-    <string name="order_deliveryType_value3">caricato</string>
-    <string name="order_deliveryType_value4">da confermare</string>
+    <string name="order_deliveryState_value0">In preparazione</string>
+    <string name="order_deliveryState_value1">Pronto</string>
+    <string name="order_deliveryState_value2">Caricato</string>
+    <string name="order_deliveryState_value3">Da confermare</string>
     <string name="order_destinationName">"Destinazione:"</string>
     <string name="order_carrierName">"Vettore: "</string>
     <string name="order_detail_batch">"Lotto: "</string>
@@ -197,10 +197,21 @@
     <string name="order_detail_expirationDate">"Scadenza: "</string>
     <string name="order_detail_completeDescription">"Note: "</string>
 
-    <string name="test_retrofit_button">"Test conessione "</string>
-    <string name="open_scanner">Apri lo scanner</string>
+    <string name="test_retrofit_button">"Test connessione "</string>
+    <string name="open_scanner">Apri il scanner</string>
     <string name="hide_scanner">Nascondi il scanner</string>
     <string name="barcode">barcode</string>
+    <string name="order_details_dialog_edit_title">Modifica riga ordine</string>
+    <string name="confirm_button">Conferma</string>
+    <string name="dismiss_button">Annulla</string>
+    <string name="order_details_dialog_edit_batch">Lotto</string>
+    <string name="order_details_dialog_edit_Quantity">Quantità</string>
+    <string name="order_details_dialog_edit_expirationDate">Data scadenza</string>
+    <string name="deleted_item_snackbar_text">"Riga dell'ordine rimossa"</string>
+    <string name="add_new_order">Aggiungi ordine</string>
+    <string name="order_dialog_delivery_title">Modifica stato di consegna</string>
+    <string name="order_details_dialog_edit_title_row">Riga n°%1$d, corto: %2$d, codice: %3$s</string>
+    <string name="private_webserver">Server privato, non protetto</string>
 
 
 </resources>

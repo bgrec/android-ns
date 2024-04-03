@@ -1,13 +1,17 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,121 +23,159 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.ColorLightBlue
+import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-import com.mastrosql.app.ui.theme.Purple40
+import com.mastrosql.app.utils.DateHelper
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun OrderDetailsItem(
+fun OrderDetailsCard(
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    navController: NavController,
-    navigateToEditItem: (Int) -> Unit,
-    onRemove: (OrderDetailsItem) -> Boolean
+    onRemove: (Int) -> Unit,
+    showEditDialog: MutableState<Boolean>,
+    snackbarHostState: SnackbarHostState,
+    listState: LazyListState,
+    modifiedItemId: MutableIntState?,
+    onDuplicate: (Int) -> Unit,
 ) {
+
     val visibleState = remember { MutableTransitionState(true) }
-    val context = LocalContext.current
 
-    AnimatedVisibility(
-        visibleState = visibleState, exit = fadeOut(spring())
+    Surface(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        SwipeToDismissItem(
+        AnimatedVisibility(
             visibleState = visibleState,
-            orderDetailsItem = orderDetailsItem,
-            modifier = modifier,
-            navController = navController,
-            navigateToEditItem = navigateToEditItem,
-            onRemove = onRemove
-        )
+            enter = expandIn(animationSpec = tween(700)),
+            exit = shrinkOut(animationSpec = tween(700)) + fadeOut(),
+        ) {
+            SwipeToDismissItem(
+                visibleState = visibleState,
+                orderDetailsItem = orderDetailsItem,
+                modifier = modifier,
+                showEditDialog = showEditDialog,
+                modifiedItemId = modifiedItemId,
+                onDuplicate = onDuplicate,
+            )
+        }
     }
-    if (!visibleState.targetState) {
-        ShowToast(context = context, text = "item removed")
 
+    val scope = rememberCoroutineScope()
+
+    val messageText = stringResource(R.string.deleted_item_snackbar_text)
+    val dismissText = stringResource(R.string.dismiss_button)
+
+    if (!visibleState.targetState && visibleState.isIdle) {
+        LaunchedEffect(visibleState.targetState) {
+            scope.launch {
+                val result = snackbarHostState.showSnackbar(
+                    message = messageText,
+                    actionLabel = dismissText,
+                    duration = SnackbarDuration.Short
+                )
+
+                when (result) {
+                    SnackbarResult.ActionPerformed -> {
+                        visibleState.targetState = true
+                        if (listState.firstVisibleItemScrollOffset == 0) {
+                            listState.animateScrollToItem(listState.firstVisibleItemScrollOffset)
+                        }
+                    }
+
+                    SnackbarResult.Dismissed -> {
+                        // Ensure that removal only happens if the row is not visible
+                        if (!visibleState.currentState) {
+                            onRemove(orderDetailsItem.id)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
-/*
-// Call the SwipeToDismissItem function with an implementation of onRemove
-SwipeToDismissItem(
-    visibleState = visibleState,
-    orderDetailsItem = orderDetailsItem,
-    modifier = modifier,
-    navController = navController,
-    navigateToEditItem = navigateToEditItem,
-    onRemove = { item ->
-        // Implement the logic to remove the item
-        // If the item is successfully removed, return true, otherwise return false
-        // For example:
-        // val removedSuccessfully = removeItemFromServer(item)
-        // removedSuccessfully
-    }
-)
- */
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissItem(
     visibleState: MutableTransitionState<Boolean>,
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    navController: NavController,
-    navigateToEditItem: (Int) -> Unit,
-    onRemove: (OrderDetailsItem) -> Boolean
+    showEditDialog: MutableState<Boolean>,
+    modifiedItemId: MutableIntState?,
+    onDuplicate: (Int) -> Unit,
 ) {
-
     val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
-        /*
-        Only for end to start action
-         */
-        if (it == SwipeToDismissBoxValue.EndToStart) {
-            // Call onRemove and set the visible state based on its result
-            val shouldRemove = onRemove(orderDetailsItem)
-            visibleState.targetState = !shouldRemove
-            // Return true only if onRemove returns true
-            shouldRemove
-        } else false
-    }, positionalThreshold = { distance -> distance * 0.5f })
 
-    SwipeToDismissBox(state = dismissState,
+        //Swipe actions
+        when (it) {
+            SwipeToDismissBoxValue.EndToStart -> {
+                visibleState.targetState = false
+                true
+            }
+
+            SwipeToDismissBoxValue.StartToEnd -> {
+                onDuplicate(orderDetailsItem.id)
+                false
+            }
+
+            else -> false
+        }
+
+    }, positionalThreshold = { distance -> distance * 0.4f })
+
+    SwipeToDismissBox(
+        state = dismissState,
         modifier = Modifier,
         enableDismissFromEndToStart = true,
         enableDismissFromStartToEnd = true,
@@ -141,14 +183,13 @@ private fun SwipeToDismissItem(
             SwipeToDismissBackground(
                 dismissState = dismissState,
             )
-
-
-        }, content = {
+        },
+        content = {
             OrderDetailsItemContent(
-                orderDetail = orderDetailsItem,
+                orderDetailsItem = orderDetailsItem,
                 modifier = modifier,
-                navController = navController,
-                navigateToEditItem = navigateToEditItem
+                showEditDialog = showEditDialog,
+                modifiedItemId = modifiedItemId
             )
         })
 }
@@ -162,48 +203,50 @@ private fun SwipeToDismissBackground(
     val color by animateColorAsState(
         when (dismissState.targetValue) {
             SwipeToDismissBoxValue.Settled -> Color.Transparent//colorScheme.background
-            SwipeToDismissBoxValue.StartToEnd -> Purple40
+            SwipeToDismissBoxValue.StartToEnd -> ColorOrange
             SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose
         }, label = "swipe_color"
     )
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .background(color)
-            .padding(16.dp, 2.dp)
-            .fillMaxHeight(),
+            .background(color),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         if (direction == SwipeToDismissBoxValue.StartToEnd) {
             Icon(
-                imageVector = Icons.Default.Edit,
+                imageVector = Icons.Default.EditNote,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(id = R.string.delete),
-                modifier = Modifier.fillMaxHeight()
+                contentDescription = stringResource(id = R.string.order_details_edit),
+                modifier = Modifier
+                    .weight(1f)
+                    .size(35.dp)
             )
         }
 
-        Spacer(Modifier)
+        Spacer(Modifier.weight(5f))
 
         if (direction == SwipeToDismissBoxValue.EndToStart) {
             Icon(
                 Icons.Default.Delete,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(id = R.string.order_details_edit),
-                modifier = Modifier.fillMaxHeight()
+                contentDescription = stringResource(id = R.string.delete),
+                modifier = Modifier
+                    .weight(1f)
+                    .size(28.dp)
             )
         }
     }
-
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun OrderDetailsItemContent(
-    orderDetail: OrderDetailsItem,
+    orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    navController: NavController,
-    navigateToEditItem: (Int) -> Unit,
+    showEditDialog: MutableState<Boolean>,
+    modifiedItemId: MutableIntState?
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -220,30 +263,24 @@ private fun OrderDetailsItemContent(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
                         stiffness = Spring.StiffnessLow
                     )
-                ),
-            verticalArrangement = Arrangement.SpaceBetween
+                ), verticalArrangement = Arrangement.SpaceBetween
         ) {
-
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OrderDetailDescriptionAndId(
-                        articleId = orderDetail.articleId,
-                        sku = orderDetail.sku,
-                        description = orderDetail.description
+                        articleId = orderDetailsItem.articleId ?: 0,
+                        sku = orderDetailsItem.sku,
+                        description = orderDetailsItem.description
                     )
                 }
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     modifier = Modifier.widthIn(60.dp),
@@ -256,19 +293,18 @@ private fun OrderDetailsItemContent(
                 }
                 //Spacer(Modifier.weight(0.5f))
                 Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.Start
+                    modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     OrderDetailDescriptionAndId2(
-                        batch = orderDetail.batch,
-                        expirationDate = orderDetail.expirationDate,
-                        quantity = orderDetail.quantity,
-                        orderedQuantity = orderDetail.orderedQuantity,
-                        shippedQuantity = orderDetail.shippedQuantity
+                        batch = orderDetailsItem.batch,
+                        expirationDate = DateHelper.formatDateToDisplay(orderDetailsItem.expirationDate),
+                        quantity = orderDetailsItem.quantity ?: 0.0,
+                        orderedQuantity = orderDetailsItem.orderedQuantity ?: 0.0,
+                        shippedQuantity = orderDetailsItem.shippedQuantity ?: 0.0
                     )
                     if (expanded) {
                         OrderDetailInfo(
-                            completeDescription = orderDetail.completeDescription
+                            completeDescription = orderDetailsItem.completeDescription
                         )
                     }
                 }
@@ -278,11 +314,15 @@ private fun OrderDetailsItemContent(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
+
                     ItemEditButton(
+                        modifiedItemId = modifiedItemId?.intValue,
+                        orderDetailsItemId = orderDetailsItem.id,
                         onClick = {
-                            //Id = orderDetail.id,
-                            // onEditClick = navigateToEditItem
+                            showEditDialog.value = true
+                            modifiedItemId?.intValue = orderDetailsItem.id
                         },
+                        modifier = modifier
                     )
                 }
             }
@@ -317,14 +357,27 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
-    onClick: () -> Unit, modifier: Modifier = Modifier
+    modifiedItemId: Int?,
+    orderDetailsItemId: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    IconButton(
-        onClick = onClick
-    ) {
+    val defaultTint = MaterialTheme.colorScheme.secondary
+    val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
+
+    LaunchedEffect(modifiedItemId, orderDetailsItemId) {
+        // Update the tint color based on the comparison between modifiedItemId and itemId
+        val tint = if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint
+        // Update the state of the tint color
+        itemEditButtonTint.value = tint
+    }
+
+    IconButton(onClick = {
+        onClick()
+    }) {
         Icon(
             Icons.Default.Edit,
-            tint = MaterialTheme.colorScheme.secondary,
+            tint = itemEditButtonTint.value,
             contentDescription = stringResource(R.string.edit_button_order_item),
             modifier = Modifier.fillMaxSize()
         )
@@ -332,25 +385,13 @@ private fun ItemEditButton(
 }
 
 
-/**
- * Composable that displays a order business name and address.
- *
- * @param description is the resource ID for the string of the order description
- * @param id is the Int that represents the order id
- * @param modifier modifiers to set to this composable
- */
-
 @Composable
 fun OrderDetailDescriptionAndId(
-    articleId: Int,
-    sku: String?,
-    description: String?,
-    modifier: Modifier = Modifier
+    articleId: Int, sku: String?, description: String?, modifier: Modifier = Modifier
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
 
             Text(
@@ -379,17 +420,13 @@ fun OrderDetailDescriptionAndId(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
 
             Text(
-                text = description?.take(50) ?: "",
-                style = MaterialTheme.typography.titleMedium
+                text = description?.take(50) ?: "", style = MaterialTheme.typography.titleMedium
             )
-
         }
-
     }
 }
 
@@ -407,49 +444,54 @@ fun OrderDetailDescriptionAndId2(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Text(
-                text = stringResource(R.string.order_detail_batch),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            if (batch != null) {
-                Text(
-                    text = batch,
-                    color = ColorLightBlue,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+            Column(
+                Modifier.weight(0.45f)
+            ) {
+                Row {
+                    Text(
+                        text = stringResource(R.string.order_detail_batch),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    if (batch != null) {
+                        Text(
+                            text = batch,
+                            color = ColorLightBlue,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
             }
 
-            Spacer(Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(0.1f))
 
-            Text(
-                text = stringResource(R.string.order_detail_expirationDate),
-                style = MaterialTheme.typography.bodyLarge,
-            )
+            Column(
+                Modifier.weight(0.45f)
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.order_detail_expirationDate),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
 
-            if (expirationDate != null) {
-                Text(
-                    text = expirationDate,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                    if (expirationDate != null) {
+                        Text(
+                            text = expirationDate,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
             }
         }
-
+        Spacer(modifier = Modifier.height(4.dp))
         QuantityTable(quantity, orderedQuantity, shippedQuantity)
     }
 }
 
-/**
- * Composable that displays a order info
- * @param id is the Int that represents the order id
- * @param sku is the String that represents the order sku
- */
 @Composable
 fun OrderDetailInfo(
-    completeDescription: String?,
-    modifier: Modifier = Modifier
-
+    completeDescription: String?, modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.padding(
@@ -458,16 +500,12 @@ fun OrderDetailInfo(
     ) {
         if (completeDescription != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
             ) {
-
                 Text(
                     text = stringResource(R.string.order_detail_completeDescription),
                     style = MaterialTheme.typography.bodySmall,
                 )
-
-
                 Text(
                     text = completeDescription,
                     fontWeight = FontWeight.Bold,
@@ -481,9 +519,7 @@ fun OrderDetailInfo(
 
 @Composable
 fun QuantityTable(
-    quantity: Double,
-    orderedQuantity: Double,
-    shippedQuantity: Double
+    quantity: Double, orderedQuantity: Double, shippedQuantity: Double
 ) {
     Column(
         modifier = Modifier
@@ -497,27 +533,23 @@ fun QuantityTable(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
             Row(
                 Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Divider(
+                VerticalDivider(
                     color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
                 QuantityText(
-                    stringResource(R.string.order_detail_quantity),
-                    false,
-                    Modifier.weight(1f)
+                    stringResource(R.string.order_detail_quantity), false, Modifier.weight(1f)
                 )
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -528,9 +560,8 @@ fun QuantityTable(
                     Modifier.weight(1f)
                 )
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
@@ -541,70 +572,61 @@ fun QuantityTable(
                     Modifier.weight(1f)
                 )
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
-
             }
 
-            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
 
             Row(
                 Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
 
                 QuantityText(quantity.toString(), true, Modifier.weight(1f))
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
 
                 QuantityText(orderedQuantity.toString(), true, Modifier.weight(1f))
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
 
                 QuantityText(shippedQuantity.toString(), true, Modifier.weight(1f))
 
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
+                VerticalDivider(
+                    color = Color.Black, modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
                 )
-
             }
-
-            Divider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
         }
     }
 }
 
 @Composable
 fun QuantityText(
-    text: String,
-    bold: Boolean = false,
-    modifier: Modifier
+    text: String, bold: Boolean = false, modifier: Modifier
 ) {
     Text(
         modifier = modifier,
@@ -614,7 +636,6 @@ fun QuantityText(
         textAlign = TextAlign.Center
     )
 }
-
 
 /*@Preview
 @Composable
@@ -664,13 +685,12 @@ fun OrderDetailCardPreview() {
 
 }*/
 
-@Preview(apiLevel = 33, showBackground = true)
+@Preview(apiLevel = 34, showBackground = true)
 @Composable
 fun OrderDetailInfoPreview() {
     MastroAndroidTheme {
         OrderDetailInfo(
-            completeDescription = "completeDescription",
-            modifier = Modifier
+            completeDescription = "completeDescription", modifier = Modifier
         )
     }
 }

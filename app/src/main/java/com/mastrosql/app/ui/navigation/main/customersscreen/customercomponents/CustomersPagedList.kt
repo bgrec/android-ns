@@ -54,7 +54,7 @@ fun CustomersPagedList(
     drawerState: DrawerState
 ) {
     val refreshScope = rememberCoroutineScope()
-    var refreshing by remember { mutableStateOf(false) }
+    val refreshing by remember { mutableStateOf(false) }
 
     val loadState: CombinedLoadStates = customers.loadState
 

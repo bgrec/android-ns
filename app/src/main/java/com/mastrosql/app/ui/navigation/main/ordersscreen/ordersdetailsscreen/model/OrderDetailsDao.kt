@@ -7,7 +7,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -21,7 +20,7 @@ interface OrderDetailsDao {
      * existing row into the database Room ignores the conflict.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     suspend fun insert(orderDetailsItem: OrderDetailsItem)
+    suspend fun insert(orderDetailsItem: OrderDetailsItem)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(orderDetailsItemList: List<OrderDetailsItem>)
@@ -36,7 +35,7 @@ interface OrderDetailsDao {
     suspend fun deleteAll()
 
     @Query("SELECT * from order_details WHERE id = :id")
-    fun getOrderDetailsItemById(id: Int): Flow<OrderDetails>
+    fun getOrderDetailsItemById(id: Int): Flow<OrderDetailsItem>
 
     @Query("SELECT * from order_details ORDER BY id ASC")
     fun getAllOrderDetailsDAO(): Flow<List<OrderDetailsItem>>

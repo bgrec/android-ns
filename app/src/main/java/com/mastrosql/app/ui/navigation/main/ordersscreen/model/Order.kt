@@ -21,34 +21,34 @@ data class Order(
 
     @PrimaryKey(autoGenerate = false)
     @SerializedName("NUME") val id: Int,
-    @SerializedName("CODI") val clientId: Int,
-    @SerializedName("ragSoc") val businessName: String,
-    @SerializedName("VIA") val street: String,
-    @SerializedName("CAP") val postalCode: String,
-    @SerializedName("CITTA") val city: String,
-    @SerializedName("PROV") val province: String,
-    @SerializedName("NAZIONE") val nation: String,
-    @SerializedName("DESTINA") val destinationId: Int,
-    @SerializedName("destinaDescri") val destinationName: String,
-    @SerializedName("DESCRI") val description: String,
-    @SerializedName("nLav") val sequence: Int,
-    @SerializedName("DATAI") val insertDate: String,
-    @SerializedName("AGENTE") val agent: String,
-    @SerializedName("TRASPO") val transportHandler: String,
-    @SerializedName("COLLI") val parcels: Int,
-    @SerializedName("vettNume") val carrierId: Int,
-    @SerializedName("VETTORE") val carrierName: String,
-    @SerializedName("PESO") val weight: Double,
-    @SerializedName("numeOrdi") val port: String,
-    @SerializedName("dataOrdi") val date: String,
-    @SerializedName("NOTE") val notes: String,
-    @SerializedName("dConsegna") val deliveryDate: String,
-    @SerializedName("TASSATIVA") val deliveryDeadline: Boolean,
-    @SerializedName("CONSEGNA") val deliveryType: Int,
-    @SerializedName("statoCons") val deliveryState: Int,
-    @SerializedName("URGENTE") val urgent: Boolean,
-    @SerializedName("PARZIALE") val partial: Int,
-    @SerializedName("NUMERO") val number: Int,
+    @SerializedName("CODI") val clientId: Int?,
+    @SerializedName("ragSoc") val businessName: String?,
+    @SerializedName("VIA") val street: String?,
+    @SerializedName("CAP") val postalCode: String?,
+    @SerializedName("CITTA") val city: String?,
+    @SerializedName("PROV") val province: String?,
+    @SerializedName("NAZIONE") val nation: String?,
+    @SerializedName("DESTINA") val destinationId: Int?,
+    @SerializedName("destinaDescri") val destinationName: String?,
+    @SerializedName("DESCRI") val description: String?,
+    @SerializedName("nLav") val sequence: Int?,
+    @SerializedName("DATAI") val insertDate: String?,
+    @SerializedName("AGENTE") val agent: String?,
+    @SerializedName("TRASPO") val transportHandler: String?,
+    @SerializedName("COLLI") val parcels: Int?,
+    @SerializedName("vettNume") val carrierId: Int?,
+    @SerializedName("VETTORE") val carrierName: String?,
+    @SerializedName("PESO") val weight: Double?,
+    @SerializedName("numeOrdi") val port: String?,
+    @SerializedName("dataOrdi") val date: String?,
+    @SerializedName("NOTE") val notes: String?,
+    @SerializedName("dConsegna") val deliveryDate: String?,
+    @SerializedName("TASSATIVA") val deliveryDeadline: Boolean?,
+    @SerializedName("CONSEGNA") val deliveryType: Int?,
+    @SerializedName("statoCons") val deliveryState: Int?,
+    @SerializedName("URGENTE") val urgent: Boolean?,
+    @SerializedName("PARZIALE") val partial: Int?,
+    @SerializedName("NUMERO") val number: Int?,
 
     @TypeConverters(OrderMetadataTypeConverter::class)
     @SerializedName("_metadata") val metadata: Metadata,
@@ -59,10 +59,9 @@ data class Order(
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
 ) {
-        val insertDate2: Date?
+    val insertDate2: Date?
         get() = SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(insertDate)
-    }
-
+}
 
 
 @Serializable
