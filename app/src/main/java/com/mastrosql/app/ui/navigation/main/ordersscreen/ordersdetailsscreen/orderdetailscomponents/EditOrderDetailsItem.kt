@@ -190,7 +190,7 @@ fun EditOrderDetailsItem(
                     ) {
                         Icon(
                             Icons.Default.RemoveCircle,
-                            contentDescription = "Scala la quantità",
+                            contentDescription = stringResource(R.string.decrease_quantity_by_one),
                             modifier = Modifier.fillMaxSize(),
                             tint = if (getOrderQuantity(orderDetailsItemState) <= 0)
                                 Color.Gray else MaterialTheme.colorScheme.primary
@@ -286,7 +286,7 @@ fun EditOrderDetailsItem(
                     }) {
                         Icon(
                             Icons.Default.AddCircle,
-                            contentDescription = "Scala la quantità",
+                            contentDescription = stringResource(R.string.increase_quantity_by_one),
                             modifier = Modifier.fillMaxSize(),
                             tint = MaterialTheme.colorScheme.primary
                         )

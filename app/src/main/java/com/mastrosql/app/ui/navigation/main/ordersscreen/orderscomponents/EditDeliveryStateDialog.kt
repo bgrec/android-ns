@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,9 +29,11 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Delive
 fun EditDeliveryStateDialog(
     showDeliveryDialog: MutableState<Boolean>,
     ordersUiState: OrdersUiState.Success,
-    selectedDeliveryState: MutableIntState,
     onUpdateDeliveryState: (Int, Int) -> Unit
 ) {
+
+    // MutableIntState to keep track of the selected delivery state
+    val selectedDeliveryState = remember { mutableIntStateOf(0) }
 
     // LaunchedEffect to set the initial value when the dialog is opened
     LaunchedEffect(showDeliveryDialog) {

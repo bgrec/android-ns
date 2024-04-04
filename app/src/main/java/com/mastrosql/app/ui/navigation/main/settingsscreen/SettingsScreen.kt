@@ -262,6 +262,22 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.testRetrofitConnection(context) }
                 ) {
+                    Text(text = stringResource(R.string.delete_permission_menu))
+                }
+            }
+
+            Spacer(modifier = Modifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.testRetrofitConnection(context) }
+                ) {
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
             }
