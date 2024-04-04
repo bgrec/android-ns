@@ -33,11 +33,6 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Orders
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
 
-object OrdersDestination : NavigationDestination {
-    override val route = "orders_list"
-    override val titleRes = R.string.clients_orders_bar_title
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

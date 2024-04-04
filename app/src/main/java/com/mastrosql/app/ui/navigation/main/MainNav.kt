@@ -20,8 +20,8 @@ import com.mastrosql.app.ui.navigation.main.homescreen.OldHomeScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen

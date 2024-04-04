@@ -155,24 +155,27 @@ private fun SwipeToDismissItem(
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
 
-        //Swipe actions
-        when (it) {
-            SwipeToDismissBoxValue.EndToStart -> {
-                visibleState.targetState = false
-                true
+            //Swipe actions
+            when (it) {
+                SwipeToDismissBoxValue.EndToStart -> {
+                    visibleState.targetState = false
+                    true
+                }
+
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    onDuplicate(orderDetailsItem.id)
+                    false
+                }
+
+                else -> false
             }
 
-            SwipeToDismissBoxValue.StartToEnd -> {
-                onDuplicate(orderDetailsItem.id)
-                false
-            }
+        },
+        positionalThreshold = { distance -> distance * 0.65f })
 
-            else -> false
-        }
-
-    }, positionalThreshold = { distance -> distance * 0.4f })
 
     SwipeToDismissBox(
         state = dismissState,
@@ -203,8 +206,9 @@ private fun SwipeToDismissBackground(
     val color by animateColorAsState(
         when (dismissState.targetValue) {
             SwipeToDismissBoxValue.Settled -> Color.Transparent//colorScheme.background
-            SwipeToDismissBoxValue.StartToEnd -> ColorOrange
-            SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose
+            SwipeToDismissBoxValue.StartToEnd -> ColorOrange.copy(alpha = 0.5f)
+            SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose.copy(alpha = 0.5f)
+            else -> Color.Transparent
         }, label = "swipe_color"
     )
     Row(
@@ -218,7 +222,7 @@ private fun SwipeToDismissBackground(
             Icon(
                 imageVector = Icons.Default.EditNote,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(id = R.string.order_details_edit),
+                contentDescription = stringResource(R.string.duplucate_row),
                 modifier = Modifier
                     .weight(1f)
                     .size(35.dp)

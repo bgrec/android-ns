@@ -212,6 +212,7 @@
     <string name="order_dialog_delivery_title">Modifica stato di consegna</string>
     <string name="order_details_dialog_edit_title_row">Riga n°%1$d, corto: %2$d, codice: %3$s</string>
     <string name="private_webserver">Server privato, non protetto</string>
+    <string name="duplucate_row">Duplica riga</string>
 
 
 </resources>

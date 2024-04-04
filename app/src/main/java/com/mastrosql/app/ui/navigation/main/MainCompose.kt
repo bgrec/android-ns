@@ -30,7 +30,7 @@ import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
