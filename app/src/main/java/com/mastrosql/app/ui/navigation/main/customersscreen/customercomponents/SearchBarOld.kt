@@ -83,7 +83,7 @@ fun SearchBarOld(customerMasterDataList: List<CustomerMasterData>, navController
             }
             CustomersList(
                 customerMasterDataList = customerMasterDataList,
-                state = remember { mutableStateOf(TextFieldValue("")) },
+                searchedTextState = remember { mutableStateOf(TextFieldValue("")) },
                 modifier = Modifier.padding(4.dp),
                 navController = navController
             )

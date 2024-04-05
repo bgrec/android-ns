@@ -23,9 +23,10 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun CustomersList(
     customerMasterDataList: List<CustomerMasterData>,
-    state: MutableState<TextFieldValue>,
+    searchedTextState: MutableState<TextFieldValue>,
+    onCustomerSelected: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController? = null
 ) {
     LazyColumn(
         modifier = Modifier
@@ -34,7 +35,7 @@ fun CustomersList(
     )
     {
         val filteredList: List<CustomerMasterData>
-        val searchedText = state.value.text
+        val searchedText = searchedTextState.value.text
 
         filteredList = if (searchedText.isEmpty()) {
             customerMasterDataList
@@ -47,6 +48,7 @@ fun CustomersList(
         items(filteredList) { customerMasterData ->
             CustomerCard(
                 customerMasterData = customerMasterData,
+                onCustomerSelected = onCustomerSelected,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
@@ -94,7 +96,7 @@ fun ItemsListPreview() {
                     0L
                 )
             ),
-            state = remember { mutableStateOf(TextFieldValue("")) },
+            searchedTextState = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current)
         )

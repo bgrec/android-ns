@@ -39,6 +39,8 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.ShowToast
+import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreenForBottomSheet
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
@@ -194,6 +196,7 @@ fun OrdersResultScreen(
         if (showBottomSheet.value) {
             // Bottom sheet to scan QR codes
             NewOrderBottomSheet(
+                navController = navController,
                 showBottomSheet = showBottomSheet,
                 //orderDetailsUiState = viewModel.orderDetailsUiState,
                 //scannerState = viewModel.scannerState,
@@ -210,11 +213,16 @@ fun OrdersResultScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewOrderBottomSheet(
+    navController: NavController,
     showBottomSheet: MutableState<Boolean>,
     //orderDetailsUiState: OrderDetailsUiState.Success,
     //scannerState: ScannerState,
     //onSendScannedCode: (Int, String) -> Unit,
 ) {
+
+    val showCustomersList = remember { mutableStateOf(true) }
+    val showOrderFields = remember { mutableStateOf(false) }
+
 
     // Get the keyboard controller
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -246,6 +254,24 @@ fun NewOrderBottomSheet(
             connection = rememberNestedScrollInteropConnection()
         )
     ) {
+
+        if (showCustomersList.value) {
+            // Select the customer from the list
+            CustomersScreenForBottomSheet(
+                onCustomerSelected = {
+                    showCustomersList.value = false
+                    showOrderFields.value = true
+                },
+                navController = navController
+            )
+        }
+
+        if (showOrderFields.value) {
+
+
+        }
+
+        /*
         Column(
             modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -376,6 +402,32 @@ fun NewOrderBottomSheet(
                     Icons.AutoMirrored.Filled.Send,
                     contentDescription = "Send Scanned Code"
                 )
+            }
+        }*/
+    }
+}
+
+@Composable
+fun OrderEditableFields(
+    customer : CustomerMasterData,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier.padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon button to show or hide the software keyboard
+            IconButton(
+                onClick = {
+                    // Toggle keyboard visibility
+                }
+            ) {
+                Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
             }
         }
     }

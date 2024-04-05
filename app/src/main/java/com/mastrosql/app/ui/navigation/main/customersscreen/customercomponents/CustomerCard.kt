@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -45,7 +45,10 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun CustomerCard(
-    customerMasterData: CustomerMasterData, modifier: Modifier, navController: NavController
+    customerMasterData: CustomerMasterData,
+    onCustomerSelected: ((Int) -> Unit)? = null,
+    modifier: Modifier,
+    navController: NavController? = null
 ) {
     var showToast by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -112,11 +115,20 @@ fun CustomerCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    CustomerNewOrderButton(
-                        onClick = {
-                            showToast = true
-                        },
-                    )
+                    if (onCustomerSelected != null) {
+                        SelectCustomerButton(
+                            onClick = {
+                                onCustomerSelected(customerMasterData.id)
+                            },
+                        )
+                    } else {
+                        EditCustomerButton(
+                            onClick = {
+                                showToast = true
+                                //navController?.navigate("customer/${customerMasterData.id}")
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -149,7 +161,7 @@ private fun CustomerExpandButton(
 }
 
 @Composable
-private fun CustomerNewOrderButton(
+private fun EditCustomerButton(
     onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
@@ -157,6 +169,22 @@ private fun CustomerNewOrderButton(
     ) {
         Icon(
             Icons.Default.Edit,
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = stringResource(R.string.insert_article),
+            modifier = Modifier.size(35.dp)
+        )
+    }
+}
+
+@Composable
+private fun SelectCustomerButton(
+    onClick: () -> Unit, modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.Send,
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(R.string.insert_article),
             modifier = Modifier.size(35.dp)

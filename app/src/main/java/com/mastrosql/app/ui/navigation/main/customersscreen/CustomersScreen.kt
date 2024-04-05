@@ -1,8 +1,13 @@
 package com.mastrosql.app.ui.navigation.main.customersscreen
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +23,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.CustomersList
-import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.SearchView
+import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.CustomersSearchView
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
@@ -80,10 +85,10 @@ fun CustomersResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
-            SearchView(state = textState)
+            CustomersSearchView(state = textState)
             CustomersList(
                 customerMasterDataList = customerMasterDataList,
-                state = textState,
+                searchedTextState = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController
             )
@@ -91,7 +96,6 @@ fun CustomersResultScreen(
 
     }
 }
-
 
 @Preview
 @Composable

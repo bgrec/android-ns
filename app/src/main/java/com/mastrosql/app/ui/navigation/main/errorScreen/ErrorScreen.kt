@@ -35,13 +35,13 @@ fun ErrorScreen(
     exception: Exception,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
+    drawerState: DrawerState? = null,
     navController: NavController,
     preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
