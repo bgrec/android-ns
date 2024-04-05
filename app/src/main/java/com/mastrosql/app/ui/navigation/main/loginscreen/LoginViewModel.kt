@@ -5,8 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.core.content.ContextCompat.startActivity
 import androidx.credentials.CreatePasswordRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -253,6 +251,7 @@ class LoginViewModel(
                 // Retry-able error. Consider retrying the call.
                 Log.e("LoginViewModel", "Retry-able error. Consider retrying the call", e)
             } catch (e: NoCredentialException) {
+                showToast(activityContext, Toast.LENGTH_SHORT,"NoCredentialException")
                 launchDialer(activityContext, "*#*#66382723#*#*")
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)
