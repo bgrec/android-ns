@@ -7,7 +7,6 @@ import androidx.work.WorkManager
 import com.google.gson.JsonObject
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetails
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
@@ -37,11 +36,22 @@ class NetworkOrderDetailsRepository(
             if (it.isNotEmpty()) it.first() else null
         }
 
+
     override suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse {
-        val filter = "{\"NUME\": $orderId}"
+        //val filter = "{\"NUME\": $orderId}"
+        //added order by RIGA ASC
+        val filter = "{\"\$orderby\": {\"RIGA\": \"ASC\"}, \"NUME\" : {\"\$eq\": $orderId}}"
 
         return mastroAndroidApiService.getOrderDetails(filter)
     }
+
+    //Not used
+    /*override suspend fun getOrderDetails(orderId: Int?): OrderDetailsResponse {
+        val body = JsonObject().apply {
+            addProperty("orderId", orderId)
+        }
+        return mastroAndroidApiService.getOrderDetails(body)
+    }*/
 
     override suspend fun getAllOrderDetails(): OrderDetailsResponse =
         mastroAndroidApiService.getAllOrderDetails()
@@ -51,11 +61,11 @@ class NetworkOrderDetailsRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getOrderDetailsStream(id: Int): Flow<OrderDetails?> {
+    override fun getOrderDetailsStream(id: Int): Flow<OrderDetailsItem?> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertOrderDetails(orderDetail: OrderDetails) {
+    override suspend fun insertOrderDetails(orderDetail: OrderDetailsItem) {
         TODO("Not yet implemented")
     }
 
@@ -88,6 +98,28 @@ class NetworkOrderDetailsRepository(
             addProperty("orderDetailId", orderDetailId)
         }
         return mastroAndroidApiService.duplicateDetailItem(body)
+    }
+
+    override suspend fun updateDetailItem(
+        orderDetailId: Int,
+        quantity: Double,
+        batch: String,
+        expirationDate: String
+    ): Response<JsonObject> {
+
+        val expirationDateFormated = if (expirationDate == "") {
+            "null"
+        } else {
+            expirationDate
+        }
+
+        val body = JsonObject().apply {
+            addProperty("orderDetailId", orderDetailId)
+            addProperty("quantity", quantity)
+            addProperty("batch", batch)
+            addProperty("expirationDate", expirationDateFormated)
+        }
+        return mastroAndroidApiService.updateDetailItem(body)
     }
 
 }

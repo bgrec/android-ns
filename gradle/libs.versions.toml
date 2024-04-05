@@ -33,17 +33,16 @@ workManagerVersion = "2.9.0"
 composeUi = "1.6.4"
 accompanist = "0.34.0"
 googleServices = "4.4.1"
-firebaseBOM = "32.7.4"
+firebaseBOM = "32.8.0"
 appDistribution = "4.2.0"
 material3 = "1.2.1"
-credentialsVersion = "1.2.0" #non aggiornare
+credentialsVersion = "1.3.0-alpha01"
 
 # composeUi version dictates the version of the accompanist libraries you should use (see below)
 #Important for Accompanist
 # Each release outlines what version of the Compose UI libraries it depends on. We are currently releasing multiple versions of Accompanist for the different versions of Compose:
 #https://github.com/google/accompanist
 #Ensure you are using the Accompanist version that matches with your Compose UI version: If you upgrade Accompanist, it will upgrade your Compose libraries version via transitive dependencies.
-
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }

@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.R.string.retry
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import retrofit2.HttpException
 
@@ -35,13 +35,13 @@ fun ErrorScreen(
     exception: Exception,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
+    drawerState: DrawerState? = null,
     navController: NavController,
     preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(

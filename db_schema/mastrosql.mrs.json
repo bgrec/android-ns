@@ -6317,6 +6317,60 @@
                         ]
                     }
                 ]
+            },
+            {
+                "id": "0x11eeea93d92ae59498a4408d5c759f7c",
+                "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+                "name": "DuplicateOrderRow",
+                "request_path": "/DuplicateOrderRow",
+                "enabled": 1,
+                "object_type": "PROCEDURE",
+                "crud_operations": [
+                    "UPDATE"
+                ],
+                "format": "FEED",
+                "items_per_page": null,
+                "media_type": null,
+                "auto_detect_media_type": 0,
+                "requires_auth": 1,
+                "auth_stored_procedure": "",
+                "row_user_ownership_enforced": 0,
+                "row_user_ownership_column": null,
+                "options": null,
+                "details": null,
+                "comments": "",
+                "objects": [
+                    {
+                        "id": "0xa006f36d21924c1af840247b9fddbe5c",
+                        "db_object_id": "0x11eeea93d92ae59498a4408d5c759f7c",
+                        "name": "MastrosqlServiceMastrosqlDuplicateOrderRowParams",
+                        "kind": "PARAMETERS",
+                        "position": 0,
+                        "fields": [
+                            {
+                                "position": 1,
+                                "id": "0xb10a1e01a621452ee993f761b090b881",
+                                "object_id": "0xa006f36d21924c1af840247b9fddbe5c",
+                                "name": "orderDetailId",
+                                "db_column": {
+                                    "in": true,
+                                    "out": false,
+                                    "name": "orderDetailId",
+                                    "datatype": "int",
+                                    "not_null": true,
+                                    "is_unique": false,
+                                    "is_primary": false,
+                                    "is_generated": false
+                                },
+                                "enabled": true,
+                                "allow_filtering": true,
+                                "allow_sorting": false,
+                                "no_check": false,
+                                "no_update": false
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     }

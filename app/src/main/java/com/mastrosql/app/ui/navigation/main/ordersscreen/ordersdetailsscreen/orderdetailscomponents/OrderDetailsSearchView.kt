@@ -2,7 +2,6 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
@@ -56,6 +55,7 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
             )
         },
         modifier = Modifier
+            .padding(2.dp)
             .fillMaxWidth()
             .focusRequester(focusRequester = focusRequester)
             .focusable()

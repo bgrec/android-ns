@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
+package com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -35,8 +36,9 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchViewOrders(state: MutableState<TextFieldValue>) {
+fun CustomersSearchView(state: MutableState<TextFieldValue>) {
 
     var isEditing by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -50,7 +52,7 @@ fun SearchViewOrders(state: MutableState<TextFieldValue>) {
         //enabled = isEditing,
         placeholder = {
             Text(
-                text = stringResource(R.string.orders_description),
+                text = stringResource(id = R.string.businessName),
                 modifier = Modifier.padding(2.dp)
             )
         },
@@ -69,7 +71,7 @@ fun SearchViewOrders(state: MutableState<TextFieldValue>) {
         leadingIcon = {
             Icon(
                 Icons.Default.Search,
-                contentDescription = stringResource(R.string.order_description),
+                contentDescription = stringResource(id = R.string.businessName),
                 modifier = Modifier
                     .padding(15.dp)
                     .size(24.dp)
@@ -127,8 +129,6 @@ fun SearchViewOrders(state: MutableState<TextFieldValue>) {
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     MastroAndroidTheme {
-        SearchViewOrders(
-            textState
-        )
+        CustomersSearchView(textState)
     }
 }

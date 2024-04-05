@@ -3,6 +3,7 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -63,10 +64,8 @@ fun OrdersList(
                         ||
                         it.businessName?.contains(searchedText, ignoreCase = true) ?: true
                         || it.city?.contains(searchedText, ignoreCase = true) ?: true
-
             }
         }
-
         items(
             filteredList,
             key = {
@@ -86,6 +85,8 @@ fun OrdersList(
                 showDeliveryDialog = showDeliveryDialog
             )
         }
+
+        item { Spacer(modifier = Modifier.padding(70.dp)) }
     }
 }
 

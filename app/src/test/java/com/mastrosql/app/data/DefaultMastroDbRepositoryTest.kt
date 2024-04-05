@@ -27,7 +27,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
- * Unit tests for [DefaultMastroDbRepository].
+ * Unit tests for .
  */
 // TODO: Remove when stable
 class DefaultMastroDbRepositoryTest {

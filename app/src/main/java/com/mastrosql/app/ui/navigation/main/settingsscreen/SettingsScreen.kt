@@ -48,7 +48,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -137,7 +136,12 @@ fun SettingsScreen(
                     value = urlState,
                     singleLine = false,
                     onValueChange = { newValue -> urlState = newValue },
-                    leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(R.drawable.bring_your_own_ip),
+                            null
+                        )
+                    },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
@@ -242,6 +246,38 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.testRetrofitConnection(context) }
                 ) {
+                    Text(text = stringResource(R.string.private_webserver))
+                }
+            }
+
+            Spacer(modifier = Modifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.testRetrofitConnection(context) }
+                ) {
+                    Text(text = stringResource(R.string.delete_permission_menu))
+                }
+            }
+
+            Spacer(modifier = Modifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(64.dp, 8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.testRetrofitConnection(context) }
+                ) {
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
             }
@@ -249,7 +285,7 @@ fun SettingsScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 34)
 @Composable
 fun SettingsScreenPreview() {
     MastroAndroidTheme {

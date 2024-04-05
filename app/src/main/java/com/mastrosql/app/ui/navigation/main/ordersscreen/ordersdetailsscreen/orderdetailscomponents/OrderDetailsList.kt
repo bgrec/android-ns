@@ -3,10 +3,8 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,14 +15,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -33,20 +30,31 @@ fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
     state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
-    navController: NavController,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
-    modifiedIndex: Int?,
+    modifiedIndex: MutableIntState?,
     onRemove: (Int) -> Unit,
     onDuplicate: (Int) -> Unit
 ) {
+    val modifiedItemId = remember { mutableIntStateOf(0) }
 
     val listState = rememberLazyListState()
+
     // Scroll to the modified item when the list changes
     LaunchedEffect(orderDetailList) {
-        //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
         modifiedIndex?.let { index ->
-            listState.animateScrollToItem(index)
+            if (index.intValue >= 0) {
+                listState.animateScrollToItem(index.intValue)
+                modifiedItemId.intValue = orderDetailList[index.intValue].id
+            }
+        }
+    }
+
+    //Set the modifiedIndex to the index of the modified item when clicked on edit
+    LaunchedEffect(modifiedItemId.intValue) {
+        if (modifiedItemId.intValue > 0) {
+            modifiedIndex?.intValue =
+                orderDetailList.indexOfFirst { it.id == modifiedItemId.intValue }
         }
     }
 
@@ -64,37 +72,38 @@ fun OrderDetailList(
         filteredList = if (searchedText.isEmpty()) {
             orderDetailList
         } else {
-            //update this for fields to search
+            //Filter the list based on the search text on this fields
             orderDetailList.filter {
-                it.description?.contains(searchedText, ignoreCase = true) == true
+                (it.description?.contains(searchedText, ignoreCase = true) == true
+                        || it.articleId.toString()
+                    ?.contains(searchedText, ignoreCase = true) == true
+                        || it.sku?.contains(searchedText, ignoreCase = true) == true)
             }
         }
-
         items(
             filteredList,
             key = {
                 it.id
             })
         { orderDetail ->
-            OrderDetailsItem(
+
+            OrderDetailsCard(
                 orderDetailsItem = orderDetail,
                 modifier = Modifier
                     .padding(2.dp)
                     .fillMaxWidth(),
                 //.focusable(),
-                navController = navController,
-                navigateToEditItem = {},
                 onRemove = onRemove,
                 showEditDialog = showEditDialog,
                 snackbarHostState = snackbarHostState,
                 listState = listState,
-                modifiedItemId = remember { mutableStateOf(if (orderDetailList.indexOf(orderDetail) == modifiedIndex) orderDetail.id else null) },
-                onDuplicate = onDuplicate
+                modifiedItemId = modifiedItemId,
+                onDuplicate = onDuplicate,
             )
         }
 
         item {
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(70.dp))
         }
     }
 }

@@ -19,7 +19,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.CustomersPagedList
-import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.SearchView
+import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.CustomersSearchView
 
 @Composable
 fun CustomersPagedScreen(
@@ -42,7 +42,7 @@ fun CustomersPagedScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
-            SearchView(state = textState)
+            CustomersSearchView(state = textState)
             Log.i("CustomersMasterDat", "CustomersMasterDataViewModel created!")
             CustomersPagedList(
                 customers = customers,

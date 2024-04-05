@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
@@ -29,10 +28,9 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerContent
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
-import com.mastrosql.app.ui.navigation.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersResultDestination
-import java.lang.Thread.sleep
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -64,7 +62,7 @@ fun MainCompose(
     if (isLoggedIn && isOnboarded) {
         // If the user is logged in and onboarded, navigate directly to the new home screen
         LaunchedEffect(Unit) {
-            navController.navigate(MainNavOption.NewHomeScreen.name) {
+            navController.navigate(MainNavOption.HomeScreen.name) {
                 popUpTo(NavRoutes.MainRoute.name) {
                     inclusive = true
                 }
@@ -77,8 +75,8 @@ fun MainCompose(
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when (destination.route) {
             MainNavOption.LoginScreen.name,
-            MainNavOption.NewHomeScreen.name,
             MainNavOption.HomeScreen.name,
+            MainNavOption.OldHomeScreen.name,
             MainNavOption.CustomersScreen.name,
             MainNavOption.CustomersPagedScreen.name,
             MainNavOption.ArticlesScreen.name,
@@ -92,7 +90,7 @@ fun MainCompose(
             }
             else -> {
                 // If the destination is not a main screen we need to handle gestures differently for each screen
-                if (destination.route == OrdersResultDestination.route) {
+                if (destination.route == OrdersDestination.route) {
                     appNavigationViewModel.setGesturesEnabled(true)
                 } else {
                     appNavigationViewModel.setGesturesEnabled(false)
@@ -108,7 +106,7 @@ fun MainCompose(
                 drawerState = drawerState,
                 menuItems = DrawerParams.createDrawerButtons(activeButtonsUiState),
                 currentPick = currentScreen
-                    ?: MainNavOption.NewHomeScreen,//defaultPick, //MainNavOption.LoginScreen
+                    ?: MainNavOption.HomeScreen,//defaultPick, //MainNavOption.LoginScreen
                 onCurrentPickChange = { newCurrentPick ->
                     appNavigationViewModel.setCurrentScreen(newCurrentPick)
                 },
@@ -127,45 +125,45 @@ fun MainCompose(
                         }
                     }
 
-                    MainNavOption.NewHomeScreen -> {
+                    MainNavOption.HomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
-                    MainNavOption.HomeScreen -> {
+                    MainNavOption.OldHomeScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.CustomersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.ArticlesScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.ItemsScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.OrdersScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
@@ -177,7 +175,7 @@ fun MainCompose(
 
                     MainNavOption.CartScreen -> {
                         navController.navigate(onUserPickedOption.name) {
-                            popUpTo(MainNavOption.NewHomeScreen.name)
+                            popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
@@ -225,16 +223,16 @@ object DrawerParams {
         //NewHome button always visible
         buttons.add(
             AppDrawerItemInfo(
-                drawerOption = MainNavOption.NewHomeScreen,
+                drawerOption = MainNavOption.HomeScreen,
                 title = R.string.drawer_home_menu,
                 icon = Icons.Default.Home,
                 descriptionId = R.string.drawer_home_description
             )
         )
-        if (activeButtonsUiState[MainNavOption.HomeScreen] == true) {
+        if (activeButtonsUiState[MainNavOption.OldHomeScreen] == true) {
             buttons.add(
                 AppDrawerItemInfo(
-                    MainNavOption.HomeScreen,
+                    MainNavOption.OldHomeScreen,
                     R.string.drawer_home,
                     Icons.Default.Home,
                     R.string.drawer_home_description

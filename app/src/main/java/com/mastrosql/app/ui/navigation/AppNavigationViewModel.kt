@@ -1,12 +1,11 @@
 package com.mastrosql.app.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 
-class AppNavigationViewModel() : ViewModel() {
+class AppNavigationViewModel : ViewModel() {
     private val _gesturesEnabled = mutableStateOf(false)
     val gesturesEnabled: State<Boolean> = _gesturesEnabled
 
@@ -23,8 +22,8 @@ class AppNavigationViewModel() : ViewModel() {
 
         _gesturesEnabled.value = when (currentScreenValue) {
             MainNavOption.LoginScreen -> false
-            MainNavOption.NewHomeScreen -> false
-            MainNavOption.HomeScreen -> true
+            MainNavOption.HomeScreen -> false
+            MainNavOption.OldHomeScreen -> true
             MainNavOption.CustomersScreen -> true
             MainNavOption.CustomersPagedScreen -> true
             MainNavOption.ArticlesScreen -> true
