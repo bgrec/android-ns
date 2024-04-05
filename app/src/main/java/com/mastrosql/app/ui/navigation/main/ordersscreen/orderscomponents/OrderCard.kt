@@ -113,6 +113,14 @@ fun OrderCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
+                    /*val color = animateColorAsState(if (condition) Color.Green else Color.Red)
+                    However, if you needed the component to always start out grey, you cannot do it with this API. Instead, you can drop down to use the lower level Animatable API:
+
+
+                    val color = remember { Animatable(Color.Gray) }
+                    LaunchedEffect(condition) {
+                        color.animateTo(if (condition) Color.Green else Color.Red)
+                    }*/
                     var tint = MaterialTheme.colorScheme.secondary
                     if (modifiedOrderId.value == order.id) {
                         tint = Color.Red

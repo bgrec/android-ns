@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.customersscreen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +24,7 @@ import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 @Composable
 fun CustomersScreenForBottomSheet(
     navController: NavController,
-    onCustomerSelected: ((Int) -> Unit)? = null,
+    onCustomerSelected: ((CustomerMasterData) -> Unit)? = null,
     viewModel: CustomersMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val customersUiState = viewModel.customersUiState
@@ -33,11 +34,10 @@ fun CustomersScreenForBottomSheet(
     Column(
         modifier = Modifier
             .fillMaxSize(),
-        //.padding(it),
-        // verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        // Get the customers data from the view model
         when (customersUiState) {
             is CustomersUiState.Loading -> {
                 LinearProgressIndicator(
@@ -46,23 +46,25 @@ fun CustomersScreenForBottomSheet(
             }
 
             is CustomersUiState.Success -> {
-
                 customerMasterDataList = customersUiState.customersMasterDataList
             }
 
             is CustomersUiState.Error -> {
                 ErrorScreen(
-                    customersUiState.exception,
-                    viewModel::getCustomersMasterData,
+                    exception = customersUiState.exception,
+                    retryAction = viewModel::getCustomersMasterData,
                     modifier = modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
                     navController = navController
                 )
             }
         }
 
-
         val textState = remember { mutableStateOf(TextFieldValue("")) }
+        // Customers search view
         CustomersSearchView(state = textState)
+
+        // Customers list
         CustomersList(
             customerMasterDataList = customerMasterDataList,
             searchedTextState = textState,

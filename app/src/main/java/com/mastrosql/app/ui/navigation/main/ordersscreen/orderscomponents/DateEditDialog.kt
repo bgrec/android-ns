@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -15,22 +15,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsItemState
 import com.mastrosql.app.utils.DateHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Decoupled snackbar host state from scaffold state for demo purposes.
-//val snackState = remember { SnackbarHostState() }
-//val snackScope = rememberCoroutineScope()
-//SnackbarHost(hostState = snackState, Modifier)
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpirationDatePickerDialog(
+fun DateEditDialog(
     showDatePickerDialog: MutableState<Boolean>,
-    orderDetailsItemState: OrderDetailsItemState
+    //orderDetailsItemState: OrderDetailsItemState
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {
@@ -55,11 +51,11 @@ fun ExpirationDatePickerDialog(
                 val formattedDate = selectedDate?.let { dateFormat.format(it) }
 
                 // Update the expirationDate state
-                orderDetailsItemState.expirationDate.value = formattedDate?.let {
+                /*orderDetailsItemState.expirationDate.value = formattedDate?.let {
                     TextFieldValue(
                         DateHelper.formatDateToDisplay(it)
                     )
-                }!!
+                }!!*/
 
                 // Dismiss the dialog
                 showDatePickerDialog.value = false

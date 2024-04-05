@@ -46,7 +46,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 @Composable
 fun CustomerCard(
     customerMasterData: CustomerMasterData,
-    onCustomerSelected: ((Int) -> Unit)? = null,
+    onCustomerSelected: ((CustomerMasterData) -> Unit)? = null,
     modifier: Modifier,
     navController: NavController? = null
 ) {
@@ -118,13 +118,14 @@ fun CustomerCard(
                     if (onCustomerSelected != null) {
                         SelectCustomerButton(
                             onClick = {
-                                onCustomerSelected(customerMasterData.id)
+                                onCustomerSelected(customerMasterData)
                             },
                         )
                     } else {
                         EditCustomerButton(
                             onClick = {
                                 showToast = true
+                                //TODO implement navigation
                                 //navController?.navigate("customer/${customerMasterData.id}")
                             },
                         )

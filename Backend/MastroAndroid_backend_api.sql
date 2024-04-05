@@ -594,6 +594,18 @@ BEGIN
     ORDER BY RIGA;
 END;
 
+####################################################################################################
+CREATE OR REPLACE VIEW clientsdestinationsview
+AS (SELECT destina.PROG_TUTTO AS PROG_TUTTO,
+            destina.CODI       AS CODI,
+          TRIM(destina.DESCRI)  AS DESCRI,
+          TRIM(destina.VIA)     AS VIA,
+          TRIM(destina.CAP)     AS CAP,
+          TRIM(destina.CITTA)   AS CITTA,
+          TRIM(destina.PROV)    AS PROV
+FROM destina WHERE destina.CODI IN (SELECT CODI FROM clientsview));
+
+CREATE VIEW test as ( select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c  from clienti left join destina on clienti.CODI = destina.CODI);
 
 ####################################################################################################
 
@@ -614,5 +626,7 @@ FLUSH PRIVILEGES;
 CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
 GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+
+
 
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;

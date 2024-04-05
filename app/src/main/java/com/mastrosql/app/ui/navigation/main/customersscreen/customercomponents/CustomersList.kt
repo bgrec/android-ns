@@ -24,7 +24,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 fun CustomersList(
     customerMasterDataList: List<CustomerMasterData>,
     searchedTextState: MutableState<TextFieldValue>,
-    onCustomerSelected: ((Int) -> Unit)? = null,
+    onCustomerSelected: ((CustomerMasterData) -> Unit)? = null,
     modifier: Modifier = Modifier,
     navController: NavController? = null
 ) {

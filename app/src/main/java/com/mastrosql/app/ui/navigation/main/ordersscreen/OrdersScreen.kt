@@ -2,20 +2,26 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +38,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +51,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreenForBo
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.DateEditDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
@@ -198,6 +207,7 @@ fun OrdersResultScreen(
             NewOrderBottomSheet(
                 navController = navController,
                 showBottomSheet = showBottomSheet,
+                modifier = modifier,
                 //orderDetailsUiState = viewModel.orderDetailsUiState,
                 //scannerState = viewModel.scannerState,
                 /*onSendScannedCode = { orderId, scannedCode ->
@@ -210,11 +220,14 @@ fun OrdersResultScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewOrderBottomSheet(
     navController: NavController,
     showBottomSheet: MutableState<Boolean>,
+    modifier: Modifier,
+    onNewOrder: () -> Unit = {},
     //orderDetailsUiState: OrderDetailsUiState.Success,
     //scannerState: ScannerState,
     //onSendScannedCode: (Int, String) -> Unit,
@@ -222,6 +235,7 @@ fun NewOrderBottomSheet(
 
     val showCustomersList = remember { mutableStateOf(true) }
     val showOrderFields = remember { mutableStateOf(false) }
+    lateinit var selectedCustomerMasterData: CustomerMasterData
 
 
     // Get the keyboard controller
@@ -258,17 +272,21 @@ fun NewOrderBottomSheet(
         if (showCustomersList.value) {
             // Select the customer from the list
             CustomersScreenForBottomSheet(
-                onCustomerSelected = {
+                onCustomerSelected = { customerMasterData ->
                     showCustomersList.value = false
                     showOrderFields.value = true
+                    selectedCustomerMasterData = customerMasterData
                 },
                 navController = navController
             )
         }
 
         if (showOrderFields.value) {
-
-
+            OrderInfoFields(
+                customer = selectedCustomerMasterData,
+                modifier = modifier,
+                navController = navController
+            )
         }
 
         /*
@@ -407,28 +425,149 @@ fun NewOrderBottomSheet(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun OrderEditableFields(
-    customer : CustomerMasterData,
+fun OrderInfoFields(
+    customer: CustomerMasterData? = null,
+    onConfirmButton: () -> Unit = {},
+    onDismissButton: () -> Unit = {},
+    onNewOrder: () -> Unit = {},
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+
     Column(
         modifier = Modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val showDatePickerDialog = remember { mutableStateOf(false) }
+
+        Row {
+            Text(
+                text = "Nuovo Ordine",
+            )
+        }
+        Row {
+            Text("Cliente: ${customer?.businessName}")
+        }
+        Row {
+            OutlinedTextField(
+                value = "",//orderDetailsItemState.batch.value,
+                label = { Text("Descrizione ordine") },
+                onValueChange = { /*orderDetailsItemState.batch.value = it*/ },
+                //isError = orderDetailsItemState.batch.value.text.isEmpty(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
+                )
+            )
+        }
+        Spacer(modifier = Modifier.padding(4.dp))
+
+        Row {
+            OutlinedTextField(singleLine = true,
+                value = ""/*orderDetailsItemState.expirationDate.value*/,
+                label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
+                onValueChange = {
+                    /*orderDetailsItemState.expirationDate.value = it*/
+                },
+                modifier = Modifier.clickable(onClick = {
+                    showDatePickerDialog.value = true
+                }),//not working
+                readOnly = false,
+                /*isError = orderDetailsItemState.expirationDate.value.text.isNotEmpty() && DateHelper.formatDateToInput(
+                    orderDetailsItemState.expirationDate.value.text
+                ).isEmpty() && DateHelper.isDateBeforeToday(
+                    orderDetailsItemState.expirationDate.value.text
+                ),*/
+                //visualTransformation = DateTransformation(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next
+                ),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        showDatePickerDialog.value = true
+                    }) {
+                        Icon(
+                            Icons.Default.DateRange,
+                            contentDescription = "Select Date"
+                        )
+                    }
+                })
+        }
+
+        if (showDatePickerDialog.value) {
+            DateEditDialog(
+                showDatePickerDialog = showDatePickerDialog,
+                //orderDetailsItemState = orderDetailsItemState
+            )
+        }
+
+        Spacer(modifier = Modifier.padding(4.dp))
+
+
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
+
         ) {
-            // Icon button to show or hide the software keyboard
-            IconButton(
+
+            TextButton(
                 onClick = {
-                    // Toggle keyboard visibility
+                    onDismissButton()
                 }
             ) {
-                Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
+                Text("Annulla")
+            }
+
+            TextButton(
+                onClick = {
+                    onConfirmButton()
+                }
+            ) {
+                Text("Conferma")
+            }
+
+            Spacer(modifier = Modifier.padding(8.dp))
+        }
+    }
+}
+
+/*
+val sheetState = rememberModalBottomSheetState()
+val scope = rememberCoroutineScope()
+var showBottomSheet by remember { mutableStateOf(false) }
+Scaffold(
+    floatingActionButton = {
+        ExtendedFloatingActionButton(
+            text = { Text("Show bottom sheet") },
+            icon = { Icon(Icons.Filled.Add, contentDescription = "") },
+            onClick = {
+                showBottomSheet = true
+            }
+        )
+    }
+) { contentPadding ->
+    // Screen content
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState
+        ) {
+            // Sheet content
+            Button(onClick = {
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        showBottomSheet = false
+                    }
+                }
+            }) {
+                Text("Hide bottom sheet")
             }
         }
     }
 }
+ */

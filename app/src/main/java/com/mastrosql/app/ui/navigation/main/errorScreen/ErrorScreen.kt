@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
@@ -35,13 +36,14 @@ fun ErrorScreen(
     exception: Exception,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
     drawerState: DrawerState? = null,
     navController: NavController,
     preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = verticalArrangement,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -64,14 +66,15 @@ fun ErrorScreenPreview() {
     val modifier = Modifier
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val navController = NavController(LocalContext.current)
+    //val viewModel = HiltViewModelFactory(LocalContext.current, navController).create(UserPreferencesViewModel::class.java
 
     MastroAndroidTheme {
         ErrorScreen(
             exception = Exception("errore"),
             retryAction = {},
-            modifier,
-            drawerState,
-            navController
+            modifier = modifier,
+            drawerState = drawerState,
+            navController = navController
         )
     }
 }

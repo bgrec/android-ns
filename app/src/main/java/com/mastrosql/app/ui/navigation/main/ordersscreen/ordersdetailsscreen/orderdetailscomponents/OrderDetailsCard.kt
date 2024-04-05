@@ -2,6 +2,7 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.or
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -367,13 +368,18 @@ private fun ItemEditButton(
     modifier: Modifier = Modifier
 ) {
     val defaultTint = MaterialTheme.colorScheme.secondary
-    val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
+    //val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
+
+    val itemEditButtonTint = remember { Animatable(defaultTint) }
 
     LaunchedEffect(modifiedItemId, orderDetailsItemId) {
         // Update the tint color based on the comparison between modifiedItemId and itemId
-        val tint = if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint
+        //val tint = if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint
+
         // Update the state of the tint color
-        itemEditButtonTint.value = tint
+        //itemEditButtonTint.value = tint
+
+        itemEditButtonTint.animateTo(if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint)
     }
 
     IconButton(onClick = {
