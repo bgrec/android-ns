@@ -1,14 +1,13 @@
-package com.mastrosql.app.ui.navigation.main.customersscreen.model
+package com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations
 
 import androidx.room.TypeConverter
-import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
  * Type converter for [Metadata] class.
  */
-class CustomerMetadataTypeConverter {
+class DestinationsMetadataTypeConverter {
     private val json = Json { ignoreUnknownKeys = true }
 
     @TypeConverter

@@ -71,6 +71,7 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             CenteredLogoImage()
+            Spacer(modifier = Modifier.height(16.dp))
             if (isLandscape) {
                 MultiColumnButtons(
                     activeButtonsUiState = activeButtonsUiState,
@@ -175,6 +176,7 @@ fun MultiColumnButtons(
             }
         }
 
+        //Logout button always visible
         item {
             Spacer(Modifier.height(16.dp))
             AppButton(

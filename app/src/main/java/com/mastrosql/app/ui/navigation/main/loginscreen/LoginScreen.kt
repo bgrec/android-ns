@@ -227,7 +227,7 @@ fun LoginScreen(
 @Composable
 fun LogoImage() {
     Image(
-        painter = painterResource(R.drawable.logo),
+        painter = painterResource(R.drawable.mastroweb),
         contentDescription = "Logo Nipeservice",
         modifier = Modifier.size(150.dp)
     )
