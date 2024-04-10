@@ -240,7 +240,7 @@ fun NewOrderBottomSheet(
     val showCustomersList = remember { mutableStateOf(true) }
     val showOrderFields = remember { mutableStateOf(false) }
     lateinit var selectedCustomerMasterData: CustomerMasterData
-    lateinit var selectedDestination: DestinationData
+    var selectedDestination: DestinationData? = null
 
 
     // Get the keyboard controller
@@ -281,11 +281,13 @@ fun NewOrderBottomSheet(
                     //showCustomersList.value = false
                     //showOrderFields.value = true
                     selectedCustomerMasterData = customerMasterData
+
                     if (destinationData != null) {
                         selectedDestination = destinationData
                         showOrderFields.value = true
                         showCustomersList.value = false
                     } else {
+                        selectedDestination = null
                         showOrderFields.value = true
                         showCustomersList.value = false
                     }
