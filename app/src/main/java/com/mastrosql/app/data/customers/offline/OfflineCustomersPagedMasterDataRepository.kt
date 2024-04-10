@@ -6,6 +6,7 @@ import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataResponse
 import kotlinx.coroutines.flow.Flow
 
 class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDao: CustomersMasterDataDao) :
@@ -15,6 +16,10 @@ class OfflineCustomersPagedMasterDataRepository(private val customerMasterDataDa
         get() = TODO("Not yet implemented")
 
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDestinationsData(): DestinationsDataResponse {
         TODO("Not yet implemented")
     }
 

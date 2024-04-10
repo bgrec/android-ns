@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.customersscreen.model
 
 import androidx.room.TypeConverter
-import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

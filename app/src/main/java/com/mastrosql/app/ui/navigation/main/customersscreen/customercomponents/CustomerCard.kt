@@ -94,7 +94,7 @@ fun CustomerCard(
                 ) {
                     CustomerNameAndId(
                         id = customerMasterData.id,
-                        pIva = customerMasterData.vat,
+                        pIva = customerMasterData.vat ?: "",
                         businessName = customerMasterData.businessName
                     )
                     if (expanded) {
@@ -115,6 +115,7 @@ fun CustomerCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
+                    //When the customer is selected, the button will navigate to the customer destinations
                     if (onCustomerSelected != null) {
                         SelectCustomerButton(
                             onClick = {
@@ -422,8 +423,8 @@ fun CustomerCardPreview() {
                 "province",
                 "nation",
                 "businessName2",
-                emptyList(),
                 "taxId",
+                emptyList(),
                 Metadata("etag"),
                 0,
                 0L

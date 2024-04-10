@@ -22,16 +22,16 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun CustomersList(
+    modifier: Modifier = Modifier,
     customerMasterDataList: List<CustomerMasterData>,
     searchedTextState: MutableState<TextFieldValue>,
     onCustomerSelected: ((CustomerMasterData) -> Unit)? = null,
-    modifier: Modifier = Modifier,
     navController: NavController? = null
 ) {
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .background(MaterialTheme.colorScheme.background)
-            //.focusable()
+        //.focusable()
     )
     {
         val filteredList: List<CustomerMasterData>
@@ -41,7 +41,7 @@ fun CustomersList(
             customerMasterDataList
         } else {
             customerMasterDataList.filter {
-                it.businessName.contains(searchedText, ignoreCase = true)
+                it.businessName?.contains(searchedText, ignoreCase = true) ?: true
             }
         }
 
@@ -52,7 +52,7 @@ fun CustomersList(
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
-                    //.focusable(),
+                //.focusable(),
                 navController = navController
             )
         }
@@ -61,7 +61,7 @@ fun CustomersList(
 
 @Preview
 @Composable
-fun ItemsListPreview() {
+fun CustomersListPreview() {
     MastroAndroidTheme {
         CustomersList(
             customerMasterDataList = listOf(
@@ -74,8 +74,8 @@ fun ItemsListPreview() {
                     "province",
                     "nation",
                     "businessName2",
-                    emptyList(),
                     "taxId",
+                    emptyList(),
                     Metadata("etag"),
                     0,
                     0L
@@ -89,8 +89,8 @@ fun ItemsListPreview() {
                     "province",
                     "nation",
                     "businessName2",
-                    emptyList(),
                     "taxId",
+                    emptyList(),
                     Metadata("etag"),
                     0,
                     0L

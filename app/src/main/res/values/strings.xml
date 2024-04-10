@@ -216,6 +216,7 @@
     <string name="decrease_quantity_by_one">Diminuisci quantità</string>
     <string name="increase_quantity_by_one">Aumenta la quantità</string>
     <string name="delete_permission_menu">Cancellazione dati non permessa</string>
+    <string name="destination_description">Destinazione</string>
 
 
 </resources>

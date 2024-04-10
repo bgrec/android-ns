@@ -109,7 +109,7 @@ class DataSourceTest_cancel_it_Later {
     ): List<CustomerMasterData> {
         // Filter the list
         //return list.filter { it.description?.contains(query, ignoreCase = true) ?: false }
-        return list.filter { it.businessName.contains(query, ignoreCase = true) }
+        return list.filter { it.businessName?.contains(query, ignoreCase = true) ?: true }
     }
 
     fun loadFilteredClientsByDescription(query: String): List<CustomerMasterData> {

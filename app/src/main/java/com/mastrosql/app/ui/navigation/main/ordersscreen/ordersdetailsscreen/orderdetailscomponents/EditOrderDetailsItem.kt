@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -55,8 +56,15 @@ fun EditOrderDetailsItem(
     onEditOrderDetailsItem: (Int, Double, String, String) -> Unit,
 
     ) {
-    //create a FocusManager
+
+    // Get the focus manager
     val focusManager = LocalFocusManager.current
+
+    // Get the context
+    val context = LocalContext.current
+
+    //Description of the dialog, if the item is not null, show the row details
+    val dialogDescriptionState = remember { mutableStateOf("") }
 
     // LaunchedEffect to set the initial value when the dialog is opened
     LaunchedEffect(showEditDialog) {
@@ -67,6 +75,7 @@ fun EditOrderDetailsItem(
 
                 orderDetailsUiState.modifiedOrderDetailsItem =
                     orderDetailsUiState.orderDetailsList[index]
+
 
                 val initialBatch = orderDetailsUiState.modifiedOrderDetailsItem!!.batch ?: ""
                 orderDetailsItemState.batch.value = TextFieldValue(initialBatch)
@@ -79,7 +88,19 @@ fun EditOrderDetailsItem(
                 )
                 orderDetailsItemState.expirationDate.value = TextFieldValue(initialExpirationDate)
 
+                if (orderDetailsUiState.modifiedOrderDetailsItem != null) {
+                    dialogDescriptionState.value = context.getString(
+                        R.string.order_details_dialog_edit_title_row,
+                        orderDetailsUiState.modifiedOrderDetailsItem?.orderRow ?: 0,
+                        orderDetailsUiState.modifiedOrderDetailsItem?.articleId ?: 0,
+                        orderDetailsUiState.modifiedOrderDetailsItem?.sku ?: ""
+                    )
+                }
+
+                Log.d("dialogDescriptionState", dialogDescriptionState.value)
             } else {
+                dialogDescriptionState.value =
+                    context.getString(R.string.order_details_dialog_edit_title)
                 Log.e("OrderDetailsScreen", "Invalid index: $index")
             }
 
@@ -90,26 +111,14 @@ fun EditOrderDetailsItem(
 
             // Hide the keyboard when focusing on the quantity field if needed
             //keyboardController?.hide()
-        }
-    }
 
-    //Description of the dialog, if the item is not null, show the row details
-    var dialogDescription = stringResource(
-        R.string.order_details_dialog_edit_title
-    )
-    if (orderDetailsUiState.modifiedOrderDetailsItem != null) {
-        dialogDescription = stringResource(
-            R.string.order_details_dialog_edit_title_row,
-            orderDetailsUiState.modifiedOrderDetailsItem?.orderRow ?: 0,
-            orderDetailsUiState.modifiedOrderDetailsItem?.articleId ?: 0,
-            orderDetailsUiState.modifiedOrderDetailsItem?.sku ?: ""
-        )
+        }
     }
 
     // Show the edit dialog when the state is true
     AlertDialog(modifier = Modifier.wrapContentSize(),
         onDismissRequest = { showEditDialog.value = false },
-        title = { Text(dialogDescription) },
+        title = { Text(dialogDescriptionState.value) },
         text = {
             val showDatePickerDialog = remember { mutableStateOf(false) }
 

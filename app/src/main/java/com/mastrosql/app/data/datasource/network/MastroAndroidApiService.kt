@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesResponse
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import retrofit2.Response
@@ -15,30 +16,21 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 /**
- * A public interface that exposes the [getAllCustomersMasterData] method
+ * A public interface that exposes the [MastroAndroidApiService] methods
+ *
+ * !!! Remember to add the SUSPEND keyword to the method signature !!!
+ *
  */
 
 interface MastroAndroidApiService {
-    /**
-     * Returns a [List] of [CustomerMasterData] and this method can be called from a Coroutine.
-     * The @GET annotation indicates that the "customersMasterData" endpoint will be requested with the GET
-     * HTTP method
-     */
 
     /**
-     * suspend fun getAllCustomersMasterData(): CustomersMasterDataResponse
-     * without parameters takes the default values of mysql offset and limit
+     * Returns a [CustomersMasterDataResponse] object which is a list of [CustomerMasterData]
+     * Authentication is required for this API call.
+     * The Authorization header is added to the request using the Interceptor in the [RetrofitInstance] class.
+     * The Authorization header is a session string that is obtained from the login API call.
      */
 
-    /*@GET("customersMasterData")
-    suspend fun getAllCustomersMasterData(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
-    ): CustomersMasterDataResponse*/
-
-    /*
-    Returns a [List] of [CustomerMasterData].
-     */
     @GET("clientsview")
     suspend fun getAllCustomersMasterData(
         //@Header("Authorization") authorization: String = "Basic bWFzdHJvOm1hc3Rybw==",
@@ -54,15 +46,17 @@ interface MastroAndroidApiService {
      * that is the value of that query parameter.
      */
 
-    // @GET("movie/popular?api_key=${MOVIE_API_KEY}&language=en-US")
-    /*
-    Returns a [List] of [CustomerMasterData]
-     */
     @GET("clientsview")
     suspend fun getCustomersMasterDataPage(
         @Query("offset") offset: Int = 0,
         @Query("limit") pageSize: Int = 1000000
     ): CustomersMasterDataResponse
+
+    @GET("clientsdestinationsview")
+    suspend fun getAllDestinationsData(
+        @Query("offset") offset: Int = 0,
+        @Query("limit") pageSize: Int = 1000000
+    ): DestinationsDataResponse
 
     @GET("articlesview")
     suspend fun getAllArticles(
@@ -78,7 +72,11 @@ interface MastroAndroidApiService {
 
     @GET("rigOrdc")
     suspend fun getOrderDetails(
-        @Query("q") filter: String,  //"{\"NUME\": 4}" rigOrdc/?q={"NUME": 4}
+        @Query("q") filter: String,
+        /**
+         * Example of filter parameter:
+         * "{\"NUME\": 4}" rigOrdc/?q={"NUME": 4}
+         */
     ): OrderDetailsResponse
 
     @GET("rigOrdc")
@@ -118,21 +116,28 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
-    /* Example of PATH parameter
-    @PUT("lisOrdc/{NUME}")
-    suspend fun updateDeliveryState(
-        @Path("NUME") orderNumber: Int,
-        @Body body: JsonObject
-    ): Response<JsonObject>
-    */
+    /**
+     *  Example of PATH parameter
+     * @PUT("lisOrdc/{NUME}")
+     * suspend fun updateDeliveryState(
+     *     @Path("NUME") orderNumber: Int,
+     *     @Body body: JsonObject
+     * ): Response<JsonObject>
+     */
 
     @PUT("ModifyOrderDeliveryState")
     suspend fun updateDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
 
-    //------------------------------------------------------------------------------------------
-    // Login API call,  ...service... /authentication/
+    /**
+     * ****************************************************************************************
+     * Authentication API calls
+     * ****************************************************************************************
+     * The following API calls are used to authenticate the user.
+     * ...service... /authentication/
+     */
+
     @GET("authentication/login")
     suspend fun login(
         @Query("app") appName: String,
@@ -150,6 +155,7 @@ interface MastroAndroidApiService {
 
 }
 
-
-// @Header("Authorization") authorization:String,
-// @Header("Client-Id") clientId:String,
+/**
+ * @Header("Authorization") authorization:String,
+ * @Header("Client-Id") clientId:String,
+ */

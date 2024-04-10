@@ -33,6 +33,11 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMetada
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemoteKeys
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataDao
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsRemoteKeys
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
@@ -49,13 +54,15 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeys
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeysDao
 
-
 /**
  * Database class with a singleton Instance object.
  */
 
 /*if */
 @Database(
+    //Change version number if you want to update the schema
+    version = 4,
+    exportSchema = true, // false
     entities = [
         Item::class,
         Article::class,
@@ -65,10 +72,16 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
         Order::class,
         OrdersRemoteKeys::class,
         OrderDetailsItem::class,
-        OrderDetailsRemoteKeys::class
+        OrderDetailsRemoteKeys::class,
+        DestinationData::class,
+        DestinationsRemoteKeys::class,
     ],
-    version = 2, exportSchema = true // false
+    /*autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3)
+    ]*/
 )
+
 @TypeConverters(
     ItemMetadataTypeConverter::class,
     CustomerLinksTypeConverter::class,
@@ -79,6 +92,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
     OrderLinksTypeConverter::class,
     OrderDetailsMetadataTypeConverter::class,
     OrderDetailLinksTypeConverter::class,
+    DestinationsMetadataTypeConverter::class,
+    DestinationsLinksTypeConverter::class
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -94,7 +109,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun ordersRemoteKeysDao(): OrdersRemoteKeysDao
     abstract fun orderDetailsDao(): OrderDetailsDao
     abstract fun orderDetailRemoteKeysDao(): OrderDetailsRemoteKeysDao
-
+    abstract fun destinationsDataDao(): DestinationsDataDao
 
     companion object {
         @Volatile
@@ -123,3 +138,21 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+
+/*
+val MIGRATION_1_2 = object : Migration(1, 2) {
+  override fun migrate(database: SupportSQLiteDatabase) {
+    database.execSQL("CREATE TABLE `Fruit` (`id` INTEGER, `name` TEXT, " +
+      "PRIMARY KEY(`id`))")
+  }
+}
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+  override fun migrate(database: SupportSQLiteDatabase) {
+    database.execSQL("ALTER TABLE Book ADD COLUMN pub_year INTEGER")
+  }
+}
+
+Room.databaseBuilder(applicationContext, MyDb::class.java, "database-name")
+  .addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
+ */

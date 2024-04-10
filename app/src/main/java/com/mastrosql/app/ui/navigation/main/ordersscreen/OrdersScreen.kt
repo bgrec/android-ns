@@ -49,8 +49,10 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreenForBottomSheet
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.DateEditDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
@@ -208,6 +210,7 @@ fun OrdersResultScreen(
                 navController = navController,
                 showBottomSheet = showBottomSheet,
                 modifier = modifier,
+                onDismissButton = { showBottomSheet.value = it },
                 //orderDetailsUiState = viewModel.orderDetailsUiState,
                 //scannerState = viewModel.scannerState,
                 /*onSendScannedCode = { orderId, scannedCode ->
@@ -227,7 +230,8 @@ fun NewOrderBottomSheet(
     navController: NavController,
     showBottomSheet: MutableState<Boolean>,
     modifier: Modifier,
-    onNewOrder: () -> Unit = {},
+    onNewOrder: (Order) -> Unit = {},
+    onDismissButton: (Boolean) -> Unit = {},
     //orderDetailsUiState: OrderDetailsUiState.Success,
     //scannerState: ScannerState,
     //onSendScannedCode: (Int, String) -> Unit,
@@ -236,6 +240,7 @@ fun NewOrderBottomSheet(
     val showCustomersList = remember { mutableStateOf(true) }
     val showOrderFields = remember { mutableStateOf(false) }
     lateinit var selectedCustomerMasterData: CustomerMasterData
+    lateinit var selectedDestination: DestinationData
 
 
     // Get the keyboard controller
@@ -272,10 +277,19 @@ fun NewOrderBottomSheet(
         if (showCustomersList.value) {
             // Select the customer from the list
             CustomersScreenForBottomSheet(
-                onCustomerSelected = { customerMasterData ->
-                    showCustomersList.value = false
-                    showOrderFields.value = true
+                onCustomerSelected = { customerMasterData, destinationData ->
+                    //showCustomersList.value = false
+                    //showOrderFields.value = true
                     selectedCustomerMasterData = customerMasterData
+                    if (destinationData != null) {
+                        selectedDestination = destinationData
+                        showOrderFields.value = true
+                        showCustomersList.value = false
+                    } else {
+                        showOrderFields.value = true
+                        showCustomersList.value = false
+                    }
+
                 },
                 navController = navController
             )
@@ -283,8 +297,11 @@ fun NewOrderBottomSheet(
 
         if (showOrderFields.value) {
             OrderInfoFields(
-                customer = selectedCustomerMasterData,
                 modifier = modifier,
+                customer = selectedCustomerMasterData,
+                destination = selectedDestination,
+                onNewOrder = onNewOrder,
+                onDismissButton = onDismissButton,
                 navController = navController
             )
         }
@@ -428,13 +445,17 @@ fun NewOrderBottomSheet(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderInfoFields(
-    customer: CustomerMasterData? = null,
-    onConfirmButton: () -> Unit = {},
-    onDismissButton: () -> Unit = {},
-    onNewOrder: () -> Unit = {},
     modifier: Modifier = Modifier,
+    customer: CustomerMasterData? = null,
+    destination: DestinationData? = null,
+    onConfirmButton: () -> Unit = {},
+    onDismissButton: (Boolean) -> Unit = {},
+    onNewOrder: (Order) -> Unit = {},
+
     navController: NavController
 ) {
+
+    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.padding(8.dp),
@@ -450,6 +471,62 @@ fun OrderInfoFields(
         Row {
             Text("Cliente: ${customer?.businessName}")
         }
+        Row {
+            Text("Destinazione: ${destination?.destinationName}")
+        }
+
+//        Row {
+//            IconButton(onClick = { expanded = true }) {
+//                Icon(Icons.Default.MoreVert, contentDescription = "Localized description")
+//            }
+//            DropdownMenu(
+//                expanded = expanded,
+//                onDismissRequest = { expanded = false }
+//            ) {
+//                DropdownMenuItem(
+//                    text = { Text("Edit") },
+//                    onClick = { /* Handle edit! */ },
+//                    leadingIcon = {
+//                        Icon(
+//                            Icons.Outlined.Edit,
+//                            contentDescription = null
+//                        )
+//                    })
+//                DropdownMenuItem(
+//                    text = { Text("Settings") },
+//                    onClick = { /* Handle settings! */ },
+//                    leadingIcon = {
+//                        Icon(
+//                            Icons.Outlined.Settings,
+//                            contentDescription = null
+//                        )
+//                    })
+//                HorizontalDivider()
+//                DropdownMenuItem(
+//                    text = { Text("Send Feedback") },
+//                    onClick = { /* Handle send feedback! */ },
+//                    leadingIcon = {
+//                        Icon(
+//                            Icons.Outlined.Email,
+//                            contentDescription = null
+//                        )
+//                    },
+//                    trailingIcon = { Text("F11", textAlign = TextAlign.Center) })
+//            }
+//        }
+        /*@Composable
+        fun DropdownMenuItem(
+            text: @Composable () -> Unit,
+            onClick: () -> Unit,
+            modifier: Modifier = Modifier,
+            leadingIcon: @Composable (() -> Unit)? = null,
+            trailingIcon: @Composable (() -> Unit)? = null,
+            enabled: Boolean = true,
+            colors: MenuItemColors = MenuDefaults.itemColors(),
+            contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
+            interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+        )*/
+
         Row {
             OutlinedTextField(
                 value = "",//orderDetailsItemState.batch.value,
@@ -513,9 +590,7 @@ fun OrderInfoFields(
         ) {
 
             TextButton(
-                onClick = {
-                    onDismissButton()
-                }
+                onClick = { onDismissButton(false) }
             ) {
                 Text("Annulla")
             }
@@ -528,7 +603,7 @@ fun OrderInfoFields(
                 Text("Conferma")
             }
 
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.padding(16.dp))
         }
     }
 }
