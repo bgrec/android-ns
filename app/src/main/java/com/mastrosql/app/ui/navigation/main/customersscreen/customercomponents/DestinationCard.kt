@@ -37,7 +37,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.M
 @Composable
 fun DestinationCard(
     destinationData: DestinationData,
-    onDestinationSelected: ((DestinationData) -> Unit)? = null,
+    onDestinationSelected: ((DestinationData?) -> Unit)? = null,
     modifier: Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -91,14 +91,74 @@ fun DestinationCard(
 
                 ) {
 
-                    SelectCustomerButton(
+                    SelectDestinationButton(
                         onClick = {
                             if (onDestinationSelected != null) {
                                 onDestinationSelected(destinationData)
                             }
                         },
                     )
+                }
+            }
+        }
+    }
+}
 
+@Composable
+fun BlankDestinationCard(
+    modifier: Modifier,
+    onDestinationSelected: ((DestinationData?) -> Unit)? = null,
+) {
+    Card(
+        modifier = modifier.padding(4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.widthIn(60.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    DestinationExpandButton(
+                        expanded = false,
+                        onClick = { },
+                    )
+                }
+                //Spacer(Modifier.weight(0.5f))
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = "Prosegui senza selezionare una destinazione")
+
+                }
+                //Spacer(Modifier.weight(1f))
+                Column(
+                    modifier = Modifier.widthIn(60.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+
+                    SelectDestinationButton(
+                        onClick = {
+                            val destinationData = null
+                            if (onDestinationSelected != null) {
+                                onDestinationSelected(destinationData)
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -122,8 +182,9 @@ private fun DestinationExpandButton(
 }
 
 @Composable
-private fun SelectCustomerButton(
-    onClick: () -> Unit, modifier: Modifier = Modifier
+private fun SelectDestinationButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -137,9 +198,11 @@ private fun SelectCustomerButton(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun DestinationsCardPreview() {
+fun DestinationsCardPreview(
+
+) {
     DestinationCard(
         destinationData = DestinationData(
             1,
@@ -154,7 +217,15 @@ fun DestinationsCardPreview() {
             1,
             0L
         ),
-        onDestinationSelected = { },
+        onDestinationSelected = {},
+        modifier = Modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BlankDestinationCardPreview() {
+    BlankDestinationCard(
         modifier = Modifier
     )
 }

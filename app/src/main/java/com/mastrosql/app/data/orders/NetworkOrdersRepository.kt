@@ -62,12 +62,19 @@ class NetworkOrdersRepository(
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject> {
+    override suspend fun updateDeliveryState(
+        orderId: Int,
+        deliveryState: Int
+    ): Response<JsonObject> {
         val body = JsonObject().apply {
             addProperty("orderId", orderId)
             addProperty("deliveryState", deliveryState)
         }
         return mastroAndroidApiService.updateDeliveryState(body)
+    }
+
+    override suspend fun addOrder(order: Order): Response<JsonObject> {
+        TODO("Not yet implemented")
     }
 
     //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }

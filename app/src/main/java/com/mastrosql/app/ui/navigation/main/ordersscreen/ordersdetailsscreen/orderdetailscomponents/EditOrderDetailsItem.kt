@@ -47,7 +47,6 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsUiState
 import com.mastrosql.app.utils.DateHelper
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditOrderDetailsItem(
     showEditDialog: MutableState<Boolean>,

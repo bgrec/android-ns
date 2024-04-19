@@ -30,7 +30,14 @@ class OfflineOrdersRepository(
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject> {
+    override suspend fun updateDeliveryState(
+        orderId: Int,
+        deliveryState: Int
+    ): Response<JsonObject> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun addOrder(order: Order): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 }

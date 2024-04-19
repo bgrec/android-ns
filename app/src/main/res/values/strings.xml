@@ -44,18 +44,18 @@
     <string name="customer_id">"Codice: "</string>
     <string name="insert_article">Inserisci articolo</string>
     <string name="vat">P.IVA: %1$s</string>
-    <string name="costumer_vat">"P.IVA: "</string>
+    <string name="customer_vat">"P.IVA: "</string>
     <string name="businessName">Ragione sociale</string>
     <string name="drawer_customers">Clienti</string>
     <string name="drawer_customers2">Clienti locale</string>
 
-    <string name="costumer_businessName2">"Descrizione 2: "</string>
-    <string name="costumer_taxId">"Codice fiscale: "</string>
-    <string name="costumer_street">"Via: "</string>
-    <string name="costumer_postalCode">"CAP: "</string>
-    <string name="costumer_city">"Citta': "</string>
-    <string name="costumer_province">"Provincia: "</string>
-    <string name="costumer_nation">"Nazione: "</string>
+    <string name="customer_businessName2">"Descrizione 2: "</string>
+    <string name="customer_taxId">"Codice fiscale: "</string>
+    <string name="customer_street">"Via: "</string>
+    <string name="customer_postalCode">"CAP: "</string>
+    <string name="customer_city">"Citta': "</string>
+    <string name="customer_province">"Provincia: "</string>
+    <string name="customer_nation">"Nazione: "</string>
 
     <string name="attention">Attenzione</string>
     <string name="back_button">Indietro</string>
@@ -138,7 +138,7 @@
     <string name="close_button">Chiudi</string>
 
     <string name="intro_title">Introduzione</string>
-    <string name="costumer_error_toast">Impossibile modificare cliente</string>
+    <string name="customer_error_toast">Impossibile modificare cliente</string>
     <string name="article_error_toast">Impossibile modificare articolo</string>
     <string name="skip">Salta</string>
     <string name="welcome_content_title">Benvenuto in MastroSQL Beta app</string>
@@ -156,6 +156,7 @@
     <string name="archives_content_text">descrizione archivi</string>
     <string name="archives_articles_title">Articoli</string>
     <string name="archives_client_title">Clienti</string>
+    <string name="archives_destinations_title">Destinazioni</string>
     <string name="archives_content_expand">"Per visualizzare i dettagli premere:"</string>
     <string name="archives_content_reduce">Per chiudere i dettagli premere:</string>
     <string name="archives_content_edit">"Per modificare premere:"</string>
@@ -171,7 +172,7 @@
     <string name="order_details_entry_title">Inserimento riga</string>
     <string name="order_details_qrscan_text">codice scannerizzato</string>
     <string name="edit_button_order_item">Modifica riga</string>
-  
+
     <string name="news_button">visualizza le novità</string>
     <string name="news_title">Novità</string>
     <string name="null_text">Null</string>
@@ -217,6 +218,7 @@
     <string name="increase_quantity_by_one">Aumenta la quantità</string>
     <string name="delete_permission_menu">Cancellazione dati non permessa</string>
     <string name="destination_description">Destinazione</string>
+    <string name="new_order">Nuovo Ordine</string>
 
 
 </resources>

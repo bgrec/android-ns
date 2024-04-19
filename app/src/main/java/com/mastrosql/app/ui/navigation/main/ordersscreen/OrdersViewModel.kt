@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
-import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 
@@ -185,6 +184,89 @@ class OrdersViewModel(
             if (index != -1) {
                 ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
                 ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(orderId))
+            }
+        }
+    }
+
+    fun addOrder(context: Context, order: Order) {
+        /*if (ordersUiState is OrdersUiState.Success) {
+            val ordersList = (ordersUiState as OrdersUiState.Success).ordersList.toMutableList()
+            ordersList.add(order)
+            ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(0))
+        }*/
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = ordersRepository.addOrder(order)
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
+
+                // Handle the response status code
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        200 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Ordine aggiunto con successo" //${response.code()}
+                            )
+                            getOrders()
+                        }
+
+                        401 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Ordine non aggiunto, non autorizzato"
+                            )
+                            ordersUiState = OrdersUiState.Error(HttpException(response))
+                        }
+
+                        404 -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "Collegamento riuscito, api not trovata ${response.code()}"
+                        )
+
+                        500 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
+
+                        503 -> {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "$errorMessage ${response.code()}"
+                            )
+                        }
+
+                        else -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            "Errore api: ${response.code()} $errorMessage"
+                        )
+
+                    }
+                }
+            } catch (e: IOException) {
+                // Handle IOException (e.g., network error)
+                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+            } catch (e: HttpException) {
+                // Handle HttpException (e.g., non-2xx response)
+                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                showToast(
+                    context,
+                    Toast.LENGTH_LONG,
+                    "Connection timed out. Please try again later."
+                )
+            } catch (e: Exception) {
+                // Handle generic exception
+                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
             }
         }
     }

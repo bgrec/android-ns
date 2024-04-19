@@ -8,12 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,10 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.CustomersList
 import com.mastrosql.app.ui.navigation.main.customersscreen.customercomponents.CustomersSearchView
@@ -38,7 +36,7 @@ import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 @Composable
 fun CustomersScreenForBottomSheet(
     navController: NavController,
-    onCustomerSelected: ((CustomerMasterData, DestinationData?) -> Unit)? = null,
+    onCustomerSelected: ((CustomerMasterData, DestinationData?, Boolean) -> Unit)? = null,
     viewModel: CustomersMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val customersUiState = viewModel.customersUiState
@@ -50,21 +48,10 @@ fun CustomersScreenForBottomSheet(
         )
     }
 
-    val showDestinations = remember { mutableStateOf(false) }
-
-//    // Observe changes in showDestinations
-//    LaunchedEffect(showDestinations.value) {
-//        // When showDestinations becomes true and destinations data is updated
-//        if (showDestinations.value && customersUiState is CustomersUiState.Success) {
-//            // Get destinations data from the UI state
-//            destinationsDataList = (customersUiState as CustomersUiState.Success).destinationsDataList ?: emptyList()
-//        }
-//    }
+    val showCustomersList = remember { mutableStateOf(true) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         // Get the customers data from the view model
@@ -93,23 +80,19 @@ fun CustomersScreenForBottomSheet(
         val customerTextState = remember { mutableStateOf(TextFieldValue("")) }
         val destinationTextState = remember { mutableStateOf(TextFieldValue("")) }
 
-        if (!showDestinations.value) {
-            Row {
-//                IconButton(onClick = { showDestinations.value = false }) {
-//                    Icon(
-//                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                        contentDescription = "Back"
-//                    )
-//                }
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(text = "Selezionare il cliente")
-                Spacer(modifier = Modifier.padding(4.dp))
+        if (showCustomersList.value) {
 
-//                IconButton(onClick = { /*TODO*/ }) {
-//                    Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
-//                }
+            // Customers title
+            Row {
+                Text(
+                    text = stringResource(id = R.string.archives_client_title),
+                    fontSize = typography.titleLarge.fontSize,
+                    style = typography.titleLarge
+                )
             }
+
             Spacer(modifier = Modifier.padding(4.dp))
+
             // Customers search view
             CustomersSearchView(state = customerTextState)
 
@@ -118,84 +101,70 @@ fun CustomersScreenForBottomSheet(
                 customerMasterDataList = customerMasterDataList,
                 searchedTextState = customerTextState,
                 onCustomerSelected = { customerMasterData ->
-                    // Call the onCustomerSelected callback if provided
-                    onCustomerSelected?.invoke(customerMasterData, null)
 
                     // Update CustomersUiState with the selected customer
                     viewModel.updateModifiedCustomer(customerMasterData)
 
-//                    if (customersUiState is CustomersUiState.Success
-//                        && customersUiState.destinationsDataList != null
-//                        && customersUiState.destinationsDataList!!.isNotEmpty()
-//                    ) {
-//                        Log.d("CustomersScreen", "DestinationsDataList: ${customersUiState.destinationsDataList}")
-//                        destinationsDataList = customersUiState.destinationsDataList!!
-//                        Log.d("CustomersScreen", "DestinationsDataList: $destinationsDataList")
-//
-//                    } else {
-//                        // Fetch destinations data in the background after fetching customers data
-//                        if (customersUiState is CustomersUiState.Success) {
-//                            destinationsDataList = emptyList()
-//                        }
-//                    }
                     modifiedCustomerDestinationsList =
                         (customersUiState as CustomersUiState.Success).modifiedCustomerDestinationsList
                             ?: emptyList()
 
+                    // Check if the selected customer has destinations
                     if (modifiedCustomerDestinationsList.isNotEmpty()) {
-                        showDestinations.value = true
-                    }
+                        // Show destinations list
+                        showCustomersList.value = false
+                    } else {
+                        showCustomersList.value = true
 
+                        val destinationData = null
+                        val selectionCompleted = true
+
+                        // Call the onCustomerSelected callback with the selected customer without destination
+                        onCustomerSelected?.invoke(
+                            customerMasterData,
+                            destinationData,
+                            selectionCompleted
+                        )
+                    }
                 },
                 modifier = Modifier.padding(4.dp),
                 navController = navController
             )
         } else {
-
-//            LaunchedEffect(showDestinations.value) {
-//                if (customersUiState is CustomersUiState.Success
-//                    && customersUiState.destinationsDataList != null
-//                    && customersUiState.destinationsDataList!!.isNotEmpty()
-//                ) {
-//                    destinationsDataList = customersUiState.destinationsDataList!!
-//                }
-//
-//            }
-
-
+            // Destinations title
             Row {
-                IconButton(onClick = { showDestinations.value = false }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(text = "Selezionare Destinazioni ")
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
-                }
+                Text(
+                    text = stringResource(id = R.string.archives_destinations_title),
+                    fontSize = typography.titleLarge.fontSize,
+                    style = typography.titleLarge
+                )
             }
+
             Spacer(modifier = Modifier.padding(4.dp))
 
             // Destinations search view
             DestinationsSearchView(state = destinationTextState)
+
             // Destinations list
             Log.d("DestinationsData", "DestinationsDataList: $modifiedCustomerDestinationsList")
+
             DestinationsList(
                 destinationsDataList = modifiedCustomerDestinationsList,
                 searchedTextState = destinationTextState,
                 onDestinationSelected = { destinationData ->
-                    // Call the onCustomerSelected callback if provided
+
+                    // Call the onCustomerSelected callback with the selected customer and destination
                     (customersUiState as CustomersUiState.Success).modifiedCustomer?.let {
+
+                        val selectionCompleted = true
                         onCustomerSelected?.invoke(
-                            it.value, destinationData
+                            it.value, destinationData, selectionCompleted
                         )
                     }
-
-                    viewModel.updateModifiedDestination(destinationData)
+                    // Update the destination data in the view model
+                    if (destinationData != null) {
+                        viewModel.updateModifiedDestination(destinationData)
+                    }
                 },
                 modifier = Modifier.padding(4.dp)
             )

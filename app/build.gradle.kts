@@ -1,4 +1,3 @@
-import java.io.File
 import java.util.Properties
 
 
@@ -30,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mastrosql.app"
-        minSdk = 21
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.1"
@@ -115,7 +114,9 @@ android {
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
+
         }
+
 
         kotlinOptions {
             jvmTarget = "17"
@@ -209,9 +210,6 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.work.runtime)
 
-//implementation(libs.androidx.compose.material.pullrefresh)
-
-
 //Paging
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
@@ -232,7 +230,6 @@ dependencies {
 // jakeWharton
     implementation(libs.jakewharton.retrofit2.kotlinx.serialization.converter)
 
-
 // Kotlinx Serialization
     implementation(libs.kotlinx.serialization)
 
@@ -244,9 +241,6 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
 
-//Accompanist
-    implementation(libs.accompanist.permissions)
-
 //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
@@ -255,8 +249,6 @@ dependencies {
 //Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
-
-
 
 // Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

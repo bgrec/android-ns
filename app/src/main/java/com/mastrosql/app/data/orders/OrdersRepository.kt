@@ -45,4 +45,6 @@ interface OrdersRepository {
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 
     suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject>
+
+    suspend fun addOrder(order: Order): Response<JsonObject>
 }

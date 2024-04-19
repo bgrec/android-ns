@@ -45,7 +45,10 @@ fun CustomersList(
             }
         }
 
-        items(filteredList) { customerMasterData ->
+        items(filteredList,
+            key = {
+                it.id
+            }) { customerMasterData ->
             CustomerCard(
                 customerMasterData = customerMasterData,
                 onCustomerSelected = onCustomerSelected,

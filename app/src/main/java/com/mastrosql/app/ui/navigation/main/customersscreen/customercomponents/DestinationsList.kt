@@ -11,7 +11,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 
 @Composable
@@ -19,7 +18,7 @@ fun DestinationsList(
     modifier: Modifier = Modifier,
     destinationsDataList: List<DestinationData>,
     searchedTextState: MutableState<TextFieldValue>,
-    onDestinationSelected: ((DestinationData) -> Unit)? = null,
+    onDestinationSelected: ((DestinationData?) -> Unit)? = null,
     //navController: NavController? = null
 ) {
     LazyColumn(
@@ -37,6 +36,16 @@ fun DestinationsList(
             destinationsDataList.filter {
                 it.destinationName?.contains(searchedText, ignoreCase = true) ?: true
             }
+        }
+        item {
+            BlankDestinationCard(
+                onDestinationSelected = onDestinationSelected,
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth(),
+                //.focusable(),
+                //navController = navController
+            )
         }
 
         items(
