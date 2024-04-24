@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -188,7 +189,7 @@ class OrdersViewModel(
         }
     }
 
-    fun addOrder(context: Context, order: Order) {
+    fun addNewOrder(context: Context, order: Order) {
         /*if (ordersUiState is OrdersUiState.Success) {
             val ordersList = (ordersUiState as OrdersUiState.Success).ordersList.toMutableList()
             ordersList.add(order)
@@ -196,7 +197,7 @@ class OrdersViewModel(
         }*/
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = ordersRepository.addOrder(order)
+                val response = ordersRepository.addNewOrder(order)
                 val errorBody = response.errorBody()?.string()
                 val errorMessage = parseErrorMessage(errorBody)
 
@@ -204,12 +205,30 @@ class OrdersViewModel(
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Ordine aggiunto con successo" //${response.code()}
-                            )
-                            getOrders()
+//
+                            val newOrderResponse = response.body()
+
+                            newOrderResponse?.items?.firstOrNull()?.let { newOrder ->
+                                // Newly added order received from the response
+                                // You can use `newOrder` object as needed
+                                Log.d("OrdersViewModel", "New order added: $newOrder")
+                                showToast(
+                                    context,
+                                    Toast.LENGTH_SHORT,
+                                    "Ordine ${newOrder.id} aggiunto con successo"
+                                )
+
+                                // Refresh the orders list
+                                getOrders()
+                                ordersUiState = when (val currentState = ordersUiState) {
+                                    is OrdersUiState.Success -> currentState.copy(
+                                        modifiedOrderId = mutableIntStateOf(newOrder.id)
+                                    )
+
+                                    else -> currentState
+                                }
+
+                            }
                         }
 
                         401 -> {
@@ -269,6 +288,15 @@ class OrdersViewModel(
                 showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
             }
         }
+    }
+
+    // Function to find the index of the newly added order in the list of items
+    private fun findIndexOfNewOrder(newOrder: Order): Int {
+        if (ordersUiState is OrdersUiState.Success) {
+            val ordersList = (ordersUiState as OrdersUiState.Success).ordersList
+            return ordersList.indexOfFirst { it == newOrder }
+        }
+        return -1 // Not found
     }
 
 //    fun setEditIndex(index: Int) {

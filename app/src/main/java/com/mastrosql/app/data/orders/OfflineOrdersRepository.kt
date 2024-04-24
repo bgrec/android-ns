@@ -6,6 +6,7 @@ import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponseList
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
@@ -37,7 +38,7 @@ class OfflineOrdersRepository(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addOrder(order: Order): Response<JsonObject> {
+    override suspend fun addNewOrder(order: Order): Response<OrdersResponseList> {
         TODO("Not yet implemented")
     }
 }

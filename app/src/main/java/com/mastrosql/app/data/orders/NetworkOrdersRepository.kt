@@ -10,6 +10,7 @@ import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponseList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import retrofit2.Response
@@ -73,8 +74,15 @@ class NetworkOrdersRepository(
         return mastroAndroidApiService.updateDeliveryState(body)
     }
 
-    override suspend fun addOrder(order: Order): Response<JsonObject> {
-        TODO("Not yet implemented")
+    override suspend fun addNewOrder(order: Order): Response<OrdersResponseList> {
+        val body = JsonObject().apply {
+            addProperty("clientId", order.clientId)
+            addProperty("destinationId", order.destinationId)
+            addProperty("description", order.description)
+            addProperty("insertDate", order.insertDate)
+            addProperty("deliveryDate", order.deliveryDate)
+        }
+        return mastroAndroidApiService.insertNewOrder(body)
     }
 
     //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }

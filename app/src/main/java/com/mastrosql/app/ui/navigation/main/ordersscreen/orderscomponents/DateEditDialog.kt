@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,18 +13,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsItemState
 import com.mastrosql.app.utils.DateHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateEditDialog(
     showDatePickerDialog: MutableState<Boolean>,
-    //orderDetailsItemState: OrderDetailsItemState
+    orderState: OrderState
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {
@@ -37,11 +33,7 @@ fun DateEditDialog(
     }, confirmButton = {
         TextButton(
             onClick = {
-                showDatePickerDialog.value = false/*snackScope.launch {
-                        snackState.showSnackbar(
-                            "Selected date timestamp: ${datePickerState.selectedDateMillis}"
-                        )
-                    }*/
+                showDatePickerDialog.value = false
                 val selectedDate = datePickerState.selectedDateMillis?.let {
                     Date(it)
                 }
@@ -51,11 +43,11 @@ fun DateEditDialog(
                 val formattedDate = selectedDate?.let { dateFormat.format(it) }
 
                 // Update the expirationDate state
-                /*orderDetailsItemState.expirationDate.value = formattedDate?.let {
+                orderState.deliveryDate.value = formattedDate?.let {
                     TextFieldValue(
                         DateHelper.formatDateToDisplay(it)
                     )
-                }!!*/
+                }!!
 
                 // Dismiss the dialog
                 showDatePickerDialog.value = false

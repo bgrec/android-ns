@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,12 +36,13 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Orders
 @Composable
 fun OrdersScreen(
     navigateToOrderDetails: (Int, String?) -> Unit,
-    onNewOrder: () -> Unit,
+    //onNewOrder: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val ordersUiState = viewModel.ordersUiState
+
     val modifier = Modifier
         .fillMaxSize()
         .fillMaxWidth()
@@ -55,7 +57,7 @@ fun OrdersScreen(
 
         is OrdersUiState.Success -> OrdersResultScreen(
             navigateToOrderDetails = navigateToOrderDetails,
-            onNewOrder = onNewOrder,
+            //onNewOrder = onNewOrder,
             ordersUiState = ordersUiState,
             modifier = modifier,
             drawerState = drawerState,
@@ -77,7 +79,7 @@ fun OrdersScreen(
 @Composable
 fun OrdersResultScreen(
     navigateToOrderDetails: (Int, String?) -> Unit,
-    onNewOrder: () -> Unit,
+    //onNewOrder: () -> Unit,
     ordersUiState: OrdersUiState.Success,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
@@ -94,7 +96,7 @@ fun OrdersResultScreen(
     val showDeliveryDialog = remember { mutableStateOf(false) }
 
     // State to control the bottom sheet visibility
-    var showBottomSheet = remember { mutableStateOf(false) }
+    val showBottomSheet = remember { mutableStateOf(false) }
 
     if (showToast) {
         ShowToast(context, "Navigating to Order Entry")
@@ -109,7 +111,6 @@ fun OrdersResultScreen(
                 title = stringResource(R.string.clients_orders_bar_title),
                 canNavigateBack = false,
                 onAddOrderClick = {
-                    //TODO navigate to order entry screen
                     showBottomSheet.value = true
                 }
             )
@@ -175,56 +176,17 @@ fun OrdersResultScreen(
         }
 
         if (showBottomSheet.value) {
-            // Bottom sheet to scan QR codes
+            // Bottom sheet to add a new order
             NewOrderBottomSheet(
                 navController = navController,
                 showBottomSheet = showBottomSheet,
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
                 onConfirmButton = { order ->
-                    viewModel.addOrder(context, order)
+                    Log.d("order", order.toString())
+                    viewModel.addNewOrder(context, order)
                 }
             )
         }
     }
 }
-
-
-/*
-val sheetState = rememberModalBottomSheetState()
-val scope = rememberCoroutineScope()
-var showBottomSheet by remember { mutableStateOf(false) }
-Scaffold(
-    floatingActionButton = {
-        ExtendedFloatingActionButton(
-            text = { Text("Show bottom sheet") },
-            icon = { Icon(Icons.Filled.Add, contentDescription = "") },
-            onClick = {
-                showBottomSheet = true
-            }
-        )
-    }
-) { contentPadding ->
-    // Screen content
-
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                showBottomSheet = false
-            },
-            sheetState = sheetState
-        ) {
-            // Sheet content
-            Button(onClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        showBottomSheet = false
-                    }
-                }
-            }) {
-                Text("Hide bottom sheet")
-            }
-        }
-    }
-}
- */

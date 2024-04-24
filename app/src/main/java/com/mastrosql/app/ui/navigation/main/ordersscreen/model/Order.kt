@@ -92,3 +92,59 @@ data class OrdersResponse(
     val links: List<Link>
 )
 
+/*
+* import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+// Define data classes to represent the JSON structure
+@Serializable
+data class ItemsContainer(
+    @SerialName("items")
+    val items: List<Item>
+)
+
+@Serializable
+data class Item(
+    @SerialName("type")
+    val type: String,
+    @SerialName("items")
+    val items: List<Order>,
+    @SerialName("_metadata")
+    val metadata: Metadata
+)
+
+@Serializable
+data class Order(
+    @SerialName("NUME")
+    val NUME: Int,
+    @SerialName("CODI")
+    val CODI: Int,
+    @SerialName("RAG_SOC")
+    val RAG_SOC: String,
+    // Define other properties as per your JSON structure
+)
+
+@Serializable
+data class Metadata(
+    @SerialName("columns")
+    val columns: List<Column>
+)
+
+@Serializable
+data class Column(
+    @SerialName("name")
+    val name: String,
+    @SerialName("type")
+    val type: String
+)
+
+// JSON string to be serialized
+val jsonString = """{"items":[{"type":"items0","items":[{"NUME":36477,"CODI":15480,"RAG_SOC":"Osteria Pian delle Viti,","VIA":"","CAP":"","CITTA":"","PROV":"","NAZIONE":"IT","DESCRI":"fff","DESTINA_DESCRI":"","N_LAV":0,"DATAI":"2024-04-24","AGENTE":0,"DESTINA":0,"TRASPO":"","COLLI":0,"VETTORE":"","VETT_NUME":0,"PESO":0.000,"NUME_ORDI":"","DATA_ORDI":null,"NOTE":null,"D_CONSEGNA":null,"TASSATIVA":false,"CONSEGNA":0,"STATO_CONS":0,"URGENTE":false,"PARZIALE":0,"NUMERO":0}],"_metadata":{"columns":[{"name":"NUME","type":" INTEGER"},{"name":"CODI","type":" INTEGER"},{"name":"RAG_SOC","type":"VARCHAR(60)"},{"name":"VIA","type":"VARCHAR(50)"},{"name":"CAP","type":"VARCHAR(10)"},{"name":"CITTA","type":"VARCHAR(50)"},{"name":"PROV","type":"VARCHAR(4)"},{"name":"NAZIONE","type":"VARCHAR(6)"},{"name":"DESCRI","type":"VARCHAR(80)"},{"name":"DESTINA_DESCRI","type":"VARCHAR(80)"},{"name":"N_LAV","type":" INTEGER"},{"name":"DATAI","type":"DATE"},{"name":"AGENTE","type":"SMALLINT"},{"name":"DESTINA","type":" INTEGER"},{"name":"TRASPO","type":"VARCHAR(15)"},{"name":"COLLI","type":"SMALLINT"},{"name":"VETTORE","type":"VARCHAR(60)"},{"name":"VETT_NUME","type":"SMALLINT"},{"name":"PESO","type":"DECIMAL(0,3)"},{"name":"NUME_ORDI","type":"VARCHAR(20)"},{"name":"DATA_ORDI","type":"DATE"},{"name":"NOTE","type":"VARCHAR(65535)"},{"name":"D_CONSEGNA","type":"DATE"},{"name":"TASSATIVA","type":"BIT(1)"},{"name":"CONSEGNA","type":"SMALLINT"},{"name":"STATO_CONS","type":"SMALLINT"},{"name":"URGENTE","type":"BIT(1)"},{"name":"PARZIALE","type":"SMALLINT"},{"name":"NUMERO","type":" INTEGER"}]}}]}"""
+
+// Deserialize the JSON string into the defined data classes
+val itemsContainer = Json.decodeFromString<ItemsContainer>(jsonString)
+
+// Access the deserialized data
+val firstOrder = itemsContainer.items.firstOrNull()?.items?.firstOrNull()
+println(firstOrder)*/

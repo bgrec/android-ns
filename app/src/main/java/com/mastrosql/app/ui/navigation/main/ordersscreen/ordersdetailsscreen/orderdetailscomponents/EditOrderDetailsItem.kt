@@ -1,8 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -96,7 +94,7 @@ fun EditOrderDetailsItem(
                     )
                 }
 
-                Log.d("dialogDescriptionState", dialogDescriptionState.value)
+                //Log.d("dialogDescriptionState", dialogDescriptionState.value)
             } else {
                 dialogDescriptionState.value =
                     context.getString(R.string.order_details_dialog_edit_title)

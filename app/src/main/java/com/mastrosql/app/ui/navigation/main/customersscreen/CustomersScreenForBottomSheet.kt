@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.customersscreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,8 +38,11 @@ fun CustomersScreenForBottomSheet(
     onCustomerSelected: ((CustomerMasterData, DestinationData?, Boolean) -> Unit)? = null,
     viewModel: CustomersMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+
+    // State to control the customers list visibility or destinations list visibility
+    val showCustomersList = remember { mutableStateOf(true) }
+
     val customersUiState = viewModel.customersUiState
-    val modifier = Modifier.fillMaxSize()
     var customerMasterDataList: List<CustomerMasterData> by remember { mutableStateOf(emptyList()) }
     var modifiedCustomerDestinationsList: List<DestinationData> by remember {
         mutableStateOf(
@@ -48,7 +50,7 @@ fun CustomersScreenForBottomSheet(
         )
     }
 
-    val showCustomersList = remember { mutableStateOf(true) }
+    val modifier = Modifier.fillMaxSize()
 
     Column(
         modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
@@ -119,7 +121,8 @@ fun CustomersScreenForBottomSheet(
                         val destinationData = null
                         val selectionCompleted = true
 
-                        // Call the onCustomerSelected callback with the selected customer without destination
+                        // Call the onCustomerSelected callback with the selected customer
+                        // without destination
                         onCustomerSelected?.invoke(
                             customerMasterData,
                             destinationData,
@@ -146,8 +149,6 @@ fun CustomersScreenForBottomSheet(
             DestinationsSearchView(state = destinationTextState)
 
             // Destinations list
-            Log.d("DestinationsData", "DestinationsDataList: $modifiedCustomerDestinationsList")
-
             DestinationsList(
                 destinationsDataList = modifiedCustomerDestinationsList,
                 searchedTextState = destinationTextState,

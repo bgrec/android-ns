@@ -30,32 +30,32 @@
     <string name="customerId">Login</string>
 
 
-    <string name="article_id">"Prog: "</string>
-    <string name="article_sku">"Codice: "</string>
+    <string name="article_id">"Prog. "</string>
+    <string name="article_sku">"Codice "</string>
 
-    <string name="article_department">"Reparto: "</string>
-    <string name="article_family">"Famiglia: "</string>
-    <string name="article_vendorSku">"Codice fornitore: "</string>
-    <string name="article_measureUnit">"Unita' di misura: "</string>
-    <string name="article_price">"Prezzo: "</string>
+    <string name="article_department">"Reparto "</string>
+    <string name="article_family">"Famiglia "</string>
+    <string name="article_vendorSku">"Codice forn. "</string>
+    <string name="article_measureUnit">"U.M.  "</string>
+    <string name="article_price">"Prezzo "</string>
 
 
-    <string name="address">Indirizzo</string>
-    <string name="customer_id">"Codice: "</string>
-    <string name="insert_article">Inserisci articolo</string>
-    <string name="vat">P.IVA: %1$s</string>
-    <string name="customer_vat">"P.IVA: "</string>
+    <string name="address">Indirizzo </string>
+    <string name="customer_id">"Codice "</string>
+    <string name="insert_article">Inserisci articolo </string>
+    <string name="vat">P.IVA %1$s</string>
+    <string name="customer_vat">"P.IVA "</string>
     <string name="businessName">Ragione sociale</string>
     <string name="drawer_customers">Clienti</string>
-    <string name="drawer_customers2">Clienti locale</string>
+    <string name="drawer_customers2">Clienti offline</string>
 
-    <string name="customer_businessName2">"Descrizione 2: "</string>
-    <string name="customer_taxId">"Codice fiscale: "</string>
-    <string name="customer_street">"Via: "</string>
-    <string name="customer_postalCode">"CAP: "</string>
-    <string name="customer_city">"Citta': "</string>
-    <string name="customer_province">"Provincia: "</string>
-    <string name="customer_nation">"Nazione: "</string>
+    <string name="customer_businessName2">"Descrizione 2 "</string>
+    <string name="customer_taxId">"C.F. "</string>
+    <string name="customer_street">"Via "</string>
+    <string name="customer_postalCode">"CAP "</string>
+    <string name="customer_city">"Citta' "</string>
+    <string name="customer_province">"Prov. "</string>
+    <string name="customer_nation">"Nazione "</string>
 
     <string name="attention">Attenzione</string>
     <string name="back_button">Indietro</string>
@@ -111,13 +111,14 @@
     <string name="writing_to_mediaStore_failed">Writing to MediaStore failed</string>
     <string name="error_saving_image">Error saving image</string>
     <string name="error_cleaning_file">Error cleaning up old temporary files</string>
+
     <string name="sync_data">" Sincronizzazione"</string>
     <string name="article_description">Descrizione articolo</string>
     <string name="articles">Articoli</string>
     <string name="logout">Logout</string>
     <string name="drawer_logout_description">Logout</string>
-    <string name="drawer_articles">Articoli</string>
-    <string name="order_id">"Ord.: "</string>
+    <string name="drawer_articles">Articoli </string>
+    <string name="order_id">"Ord. "</string>
     <string name="order_description">Descrizione ordine</string>
     <string name="clients_orders_bar_title">Ordini clienti</string>
     <string name="drawer_orders">Ordini</string>
@@ -128,7 +129,7 @@
 
     <string name="show_intro_again">"Mostra introduzione"</string>
 
-    <string name="order_details_edit">Ord.n %1$d %2$s</string>
+    <string name="order_details_edit">Ord. n° %1$d %2$s</string>
 
     <string name="Username">Username</string>
     <string name="Password">Password</string>
@@ -153,15 +154,15 @@
     <string name="home_content_title">Home</string>
     <string name="home_content_text">Nella home vengono visualizzate le sezioni che sono state scelte ed è possibile fare il logout nel caso si voglia cambiare delle preferenze nelle impostazioni o accedere usando diverse credenziali.</string>
     <string name="archives_content_title">Archivi</string>
-    <string name="archives_content_text">descrizione archivi</string>
+    <string name="archives_content_text">Descrizione archivi</string>
     <string name="archives_articles_title">Articoli</string>
     <string name="archives_client_title">Clienti</string>
     <string name="archives_destinations_title">Destinazioni</string>
-    <string name="archives_content_expand">"Per visualizzare i dettagli premere:"</string>
-    <string name="archives_content_reduce">Per chiudere i dettagli premere:</string>
-    <string name="archives_content_edit">"Per modificare premere:"</string>
+    <string name="archives_content_expand">"Per visualizzare i dettagli premere "</string>
+    <string name="archives_content_reduce">Per chiudere i dettagli premere </string>
+    <string name="archives_content_edit">"Per modificare premere "</string>
     <string name="orders_content_title">Documenti</string>
-    <string name="orders_content_text">descrizione documenti</string>
+    <string name="orders_content_text">Descrizione documenti</string>
     <string name="drawer_content_title">Menù a tendina</string>
 
     <string name="drawer_content_text">"Premere l'icona ≡ in alto a sinistra per visualizzare il menù con tutte le sezioni scelte e il logout."</string>
@@ -170,7 +171,7 @@
 
     <string name="order_entry_title">Modifica ordine</string>
     <string name="order_details_entry_title">Inserimento riga</string>
-    <string name="order_details_qrscan_text">codice scannerizzato</string>
+    <string name="order_details_qr_scan_text">Codice letto</string>
     <string name="edit_button_order_item">Modifica riga</string>
 
     <string name="news_button">visualizza le novità</string>
@@ -179,24 +180,24 @@
 
     <string name="order_details_add_button">Aggiungi articolo</string>
 
-    <string name="order_insertDate">"Data: "</string>
-    <string name="order_deliveryDate">"Data di consegna: "</string>
-    <string name="order_notes">Note:</string>
-    <string name="order_deliveryType">"Stato Consegna: "</string>
+    <string name="order_insertDate">"Data "</string>
+    <string name="order_deliveryDate">"Data di consegna "</string>
+    <string name="order_notes">Note </string>
+    <string name="order_deliveryType">"Stato Consegna "</string>
     <string name="order_deliveryState_value0">In preparazione</string>
     <string name="order_deliveryState_value1">Pronto</string>
     <string name="order_deliveryState_value2">Caricato</string>
     <string name="order_deliveryState_value3">Da confermare</string>
-    <string name="order_destinationName">"Destinazione:"</string>
-    <string name="order_carrierName">"Vettore: "</string>
-    <string name="order_detail_batch">"Lotto: "</string>
-    <string name="order_detail_articleId">"Codice: "</string>
-    <string name="order_detail_sku">"Articolo: "</string>
+    <string name="order_destinationName">"Destinazione "</string>
+    <string name="order_carrierName">"Vettore "</string>
+    <string name="order_detail_batch">"Lotto "</string>
+    <string name="order_detail_articleId">"Prog. "</string>
+    <string name="order_detail_sku">"Cod. "</string>
     <string name="order_detail_quantity">"Quant."</string>
     <string name="order_detail_orderedQuantity">"Ord."</string>
     <string name="order_detail_shippedQuantity">"Cons."</string>
-    <string name="order_detail_expirationDate">"Scadenza: "</string>
-    <string name="order_detail_completeDescription">"Note: "</string>
+    <string name="order_detail_expirationDate">"Scadenza "</string>
+    <string name="order_detail_completeDescription">"Note "</string>
 
     <string name="test_retrofit_button">"Test connessione "</string>
     <string name="open_scanner">Apri il scanner</string>
@@ -211,7 +212,7 @@
     <string name="deleted_item_snackbar_text">"Riga dell'ordine rimossa"</string>
     <string name="add_new_order">Aggiungi ordine</string>
     <string name="order_dialog_delivery_title">Modifica stato di consegna</string>
-    <string name="order_details_dialog_edit_title_row">Riga n°%1$d, corto: %2$d, codice: %3$s</string>
+    <string name="order_details_dialog_edit_title_row">Riga n°%1$d, corto: %2$d, cod.: %3$s</string>
     <string name="private_webserver">Server privato, non protetto</string>
     <string name="duplucate_row">Duplica riga</string>
     <string name="decrease_quantity_by_one">Diminuisci quantità</string>
@@ -219,6 +220,7 @@
     <string name="delete_permission_menu">Cancellazione dati non permessa</string>
     <string name="destination_description">Destinazione</string>
     <string name="new_order">Nuovo Ordine</string>
+    <string name="select_a_date">Seleziona una data</string>
 
 
 </resources>

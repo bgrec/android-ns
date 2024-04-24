@@ -560,7 +560,7 @@ CREATE PROCEDURE UpdateOrderRow(
 )
 BEGIN
     DECLARE updatedDate DATE;
-    IF expirationDate IS NULL OR expirationDate = '' OR expirationDate= 'null' THEN
+    IF expirationDate IS NULL OR expirationDate = '' OR expirationDate = 'null' THEN
         SET expirationDate = NULL;
     ELSE
         SET updatedDate = STR_TO_DATE(expirationDate, '%d/%m/%Y');
@@ -596,16 +596,67 @@ END;
 
 ####################################################################################################
 CREATE OR REPLACE VIEW clientsdestinationsview
-AS (SELECT destina.PROG_TUTTO AS PROG_TUTTO,
-            destina.CODI       AS CODI,
-          TRIM(destina.DESCRI)  AS DESCRI,
-          TRIM(destina.VIA)     AS VIA,
-          TRIM(destina.CAP)     AS CAP,
-          TRIM(destina.CITTA)   AS CITTA,
-          TRIM(destina.PROV)    AS PROV
-FROM destina WHERE destina.CODI IN (SELECT CODI FROM clientsview));
+AS
+(
+SELECT destina.PROG_TUTTO   AS PROG_TUTTO,
+       destina.CODI         AS CODI,
+       TRIM(destina.DESCRI) AS DESCRI,
+       TRIM(destina.VIA)    AS VIA,
+       TRIM(destina.CAP)    AS CAP,
+       TRIM(destina.CITTA)  AS CITTA,
+       TRIM(destina.PROV)   AS PROV
+FROM destina
+WHERE destina.CODI IN (SELECT CODI FROM clientsview));
 
-CREATE VIEW test as ( select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c  from clienti left join destina on clienti.CODI = destina.CODI);
+####################################################################################################
+CREATE VIEW test as
+(
+select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c
+from clienti
+         left join destina on clienti.CODI = destina.CODI);
+####################################################################################################
+DROP PROCEDURE IF EXISTS InsertNewOrder;
+CREATE PROCEDURE InsertNewOrder(
+    IN clientId INT,
+    IN destinationId INT,
+    IN description VARCHAR(255),
+    IN insertDate VARCHAR(255),
+    IN deliveryDate VARCHAR(255)
+)
+BEGIN
+
+    DECLARE lastOrderNumber INT;
+    DECLARE insertDateAsDate DATE;
+    DECLARE deliveryDateAsDate DATE;
+
+    IF insertDate IS NULL OR insertDate = '' OR insertDate = 'null' THEN
+        SET insertDate = NULL;
+    ELSE
+        SET insertDateAsDate = STR_TO_DATE(insertDate, '%d/%m/%Y');
+    END IF;
+
+    IF deliveryDate IS NULL OR deliveryDate = '' OR deliveryDate = 'null' THEN
+        SET deliveryDateAsDate = NULL;
+    ELSE
+        SET deliveryDateAsDate = STR_TO_DATE(deliveryDate, '%d/%m/%Y');
+    END IF;
+
+    INSERT INTO lis_ordc (CODI, DESTINA, DESCRI, DATAI, D_CONSEGNA)
+    VALUES (clientId, destinationId, description, insertDateAsDate, deliveryDateAsDate);
+
+    SELECT NUME
+    INTO lastOrderNumber
+    FROM lis_ordc
+    WHERE CODI = clientId
+      AND DESTINA = destinationId
+      AND DESCRI = description
+      AND DATAI = insertDateAsDate
+    ORDER BY NUME DESC
+    LIMIT 1;
+
+    SELECT * FROM ordersview WHERE NUME = lastOrderNumber LIMIT 1;
+END;
+
 
 ####################################################################################################
 
@@ -626,7 +677,6 @@ FLUSH PRIVILEGES;
 CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
 GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
-
 
 
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;

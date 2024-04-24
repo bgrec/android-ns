@@ -26,7 +26,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun OrdersList(
     modifier: Modifier,

@@ -1,9 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -393,7 +391,6 @@ class OrderDetailsViewModel(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateDetailsItem(
         orderDetailsItemId: Int, quantity: Double,
         batch: String,
@@ -421,7 +418,6 @@ class OrderDetailsViewModel(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun updateDetailsItemData(
         context: Context,
         orderDetailsItemId: Int,

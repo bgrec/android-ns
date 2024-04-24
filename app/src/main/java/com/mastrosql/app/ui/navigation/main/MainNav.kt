@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -26,7 +24,6 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.Ord
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
 
     navigation(
@@ -62,7 +59,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         ) {
             composable(route = OrdersDestination.route) {
                 OrdersScreen(
-                    onNewOrder = {/*orderId ->
+                    /*onNewOrder = {/*orderId ->
                         //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
                         navController.currentBackStackEntry?.savedStateHandle?.set(
                             "shouldRefresh",
@@ -74,7 +71,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                                 //TODO verify if launchSigleTop is  needed
                                 launchSingleTop = true
                             }
-                    */},// { navController.navigate(OrderEntryDestination.route) },
+                    */},*/// { navController.navigate(OrderEntryDestination.route) },
                     navigateToOrderDetails = { orderId, orderDescription ->
                         navController.navigate("${OrderDetailsDestination.route}/${orderId}?orderDescription=${orderDescription}") {
                             //TODO verify if launchSigleTop is  needed
