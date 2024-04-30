@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -25,6 +24,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,14 +47,13 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderCard(
     order: Order,
     modifier: Modifier,
     navController: NavController,
     navigateToOrderDetails: (Int, String?) -> Unit,
-    modifiedOrderId: MutableState<Int>,
+    modifiedOrderId: MutableIntState?,
     showDeliveryDialog: MutableState<Boolean>
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -95,8 +95,10 @@ fun OrderCard(
                         insertDate = DateHelper.formatDateToDisplay(order.insertDate),
                         businessName = order.businessName,
                         deliveryState = order.deliveryState,
-                        showDeliveryDialog = showDeliveryDialog,
-                        modifiedOrderId = modifiedOrderId
+                        onRowClick = {
+                            modifiedOrderId?.intValue = order.id
+                            showDeliveryDialog.value = true
+                        }
                     )
                     if (expanded) {
                         OrderInfo(
@@ -113,24 +115,26 @@ fun OrderCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    /*val color = animateColorAsState(if (condition) Color.Green else Color.Red)
-                    However, if you needed the component to always start out grey, you cannot do it with this API. Instead, you can drop down to use the lower level Animatable API:
 
+                    Log.d(
+                        "OrderCard",
+                        "modifiedOrderId: ${modifiedOrderId?.intValue}, order.id: ${order.id}"
+                    )
 
-                    val color = remember { Animatable(Color.Gray) }
-                    LaunchedEffect(condition) {
-                        color.animateTo(if (condition) Color.Green else Color.Red)
-                    }*/
-                    var tint = MaterialTheme.colorScheme.secondary
-                    if (modifiedOrderId.value == order.id) {
-                        tint = Color.Red
-                    }
                     OrderDetailsEditButton(
                         orderId = order.id,
                         orderDescription = order.description,
-                        onEditClick = navigateToOrderDetails,
-                        modifiedOrderId = modifiedOrderId,
-                        tint = tint
+                        onEditClick = { orderId, orderDescription ->
+                            //Setting the modifiedOrderId to the id of the order that was clicked
+                            //this will change the color of the edit button
+                            modifiedOrderId?.intValue = orderId
+
+                            //Navigate to the order details screen
+                            navigateToOrderDetails(orderId, orderDescription)
+
+                        },
+                        modifiedOrderId = modifiedOrderId?.intValue
+
                     )
                 }
             }
@@ -156,23 +160,34 @@ private fun OrderExpandButton(
 
 @Composable
 private fun OrderDetailsEditButton(
+    modifier: Modifier = Modifier,
     orderId: Int,
     orderDescription: String?,
     onEditClick: (Int, String?) -> Unit,
-    modifier: Modifier = Modifier,
-    modifiedOrderId: MutableState<Int>,
-    tint: Color
+    modifiedOrderId: Int?
 ) {
+    val defaultTint = MaterialTheme.colorScheme.secondary
+    val orderEditButtonTint = remember { mutableStateOf(defaultTint) }
+
+    LaunchedEffect(modifiedOrderId, orderId) {
+        // Animate the color change when modifiedOrderId equals orderId
+        if (modifiedOrderId == orderId) {
+            orderEditButtonTint.value = Color.Red
+        } else {
+            orderEditButtonTint.value = defaultTint
+        }
+    }
+
     IconButton(onClick = {
+        // Change the button color to red when clicked
+        orderEditButtonTint.value = Color.Red
         onEditClick(orderId, orderDescription)
-        modifiedOrderId.value = orderId
 
     }) {
-
         Icon(
             Icons.Default.Edit,
             //tint = MaterialTheme.colorScheme.secondary,
-            tint = tint,
+            tint = orderEditButtonTint.value,
             contentDescription = stringResource(R.string.insert_article),
             modifier = Modifier.fillMaxSize()
         )
@@ -195,8 +210,7 @@ fun OrderDescriptionAndId(
     businessName: String?,
     description: String?,
     modifier: Modifier = Modifier,
-    showDeliveryDialog: MutableState<Boolean>,
-    modifiedOrderId: MutableState<Int>
+    onRowClick: () -> Unit = {}
 ) {
     val deliveryStateObj = DeliveryStates.deliveryStates.find { it.state == deliveryState }
 
@@ -237,12 +251,8 @@ fun OrderDescriptionAndId(
         Row(
             modifier = Modifier
                 .clickable(
-                    onClick = {
-                        //Setting the modifiedOrderId to the id of the order that was clicked
-                        //and showing the delivery dialog
-                        modifiedOrderId.value = orderId
-                        showDeliveryDialog.value = true
-                    }),
+                    onClick = onRowClick
+                ),
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
@@ -374,8 +384,6 @@ fun OrderInfo(
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun OrderCardPreview() {

@@ -5,8 +5,8 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesRespons
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
-import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponseList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -122,7 +122,7 @@ interface MastroAndroidApiService {
     @PUT("InsertNewOrder")
     suspend fun insertNewOrder(
         @Body body: JsonObject
-    ): Response<OrdersResponseList>
+    ): Response<OrderAddResponse>
 
     /**
      *  Example of PATH parameter

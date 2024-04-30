@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,8 +31,8 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 fun OrdersList(
     modifier: Modifier,
     ordersList: List<Order>,
-    modifiedOrderId: MutableState<Int>,
-    state: MutableState<TextFieldValue>,
+    modifiedOrderId: MutableIntState?,
+    searchTextState: MutableState<TextFieldValue>,
     navController: NavController,
     navigateToOrderDetails: (Int, String?) -> Unit,
     showDeliveryDialog: MutableState<Boolean>
@@ -40,32 +40,26 @@ fun OrdersList(
     val listState = rememberLazyListState()
     // Scroll to the modified item when the list changes
     LaunchedEffect(ordersList) {
-        //Log.d("OrderDetailList", "modifiedIndex: $modifiedIndex")
-        modifiedOrderId.value.let { index ->
-            listState.animateScrollToItem(index)
+        modifiedOrderId?.intValue.let { modifiedOrderId ->
+            if (modifiedOrderId != null && modifiedOrderId > 0) {
+                val index = ordersList.indexOfFirst { it.id == modifiedOrderId }
+                Log.d("OrdersList", "Scrolling to index $index")
+                listState.animateScrollToItem(index)
+            }
         }
     }
 
     LazyColumn(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
+        //pass the listState to the LazyColumn to be able to scroll to the modified item
+        state = listState,
         //.focusable()
     )
     {
-        val filteredList: List<Order>
-        val searchedText = state.value.text
 
-        filteredList = if (searchedText.isEmpty()) {
-            ordersList
-        } else {
-            //update this for fields to search
-            ordersList.filter {
-                it.description?.contains(searchedText, ignoreCase = true) ?: true
-                        ||
-                        it.businessName?.contains(searchedText, ignoreCase = true) ?: true
-                        || it.city?.contains(searchedText, ignoreCase = true) ?: true
-            }
-        }
+        val filteredList = filterOrders(ordersList, searchTextState.value.text)
+
         items(
             filteredList,
             key = {
@@ -90,7 +84,18 @@ fun OrdersList(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+private fun filterOrders(ordersList: List<Order>, searchedText: String): List<Order> {
+    return if (searchedText.isEmpty())
+        ordersList
+    else
+        ordersList.filter {
+            it.description?.contains(searchedText, ignoreCase = true) ?: true
+                    ||
+                    it.businessName?.contains(searchedText, ignoreCase = true) ?: true
+                    || it.city?.contains(searchedText, ignoreCase = true) ?: true
+        }
+}
+
 @Preview
 @Composable
 fun OrdersListPreview() {
@@ -171,7 +176,7 @@ fun OrdersListPreview() {
                     lastUpdated = System.currentTimeMillis()
                 )
             ),
-            state = remember { mutableStateOf(TextFieldValue("")) },
+            searchTextState = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current),
             modifiedOrderId = remember { mutableIntStateOf(0) },

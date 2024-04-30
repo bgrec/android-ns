@@ -145,7 +145,6 @@ fun OrderDetailsCard(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissItem(
@@ -245,7 +244,6 @@ private fun SwipeToDismissBackground(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun OrderDetailsItemContent(
     orderDetailsItem: OrderDetailsItem,

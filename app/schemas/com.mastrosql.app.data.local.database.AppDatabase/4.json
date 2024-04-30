@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "88151326232c04aae2fddc46ad91675c",
+    "identityHash": "84719ca2cd566dec81b7a3a742e1de40",
     "entities": [
       {
         "tableName": "items",
@@ -496,7 +496,7 @@
       },
       {
         "tableName": "orders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `clientId` INTEGER, `businessName` TEXT, `street` TEXT, `postalCode` TEXT, `city` TEXT, `province` TEXT, `nation` TEXT, `destinationId` INTEGER, `destinationName` TEXT, `description` TEXT, `sequence` INTEGER, `insertDate` TEXT, `agent` TEXT, `transportHandler` TEXT, `parcels` INTEGER, `carrierId` INTEGER, `carrierName` TEXT, `weight` REAL, `port` TEXT, `date` TEXT, `notes` TEXT, `deliveryDate` TEXT, `deliveryDeadline` INTEGER, `deliveryType` INTEGER, `deliveryState` INTEGER, `urgent` INTEGER, `partial` INTEGER, `number` INTEGER, `metadata` TEXT NOT NULL, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `clientId` INTEGER, `businessName` TEXT, `street` TEXT, `postalCode` TEXT, `city` TEXT, `province` TEXT, `nation` TEXT, `destinationId` INTEGER, `destinationName` TEXT, `description` TEXT, `sequence` INTEGER, `insertDate` TEXT, `agent` TEXT, `transportHandler` TEXT, `parcels` INTEGER, `carrierId` INTEGER, `carrierName` TEXT, `weight` REAL, `port` TEXT, `date` TEXT, `notes` TEXT, `deliveryDate` TEXT, `deliveryDeadline` INTEGER, `deliveryType` INTEGER, `deliveryState` INTEGER, `urgent` INTEGER, `partial` INTEGER, `number` INTEGER, `metadata` TEXT, `links` TEXT, `page` INTEGER, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -676,19 +676,19 @@
             "fieldPath": "metadata",
             "columnName": "metadata",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "links",
             "columnName": "links",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "page",
             "columnName": "page",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "lastUpdated",
@@ -1134,7 +1134,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '88151326232c04aae2fddc46ad91675c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '84719ca2cd566dec81b7a3a742e1de40')"
     ]
   }
 }

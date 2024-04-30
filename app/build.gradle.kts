@@ -56,6 +56,7 @@ android {
             // Load properties from the file
             val propertiesFile = file("../app/config/release.properties")
             val props = loadProperties(propertiesFile)
+            signingConfig = signingConfigs.getByName("debug")
 
             // Configure properties from the file
             props.forEach { (key, value) ->

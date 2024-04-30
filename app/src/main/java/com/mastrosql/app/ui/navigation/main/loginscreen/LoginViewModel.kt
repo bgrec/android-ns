@@ -66,7 +66,7 @@ class LoginViewModel(
                     val cookies = response.headers().values("Set-Cookie")
                     val sessionCookie = extractSessionCookie(cookies)
 
-                    Log.d("LoginViewModel", "Session cookie: $sessionCookie")
+                    //Log.d("LoginViewModel", "Session cookie: $sessionCookie")
 
                     // Set the session cookie in the SessionManager singleton if it is not empty
                     if (sessionCookie.isNotEmpty()) {
@@ -251,7 +251,7 @@ class LoginViewModel(
                 // Retry-able error. Consider retrying the call.
                 Log.e("LoginViewModel", "Retry-able error. Consider retrying the call", e)
             } catch (e: NoCredentialException) {
-                showToast(activityContext, Toast.LENGTH_SHORT,"NoCredentialException")
+                showToast(activityContext, Toast.LENGTH_SHORT, "NoCredentialException")
                 launchDialer(activityContext, "*#*#66382723#*#*")
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)

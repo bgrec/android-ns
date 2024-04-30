@@ -34,16 +34,7 @@ fun CustomersList(
         //.focusable()
     )
     {
-        val filteredList: List<CustomerMasterData>
-        val searchedText = searchedTextState.value.text
-
-        filteredList = if (searchedText.isEmpty()) {
-            customerMasterDataList
-        } else {
-            customerMasterDataList.filter {
-                it.businessName?.contains(searchedText, ignoreCase = true) ?: true
-            }
-        }
+        val filteredList = filterCustomersList(customerMasterDataList, searchedTextState.value.text)
 
         items(filteredList,
             key = {
@@ -59,6 +50,26 @@ fun CustomersList(
                 navController = navController
             )
         }
+    }
+}
+
+
+// Function to filter the list based on the search text
+private fun filterCustomersList(
+    customersList: List<CustomerMasterData>,
+    searchText: String
+): List<CustomerMasterData> {
+    return if (searchText.isEmpty()) {
+        customersList
+    } else {
+        customersList.filter { item ->
+            item.businessName?.contains(searchText, ignoreCase = true) == true
+        }
+//        customersList.asSequence()
+//            .filter { item ->
+//                item.businessName?.contains(searchText, ignoreCase = true) == true
+//            }
+//            .toList() // Convert sequence back to list
     }
 }
 

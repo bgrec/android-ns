@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +41,7 @@ fun OrdersScreen(
     viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val ordersUiState = viewModel.ordersUiState
+
 
     val modifier = Modifier
         .fillMaxSize()
@@ -152,7 +152,7 @@ fun OrdersResultScreen(
             OrdersList(
                 ordersList = ordersUiState.ordersList,
                 modifiedOrderId = ordersUiState.modifiedOrderId,
-                state = textState,
+                searchTextState = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController,
                 navigateToOrderDetails = navigateToOrderDetails,
@@ -183,8 +183,8 @@ fun OrdersResultScreen(
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
                 onConfirmButton = { order ->
-                    Log.d("order", order.toString())
                     viewModel.addNewOrder(context, order)
+                    showBottomSheet.value = false
                 }
             )
         }

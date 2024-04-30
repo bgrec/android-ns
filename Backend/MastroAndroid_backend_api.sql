@@ -614,6 +614,7 @@ CREATE VIEW test as
 select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c
 from clienti
          left join destina on clienti.CODI = destina.CODI);
+
 ####################################################################################################
 DROP PROCEDURE IF EXISTS InsertNewOrder;
 CREATE PROCEDURE InsertNewOrder(
@@ -625,12 +626,13 @@ CREATE PROCEDURE InsertNewOrder(
 )
 BEGIN
 
-    DECLARE lastOrderNumber INT;
+    DECLARE lastOrderId INT;
     DECLARE insertDateAsDate DATE;
     DECLARE deliveryDateAsDate DATE;
+    DECLARE orderNumber INT;
 
     IF insertDate IS NULL OR insertDate = '' OR insertDate = 'null' THEN
-        SET insertDate = NULL;
+        SET insertDate = CURDATE();
     ELSE
         SET insertDateAsDate = STR_TO_DATE(insertDate, '%d/%m/%Y');
     END IF;
@@ -641,20 +643,25 @@ BEGIN
         SET deliveryDateAsDate = STR_TO_DATE(deliveryDate, '%d/%m/%Y');
     END IF;
 
-    INSERT INTO lis_ordc (CODI, DESTINA, DESCRI, DATAI, D_CONSEGNA)
-    VALUES (clientId, destinationId, description, insertDateAsDate, deliveryDateAsDate);
+    SELECT MAX(NUMERO) + 1 INTO orderNumber FROM lis_ordc WHERE YEAR(DATAI) = YEAR(insertDateAsDate);
+
+    INSERT INTO lis_ordc (CODI, DESTINA, DESCRI, DATAI, D_CONSEGNA, NUMERO)
+    VALUES (clientId, destinationId, description, insertDateAsDate, deliveryDateAsDate, orderNumber);
 
     SELECT NUME
-    INTO lastOrderNumber
+    INTO lastOrderId
     FROM lis_ordc
     WHERE CODI = clientId
       AND DESTINA = destinationId
       AND DESCRI = description
       AND DATAI = insertDateAsDate
+      # AND D_CONSEGNA = deliveryDateAsDate # This condition is not necessary because the delivery date can be NULL
+      AND NUMERO = orderNumber
     ORDER BY NUME DESC
     LIMIT 1;
 
-    SELECT * FROM ordersview WHERE NUME = lastOrderNumber LIMIT 1;
+    -- Return the last order details based on the last order number
+    SELECT * FROM ordersview WHERE NUME = lastOrderId LIMIT 1;
 END;
 
 

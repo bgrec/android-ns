@@ -251,7 +251,7 @@ fun OrderDetailResultScreen(
 
                 OrderDetailList(orderDetailList = orderDetailsUiState.orderDetailsList,
                     modifiedIndex = orderDetailsUiState.modifiedIndex,
-                    state = textState,
+                    searchTextState = textState,
                     modifier = Modifier
                         .padding(0.dp, 8.dp)
                         .weight(if (showBottomSheet.value) 0.5f else 1f),
