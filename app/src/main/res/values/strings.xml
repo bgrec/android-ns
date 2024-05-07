@@ -221,6 +221,12 @@
     <string name="destination_description">Destinazione</string>
     <string name="new_order">Nuovo Ordine</string>
     <string name="select_a_date">Seleziona una data</string>
+    <string name="error_connection_timeout">Connection timed out. Please try again later.</string>
+    <string name="error_unexpected_error">An unexpected error occurred: %1$s</string>
+    <string name="error_api">Errore api: %1$d %2$s</string>
+    <string name="error_unauthorized">Non autorizzato</string>
+    <string name="error_no_order_added">Ordine non aggiunto, nessun ordine restituito</string>
+    <string name="error_http">HTTP error occurred: %1$s</string>
 
 
 </resources>

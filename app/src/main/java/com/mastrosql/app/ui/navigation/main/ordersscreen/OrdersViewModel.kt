@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
@@ -10,9 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mastrosql.app.R
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,6 +21,13 @@ import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 
+/**
+ * Interface [OrdersUiState] to represent the different states of the Orders screen.
+ * The states are:
+ * - [OrdersUiState.Success]: Represents the successful state of the Orders screen with the list of orders.
+ * - [OrdersUiState.Error]: Represents the error state of the Orders screen with the exception.
+ * - [OrdersUiState.Loading]: Represents the loading state of the Orders screen.
+ */
 sealed interface OrdersUiState {
 
     data class Success(
@@ -35,6 +41,7 @@ sealed interface OrdersUiState {
 
 /**
  * Factory for [OrdersViewModel] that takes [OrdersRepository] as a dependency
+ *
  */
 
 class OrdersViewModel(
@@ -63,127 +70,30 @@ class OrdersViewModel(
                         ordersRepository.getOrders().items
                     OrdersUiState
                         .Success(
-                            ordersListResult,//.toMutableList(),
-                            //Not -1 to avoid the crash because of the index out of bound
+                            ordersListResult,
                             modifiedOrderId = _modifiedOrderId
                         )
-                } catch (e: IOException) {
-                    OrdersUiState.Error(e)
-                } catch (e: HttpException) {
-                    OrdersUiState.Error(e)
                 } catch (e: Exception) {
-                    OrdersUiState.Error(e)
-                }
-        }
-    }
-
-    fun updateDeliveryState(context: Context, orderId: Int, deliveryState: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = ordersRepository.updateDeliveryState(orderId, deliveryState)
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorMessage(errorBody)
-
-                // Handle the response status code
-                withContext(Dispatchers.Main) {
-                    when (response.code()) {
-                        200 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Modifica salvata con successo" //${response.code()}
-                            )
-
-                            //If the response is successful, update the delivery state of the order
-                            //without refreshing the list
-                            updateOrdersItem(orderId, deliveryState)
-                        }
-
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Modifiche non salvate, non autorizzato"
-                            )
-                            ordersUiState = OrdersUiState.Error(HttpException(response))
-                        }
-                        //TODO: Add other status codes and handle them
-                        404 -> showToast(
-                            context,
-                            Toast.LENGTH_LONG,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
-                        )
-
-                        500 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
-                            )
-                        }
-
-                        503 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
-                            )
-                        }
-
-                        else -> showToast(
-                            context,
-                            Toast.LENGTH_LONG,
-                            "Errore api: ${response.code()} $errorMessage"
-                        )
+                    when (e) {
+                        is IOException -> OrdersUiState.Error(e)
+                        is HttpException -> OrdersUiState.Error(e)
+                        else -> OrdersUiState.Error(e)
                     }
                 }
-
-            } catch (e: IOException) {
-                // Handle IOException (e.g., network error)
-                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
-            } catch (e: HttpException) {
-                // Handle HttpException (e.g., non-2xx response)
-                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
-            } catch (e: SocketTimeoutException) {
-                // Handle socket timeout exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
-                )
-            } catch (e: Exception) {
-                // Handle generic exception
-                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
-            }
         }
     }
 
-    //Get the message in the body
-    private fun parseErrorMessage(errorBody: String?): String {
-        if (errorBody != null) {
-            val jsonError = JSONObject(errorBody)
-            return jsonError.optString("message", "{}")
-        }
-        return "{}"
-    }
 
-    private fun showToast(context: Context, toastLength: Int, message: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (message.isNotEmpty()) {
-                val toast = Toast.makeText(context, message, toastLength)
-                //Error for toast gravity with message
-                //toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            } else {
-                // Hide loading message by not showing any toast
-            }
-        }
-    }
-
+    /**
+     * Function to update the delivery state of the order in the list
+     * @param orderId The id of the order to update
+     * @param deliveryState The new delivery state of the order
+     *
+     */
     //Function to update the delivery state of the order in the list
     private fun updateOrdersItem(orderId: Int, deliveryState: Int) {
-        if (ordersUiState is OrdersUiState.Success) {
-            val ordersList = (ordersUiState as OrdersUiState.Success).ordersList.toMutableList()
+        (ordersUiState as? OrdersUiState.Success)?.let { successState ->
+            val ordersList = successState.ordersList.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
             if (index != -1) {
                 ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
@@ -192,12 +102,61 @@ class OrdersViewModel(
         }
     }
 
+    fun updateDeliveryState(context: Context, orderId: Int, deliveryState: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = ordersRepository.updateDeliveryState(orderId, deliveryState)
+
+                handleResponse(context, response) {
+                    launch {
+                        showToast(
+                            context,
+                            Toast.LENGTH_SHORT,
+                            "Modifica salvata con successo"
+                        )
+                    }
+
+                    //If the response is successful, update the delivery state of the order
+                    //without refreshing the list
+                    updateOrdersItem(orderId, deliveryState)
+                }
+
+            } catch (e: Exception) {
+                // Handle exception
+                handleException(context, e)
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                handleSocketTimeoutException(context)
+            }
+        }
+    }
+
+    /**
+     * Function to parse the error message from the error body
+     */
+    private fun parseErrorMessage(errorBody: String?): String {
+        if (errorBody != null) {
+            val jsonError = JSONObject(errorBody)
+            return jsonError.optString("message", "{}")
+        }
+        return "{}"
+    }
+
+    /**
+     * Function to show a toast message on the main thread
+     */
+    private suspend fun showToast(context: Context, toastLength: Int, message: String) {
+        withContext(Dispatchers.Main) {
+            if (message.isNotEmpty()) {
+                val toast = Toast.makeText(context, message, toastLength)
+                //Error for toast gravity with message
+                //toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            }
+        }
+    }
+
     fun addNewOrder(context: Context, order: Order) {
-        /*if (ordersUiState is OrdersUiState.Success) {
-            val ordersList = (ordersUiState as OrdersUiState.Success).ordersList.toMutableList()
-            ordersList.add(order)
-            ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(0))
-        }*/
         viewModelScope.launch(Dispatchers.IO) {
             try {
 
@@ -207,16 +166,17 @@ class OrdersViewModel(
                     val newOrderResponse = response.body()
                     val newOrder = newOrderResponse?.getAddedOrder()
                     newOrder?.let { addedOrder ->
-                        showToast(
-                            context,
-                            Toast.LENGTH_SHORT,
-                            "Ordine ${addedOrder.number} aggiunto con successo"
-                        )
+                        launch {
+                            showToast(
+                                context,
+                                Toast.LENGTH_SHORT,
+                                "Ordine ${addedOrder.number} aggiunto con successo"
+                            )
+                        }
                         _modifiedOrderId.intValue = addedOrder.id
 
-                        // No need to refresh the list if the current UI state is Success
-                        //getOrders()
-                        Log.d("addNewOrder", "Added order: $addedOrder")
+                        //Log.d("addNewOrder", "Added order: $addedOrder")
+
                         // Check if the current UI state is Success
                         if (ordersUiState is OrdersUiState.Success) {
                             // Add the new order to the beginning of the list without refreshing
@@ -229,29 +189,22 @@ class OrdersViewModel(
                             // We trigger a refresh of the orders.
                             getOrders()
                         }
-                    } ?: showToast(
-                        context,
-                        Toast.LENGTH_SHORT,
-                        "Ordine non aggiunto, nessun ordine restituito"
-                    )
+                    } ?: launch {
+                        showToast(
+                            context,
+                            Toast.LENGTH_SHORT,
+                            context.getString(R.string.error_no_order_added)
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 // Handle exception
                 handleException(context, e)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                handleSocketTimeoutException(context, e)
+                handleSocketTimeoutException(context)
             }
         }
-    }
-
-    // Function to find the index of the newly added order in the list of items
-    private fun findIndexOfNewOrder(newOrder: Order): Int {
-        if (ordersUiState is OrdersUiState.Success) {
-            val ordersList = (ordersUiState as OrdersUiState.Success).ordersList
-            return ordersList.indexOfFirst { it == newOrder }
-        }
-        return -1 // Not found
     }
 
     private inline fun handleResponse(
@@ -265,41 +218,42 @@ class OrdersViewModel(
         when (response.code()) {
             200 -> onSuccess()
             401 -> {
-                showToast(
-                    context,
-                    Toast.LENGTH_SHORT,
-                    "Ordine non aggiunto, non autorizzato"
-                )
+                viewModelScope.launch {
+                    showToast(
+                        context,
+                        Toast.LENGTH_SHORT,
+                        context.getString(R.string.error_unauthorized)
+                    )
+                }
                 ordersUiState = OrdersUiState.Error(HttpException(response))
             }
 
-            404 -> showToast(
-                context,
-                Toast.LENGTH_LONG,
-                "Collegamento riuscito, api not trovata ${response.code()}"
-            )
-
-            500 -> {
+            404 -> viewModelScope.launch {
                 showToast(
                     context,
-                    Toast.LENGTH_SHORT,
-                    "$errorMessage ${response.code()}"
+                    Toast.LENGTH_LONG,
+                    "Collegamento riuscito, api not trovata ${response.code()}"
                 )
             }
 
-            503 -> {
-                showToast(
-                    context,
-                    Toast.LENGTH_SHORT,
-                    "$errorMessage ${response.code()}"
-                )
+
+            500, 503 -> {
+                viewModelScope.launch {
+                    showToast(
+                        context,
+                        Toast.LENGTH_SHORT,
+                        "$errorMessage ${response.code()}"
+                    )
+                }
             }
 
-            else -> showToast(
-                context,
-                Toast.LENGTH_LONG,
-                "Errore api: ${response.code()} $errorMessage"
-            )
+            else -> viewModelScope.launch {
+                showToast(
+                    context,
+                    Toast.LENGTH_LONG,
+                    context.getString(R.string.error_api, response.code(), errorMessage)
+                )
+            }
         }
     }
 
@@ -307,44 +261,45 @@ class OrdersViewModel(
         when (exception) {
             is IOException -> {
                 // Handle IOException (e.g., network error)
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Network error occurred: ${exception.message}"
-                )
+                viewModelScope.launch {
+                    showToast(
+                        context,
+                        Toast.LENGTH_LONG,
+                        "Network error occurred: ${exception.message}"
+                    )
+                }
             }
 
             is HttpException -> {
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "HTTP error occurred: ${exception.message}"
-                )
+                viewModelScope.launch {
+                    showToast(
+                        context,
+                        Toast.LENGTH_LONG,
+                        context.getString(R.string.error_http, exception.message)
+                    )
+                }
             }
 
             else -> {
                 // Handle generic exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "An unexpected error occurred: ${exception.message}"
-                )
+                viewModelScope.launch {
+                    showToast(
+                        context,
+                        Toast.LENGTH_LONG,
+                        context.getString(R.string.error_unexpected_error, exception.message)
+                    )
+                }
             }
         }
     }
 
-    private fun handleSocketTimeoutException(context: Context, exception: SocketTimeoutException) {
-        showToast(
-            context,
-            Toast.LENGTH_LONG,
-            "Connection timed out. Please try again later."
-        )
+    private fun handleSocketTimeoutException(context: Context) {
+        viewModelScope.launch {
+            showToast(
+                context,
+                Toast.LENGTH_LONG,
+                context.getString(R.string.error_connection_timeout)
+            )
+        }
     }
-
-//    fun setEditIndex(index: Int) {
-//        ordersUiState = when (val currentState = ordersUiState) {
-//            is OrdersUiState.Success -> currentState.copy(modifiedOrderId = mutableStateOf(index))
-//            else -> currentState
-//        }
-//    }
 }

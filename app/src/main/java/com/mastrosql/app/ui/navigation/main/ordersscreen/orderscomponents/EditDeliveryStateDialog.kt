@@ -37,7 +37,7 @@ fun EditDeliveryStateDialog(
     LaunchedEffect(showDeliveryDialog) {
         if (showDeliveryDialog.value) {
             val modifiedOrder =
-                ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.value }
+                ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.intValue }
             val modifiedOrderDeliveryState = modifiedOrder?.deliveryState
             if (modifiedOrderDeliveryState != null) {
                 selectedDeliveryState.intValue = modifiedOrderDeliveryState
@@ -87,7 +87,7 @@ fun EditDeliveryStateDialog(
             TextButton(onClick = {
                 showDeliveryDialog.value = false
                 onUpdateDeliveryState(
-                    ordersUiState.modifiedOrderId.value,
+                    ordersUiState.modifiedOrderId.intValue,
                     selectedDeliveryState.intValue
                 )
             }) {

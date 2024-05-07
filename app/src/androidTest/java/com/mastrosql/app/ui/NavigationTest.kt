@@ -18,9 +18,7 @@ package com.mastrosql.app.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
 import com.mastrosql.app.MainActivity
-import com.mastrosql.app.data.local.di.fakeMastroDbs
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
@@ -36,7 +34,6 @@ class NavigationTest {
     @get:Rule(order = 1)
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-    @OptIn(ExperimentalAnimationApi::class)
     @Test
     fun test1() {
         // TODO: Add navigation tests

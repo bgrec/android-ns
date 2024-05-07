@@ -78,6 +78,15 @@ interface MastroAndroidApiService {
         @Query("limit") pageSize: Int = 1000000
     ): OrdersResponse
 
+    @GET("ordersview")
+    suspend fun getOrderByFilter(
+        @Query("q") filter: String,
+        /**
+         * Example of filter parameter:
+         * "{\"NUME\": 36519}" /ordersview?q={"NUME" : {"$eq": 36519}}
+         */
+    ): OrdersResponse
+
     @GET("rigOrdc")
     suspend fun getOrderDetails(
         @Query("q") filter: String,

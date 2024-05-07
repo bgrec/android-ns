@@ -61,7 +61,6 @@ fun OldHomeScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun SearchBar(drawerState: DrawerState, navController: NavController, viewModel: CartViewModel) {

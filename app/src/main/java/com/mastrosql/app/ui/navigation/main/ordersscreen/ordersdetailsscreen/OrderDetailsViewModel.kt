@@ -61,7 +61,7 @@ class OrderDetailsViewModel(
     val orderId: StateFlow<Int?> = _orderId
 
     private val _orderDescription: MutableStateFlow<String?> = MutableStateFlow(
-        savedStateHandle.get<String?>(OrderDetailsDestination.ORDER_DESCRIPTION_ARG)
+        savedStateHandle.get(OrderDetailsDestination.ORDER_DESCRIPTION_ARG)
     )
     private val orderDescription: StateFlow<String?> = _orderDescription
 

@@ -43,6 +43,12 @@ class NetworkOrdersRepository(
     override suspend fun getOrders(): OrdersResponse =
         mastroAndroidApiService.getAllOrders()
 
+    override suspend fun getOrderByOrderId(orderId: Int): OrdersResponse {
+
+        val filter = "{\"NUME\" : {\"\$eq\": $orderId}}"
+        return mastroAndroidApiService.getOrderByFilter(filter)
+    }
+
     override fun getAllOrdersStream(): Flow<List<Order>> {
         TODO("Not yet implemented")
     }

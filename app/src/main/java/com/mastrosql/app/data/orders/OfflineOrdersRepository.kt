@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class OfflineOrdersRepository(
-    private val ordersDao: OrdersDao,
-    override val outputWorkInfo: Flow<WorkInfo>
+    private val ordersDao: OrdersDao, override val outputWorkInfo: Flow<WorkInfo>
 ) : OrdersRepository {
     override suspend fun getOrders(): OrdersResponse {
         TODO()
@@ -32,13 +31,16 @@ class OfflineOrdersRepository(
     }
 
     override suspend fun updateDeliveryState(
-        orderId: Int,
-        deliveryState: Int
+        orderId: Int, deliveryState: Int
     ): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 
     override suspend fun addNewOrder(order: Order): Response<OrderAddResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getOrderByOrderId(orderId: Int): OrdersResponse {
         TODO("Not yet implemented")
     }
 }

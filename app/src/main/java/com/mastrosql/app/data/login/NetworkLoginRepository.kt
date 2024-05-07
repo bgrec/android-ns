@@ -1,7 +1,5 @@
 package com.mastrosql.app.data.login
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import retrofit2.Response

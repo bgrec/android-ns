@@ -285,8 +285,8 @@ fun OrderDescriptionAndId(
 
 /**
  * Composable that displays a order info
- * @param  is the Int that represents the order id
- * @param  is the String that represents the order sku
+ * @param   destinationName Int that represents the order id
+ * @param  deliveryDate the String that represents the order sku
  */
 @Composable
 fun OrderInfo(

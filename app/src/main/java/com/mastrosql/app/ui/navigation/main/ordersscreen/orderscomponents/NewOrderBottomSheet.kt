@@ -19,7 +19,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewOrderBottomSheet(
     modifier: Modifier,

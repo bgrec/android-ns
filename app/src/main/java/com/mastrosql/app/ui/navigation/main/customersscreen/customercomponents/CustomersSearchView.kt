@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomersSearchView(state: MutableState<TextFieldValue>) {
 

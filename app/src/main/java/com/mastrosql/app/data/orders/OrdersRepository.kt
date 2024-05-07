@@ -48,4 +48,5 @@ interface OrdersRepository {
     suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject>
 
     suspend fun addNewOrder(order: Order): Response<OrderAddResponse>
+    suspend fun getOrderByOrderId(orderId: Int): OrdersResponse
 }

@@ -26,30 +26,30 @@ CREATE OR REPLACE VIEW `ordersview`
 AS
 SELECT lis_ordc.NUME                                                AS NUME,
        lis_ordc.CODI                                                AS CODI,
-       IFNULL(TRIM(clienti.DESCRI), '')                             AS RAG_SOC,
+       IFNULL(TRIM(clienti.DESCRI), '')                             AS RAGIONESOCIALE,
        IFNULL(IFNULL(TRIM(destina.VIA), TRIM(clienti.VIA)), '')     AS VIA,
        IFNULL(IFNULL(TRIM(destina.CAP), TRIM(clienti.CAP)), '')     AS CAP,
        IFNULL(IFNULL(TRIM(destina.CITTA), TRIM(clienti.CITTA)), '') AS CITTA,
        IFNULL(IFNULL(TRIM(destina.PROV), TRIM(clienti.PROV)), '')   AS PROV,
        IFNULL(TRIM(clienti.NAZIONE), '')                            AS NAZIONE,
        IFNULL(TRIM(lis_ordc.DESCRI), '')                            AS DESCRI,
-       IFNULL(TRIM(destina.DESCRI), '')                             AS DESTINA_DESCRI,
-       lis_ordc.N_LAV                                               AS N_LAV,
+       IFNULL(TRIM(destina.DESCRI), '')                             AS DESTINAZIONEDESCRI,
+       lis_ordc.N_LAV                                               AS NUMEROLAV,
        lis_ordc.DATAI                                               AS DATAI,
        lis_ordc.AGENTE                                              AS AGENTE,
        lis_ordc.DESTINA                                             AS DESTINA,
        TRIM(lis_ordc.TRASPO)                                        AS TRASPO,
        lis_ordc.COLLI                                               AS COLLI,
        IFNULL(TRIM(lis_ordc.VETTORE), TRIM(vettori.DESCRI))         AS VETTORE,
-       lis_ordc.VETT_NUME                                           AS VETT_NUME,
+       lis_ordc.VETT_NUME                                           AS VETTORENUME,
        lis_ordc.PESO                                                AS PESO,
-       TRIM(lis_ordc.NUME_ORDI)                                     AS NUME_ORDI,
-       lis_ordc.DATA_ORDI                                           AS DATA_ORDI,
+       TRIM(lis_ordc.NUME_ORDI)                                     AS NUMEROORDI,
+       lis_ordc.DATA_ORDI                                           AS DATAORDI,
        TRIM(lis_ordc.NOTE)                                          AS NOTE,
-       lis_ordc.D_CONSEGNA                                          AS D_CONSEGNA,
+       lis_ordc.D_CONSEGNA                                          AS DATACONSEGNA,
        lis_ordc.TASSATIVA                                           AS TASSATIVA,
        lis_ordc.CONSEGNA                                            AS CONSEGNA,
-       lis_ordc.STATO_CONS                                          AS STATO_CONS,
+       lis_ordc.STATO_CONS                                          AS STATOCONSEGNA,
        lis_ordc.URGENTE                                             AS URGENTE,
        lis_ordc.PARZIALE                                            AS PARZIALE,
        lis_ordc.NUMERO                                              AS NUMERO
@@ -60,7 +60,7 @@ FROM lis_ordc
          LEFT JOIN destina ON lis_ordc.DESTINA = destina.PROG_TUTTO
          LEFT JOIN vettori ON lis_ordc.VETT_NUME = vettori.NUME
 WHERE lis_ordc.DATAI >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-  AND !lis_ordc.CONSOLI
+  AND NOT lis_ordc.CONSOLI
 
 ORDER BY lis_ordc.DATAI DESC;
 
