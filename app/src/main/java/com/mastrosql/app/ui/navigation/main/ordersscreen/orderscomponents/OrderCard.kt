@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -51,7 +50,6 @@ import com.mastrosql.app.utils.DateHelper
 fun OrderCard(
     order: Order,
     modifier: Modifier,
-    navController: NavController,
     navigateToOrderDetails: (Int, String?) -> Unit,
     modifiedOrderId: MutableIntState?,
     showDeliveryDialog: MutableState<Boolean>
@@ -59,8 +57,7 @@ fun OrderCard(
     var expanded by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier
-            .padding(4.dp),
+        modifier = modifier.padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -89,8 +86,7 @@ fun OrderCard(
                 Column(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
-                    OrderDescriptionAndId(
-                        orderId = order.id,
+                    OrderDescriptionAndId(orderId = order.id,
                         description = order.description,
                         insertDate = DateHelper.formatDateToDisplay(order.insertDate),
                         businessName = order.businessName,
@@ -98,8 +94,7 @@ fun OrderCard(
                         onRowClick = {
                             modifiedOrderId?.intValue = order.id
                             showDeliveryDialog.value = true
-                        }
-                    )
+                        })
                     if (expanded) {
                         OrderInfo(
                             destinationName = order.destinationName,
@@ -115,11 +110,6 @@ fun OrderCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-
-                    Log.d(
-                        "OrderCard",
-                        "modifiedOrderId: ${modifiedOrderId?.intValue}, order.id: ${order.id}"
-                    )
 
                     OrderDetailsEditButton(
                         orderId = order.id,
@@ -189,7 +179,7 @@ private fun OrderDetailsEditButton(
             //tint = MaterialTheme.colorScheme.secondary,
             tint = orderEditButtonTint.value,
             contentDescription = stringResource(R.string.insert_article),
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
         )
     }
 }
@@ -219,8 +209,7 @@ fun OrderDescriptionAndId(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.order_id),
@@ -247,13 +236,10 @@ fun OrderDescriptionAndId(
             )
         }
 
-
         Row(
-            modifier = Modifier
-                .clickable(
-                    onClick = onRowClick
-                ),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.clickable(
+                onClick = onRowClick
+            ), horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.order_deliveryType),
@@ -290,11 +276,11 @@ fun OrderDescriptionAndId(
  */
 @Composable
 fun OrderInfo(
+    modifier: Modifier = Modifier,
     destinationName: String?,
     deliveryDate: String?,
-    carrierName: String?,
-    notes: String?,
-    modifier: Modifier = Modifier
+    carrierName: String? = "",
+    notes: String? = null
 
 ) {
     Column(
@@ -304,8 +290,7 @@ fun OrderInfo(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.order_destinationName),
@@ -320,8 +305,7 @@ fun OrderInfo(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.order_deliveryDate),
@@ -337,8 +321,7 @@ fun OrderInfo(
 
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.order_carrierName),
@@ -348,8 +331,7 @@ fun OrderInfo(
 
         if (carrierName != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = carrierName ?: "",
@@ -361,8 +343,7 @@ fun OrderInfo(
 
         if (notes != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.order_notes),
@@ -371,8 +352,7 @@ fun OrderInfo(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = notes,
@@ -388,49 +368,47 @@ fun OrderInfo(
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
-        OrderCard(
-            order = Order(
-                id = 1,
-                clientId = 1,
-                businessName = "businessName",
-                street = "street",
-                postalCode = "postalCode",
-                city = "city",
-                province = "province",
-                nation = "nation",
-                destinationId = 1,
-                destinationName = "destinationName",
-                description = "description",
-                sequence = 1,
-                insertDate = "insertDate",
-                agent = "agent",
-                transportHandler = "transportHandler",
-                parcels = 1,
-                carrierId = 1,
-                carrierName = "carrierName",
-                weight = 1.0,
-                port = "port",
-                date = "2023-01-01",
-                notes = "notes",
-                deliveryDate = "2023-01-0",
-                deliveryDeadline = true,
-                deliveryType = 1,
-                deliveryState = 1,
-                urgent = true,
-                partial = 1,
-                number = 1,
+        OrderCard(order = Order(
+            id = 1,
+            clientId = 1,
+            businessName = "businessName",
+            street = "street",
+            postalCode = "postalCode",
+            city = "city",
+            province = "province",
+            nation = "nation",
+            destinationId = 1,
+            destinationName = "destinationName",
+            description = "description",
+            sequence = 1,
+            insertDate = "insertDate",
+            agent = "agent",
+            transportHandler = "transportHandler",
+            parcels = 1,
+            carrierId = 1,
+            carrierName = "carrierName",
+            weight = 1.0,
+            port = "port",
+            date = "2023-01-01",
+            notes = "notes",
+            deliveryDate = "2023-01-0",
+            deliveryDeadline = true,
+            deliveryType = 1,
+            deliveryState = 1,
+            urgent = true,
+            partial = 1,
+            number = 1,
 
-                links = emptyList(),
-                metadata = Metadata("etag"),
-                page = 0,
-                lastUpdated = System.currentTimeMillis()
-            ),
+            links = emptyList(),
+            metadata = Metadata("etag"),
+            page = 0,
+            lastUpdated = System.currentTimeMillis()
+        ),
             modifier = Modifier,
-            navController = NavController(LocalContext.current),
+           // navController = NavController(LocalContext.current),
             navigateToOrderDetails = { _, _ -> },
             modifiedOrderId = remember { mutableIntStateOf(0) },
-            showDeliveryDialog = remember { mutableStateOf(false) }
-        )
+            showDeliveryDialog = remember { mutableStateOf(false) })
     }
 }
 
@@ -449,48 +427,3 @@ fun OrderInfoPreview() {
     }
 }
 
-/*
-@Composable
-fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
-        Column {
-            Image(
-                painter = painterResource(affirmation.imageResourceId),
-                contentDescription = stringResource(affirmation.stringResourceId),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(194.dp),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = LocalContext.current.getString(affirmation.stringResourceId),
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-    }
-}
- */
-
-/*/**
- * Composable that displays a photo of a dog.
- *
- * @param dogIcon is the resource ID for the image of the dog
- * @param modifier modifiers to set to this composable
- */
-@Composable
-fun DogIcon(@DrawableRes dogIcon: Int, modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier
-            .size(64.dp)
-            .padding(8.dp)
-            .clip(RoundedCornerShape(50)),
-        contentScale = ContentScale.Crop,
-        painter = painterResource(dogIcon),
-        /*
-         * Content Description is not needed here - image is decorative, and setting a null content
-         * description allows accessibility services to skip this element during navigation.
-         */
-        contentDescription = null
-    )
-}*/

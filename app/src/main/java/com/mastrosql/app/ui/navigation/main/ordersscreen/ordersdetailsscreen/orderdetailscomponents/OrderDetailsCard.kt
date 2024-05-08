@@ -219,7 +219,7 @@ private fun SwipeToDismissBackground(
             Icon(
                 imageVector = Icons.Default.EditNote,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(R.string.duplucate_row),
+                contentDescription = stringResource(R.string.duplicate_row),
                 modifier = Modifier
                     .weight(1f)
                     .size(35.dp)

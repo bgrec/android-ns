@@ -6,9 +6,6 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * For GSON Serialization  use @SerializedName(value = "DESCRI")
@@ -59,8 +56,8 @@ data class Order(
     @ColumnInfo(name = "page") var page: Int?,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
 ) {
-    val insertDate2: Date?
-        get() = insertDate?.let { SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(it) }
+    /*val insertDate2: Date?
+        get() = insertDate?.let { SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(it) }*/
 }
 
 

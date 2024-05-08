@@ -137,7 +137,7 @@ class CustomersMasterDataViewModel(
                 // Update modifiedCustomerDestinationsList in the UI state
                 currentState.modifiedCustomerDestinationsList = filteredDestinationsList
 
-                Log.d("ModifiedDestinations", "ModifiedDestinations: $filteredDestinationsList")
+                //Log.d("ModifiedDestinations", "ModifiedDestinations: $filteredDestinationsList")
                 // Update customersUiState with the modified customer and filtered destinations list
                 customersUiState = currentState
             }

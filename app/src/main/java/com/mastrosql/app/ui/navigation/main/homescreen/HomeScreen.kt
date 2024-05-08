@@ -2,7 +2,6 @@ package com.mastrosql.app.ui.navigation.main.homescreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,10 +21,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -35,10 +34,10 @@ import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.AppNavigationViewModel
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.homescreen.ButtonItemsList.buttonItems
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import java.util.EnumMap
 
 @Composable
@@ -47,11 +46,12 @@ fun HomeScreen(
     navController: NavController,
     preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+
     // Get AppNavigationViewModel from LocalAppNavigationViewModelProvider
     val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
 
     // Get active buttons from UserPreferencesViewModel
-    val activeButtonsUiState by preferencesViewModel.activeButtonsUiState.collectAsState()
+    val activeButtonsUiState by rememberUpdatedState(preferencesViewModel.activeButtonsUiState.collectAsState())
 
     // Get the current orientation
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -70,35 +70,22 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            CenteredLogoImage()
-            Spacer(modifier = Modifier.height(16.dp))
             if (isLandscape) {
                 MultiColumnButtons(
-                    activeButtonsUiState = activeButtonsUiState,
+                    activeButtonsUiState = activeButtonsUiState.value,
                     navController = navController,
                     appNavigationViewModel = appNavigationViewModel,
                     logout = { preferencesViewModel.logout(navController) }
                 )
             } else {
                 OneColumnButtons(
-                    activeButtonsUiState = activeButtonsUiState,
+                    activeButtonsUiState = activeButtonsUiState.value,
                     navController = navController,
                     appNavigationViewModel = appNavigationViewModel,
                     logout = { preferencesViewModel.logout(navController) }
                 )
             }
         }
-    }
-}
-
-@Composable
-fun CenteredLogoImage() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        LogoImage()
     }
 }
 
@@ -119,9 +106,12 @@ fun OneColumnButtons(
             .height(50.dp)
             .align(Alignment.CenterHorizontally)
 
+        LogoImage()
+        Spacer(modifier = Modifier.height(32.dp))
+
         buttonItems.forEach { item ->
             if (item.destination in activeButtonsUiState && activeButtonsUiState[item.destination] == true) {
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(16.dp))
                 AppButton(
                     modifier = buttonsModifier,
                     text = item.labelResId,
@@ -131,7 +121,7 @@ fun OneColumnButtons(
         }
 
         // Logout button always visible
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(64.dp))
         AppButton(
             modifier = buttonsModifier,
             text = R.string.drawer_logout_description,
@@ -149,15 +139,17 @@ fun MultiColumnButtons(
     logout: () -> Unit = {}
 ) {
     val buttonsModifier = Modifier
-        .width(300.dp)
+        //.width(300.dp)
         .height(50.dp)
 
     val filteredButtons = buttonItems
         .filter { it.destination in activeButtonsUiState && activeButtonsUiState[it.destination] == true }
-    val items = filteredButtons.chunked(2)
+
+    val chunkSize = 3
+    val items = filteredButtons.chunked(chunkSize)
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(1),
         modifier = Modifier.padding(horizontal = 16.dp),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
@@ -190,12 +182,6 @@ fun MultiColumnButtons(
             )
         }
     }
-}
-
-@Composable
-@Preview
-fun CenteredLogoImagePreview() {
-    CenteredLogoImage()
 }
 
 //@Preview(apiLevel = 33)

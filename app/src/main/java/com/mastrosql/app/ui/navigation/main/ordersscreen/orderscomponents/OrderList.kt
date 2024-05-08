@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,7 +42,7 @@ fun OrdersList(
         modifiedOrderId?.intValue.let { modifiedOrderId ->
             if (modifiedOrderId != null && modifiedOrderId > 0) {
                 val index = ordersList.indexOfFirst { it.id == modifiedOrderId }
-                Log.d("OrdersList", "Scrolling to index $index")
+                //Log.d("OrdersList", "Scrolling to index $index")
                 listState.animateScrollToItem(index)
             }
         }
@@ -73,7 +72,7 @@ fun OrdersList(
                     .padding(4.dp)
                     .fillMaxWidth(),
                 //.focusable(),
-                navController = navController,
+                //navController = navController,
                 navigateToOrderDetails = navigateToOrderDetails,
                 modifiedOrderId = modifiedOrderId,
                 showDeliveryDialog = showDeliveryDialog

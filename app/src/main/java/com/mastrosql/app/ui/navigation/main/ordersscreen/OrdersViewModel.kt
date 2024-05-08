@@ -90,7 +90,6 @@ class OrdersViewModel(
      * @param deliveryState The new delivery state of the order
      *
      */
-    //Function to update the delivery state of the order in the list
     private fun updateOrdersItem(orderId: Int, deliveryState: Int) {
         (ordersUiState as? OrdersUiState.Success)?.let { successState ->
             val ordersList = successState.ordersList.toMutableList()
@@ -102,6 +101,12 @@ class OrdersViewModel(
         }
     }
 
+    /**
+     * Function to update the delivery state of the order in the database
+     * @param context The context to show the toast message
+     * @param orderId The id of the order to update
+     * @param deliveryState The new delivery state of the order
+     */
     fun updateDeliveryState(context: Context, orderId: Int, deliveryState: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -117,7 +122,7 @@ class OrdersViewModel(
                     }
 
                     //If the response is successful, update the delivery state of the order
-                    //without refreshing the list
+                    // without refreshing the list
                     updateOrdersItem(orderId, deliveryState)
                 }
 
@@ -133,6 +138,7 @@ class OrdersViewModel(
 
     /**
      * Function to parse the error message from the error body
+     * @param errorBody The error body to parse
      */
     private fun parseErrorMessage(errorBody: String?): String {
         if (errorBody != null) {
@@ -143,19 +149,10 @@ class OrdersViewModel(
     }
 
     /**
-     * Function to show a toast message on the main thread
+     * Function to add a new order to the list
+     * @param context The context to show the toast message
+     * @param order The order to add
      */
-    private suspend fun showToast(context: Context, toastLength: Int, message: String) {
-        withContext(Dispatchers.Main) {
-            if (message.isNotEmpty()) {
-                val toast = Toast.makeText(context, message, toastLength)
-                //Error for toast gravity with message
-                //toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            }
-        }
-    }
-
     fun addNewOrder(context: Context, order: Order) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -179,14 +176,14 @@ class OrdersViewModel(
 
                         // Check if the current UI state is Success
                         if (ordersUiState is OrdersUiState.Success) {
-                            // Add the new order to the beginning of the list without refreshing
+                            // Add the new order to the beginning (index 0) of the list without refreshing
                             val currentOrders =
                                 (ordersUiState as OrdersUiState.Success).ordersList.toMutableList()
                             currentOrders.add(0, addedOrder)
                             ordersUiState = OrdersUiState.Success(currentOrders, _modifiedOrderId)
                         } else {
-                            // If the UI state is not Success, we can't directly add the new order.
-                            // We trigger a refresh of the orders.
+                            // If the UI state is not Success (e.g., Loading or Error),
+                            // trigger a refresh of the orders.
                             getOrders()
                         }
                     } ?: launch {
@@ -207,6 +204,12 @@ class OrdersViewModel(
         }
     }
 
+    /**
+     * Function to handle the response from the API
+     * @param context The context to show the toast message
+     * @param response The response from the API
+     * @param onSuccess The lambda function to execute when the response is successful
+     */
     private inline fun handleResponse(
         context: Context,
         response: Response<*>,
@@ -236,7 +239,6 @@ class OrdersViewModel(
                 )
             }
 
-
             500, 503 -> {
                 viewModelScope.launch {
                     showToast(
@@ -257,6 +259,9 @@ class OrdersViewModel(
         }
     }
 
+    /**
+     * Function to handle the exception
+     */
     private fun handleException(context: Context, exception: Exception) {
         when (exception) {
             is IOException -> {
@@ -293,6 +298,10 @@ class OrdersViewModel(
         }
     }
 
+    /**
+     * Function to handle the socket timeout exception
+     *
+     */
     private fun handleSocketTimeoutException(context: Context) {
         viewModelScope.launch {
             showToast(
@@ -300,6 +309,23 @@ class OrdersViewModel(
                 Toast.LENGTH_LONG,
                 context.getString(R.string.error_connection_timeout)
             )
+        }
+    }
+
+    /**
+     * Function to show a toast message in the main thread
+     * @param context The context to show the toast message
+     * @param toastLength The length of the toast message
+     * @param message The message to show in the toast
+     */
+    private suspend fun showToast(context: Context, toastLength: Int, message: String) {
+        withContext(Dispatchers.Main) {
+            if (message.isNotEmpty()) {
+                val toast = Toast.makeText(context, message, toastLength)
+                //Error for toast gravity with message
+                //toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            }
         }
     }
 }

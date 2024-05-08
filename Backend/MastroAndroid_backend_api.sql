@@ -1,26 +1,3 @@
-/*CREATE OR REPLACE VIEW `ordersRowsView`
-AS
-SELECT
-    rig_ordc.NUME_PRO AS NUME_PRO,
-    rig_ordc.NUME AS NUME,
-    rig_ordc.STAMP AS STAM,
-    rig_ordc.RIGA AS RIGA,
-    rig_ordc.CORTO AS CORTO,
-    TRIM(rig_ordc.ART_CODI) AS ART_CODI,
-    TRIM(rig_ordc.ART_CFOR) AS ART_CFOR,
-    TRIM(rig_ordc.DESCRI) AS DESCRI,
-    TRIM(rig_ordc.LIBE) AS LIBE,
-    TRIM(rig_ordc.IVA) AS IVA,
-    rig_ordc.IVA_PERC AS IVA_PERC,
-    rig_ordc.COST AS COST,
-    rig_ordc.VEND AS VEND,
-    TRIM(lis_ordr.MISU) AS MISU,
-    lis_ordr.QTA AS QTA,
-    lis_ordr.QTA_CONS AS QTA_CONS,
-    lis_ordr.QTA_CONS AS QTA_CONS,
-    lis_ordr.QTA_CONS AS*/
-
-
 ####################################################################################################
 CREATE OR REPLACE VIEW `ordersview`
 AS
