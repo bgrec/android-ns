@@ -21,14 +21,18 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
@@ -38,6 +42,10 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.homescreen.ButtonItemsList.buttonItems
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import java.util.EnumMap
 
 @Composable
@@ -122,12 +130,7 @@ fun OneColumnButtons(
 
         // Logout button always visible
         Spacer(modifier = Modifier.height(64.dp))
-        AppButton(
-            modifier = buttonsModifier,
-            text = R.string.drawer_logout_description,
-            onClick = {
-                logout()
-            })
+        LogoutButton(modifier = buttonsModifier, logout = logout)
     }
 }
 
@@ -139,27 +142,25 @@ fun MultiColumnButtons(
     logout: () -> Unit = {}
 ) {
     val buttonsModifier = Modifier
-        //.width(300.dp)
-        .height(50.dp)
+        .padding(8.dp)
 
     val filteredButtons = buttonItems
         .filter { it.destination in activeButtonsUiState && activeButtonsUiState[it.destination] == true }
 
-    val chunkSize = 3
+    val chunkSize = 2
     val items = filteredButtons.chunked(chunkSize)
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
+        columns = GridCells.Fixed(2),
         modifier = Modifier.padding(horizontal = 16.dp),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
-        items(items) { row ->
+        items(items) { chunk ->
             Row(Modifier.fillMaxWidth()) {
-                row.forEach { button ->
+                chunk.forEach { button ->
                     Spacer(Modifier.width(16.dp))
                     AppButton(
                         modifier = buttonsModifier
-                            .padding(8.dp)
                             .weight(1f),
                         text = button.labelResId,
                         onClick = { button.action(navController, appNavigationViewModel) }
@@ -168,48 +169,77 @@ fun MultiColumnButtons(
             }
         }
 
+        // Add a dummy button if the number of buttons + 1 (logout) is odd
+        if ((filteredButtons.size + 1) % 2 != 0) {
+            item {
+                Spacer(Modifier.width(16.dp))
+                // You can customize the text of the dummy button as needed
+                AppButton(
+                    modifier = buttonsModifier,
+                    text = R.string.dummy_button,
+                    onClick = { /* No action needed */ }
+                )
+            }
+        }
         //Logout button always visible
         item {
             Spacer(Modifier.height(16.dp))
-            AppButton(
-                modifier = buttonsModifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                text = R.string.drawer_logout_description,
-                onClick = {
-                    logout()
-                }
-            )
+            LogoutButton(modifier = buttonsModifier, logout = logout)
         }
     }
 }
 
-//@Preview(apiLevel = 33)
-//@Composable
-//fun NewHomeScreenPreview(
-//) {
-//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-//    val navController = NavController(LocalContext.current)
-//    NewHomeScreen(drawerState, navController)
-//}
+@Composable
+fun LogoutButton(
+    modifier: Modifier,
+    logout: () -> Unit = {}
+) {
+    AppButton(
+        modifier = modifier,
+        text = R.string.drawer_logout_description,
+        onClick = {
+            logout()
+        })
+}
+
+@Composable
+@Preview(showBackground = true)
+fun HomeScreenPreview() {
+    HomeScreen(
+        navController = NavController(LocalContext.current),
+        preferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    )
+}
 
 
-//@Composable
-//@Preview(apiLevel = 33)
-//fun HomeButtonsPreview() {
-//    val navController = rememberNavController()
-//
-//    // Create a mock EnumMap to simulate active buttons state
-//    val activeButtonsUiState: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
-//    activeButtonsUiState[MainNavOption.CustomersScreen] = true
-//    activeButtonsUiState[MainNavOption.CustomersPagedScreen] = true
-//    activeButtonsUiState[MainNavOption.ArticlesScreen] = true
-//    activeButtonsUiState[MainNavOption.ItemsScreen] = true
-//    activeButtonsUiState[MainNavOption.OrdersScreen] = true
-//
-//    val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
-//    // Provide the mock AppNavigationViewModel via CompositionLocal
-//    CompositionLocalProvider(LocalAppNavigationViewModelProvider provides appNavigationViewModel) {
-//        HomeButtons(activeButtonsUiState, navController, appNavigationViewModel)
-//    }
-//}
+@Composable
+@Preview(showBackground = true)
+fun OneColumnButtonsPreview() {
+    // Create a mock EnumMap with all buttons set to true
+    val activeButtonsUiState: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
+    MainNavOption.entries.forEach { option ->
+        activeButtonsUiState[option] = true
+    }
+    OneColumnButtons(
+        activeButtonsUiState = activeButtonsUiState,
+        navController = NavController(LocalContext.current),
+        appNavigationViewModel = AppNavigationViewModel(),
+        logout = {}
+    )
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.ORIENTATION_LANDSCAPE)
+fun MultiColumnButtonsPreview() {
+    // Create a mock EnumMap with all buttons set to true
+    val activeButtonsUiState: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
+    MainNavOption.entries.forEach { option ->
+        activeButtonsUiState[option] = true
+    }
+    MultiColumnButtons(
+        activeButtonsUiState = activeButtonsUiState,
+        navController = NavController(LocalContext.current),
+        appNavigationViewModel = AppNavigationViewModel(),
+        logout = {}
+    )
+}

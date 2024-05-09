@@ -12,9 +12,9 @@ import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.R
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
@@ -114,7 +114,7 @@ class OrdersViewModel(
 
                 handleResponse(context, response) {
                     launch {
-                        showToast(
+                        ToastUtils.showToast(
                             context,
                             Toast.LENGTH_SHORT,
                             "Modifica salvata con successo"
@@ -164,7 +164,7 @@ class OrdersViewModel(
                     val newOrder = newOrderResponse?.getAddedOrder()
                     newOrder?.let { addedOrder ->
                         launch {
-                            showToast(
+                            ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
                                 "Ordine ${addedOrder.number} aggiunto con successo"
@@ -187,7 +187,7 @@ class OrdersViewModel(
                             getOrders()
                         }
                     } ?: launch {
-                        showToast(
+                        ToastUtils.showToast(
                             context,
                             Toast.LENGTH_SHORT,
                             context.getString(R.string.error_no_order_added)
@@ -222,7 +222,7 @@ class OrdersViewModel(
             200 -> onSuccess()
             401 -> {
                 viewModelScope.launch {
-                    showToast(
+                    ToastUtils.showToast(
                         context,
                         Toast.LENGTH_SHORT,
                         context.getString(R.string.error_unauthorized)
@@ -232,7 +232,7 @@ class OrdersViewModel(
             }
 
             404 -> viewModelScope.launch {
-                showToast(
+                ToastUtils.showToast(
                     context,
                     Toast.LENGTH_LONG,
                     "Collegamento riuscito, api not trovata ${response.code()}"
@@ -241,7 +241,7 @@ class OrdersViewModel(
 
             500, 503 -> {
                 viewModelScope.launch {
-                    showToast(
+                    ToastUtils.showToast(
                         context,
                         Toast.LENGTH_SHORT,
                         "$errorMessage ${response.code()}"
@@ -250,7 +250,7 @@ class OrdersViewModel(
             }
 
             else -> viewModelScope.launch {
-                showToast(
+                ToastUtils.showToast(
                     context,
                     Toast.LENGTH_LONG,
                     context.getString(R.string.error_api, response.code(), errorMessage)
@@ -267,17 +267,17 @@ class OrdersViewModel(
             is IOException -> {
                 // Handle IOException (e.g., network error)
                 viewModelScope.launch {
-                    showToast(
+                    ToastUtils.showToast(
                         context,
                         Toast.LENGTH_LONG,
-                        "Network error occurred: ${exception.message}"
+                        context.getString(R.string.error_network_error, exception.message)
                     )
                 }
             }
 
             is HttpException -> {
                 viewModelScope.launch {
-                    showToast(
+                    ToastUtils.showToast(
                         context,
                         Toast.LENGTH_LONG,
                         context.getString(R.string.error_http, exception.message)
@@ -288,7 +288,7 @@ class OrdersViewModel(
             else -> {
                 // Handle generic exception
                 viewModelScope.launch {
-                    showToast(
+                    ToastUtils.showToast(
                         context,
                         Toast.LENGTH_LONG,
                         context.getString(R.string.error_unexpected_error, exception.message)
@@ -304,7 +304,7 @@ class OrdersViewModel(
      */
     private fun handleSocketTimeoutException(context: Context) {
         viewModelScope.launch {
-            showToast(
+            ToastUtils.showToast(
                 context,
                 Toast.LENGTH_LONG,
                 context.getString(R.string.error_connection_timeout)
@@ -312,20 +312,5 @@ class OrdersViewModel(
         }
     }
 
-    /**
-     * Function to show a toast message in the main thread
-     * @param context The context to show the toast message
-     * @param toastLength The length of the toast message
-     * @param message The message to show in the toast
-     */
-    private suspend fun showToast(context: Context, toastLength: Int, message: String) {
-        withContext(Dispatchers.Main) {
-            if (message.isNotEmpty()) {
-                val toast = Toast.makeText(context, message, toastLength)
-                //Error for toast gravity with message
-                //toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            }
-        }
-    }
+
 }

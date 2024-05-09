@@ -227,7 +227,7 @@ class UserPreferencesRepository @Inject constructor(
         return userPreferencesFlow.map { it.isLinearLayout }
     }
 
-    fun getIsOnboarded(): Flow<Boolean> {
+    open fun getIsOnboarded(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isOnboarded }
     }
 

@@ -2,7 +2,7 @@ package com.mastrosql.app.ui.navigation.main.loginscreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -64,17 +63,17 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
+
+    //CoroutineScope to launch the CredentialManager
     val coroutineScope = rememberCoroutineScope()
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-    val focusManager = LocalFocusManager.current
+    //InteractionSource for the TextField to get the credentials from the CredentialManager
+    //when the user taps on the TextField
     val interactionSource = remember { MutableInteractionSource() }
-    val focusRequester = remember { FocusRequester() }
+
 
     //Initialize the CredentialManager in the ViewModel with the context
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel) {
         coroutineScope.launch {
             viewModel.initCredentialManager(context)
         }
@@ -93,6 +92,36 @@ fun LoginScreen(
         }
     }
 
+    Login(
+        navController = navController,
+        interactionSource = interactionSource,
+        onLogin = { username, password ->
+            viewModel.login(
+                context = context,
+                username = username,
+                password = password,
+                isCredentialManagerLogin = false
+            )
+        })
+}
+
+@Composable
+fun Login(
+    navController: NavController,
+    interactionSource: MutableInteractionSource,
+    onLogin: (String, String) -> Unit
+) {
+
+    //State for the TextField
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    //FocusManager to clear the focus on tap
+    val focusManager = LocalFocusManager.current
+
+    //FocusRequester to get the focus on the TextField on opening the screen
+    val focusRequester = remember { FocusRequester() }
+
     Scaffold(
         topBar = {
             LoginAppBar(onClick = {
@@ -103,11 +132,16 @@ fun LoginScreen(
             })
         },
         modifier = Modifier
+            .clickable {
+                focusManager.clearFocus()
+            }
+        /*  //same result as clickable
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
                 })
             }
+        */
     ) { innerPadding ->
 
         val isLandscape =
@@ -125,6 +159,10 @@ fun LoginScreen(
                 LogoImage()
                 Spacer(modifier = Modifier.weight(0.2f))
             }
+
+            //State for the updated credentials
+            val updatedUsername by rememberUpdatedState(username)
+            val updatedPassword by rememberUpdatedState(password)
 
             //TextField with the CredentialManager
             OutlinedTextField(
@@ -150,9 +188,11 @@ fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.size(32.dp))
+
             // TextField for Password
             var isPasswordVisible by remember { mutableStateOf(false) }
 
+            //TextField with the password
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -185,12 +225,7 @@ fun LoginScreen(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
-                        viewModel.login(
-                            context = context,
-                            username = username,
-                            password = password,
-                            isCredentialManagerLogin = false
-                        )
+                        onLogin(updatedUsername, updatedPassword)
                     }
                 ),
                 visualTransformation = if (isPasswordVisible)
@@ -200,9 +235,6 @@ fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.weight(0.3f))
-
-            val updatedUsername by rememberUpdatedState(username)
-            val updatedPassword by rememberUpdatedState(password)
 
             val buttonModifier = if (isLandscape) {
                 Modifier
@@ -214,16 +246,13 @@ fun LoginScreen(
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
             }
+
+            //Button to login
             AppButton(
                 modifier = buttonModifier,
                 text = R.string.login,
                 onClick = {
-                    viewModel.login(
-                        context = context,
-                        username = updatedUsername,
-                        password = updatedPassword,
-                        isCredentialManagerLogin = false
-                    )
+                    onLogin(updatedUsername, updatedPassword)
                 }
             )
 
@@ -231,8 +260,10 @@ fun LoginScreen(
         }
     }
 }
-//}
 
+/**
+ * Composable for the image of the login screen
+ */
 @Composable
 fun LogoImage() {
     Image(
@@ -246,7 +277,13 @@ fun LogoImage() {
 @Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun LoginScreenPreview() {
+    val mutableInteractionSource = remember {
+        MutableInteractionSource()
+    }
     MastroAndroidTheme {
-        LoginScreen(navController = NavController(LocalContext.current))
+        Login(
+            navController = NavController(LocalContext.current),
+            interactionSource = mutableInteractionSource,
+            onLogin = { _, _ -> })
     }
 }

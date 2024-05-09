@@ -23,7 +23,7 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.EnumMap
 
-class UserPreferencesViewModel(
+open class UserPreferencesViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
@@ -59,7 +59,7 @@ class UserPreferencesViewModel(
     private val activeButtons: Flow<EnumMap<MainNavOption, Boolean>> =
         userPreferencesRepository.getActiveButtons()
 
-    val activeButtonsUiState = activeButtons
+    open val activeButtonsUiState = activeButtons
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
@@ -114,7 +114,7 @@ class UserPreferencesViewModel(
         }
     }
 
-    fun logout(navController: NavController) {
+    open fun logout(navController: NavController) {
         viewModelScope.launch {
             // Navigate to the login screen
             navController.navigate(MainNavOption.LoginScreen.name) {

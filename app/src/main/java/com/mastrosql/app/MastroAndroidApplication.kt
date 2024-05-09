@@ -74,17 +74,18 @@ class MastroAndroidApplication : Application(), CoroutineScope {
         */
     }
 
-    // Function to start polling the API to maintain the user's session active
+    /**
+     * Function to start polling the API to maintain the user's session active
+     *
+     */
     private fun startPolling() {
         launch {
             while (true) {
                 try {
                     val response = appContainer.mastroAndroidApiService.getLoginStatus()
                     if (!response.isSuccessful) {
-                        Log.e("Polling", "Error polling the API")
+                        Log.e("Polling", "Error polling the API: ${response.message()}")
                     }
-                    // TODO Remove this log statement in production
-                    Log.d("Polling", "Response: $response")
 
                 } catch (e: Exception) {
                     Log.e("Polling", "Error polling the API: ${e.message}")
