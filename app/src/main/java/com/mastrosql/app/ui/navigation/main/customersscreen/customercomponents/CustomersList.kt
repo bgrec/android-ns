@@ -22,44 +22,60 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun CustomersList(
-    customerMasterDataList: List<CustomerMasterData>,
-    state: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
-    navController: NavController
+    customerMasterDataList: List<CustomerMasterData>,
+    searchedTextState: MutableState<TextFieldValue>,
+    onCustomerSelected: ((CustomerMasterData) -> Unit)? = null,
+    navController: NavController? = null
 ) {
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .background(MaterialTheme.colorScheme.background)
-            //.focusable()
+        //.focusable()
     )
     {
-        val filteredList: List<CustomerMasterData>
-        val searchedText = state.value.text
+        val filteredList = filterCustomersList(customerMasterDataList, searchedTextState.value.text)
 
-        filteredList = if (searchedText.isEmpty()) {
-            customerMasterDataList
-        } else {
-            customerMasterDataList.filter {
-                it.businessName.contains(searchedText, ignoreCase = true)
-            }
-        }
-
-        items(filteredList) { customerMasterData ->
+        items(filteredList,
+            key = {
+                it.id
+            }) { customerMasterData ->
             CustomerCard(
                 customerMasterData = customerMasterData,
+                onCustomerSelected = onCustomerSelected,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
-                    //.focusable(),
+                //.focusable(),
                 navController = navController
             )
         }
     }
 }
 
+
+// Function to filter the list based on the search text
+private fun filterCustomersList(
+    customersList: List<CustomerMasterData>,
+    searchText: String
+): List<CustomerMasterData> {
+    return if (searchText.isEmpty()) {
+        customersList
+    } else {
+        customersList.filter { item ->
+            item.businessName?.contains(searchText, ignoreCase = true) == true
+        }
+//        customersList.asSequence()
+//            .filter { item ->
+//                item.businessName?.contains(searchText, ignoreCase = true) == true
+//            }
+//            .toList() // Convert sequence back to list
+    }
+}
+
 @Preview
 @Composable
-fun ItemsListPreview() {
+fun CustomersListPreview() {
     MastroAndroidTheme {
         CustomersList(
             customerMasterDataList = listOf(
@@ -72,8 +88,8 @@ fun ItemsListPreview() {
                     "province",
                     "nation",
                     "businessName2",
-                    emptyList(),
                     "taxId",
+                    emptyList(),
                     Metadata("etag"),
                     0,
                     0L
@@ -87,14 +103,14 @@ fun ItemsListPreview() {
                     "province",
                     "nation",
                     "businessName2",
-                    emptyList(),
                     "taxId",
+                    emptyList(),
                     Metadata("etag"),
                     0,
                     0L
                 )
             ),
-            state = remember { mutableStateOf(TextFieldValue("")) },
+            searchedTextState = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current)
         )

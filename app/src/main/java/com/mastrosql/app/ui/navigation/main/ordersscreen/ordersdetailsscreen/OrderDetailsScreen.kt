@@ -1,8 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,9 +56,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.ord
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.ScannerState
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun OrderDetailsScreen(
     navigateToNewItem: (Int) -> Unit,
@@ -99,8 +95,6 @@ fun OrderDetailsScreen(
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalMaterial3Api
 @Composable
@@ -257,7 +251,7 @@ fun OrderDetailResultScreen(
 
                 OrderDetailList(orderDetailList = orderDetailsUiState.orderDetailsList,
                     modifiedIndex = orderDetailsUiState.modifiedIndex,
-                    state = textState,
+                    searchTextState = textState,
                     modifier = Modifier
                         .padding(0.dp, 8.dp)
                         .weight(if (showBottomSheet.value) 0.5f else 1f),
@@ -303,7 +297,6 @@ fun OrderDetailResultScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun OrdersScreenPreview() {

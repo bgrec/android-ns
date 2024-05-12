@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -76,7 +75,6 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailsCard(
     orderDetailsItem: OrderDetailsItem,
@@ -144,7 +142,6 @@ fun OrderDetailsCard(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissItem(
@@ -155,24 +152,27 @@ private fun SwipeToDismissItem(
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
 
-        //Swipe actions
-        when (it) {
-            SwipeToDismissBoxValue.EndToStart -> {
-                visibleState.targetState = false
-                true
+            //Swipe actions
+            when (it) {
+                SwipeToDismissBoxValue.EndToStart -> {
+                    visibleState.targetState = false
+                    true
+                }
+
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    onDuplicate(orderDetailsItem.id)
+                    false
+                }
+
+                else -> false
             }
 
-            SwipeToDismissBoxValue.StartToEnd -> {
-                onDuplicate(orderDetailsItem.id)
-                false
-            }
+        },
+        positionalThreshold = { distance -> distance * 0.65f })
 
-            else -> false
-        }
-
-    }, positionalThreshold = { distance -> distance * 0.4f })
 
     SwipeToDismissBox(
         state = dismissState,
@@ -203,8 +203,9 @@ private fun SwipeToDismissBackground(
     val color by animateColorAsState(
         when (dismissState.targetValue) {
             SwipeToDismissBoxValue.Settled -> Color.Transparent//colorScheme.background
-            SwipeToDismissBoxValue.StartToEnd -> ColorOrange
-            SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose
+            SwipeToDismissBoxValue.StartToEnd -> ColorOrange.copy(alpha = 0.5f)
+            SwipeToDismissBoxValue.EndToStart -> ColorRedFleryRose.copy(alpha = 0.5f)
+            else -> Color.Transparent
         }, label = "swipe_color"
     )
     Row(
@@ -218,7 +219,7 @@ private fun SwipeToDismissBackground(
             Icon(
                 imageVector = Icons.Default.EditNote,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = stringResource(id = R.string.order_details_edit),
+                contentDescription = stringResource(R.string.duplicate_row),
                 modifier = Modifier
                     .weight(1f)
                     .size(35.dp)
@@ -240,7 +241,6 @@ private fun SwipeToDismissBackground(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun OrderDetailsItemContent(
     orderDetailsItem: OrderDetailsItem,
@@ -363,13 +363,18 @@ private fun ItemEditButton(
     modifier: Modifier = Modifier
 ) {
     val defaultTint = MaterialTheme.colorScheme.secondary
-    val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
+    //val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
+
+    val itemEditButtonTint = remember { Animatable(defaultTint) }
 
     LaunchedEffect(modifiedItemId, orderDetailsItemId) {
         // Update the tint color based on the comparison between modifiedItemId and itemId
-        val tint = if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint
+        //val tint = if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint
+
         // Update the state of the tint color
-        itemEditButtonTint.value = tint
+        //itemEditButtonTint.value = tint
+
+        itemEditButtonTint.animateTo(if (modifiedItemId == orderDetailsItemId) Color.Red else defaultTint)
     }
 
     IconButton(onClick = {

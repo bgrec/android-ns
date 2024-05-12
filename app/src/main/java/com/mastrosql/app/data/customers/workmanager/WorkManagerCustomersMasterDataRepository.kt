@@ -15,6 +15,7 @@ import com.mastrosql.app.data.customers.CustomersMasterDataRepository
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataResponse
 import com.mastrosql.app.worker.CleanupWorker
 import com.mastrosql.app.worker.CustomersMasterDataWorker
 import com.mastrosql.app.worker.DataSyncWorker
@@ -173,6 +174,10 @@ WorkManager.getInstance(applicationContext).cancelAllWork()
 
         //mastroAndroidApiService.getAllCustomersMasterData()
         return mastroAndroidApiService.getAllCustomersMasterData()
+    }
+
+    override suspend fun getDestinationsData(): DestinationsDataResponse {
+        TODO("Not yet implemented")
     }
 
 

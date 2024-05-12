@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -28,11 +26,10 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerContent
 import com.mastrosql.app.ui.components.appdrawer.AppDrawerItemInfo
 import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.introGraph
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
@@ -70,8 +67,7 @@ fun MainCompose(
         }
     }
 
-    // Update current screen when navigating
-    // Update current screen when navigating because of deep links and nested navigation graphs
+    // Update currentScreen when navigating
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when (destination.route) {
             MainNavOption.LoginScreen.name,
@@ -88,8 +84,10 @@ fun MainCompose(
             MainNavOption.Logout.name -> {
                 appNavigationViewModel.setCurrentScreen(MainNavOption.valueOf(destination.route!!))
             }
+
             else -> {
-                // If the destination is not a main screen we need to handle gestures differently for each screen
+                // If the destination is not a main screen we need to handle gestures differently
+                // for each screen
                 if (destination.route == OrdersDestination.route) {
                     appNavigationViewModel.setGesturesEnabled(true)
                 } else {
@@ -319,7 +317,6 @@ object DrawerParams {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun MainActivityPreview() {

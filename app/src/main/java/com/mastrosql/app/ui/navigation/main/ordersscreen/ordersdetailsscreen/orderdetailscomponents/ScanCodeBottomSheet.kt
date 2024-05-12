@@ -136,7 +136,7 @@ fun ScanCodeBottomSheet(
                             scannerState.scannedCode.value = ""
                         }
                     },
-                    label = { Text(stringResource(R.string.order_details_qrscan_text)) },
+                    label = { Text(stringResource(R.string.order_details_qr_scan_text)) },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Send

@@ -17,19 +17,18 @@ import kotlinx.serialization.Serializable
 data class CustomerMasterData(
     @PrimaryKey(autoGenerate = true)
     @SerializedName(value = "CODI") val id: Int,
-    @SerializedName("DESCRI") val businessName: String,
-    @SerializedName("VIA") val street: String,
-    @SerializedName("CAP") val postalCode: String,
-    @SerializedName("PIVA") val vat: String,
-    @SerializedName("CITTA") val city: String,
-    @SerializedName("PROV") val province: String,
-    @SerializedName("NAZIONE") val nation: String,
-    @SerializedName("DESC2") val businessName2: String,
+    @SerializedName("DESCRI") val businessName: String?,
+    @SerializedName("VIA") val street: String?,
+    @SerializedName("CAP") val postalCode: String?,
+    @SerializedName("PIVA") val vat: String?,
+    @SerializedName("CITTA") val city: String?,
+    @SerializedName("PROV") val province: String?,
+    @SerializedName("NAZIONE") val nation: String?,
+    @SerializedName("DESC2") val businessName2: String?,
+    @SerializedName("CODFIS") val taxId: String?,
 
     @TypeConverters(CustomerLinksTypeConverter::class)
     @SerializedName("links") val links: List<Link>,
-
-    @SerializedName("CODFIS") val taxId: String,
 
     @TypeConverters(CustomerMetadataTypeConverter::class)
     @SerializedName("_metadata") val metadata: Metadata,
@@ -41,16 +40,16 @@ data class CustomerMasterData(
     fun trimAllStrings(): CustomerMasterData {
         return CustomerMasterData(
             id = id,
-            businessName = businessName.trim(),
-            street = street.trim(),
-            postalCode = postalCode.trim(),
-            vat = vat.trim(),
-            city = city.trim(),
-            province = province.trim(),
-            nation = nation.trim(),
-            businessName2 = businessName2.trim(),
+            businessName = (businessName?.trim() ?: ""),
+            street = (street?.trim() ?: ""),
+            postalCode = (postalCode?.trim() ?: ""),
+            vat = (vat?.trim() ?: ""),
+            city = (city?.trim() ?: ""),
+            province = (province?.trim() ?: ""),
+            nation = (nation?.trim() ?: ""),
+            businessName2 = (businessName2?.trim() ?: ""),
+            taxId = (taxId?.trim() ?: ""),
             links = links,
-            taxId = taxId.trim(),
             metadata = metadata,
             page = page,
             lastUpdated = lastUpdated

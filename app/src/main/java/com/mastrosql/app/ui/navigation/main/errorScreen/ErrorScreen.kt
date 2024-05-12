@@ -35,13 +35,14 @@ fun ErrorScreen(
     exception: Exception,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
+    drawerState: DrawerState? = null,
     navController: NavController,
     preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = verticalArrangement,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -64,14 +65,15 @@ fun ErrorScreenPreview() {
     val modifier = Modifier
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val navController = NavController(LocalContext.current)
+    //val viewModel = HiltViewModelFactory(LocalContext.current, navController).create(UserPreferencesViewModel::class.java
 
     MastroAndroidTheme {
         ErrorScreen(
             exception = Exception("errore"),
             retryAction = {},
-            modifier,
-            drawerState,
-            navController
+            modifier = modifier,
+            drawerState = drawerState,
+            navController = navController
         )
     }
 }

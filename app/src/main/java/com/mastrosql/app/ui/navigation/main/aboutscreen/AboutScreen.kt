@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +29,6 @@ import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.BuildConfig
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.MainNavOption
-import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.previews.AllScreenPreview
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import java.text.SimpleDateFormat
@@ -46,7 +43,7 @@ fun AboutScreen(navController: NavController = rememberNavController(), context:
             title = { Text(stringResource(R.string.drawer_about)) },
             navigationIcon = {
                 IconButton(onClick = {
-                    navController.navigate(MainNavOption.SettingsScreen.name){
+                    navController.navigate(MainNavOption.SettingsScreen.name) {
                         popUpTo(MainNavOption.LoginScreen.name)
                     }
                 }) {
@@ -119,12 +116,7 @@ private fun getAppVersion(context: Context): String {
 private fun getBuildNumber(context: Context): Int {
     return try {
         val packageInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        if (Build.VERSION.SDK_INT >= 28) {
-            packageInfo.longVersionCode.toInt()
-        } else {
-            @Suppress("DEPRECATION")
-            packageInfo.versionCode
-        }
+        packageInfo.longVersionCode.toInt()
     } catch (e: PackageManager.NameNotFoundException) {
         Log.e("AboutScreen", "Error getting build number", e)
         -1

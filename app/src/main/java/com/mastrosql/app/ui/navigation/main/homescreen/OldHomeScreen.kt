@@ -61,7 +61,6 @@ fun OldHomeScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun SearchBar(drawerState: DrawerState, navController: NavController, viewModel: CartViewModel) {
@@ -131,7 +130,7 @@ fun SearchBarPreview() {
 
 @Preview(apiLevel = 33)
 @Composable
-fun HomeScreenPreview() {
+fun HomeScreenOldPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
     OldHomeScreen(
         drawerState = DrawerState(DrawerValue.Closed),

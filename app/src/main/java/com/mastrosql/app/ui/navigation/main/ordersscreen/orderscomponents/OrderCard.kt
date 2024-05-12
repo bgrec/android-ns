@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -25,6 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,21 +46,18 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderCard(
     order: Order,
     modifier: Modifier,
-    navController: NavController,
     navigateToOrderDetails: (Int, String?) -> Unit,
-    modifiedOrderId: MutableState<Int>,
+    modifiedOrderId: MutableIntState?,
     showDeliveryDialog: MutableState<Boolean>
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier
-            .padding(4.dp),
+        modifier = modifier.padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -89,15 +86,15 @@ fun OrderCard(
                 Column(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
-                    OrderDescriptionAndId(
-                        orderId = order.id,
+                    OrderDescriptionAndId(orderId = order.id,
                         description = order.description,
                         insertDate = DateHelper.formatDateToDisplay(order.insertDate),
                         businessName = order.businessName,
                         deliveryState = order.deliveryState,
-                        showDeliveryDialog = showDeliveryDialog,
-                        modifiedOrderId = modifiedOrderId
-                    )
+                        onRowClick = {
+                            modifiedOrderId?.intValue = order.id
+                            showDeliveryDialog.value = true
+                        })
                     if (expanded) {
                         OrderInfo(
                             destinationName = order.destinationName,
@@ -113,31 +110,27 @@ fun OrderCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    var tint = MaterialTheme.colorScheme.secondary
-                    if (modifiedOrderId.value == order.id) {
-                        tint = Color.Red
-                    }
+
                     OrderDetailsEditButton(
                         orderId = order.id,
                         orderDescription = order.description,
-                        onEditClick = navigateToOrderDetails,
-                        modifiedOrderId = modifiedOrderId,
-                        tint = tint
+                        onEditClick = { orderId, orderDescription ->
+                            //Setting the modifiedOrderId to the id of the order that was clicked
+                            //this will change the color of the edit button
+                            modifiedOrderId?.intValue = orderId
+
+                            //Navigate to the order details screen
+                            navigateToOrderDetails(orderId, orderDescription)
+
+                        },
+                        modifiedOrderId = modifiedOrderId?.intValue
+
                     )
                 }
             }
         }
     }
 }
-
-/**
- * Composable that displays a button that is clickable and displays an expand more or an expand less
- * icon.
- *
- * @param expanded represents whether the expand more or expand less icon is visible
- * @param onClick is the action that happens when the button is clicked
- * @param modifier modifiers to set to this composable
- */
 
 @Composable
 private fun OrderExpandButton(
@@ -157,25 +150,36 @@ private fun OrderExpandButton(
 
 @Composable
 private fun OrderDetailsEditButton(
+    modifier: Modifier = Modifier,
     orderId: Int,
     orderDescription: String?,
     onEditClick: (Int, String?) -> Unit,
-    modifier: Modifier = Modifier,
-    modifiedOrderId: MutableState<Int>,
-    tint: Color
+    modifiedOrderId: Int?
 ) {
+    val defaultTint = MaterialTheme.colorScheme.secondary
+    val orderEditButtonTint = remember { mutableStateOf(defaultTint) }
+
+    LaunchedEffect(modifiedOrderId, orderId) {
+        // Animate the color change when modifiedOrderId equals orderId
+        if (modifiedOrderId == orderId) {
+            orderEditButtonTint.value = Color.Red
+        } else {
+            orderEditButtonTint.value = defaultTint
+        }
+    }
+
     IconButton(onClick = {
+        // Change the button color to red when clicked
+        orderEditButtonTint.value = Color.Red
         onEditClick(orderId, orderDescription)
-        modifiedOrderId.value = orderId
 
     }) {
-
         Icon(
             Icons.Default.Edit,
             //tint = MaterialTheme.colorScheme.secondary,
-            tint = tint,
+            tint = orderEditButtonTint.value,
             contentDescription = stringResource(R.string.insert_article),
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
         )
     }
 }
@@ -196,8 +200,7 @@ fun OrderDescriptionAndId(
     businessName: String?,
     description: String?,
     modifier: Modifier = Modifier,
-    showDeliveryDialog: MutableState<Boolean>,
-    modifiedOrderId: MutableState<Int>
+    onRowClick: () -> Unit = {}
 ) {
     val deliveryStateObj = DeliveryStates.deliveryStates.find { it.state == deliveryState }
 
@@ -206,8 +209,7 @@ fun OrderDescriptionAndId(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.order_id),
@@ -234,17 +236,10 @@ fun OrderDescriptionAndId(
             )
         }
 
-
         Row(
-            modifier = Modifier
-                .clickable(
-                    onClick = {
-                        //Setting the modifiedOrderId to the id of the order that was clicked
-                        //and showing the delivery dialog
-                        modifiedOrderId.value = orderId
-                        showDeliveryDialog.value = true
-                    }),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.clickable(
+                onClick = onRowClick
+            ), horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.order_deliveryType),
@@ -276,16 +271,16 @@ fun OrderDescriptionAndId(
 
 /**
  * Composable that displays a order info
- * @param  is the Int that represents the order id
- * @param  is the String that represents the order sku
+ * @param   destinationName Int that represents the order id
+ * @param  deliveryDate the String that represents the order sku
  */
 @Composable
 fun OrderInfo(
+    modifier: Modifier = Modifier,
     destinationName: String?,
     deliveryDate: String?,
-    carrierName: String?,
-    notes: String?,
-    modifier: Modifier = Modifier
+    carrierName: String? = "",
+    notes: String? = null
 
 ) {
     Column(
@@ -295,8 +290,7 @@ fun OrderInfo(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.order_destinationName),
@@ -311,8 +305,7 @@ fun OrderInfo(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.order_deliveryDate),
@@ -328,8 +321,7 @@ fun OrderInfo(
 
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.order_carrierName),
@@ -339,8 +331,7 @@ fun OrderInfo(
 
         if (carrierName != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = carrierName ?: "",
@@ -352,8 +343,7 @@ fun OrderInfo(
 
         if (notes != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.order_notes),
@@ -362,8 +352,7 @@ fun OrderInfo(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = notes,
@@ -375,55 +364,51 @@ fun OrderInfo(
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(apiLevel = 33)
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
-        OrderCard(
-            order = Order(
-                id = 1,
-                clientId = 1,
-                businessName = "businessName",
-                street = "street",
-                postalCode = "postalCode",
-                city = "city",
-                province = "province",
-                nation = "nation",
-                destinationId = 1,
-                destinationName = "destinationName",
-                description = "description",
-                sequence = 1,
-                insertDate = "insertDate",
-                agent = "agent",
-                transportHandler = "transportHandler",
-                parcels = 1,
-                carrierId = 1,
-                carrierName = "carrierName",
-                weight = 1.0,
-                port = "port",
-                date = "2023-01-01",
-                notes = "notes",
-                deliveryDate = "2023-01-0",
-                deliveryDeadline = true,
-                deliveryType = 1,
-                deliveryState = 1,
-                urgent = true,
-                partial = 1,
-                number = 1,
+        OrderCard(order = Order(
+            id = 1,
+            clientId = 1,
+            businessName = "businessName",
+            street = "street",
+            postalCode = "postalCode",
+            city = "city",
+            province = "province",
+            nation = "nation",
+            destinationId = 1,
+            destinationName = "destinationName",
+            description = "description",
+            sequence = 1,
+            insertDate = "insertDate",
+            agent = "agent",
+            transportHandler = "transportHandler",
+            parcels = 1,
+            carrierId = 1,
+            carrierName = "carrierName",
+            weight = 1.0,
+            port = "port",
+            date = "2023-01-01",
+            notes = "notes",
+            deliveryDate = "2023-01-0",
+            deliveryDeadline = true,
+            deliveryType = 1,
+            deliveryState = 1,
+            urgent = true,
+            partial = 1,
+            number = 1,
 
-                links = emptyList(),
-                metadata = Metadata("etag"),
-                page = 0,
-                lastUpdated = System.currentTimeMillis()
-            ),
+            links = emptyList(),
+            metadata = Metadata("etag"),
+            page = 0,
+            lastUpdated = System.currentTimeMillis()
+        ),
             modifier = Modifier,
-            navController = NavController(LocalContext.current),
+           // navController = NavController(LocalContext.current),
             navigateToOrderDetails = { _, _ -> },
             modifiedOrderId = remember { mutableIntStateOf(0) },
-            showDeliveryDialog = remember { mutableStateOf(false) }
-        )
+            showDeliveryDialog = remember { mutableStateOf(false) })
     }
 }
 
@@ -442,48 +427,3 @@ fun OrderInfoPreview() {
     }
 }
 
-/*
-@Composable
-fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
-        Column {
-            Image(
-                painter = painterResource(affirmation.imageResourceId),
-                contentDescription = stringResource(affirmation.stringResourceId),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(194.dp),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = LocalContext.current.getString(affirmation.stringResourceId),
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-    }
-}
- */
-
-/*/**
- * Composable that displays a photo of a dog.
- *
- * @param dogIcon is the resource ID for the image of the dog
- * @param modifier modifiers to set to this composable
- */
-@Composable
-fun DogIcon(@DrawableRes dogIcon: Int, modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier
-            .size(64.dp)
-            .padding(8.dp)
-            .clip(RoundedCornerShape(50)),
-        contentScale = ContentScale.Crop,
-        painter = painterResource(dogIcon),
-        /*
-         * Content Description is not needed here - image is decorative, and setting a null content
-         * description allows accessibility services to skip this element during navigation.
-         */
-        contentDescription = null
-    )
-}*/

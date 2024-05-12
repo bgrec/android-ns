@@ -5,8 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.core.content.ContextCompat.startActivity
 import androidx.credentials.CreatePasswordRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -28,6 +26,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mastrosql.app.R
 import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
@@ -51,24 +50,23 @@ class LoginViewModel(
     }
 
     fun login(
-        context: Context,
-        username: String,
-        password: String,
-        isCredentialManagerLogin: Boolean
+        context: Context, username: String, password: String, isCredentialManagerLogin: Boolean
     ) {
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Perform the login request and handle the response
                 val response = loginRepository.login(username, password)
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorBody)
 
                 //The server responds with a temporary redirect that is ../authentication/status
-                //but the session cookie is set before redirect so in RetrofitInstance the redirect is not followed
+                //but the session cookie is set before redirect
+                //so in RetrofitInstance the redirect is not followed
+                //(there is a flag to not follow redirects)
+
                 if (response.code() == 307) {
                     val cookies = response.headers().values("Set-Cookie")
                     val sessionCookie = extractSessionCookie(cookies)
-
-                    Log.d("LoginViewModel", "Session cookie: $sessionCookie")
 
                     // Set the session cookie in the SessionManager singleton if it is not empty
                     if (sessionCookie.isNotEmpty()) {
@@ -81,48 +79,32 @@ class LoginViewModel(
                         saveNewCredential(context, username, password)
                     }
 
-                    // Save the logged in state in the data store
+                    //Save the logged in state in the data store
                     userPreferencesRepository.saveLoggedIn(true)
 
                 } else {
 
                     when (response.code()) {
-
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_LONG,
-                                " Credenziali non valide o errate ${response.code()}"
+                        401 -> showToast(
+                            context, Toast.LENGTH_LONG, context.getString(
+                                R.string.error_invalid_credentials, response.code()
                             )
-                        }
-
-                        404 -> showToast(
-                            context,
-                            Toast.LENGTH_LONG,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
                         )
 
-                        500 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "${response.code()}"
-                            )
-                        }
+                        404, 500, 503 -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            context.getString(R.string.error_api, response.code(), errorMessage)
+                        )
 
-                        503 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                " ${response.code()}"
-                            )
-                        }
-
-                        else -> {
-                            showToast(context, Toast.LENGTH_LONG, "Errore api: ${response.code()}")
-                        }
+                        else -> showToast(
+                            context,
+                            Toast.LENGTH_LONG,
+                            context.getString(R.string.error_api, response.code(), errorMessage)
+                        )
                     }
 
+                    //Save the logged in state in the data store
                     userPreferencesRepository.saveLoggedIn(false)
                 }
 
@@ -135,9 +117,7 @@ class LoginViewModel(
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
                 showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
+                    context, Toast.LENGTH_LONG, "Connection timed out. Please try again later."
                 )
             } catch (e: Exception) {
                 // Handle generic exception
@@ -146,15 +126,24 @@ class LoginViewModel(
         }
     }
 
-    // Extract the session cookie from the response headers
+    /**
+     * Extract the session cookie from the list of cookies returned by the server.
+     */
+
     private fun extractSessionCookie(cookies: List<String>): String {
         return cookies.firstOrNull { it.startsWith("session_") } ?: ""
     }
 
-    //Get the message in the body
+    /**
+     * Function to parse the error message from the error body
+     * @param errorBody The error body to parse
+     */
     private fun parseErrorMessage(errorBody: String?): String {
-        val jsonError = JSONObject(errorBody ?: "{}")
-        return jsonError.optString("message")
+        if (errorBody != null) {
+            val jsonError = JSONObject(errorBody)
+            return jsonError.optString("message", "{}")
+        }
+        return "{}"
     }
 
     private fun showToast(context: Context, toastLength: Int, message: String) {
@@ -171,24 +160,19 @@ class LoginViewModel(
     }
 
     private suspend fun saveNewCredential(
-        activityContext: Context,
-        username: String,
-        password: String
+        activityContext: Context, username: String, password: String
     ) {
         // Initialize a CreatePasswordRequest object.
-        val createPasswordRequest =
-            CreatePasswordRequest(id = username, password = password)
+        val createPasswordRequest = CreatePasswordRequest(id = username, password = password)
 
         // Create credential and handle result.
         viewModelScope.launch {
             try {
-                val result =
-                    credentialManager.createCredential(
-                        // Use an activity based context to avoid undefined
-                        // system UI launching behavior.
-                        activityContext,
-                        createPasswordRequest
-                    )
+                val result = credentialManager.createCredential(
+                    // Use an activity based context to avoid undefined
+                    // system UI launching behavior.
+                    activityContext, createPasswordRequest
+                )
                 // Handle the result of registering or updating password
 
             } catch (e: CreateCredentialException) {
@@ -234,8 +218,7 @@ class LoginViewModel(
                 val result = credentialManager.getCredential(
                     // Use an activity-based context to avoid undefined system UI
                     // launching behavior.
-                    context = activityContext,
-                    request = getCredRequest
+                    context = activityContext, request = getCredRequest
                 )
                 handleSignIn(result, activityContext)
             } catch (e: GetCredentialException) {
@@ -253,6 +236,7 @@ class LoginViewModel(
                 // Retry-able error. Consider retrying the call.
                 Log.e("LoginViewModel", "Retry-able error. Consider retrying the call", e)
             } catch (e: NoCredentialException) {
+                showToast(activityContext, Toast.LENGTH_SHORT, "NoCredentialException")
                 launchDialer(activityContext, "*#*#66382723#*#*")
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)
@@ -334,8 +318,7 @@ class LoginViewModel(
         }
     }
 
-}
-/*
+}/*
 On Begin Sign In Failure: 16: Caller has been temporarily blocked due to too many canceled sign-in prompts.
 If you encounter this 24-hour cooldown period during development, you can reset it by clearing Google Play services' app storage.
 

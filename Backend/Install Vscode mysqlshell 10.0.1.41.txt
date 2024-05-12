@@ -1,0 +1,60 @@
+copia (code_1.87.0-1709078641_amd64.deb) in mastro
+
+sudo chmod +x code_1.87.0-1709078641_amd64.deb
+sudo dpkg -i code_1.87.0-1709078641_amd64.deb
+sudo apt --fix-broken install
+
+code --install-extension Oracle.mysql-shell-for-vs-code
+
+copiare .mysqlsh-gui in mastro  (spostato proprietario a mastro)
+
+lanciare
+
+sudo '/home/mastro/.mysqlsh-gui/plugin_data/gui_plugin/web_certs/install.sh'
+
+/home/mastro/.vscode/extensions/oracle.mysql-shell-for-vs-code-1.14.2-linux-x64/shell/bin/mysqlsh mastro@10.0.1.41
+
+
+mrs.configure()			Crea database su mysql 
+mrs.add.service()		da provare
+mrs.add.schema()		da provare
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/home/mastro/.vscode/extensions/oracle.mysql-shell-for-vs-code-1.14.2-linux-x64/router/bin/mysqlrouter_bootstrap mastro@10.0.1.41:3306 --mrs --directory "/home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter"
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/home/mastro/.vscode/extensions/oracle.mysql-shell-for-vs-code-1.14.2-linux-x64/router/bin/mysqlrouter_bootstrap mastro@10.0.1.41:3306 --mrs --directory "/home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter" "--conf-set-option=http_server.ssl_cert=/home/mastro/.mysqlsh-gui/plugin_data/gui_plugin/web_certs/server.crt" "--conf-set-option=http_server.ssl_key=/home/mastro/.mysqlsh-gui/plugin_data/gui_plugin/web_certs/server.key" --conf-set-option=logger.level=DEBUG --conf-set-option=logger.sinks=consolelog --conf-base-port=6450 --conf-set-option=http_server.port=8443; exit
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter/start.sh
+/home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter/stop.sh
+
+
+fine
+
+
+apt --fix-broken install
+
+
+sito da vedere per configurazioni
+
+https://dev.mysql.com/doc/dev/mysql-rest-service/latest/
+
+
+per linux 
+# permessi per il file start
+
+chmod +x /home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter/start.sh
+
+# per modificare il crontab e aggiungere il percorso 
+
+crontab -e
+
+# poi con nano aggiungere e salvare
+
+@reboot sleep 10 && /home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter/start.sh
+
+# in crontab per avere un log: @reboot sleep 60 /home/mastro/.mysqlsh-gui/plugin_data/mrs_plugin/router_configs/1/mysqlrouter/start.sh >> /home/mastro/cron.log 2>&1
+
+

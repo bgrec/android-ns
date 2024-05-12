@@ -1,20 +1,18 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
-import androidx.annotation.StringRes
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -30,15 +28,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -56,7 +55,7 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -64,15 +63,64 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val focusManager = LocalFocusManager.current
+
+    //CoroutineScope to launch the CredentialManager
+    val coroutineScope = rememberCoroutineScope()
+
+    //InteractionSource for the TextField to get the credentials from the CredentialManager
+    //when the user taps on the TextField
     val interactionSource = remember { MutableInteractionSource() }
-    var timesClicked by remember { mutableIntStateOf(0) }
-    val focusRequester = remember { FocusRequester() }
+
 
     //Initialize the CredentialManager in the ViewModel with the context
-    viewModel.initCredentialManager(context)
+    LaunchedEffect(viewModel) {
+        coroutineScope.launch {
+            viewModel.initCredentialManager(context)
+        }
+    }
+
+    //Collect the interactions on the TextField to get the credentials from the CredentialManager
+    LaunchedEffect(interactionSource) {
+        coroutineScope.launch {
+            var clickCount = 0
+            interactionSource.interactions.collect {
+                if (it is PressInteraction.Release && clickCount < 2) {
+                    clickCount++
+                    viewModel.getCredentials(context)
+                }
+            }
+        }
+    }
+
+    Login(
+        navController = navController,
+        interactionSource = interactionSource,
+        onLogin = { username, password ->
+            viewModel.login(
+                context = context,
+                username = username,
+                password = password,
+                isCredentialManagerLogin = false
+            )
+        })
+}
+
+@Composable
+fun Login(
+    navController: NavController,
+    interactionSource: MutableInteractionSource,
+    onLogin: (String, String) -> Unit
+) {
+
+    //State for the TextField
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    //FocusManager to clear the focus on tap
+    val focusManager = LocalFocusManager.current
+
+    //FocusRequester to get the focus on the TextField on opening the screen
+    val focusRequester = remember { FocusRequester() }
 
     Scaffold(
         topBar = {
@@ -84,285 +132,158 @@ fun LoginScreen(
             })
         },
         modifier = Modifier
+            .clickable {
+                focusManager.clearFocus()
+            }
+        /*  //same result as clickable
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
                 })
             }
+        */
     ) { innerPadding ->
+
+        val isLandscape =
+            LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp)
                 .padding(innerPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier.offset(y = 50.dp)
-            )
-            {
-                LogoImage()
-            }// Show the logo in the center below the TopAppBar
-
-            Spacer(modifier = Modifier.height(16.dp)) // Add some space between the logo and the text fields
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center
-            ) {
-                // TextField for Username
-                Spacer(modifier = Modifier.weight(1f))
-
-                //TextField with the CredentialManager
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    modifier = Modifier
-                        .padding(bottom = 32.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .focusRequester(focusRequester),
-                    label = { Text(stringResource(R.string.Username)) },
-                    singleLine = true,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.AccountCircle,
-                            contentDescription = null
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(),
-                    interactionSource = interactionSource
-                        .also { interactionSource ->
-                            LaunchedEffect(interactionSource) {
-                                interactionSource.interactions.collect {
-                                    if (it is PressInteraction.Release && timesClicked <= 1) {
-                                        timesClicked++
-                                        viewModel.getCredentials(context)
-                                    }
-                                }
-                            }
-                        }
-                )
-
-                // Add some space between the text fields
-                //Spacer(modifier = Modifier.height(30.dp))
+            if (!isLandscape) {
                 Spacer(modifier = Modifier.weight(0.1f))
-                // TextField for Password
-                var isPasswordVisible by remember { mutableStateOf(false) }
+                LogoImage()
+                Spacer(modifier = Modifier.weight(0.2f))
+            }
 
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    modifier = Modifier
-                        .padding(bottom = 32.dp)
-                        .align(Alignment.CenterHorizontally),
-                    label = { Text(stringResource(R.string.Password)) },
-                    leadingIcon = {
+            //State for the updated credentials
+            val updatedUsername by rememberUpdatedState(username)
+            val updatedPassword by rememberUpdatedState(password)
+
+            //TextField with the CredentialManager
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .focusRequester(focusRequester),
+                label = { Text(stringResource(R.string.Username)) },
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = null
+                    )
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(),
+                interactionSource = interactionSource
+            )
+
+            Spacer(modifier = Modifier.size(32.dp))
+
+            // TextField for Password
+            var isPasswordVisible by remember { mutableStateOf(false) }
+
+            //TextField with the password
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally),
+                label = { Text(stringResource(R.string.Password)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Lock,
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = {
+                    IconButton(onClick = {
+                        isPasswordVisible = !isPasswordVisible
+                    }) {
                         Icon(
-                            imageVector = Icons.Outlined.Lock,
-                            contentDescription = null
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            isPasswordVisible = !isPasswordVisible
-                        }) {
-                            Icon(
-                                imageVector = if (isPasswordVisible)
-                                    Icons.Filled.Visibility
-                                else
-                                    Icons.Filled.VisibilityOff,
-                                contentDescription = "Password Visibility"
-                            )
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                            viewModel.login(
-                                context = context,
-                                username = username,
-                                password = password,
-                                isCredentialManagerLogin = false
-                            )
-                        }
-                    ),
-                    visualTransformation = if (isPasswordVisible)
-                        VisualTransformation.None
-                    else
-                        PasswordVisualTransformation(),
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                AppButton(
-                    modifier = Modifier
-                        .padding(bottom = 30.dp)
-                        .align(Alignment.CenterHorizontally),
-                    text = R.string.login,
-                    onClick = {
-                        viewModel.login(
-                            context = context,
-                            username = username,
-                            password = password,
-                            isCredentialManagerLogin = false
+                            imageVector = if (isPasswordVisible)
+                                Icons.Filled.Visibility
+                            else
+                                Icons.Filled.VisibilityOff,
+                            contentDescription = "Password Visibility"
                         )
                     }
-                )
-                Spacer(modifier = Modifier.weight(1f))
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        onLogin(updatedUsername, updatedPassword)
+                    }
+                ),
+                visualTransformation = if (isPasswordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+            )
+
+            Spacer(modifier = Modifier.weight(0.3f))
+
+            val buttonModifier = if (isLandscape) {
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .width(400.dp)
+
+            } else {
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
             }
+
+            //Button to login
+            AppButton(
+                modifier = buttonModifier,
+                text = R.string.login,
+                onClick = {
+                    onLogin(updatedUsername, updatedPassword)
+                }
+            )
+
+            Spacer(modifier = Modifier.weight(0.2f))
         }
     }
 }
 
+/**
+ * Composable for the image of the login screen
+ */
 @Composable
 fun LogoImage() {
     Image(
-        painter = painterResource(R.drawable.logo),
+        painter = painterResource(R.drawable.mastroweb),
         contentDescription = "Logo Nipeservice",
         modifier = Modifier.size(150.dp)
     )
 }
 
-@Composable
-fun LoginFields(
-    @StringRes label: Int,
-    value: String,
-    isPassword: Boolean = false,
-    icon: @Composable (() -> Unit),
-    onValueChanged: (String) -> Unit,
-    keyboardOptions: KeyboardOptions,
-    keyboardAction: KeyboardActions,
-    modifier: Modifier,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    interactionSource: MutableInteractionSource = remember {
-        MutableInteractionSource()
-    },
-) {
-
-    val focusRequester = remember { FocusRequester() }
-    //val focusManager = LocalFocusManager.current
-
-    OutlinedTextField(
-        leadingIcon = icon,
-        value = value,
-        singleLine = true,
-        onValueChange = onValueChanged,
-        label = { Text(stringResource(label)) },
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardAction,
-        modifier = modifier
-            .focusRequester(focusRequester),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation,
-        interactionSource = interactionSource
-    )
-}
 
 @Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun LoginScreenPreview() {
+    val mutableInteractionSource = remember {
+        MutableInteractionSource()
+    }
     MastroAndroidTheme {
-        var username by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier.offset(y = 50.dp)
-            )
-            {
-                LogoImage()
-            }// Show the logo in the center below the TopAppBar
-
-            Spacer(modifier = Modifier.height(16.dp)) // Add some space between the logo and the text fields
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center
-            ) {
-                // TextField for Username
-                Spacer(modifier = Modifier.weight(1f))
-
-                LoginFields(
-                    modifier = Modifier
-                        .padding(bottom = 32.dp)
-                        .align(Alignment.CenterHorizontally),
-                    label = R.string.Username,
-                    value = username,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.AccountCircle,
-                            contentDescription = null
-                        )
-                    },
-                    onValueChanged = { username = it },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardAction = KeyboardActions(
-                        onNext = {
-                            //focusManager.clearFocus()
-                        }
-                    )
-                )
-
-                //Spacer(modifier = Modifier.height(30.dp)) // Add some space between the text fields
-                Spacer(modifier = Modifier.weight(0.1f))
-
-
-                LoginFields(
-                    modifier = Modifier
-                        .padding(bottom = 32.dp)
-                        .align(Alignment.CenterHorizontally),
-                    isPassword = true,
-                    label = R.string.Password,
-                    value = password,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Lock,
-                            contentDescription = null
-                        )
-                    },
-                    onValueChanged = { password = it },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardAction = KeyboardActions(
-                        onDone = {
-                            //focusManager.clearFocus()
-                        }
-                    )
-                )
-                //Spacer(modifier = Modifier.height(50.dp))
-                Spacer(modifier = Modifier.weight(1f))
-
-                AppButton(
-                    modifier = Modifier
-                        .padding(bottom = 30.dp)
-                        .align(Alignment.CenterHorizontally),
-                    text = R.string.login,
-                    onClick = { println("prova") }
-
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
-        }
+        Login(
+            navController = NavController(LocalContext.current),
+            interactionSource = mutableInteractionSource,
+            onLogin = { _, _ -> })
     }
 }

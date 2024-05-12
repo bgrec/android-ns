@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,26 +26,23 @@ import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.NewOrderBottomSheet
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
 
-object OrdersDestination : NavigationDestination {
-    override val route = "orders_list"
-    override val titleRes = R.string.clients_orders_bar_title
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
     navigateToOrderDetails: (Int, String?) -> Unit,
-    navigateToOrderEntry: () -> Unit,
+    //onNewOrder: () -> Unit,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val ordersUiState = viewModel.ordersUiState
+
+
     val modifier = Modifier
         .fillMaxSize()
         .fillMaxWidth()
@@ -63,7 +57,7 @@ fun OrdersScreen(
 
         is OrdersUiState.Success -> OrdersResultScreen(
             navigateToOrderDetails = navigateToOrderDetails,
-            navigateToOrderEntry = navigateToOrderEntry,
+            //onNewOrder = onNewOrder,
             ordersUiState = ordersUiState,
             modifier = modifier,
             drawerState = drawerState,
@@ -81,26 +75,28 @@ fun OrdersScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
 fun OrdersResultScreen(
     navigateToOrderDetails: (Int, String?) -> Unit,
-    navigateToOrderEntry: () -> Unit,
+    //onNewOrder: () -> Unit,
     ordersUiState: OrdersUiState.Success,
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrdersViewModel,
 ) {
-    //val itemsUiState by viewModel.itemsUiState.collectAsState()
-    //val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showToast by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val showDeliveryDialog = remember { mutableStateOf(false) }
-    val selectedDeliveryState = remember { mutableIntStateOf(0) }
 
+    // Context used to show the toast
+    val context = LocalContext.current
+
+    // State to control the delivery dialog visibility
+    val showDeliveryDialog = remember { mutableStateOf(false) }
+
+    // State to control the bottom sheet visibility
+    val showBottomSheet = remember { mutableStateOf(false) }
 
     if (showToast) {
         ShowToast(context, "Navigating to Order Entry")
@@ -110,14 +106,12 @@ fun OrdersResultScreen(
 
     Scaffold(
         topBar = {
-
             OrdersTopAppBar(
                 drawerState = drawerState,
                 title = stringResource(R.string.clients_orders_bar_title),
                 canNavigateBack = false,
                 onAddOrderClick = {
-                    navigateToOrderEntry()
-                    showToast = true
+                    showBottomSheet.value = true
                 }
             )
         },
@@ -151,12 +145,14 @@ fun OrdersResultScreen(
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
 
+            // Search view for filtering the orders list
             OrdersSearchView(state = textState)
 
+            // Orders list, lazy column with the orders
             OrdersList(
                 ordersList = ordersUiState.ordersList,
                 modifiedOrderId = ordersUiState.modifiedOrderId,
-                state = textState,
+                searchTextState = textState,
                 modifier = Modifier.padding(4.dp),
                 navController = navController,
                 navigateToOrderDetails = navigateToOrderDetails,
@@ -165,16 +161,30 @@ fun OrdersResultScreen(
         }
 
         if (showDeliveryDialog.value) {
+            // Edit delivery Alert dialog, used to update the delivery state of an order
             EditDeliveryStateDialog(
                 showDeliveryDialog = showDeliveryDialog,
                 ordersUiState = ordersUiState,
-                selectedDeliveryState = selectedDeliveryState,
                 onUpdateDeliveryState = { orderId, deliveryState ->
                     viewModel.updateDeliveryState(
                         context = context,
                         orderId = orderId,
                         deliveryState = deliveryState
                     )
+                }
+            )
+        }
+
+        if (showBottomSheet.value) {
+            // Bottom sheet to add a new order
+            NewOrderBottomSheet(
+                navController = navController,
+                showBottomSheet = showBottomSheet,
+                modifier = modifier,
+                onDismissButton = { showBottomSheet.value = it },
+                onConfirmButton = { order ->
+                    viewModel.addNewOrder(context, order)
+                    showBottomSheet.value = false
                 }
             )
         }

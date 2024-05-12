@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 private const val CUSTOMERS_STARTING_OFFSET = 0
 private const val CUSTOMERS_DEFAULT_LIMIT = 100
-private const val CACHE_TIMEOUT = 0L  //1 hour
+private const val CACHE_TIMEOUT = 1L  //1 hour
 
 /**
  * Remote mediator to append to and prepend to the list of customers.

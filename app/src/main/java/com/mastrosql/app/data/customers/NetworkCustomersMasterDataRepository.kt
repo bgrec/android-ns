@@ -9,6 +9,7 @@ import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataDao
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -40,6 +41,10 @@ class NetworkCustomersMasterDataRepository(
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse =
         mastroAndroidApiService.getAllCustomersMasterData()
 
+    override suspend fun getDestinationsData(): DestinationsDataResponse =
+        mastroAndroidApiService.getAllDestinationsData()
+
+
     override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) {
 
     }
@@ -56,5 +61,4 @@ class NetworkCustomersMasterDataRepository(
     override suspend fun deleteData() {
         customerMasterDataDao.deleteAll()
     }
-
 }

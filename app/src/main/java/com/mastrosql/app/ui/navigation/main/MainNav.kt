@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -16,17 +14,16 @@ import com.mastrosql.app.ui.navigation.main.cartscreen.CartScreen
 import com.mastrosql.app.ui.navigation.main.cartscreen.CartViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedScreen
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreen
-import com.mastrosql.app.ui.navigation.main.homescreen.OldHomeScreen
 import com.mastrosql.app.ui.navigation.main.homescreen.HomeScreen
+import com.mastrosql.app.ui.navigation.main.homescreen.OldHomeScreen
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsComposable
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
 
     navigation(
@@ -62,7 +59,19 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         ) {
             composable(route = OrdersDestination.route) {
                 OrdersScreen(
-                    navigateToOrderEntry = {},// { navController.navigate(OrderEntryDestination.route) },
+                    /*onNewOrder = {/*orderId ->
+                        //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "shouldRefresh",
+                            true
+                        )
+                        //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
+                        navController
+                            .navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
+                                //TODO verify if launchSigleTop is  needed
+                                launchSingleTop = true
+                            }
+                    */},*/// { navController.navigate(OrderEntryDestination.route) },
                     navigateToOrderDetails = { orderId, orderDescription ->
                         navController.navigate("${OrderDetailsDestination.route}/${orderId}?orderDescription=${orderDescription}") {
                             //TODO verify if launchSigleTop is  needed

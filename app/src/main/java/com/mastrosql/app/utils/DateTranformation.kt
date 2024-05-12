@@ -6,7 +6,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import kotlin.math.absoluteValue
 
-class DateTransformation() : VisualTransformation {
+class DateTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         return dateFilter(text)
     }
@@ -75,23 +75,3 @@ class MaskVisualTransformation(private val mask: String) : VisualTransformation 
         }
     }
 }
-/*
-@Composable
-fun DateTextField() {
-    var date by remember { mutableStateOf("") }
-    TextField(
-        value = date,
-        onValueChange = {
-            if (it.length <= DATE_LENGTH) {
-                date = it
-            }
-        },
-        visualTransformation = MaskVisualTransformation(DATE_MASK)
-    )
-}
-
-object DateDefaults {
-    const val DATE_MASK = "##/##/####"
-    const val DATE_LENGTH = 8 // Equals to "##/##/####".count { it == '#' }
-}
- */

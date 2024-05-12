@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "21aae19f8ca2415728abbdab735b4cd2",
+    "identityHash": "69f4f3563d3ce48fcea08f34529ebdd6",
     "entities": [
       {
         "tableName": "items",
@@ -398,7 +398,7 @@
       },
       {
         "tableName": "customers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `businessName` TEXT NOT NULL, `street` TEXT NOT NULL, `postalCode` TEXT NOT NULL, `vat` TEXT NOT NULL, `city` TEXT NOT NULL, `province` TEXT NOT NULL, `nation` TEXT NOT NULL, `businessName2` TEXT NOT NULL, `links` TEXT NOT NULL, `taxId` TEXT NOT NULL, `metadata` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `businessName` TEXT, `street` TEXT, `postalCode` TEXT, `vat` TEXT, `city` TEXT, `province` TEXT, `nation` TEXT, `businessName2` TEXT, `taxId` TEXT, `links` TEXT NOT NULL, `metadata` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -410,59 +410,59 @@
             "fieldPath": "businessName",
             "columnName": "businessName",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "street",
             "columnName": "street",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "postalCode",
             "columnName": "postalCode",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "vat",
             "columnName": "vat",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "city",
             "columnName": "city",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "province",
             "columnName": "province",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "nation",
             "columnName": "nation",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "businessName2",
             "columnName": "businessName2",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "links",
-            "columnName": "links",
-            "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "taxId",
             "columnName": "taxId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "links",
+            "columnName": "links",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1010,7 +1010,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '21aae19f8ca2415728abbdab735b4cd2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69f4f3563d3ce48fcea08f34529ebdd6')"
     ]
   }
 }

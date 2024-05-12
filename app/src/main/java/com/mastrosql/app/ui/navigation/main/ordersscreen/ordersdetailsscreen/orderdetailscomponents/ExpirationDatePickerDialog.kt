@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,11 +23,11 @@ import java.util.Locale
 //val snackScope = rememberCoroutineScope()
 //SnackbarHost(hostState = snackState, Modifier)
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpirationDatePickerDialog(
-    showDatePickerDialog: MutableState<Boolean>, orderDetailsItemState: OrderDetailsItemState
+    showDatePickerDialog: MutableState<Boolean>,
+    orderDetailsItemState: OrderDetailsItemState
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {
