@@ -207,6 +207,14 @@ open class UserPreferencesViewModel(
         }
     }
 
+    fun setNotSecuredApi(context: Context) {
+        TODO("Not yet implemented")
+    }
+
+    fun setSwipeToDelete(context: Context) {
+
+    }
+
 }
 
 data class DessertReleaseUiState(
