@@ -71,8 +71,6 @@ fun OrderDetailsScreen(
     when (orderDetailsUiState) {
         is OrderDetailsUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
-            drawerState = drawerState,
-            navController = navController,
             loading = true
         )
 
@@ -89,7 +87,6 @@ fun OrderDetailsScreen(
             orderDetailsUiState.exception,
             viewModel::getOrderDetails,
             modifier = modifier.fillMaxSize(),
-            drawerState = drawerState,
             navController = navController
         )
     }

@@ -63,8 +63,6 @@ fun CustomersPagedList(
             //CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             LoadingScreen(
                 modifier = modifier.fillMaxSize(),
-                drawerState = drawerState,
-                navController = navController,
                 loading = true
             )
         }

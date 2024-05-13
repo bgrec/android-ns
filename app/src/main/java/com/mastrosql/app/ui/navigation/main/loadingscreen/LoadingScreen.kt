@@ -8,19 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.R
 
 /**
@@ -30,8 +25,6 @@ import com.mastrosql.app.R
 @Composable
 fun LoadingScreen(
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
-    navController: NavController,
     loading: Boolean
 ) {
     Column(
@@ -45,7 +38,7 @@ fun LoadingScreen(
 
         ) {
             if (loading) {
-                //
+                // Display a circular progress indicator while loading
                 IndeterminateCircularIndicator()
             } else {
                 Image(
@@ -59,6 +52,7 @@ fun LoadingScreen(
     }
 }
 
+
 @Composable
 fun IndeterminateCircularIndicator() {
     CircularProgressIndicator(
@@ -68,12 +62,10 @@ fun IndeterminateCircularIndicator() {
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoadingScreenPreview() {
     val modifier = Modifier
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val navController = NavController(LocalContext.current)
 
-    LoadingScreen(modifier, drawerState, navController, true)
+    LoadingScreen(modifier, true)
 }

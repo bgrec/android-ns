@@ -30,6 +30,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -59,12 +62,11 @@ fun SettingsScreen(
     navController: NavController,
     viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+
     val context = LocalContext.current
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    var showDialog by remember { mutableStateOf(false) }
 
     val baseUrlUiState by viewModel.baseUrlUiState.collectAsState()
+    val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
 
     var urlState by remember { mutableStateOf(baseUrlUiState) }
 
@@ -73,7 +75,37 @@ fun SettingsScreen(
         urlState = baseUrlUiState
     }
 
-    val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
+    SettingsComposable(
+        navController = navController,
+        activeButtonsUiState = activeButtonsUiState,
+        urlState = urlState,
+        onSaveUrl = { url -> viewModel.setBaseUrl(url) },
+        onSetOnboardingCompleted = { isOnboardingCompleted ->
+            viewModel.onBoardingCompleted(
+                isOnboardingCompleted
+            )
+        },
+        onUpdateActiveButtons = { updatedState -> viewModel.updateActiveButtons(updatedState) }
+    )
+
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsComposable(
+    navController: NavController,
+    activeButtonsUiState: EnumMap<MainNavOption, Boolean>,
+    urlState: String,
+    onSaveUrl: (String) -> Unit,
+    onSetOnboardingCompleted: (Boolean) -> Unit,
+    onUpdateActiveButtons: (EnumMap<MainNavOption, Boolean>) -> Unit
+
+) {
+
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    var showDialog by remember { mutableStateOf(false) }
 
     val stringResMap by remember {
         mutableStateOf(
@@ -106,7 +138,10 @@ fun SettingsScreen(
         modifier = Modifier
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
-                    viewModel.setBaseUrl(urlState)
+                    //viewModel.setBaseUrl(urlState)
+                    if (urlState.isNotEmpty()) {
+                        onSaveUrl(urlState)
+                    }
                     focusManager.clearFocus()
                 })
             }
@@ -132,10 +167,15 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
 
+                var url by rememberSaveable { mutableStateOf("") }
+                val updatedUrlState by rememberUpdatedState(url)
+
                 OutlinedTextField(
-                    value = urlState,
+                    value = url,
                     singleLine = false,
-                    onValueChange = { newValue -> urlState = newValue },
+                    onValueChange = {
+                        url = it
+                    },
                     leadingIcon = {
                         Icon(
                             painterResource(R.drawable.bring_your_own_ip),
@@ -148,7 +188,8 @@ fun SettingsScreen(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            viewModel.setBaseUrl(urlState)
+                            //viewModel.setBaseUrl(urlState)
+                            onSaveUrl(updatedUrlState)
                             focusManager.clearFocus()
                         }
                     ),
@@ -187,7 +228,8 @@ fun SettingsScreen(
                                                 val isChecked = !(activeButtonsUiState[it] ?: false)
                                                 val updatedState = EnumMap(activeButtonsUiState)
                                                 updatedState[it] = isChecked
-                                                viewModel.updateActiveButtons(updatedState)
+                                                //viewModel.updateActiveButtons(updatedState)
+                                                onUpdateActiveButtons(updatedState)
                                             }
                                         ),
                                         verticalAlignment = Alignment.CenterVertically,
@@ -202,7 +244,8 @@ fun SettingsScreen(
                                             onCheckedChange = { isChecked ->
                                                 val updatedState = EnumMap(activeButtonsUiState)
                                                 updatedState[it] = isChecked
-                                                viewModel.updateActiveButtons(updatedState)
+                                                //viewModel.updateActiveButtons(updatedState)
+                                                onUpdateActiveButtons(updatedState)
                                             })
                                     }
                                 }
@@ -229,7 +272,10 @@ fun SettingsScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.onBoardingCompleted(false) }
+                    onClick = {
+                        onSetOnboardingCompleted(false)
+                        //viewModel.onBoardingCompleted(false)
+                    }
                 ) {
                     Text(text = stringResource(R.string.show_intro_again))
                 }
@@ -244,7 +290,7 @@ fun SettingsScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.testRetrofitConnection(context) }
+                    onClick = { /*viewModel.testRetrofitConnection(context)*/ }
                 ) {
                     Text(text = stringResource(R.string.private_webserver))
                 }
@@ -260,7 +306,7 @@ fun SettingsScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.testRetrofitConnection(context) }
+                    onClick = { /*viewModel.testRetrofitConnection(context)*/ }
                 ) {
                     Text(text = stringResource(R.string.delete_permission_menu))
                 }
@@ -276,7 +322,7 @@ fun SettingsScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.testRetrofitConnection(context) }
+                    onClick = { /*viewModel.testRetrofitConnection(context)*/ }
                 ) {
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
@@ -289,6 +335,13 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreenPreview() {
     MastroAndroidTheme {
-        SettingsScreen(NavController(LocalContext.current))
+        SettingsComposable(
+            navController = NavController(LocalContext.current),
+            activeButtonsUiState = EnumMap(MainNavOption::class.java),
+            urlState = "",
+            onSaveUrl = {},
+            onSetOnboardingCompleted = {},
+            onUpdateActiveButtons = {}
+        )
     }
 }

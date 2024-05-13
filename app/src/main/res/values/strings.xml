@@ -231,6 +231,11 @@
     <string name="error_no_order_added">Ordine non aggiunto, nessun ordine restituito</string>
     <string name="error_http">HTTP error occurred: %1$s</string>
     <string name="error_invalid_credentials">" Credenziali non valide o errate %1$d"</string>
+    <string name="error_api_not_found">Collegamento riuscito, api not trovata %1$d</string>
+    <string name="new_order_added">Ordine %1$d aggiunto con successo</string>
+    <string name="new_item_added">Articolo inserito con successo</string>
+    <string name="item_deleted">Riga eliminata con successo %1$d</string>
+    <string name="update_order_details">Modifiche salvate con successo %1$d</string>
 
 
 </resources>
