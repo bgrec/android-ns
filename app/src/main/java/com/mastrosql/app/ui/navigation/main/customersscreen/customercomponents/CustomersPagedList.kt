@@ -74,7 +74,6 @@ fun CustomersPagedList(
                 (loadState.refresh as LoadState.Error).error as Exception,
                 { customers.refresh() },
                 modifier = modifier.fillMaxSize(),
-                drawerState = drawerState,
                 navController = navController
             )
         }

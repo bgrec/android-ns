@@ -78,6 +78,7 @@ androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "workManagerVersion" }
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "workManagerVersion" }
 
+#noinspection CredentialDependency
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentialsVersion" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsVersion" }
 
