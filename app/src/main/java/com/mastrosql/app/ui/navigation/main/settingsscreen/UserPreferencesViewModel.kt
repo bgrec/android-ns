@@ -5,31 +5,73 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.mastrosql.app.R
+import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
+import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
-import kotlinx.coroutines.CoroutineScope
+import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.EnumMap
 
+data class UserPreferencesUiState(
+    val isOnboarded: Boolean = false,
+    val isLoggedIn: Boolean = false,
+    val isNotSecuredApi: Boolean = false,
+    val isSwipeToDeleteDeactivated: Boolean = false,
+    val baseUrl: String = "",
+    val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
+)
+
 open class UserPreferencesViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
-    // Flow to observe isOnboardingComplete value
-    private val isOnboarded: Flow<Boolean> =
+    // Mutable state flow for UI state
+    val uiState: StateFlow<UserPreferencesUiState> =
         userPreferencesRepository.getIsOnboarded()
+            .zip(
+                userPreferencesRepository.getIsLoggedIn(),
+                userPreferencesRepository.getIsNotSecuredApi(),
+                userPreferencesRepository.getIsSwipeToDeleteDeactivated(),
+                userPreferencesRepository.getBaseUrl(),
+                userPreferencesRepository.getActiveButtons()
+            ) { isOnboarded, isLoggedIn, isNotSecuredApi, isSwipeToDeleteDeactivated, baseUrl, activeButtons ->
+                UserPreferencesUiState(
+                    isOnboarded = isOnboarded,
+                    isLoggedIn = isLoggedIn,
+                    isNotSecuredApi = isNotSecuredApi,
+                    isSwipeToDeleteDeactivated = isSwipeToDeleteDeactivated,
+                    baseUrl = baseUrl,
+                    activeButtons = activeButtons
+                )
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+                initialValue = UserPreferencesUiState()
+            )
+
+
+    // Function to update UI state
+    private fun updateUiState(newState: UserPreferencesUiState) {
+        //_uiState.value = newState
+    }
+
+    // Flow to observe isOnboardingComplete value
+    private val isOnboarded: Flow<Boolean> = userPreferencesRepository.getIsOnboarded()
 
     val isOnboardedUiState = isOnboarded.stateIn(
         scope = viewModelScope,
@@ -37,8 +79,8 @@ open class UserPreferencesViewModel(
         initialValue = false
     )
 
-    private val isLoggedIn: Flow<Boolean> =
-        userPreferencesRepository.getIsLoggedIn()
+    // Flow to observe isLoggedIn value
+    private val isLoggedIn: Flow<Boolean> = userPreferencesRepository.getIsLoggedIn()
 
     val isLoggedInUiState = isLoggedIn.stateIn(
         scope = viewModelScope,
@@ -46,40 +88,53 @@ open class UserPreferencesViewModel(
         initialValue = false
     )
 
-    private val baseUrl: Flow<String> =
-        userPreferencesRepository.getBaseUrl()
+    // Flow to observe isNotSecuredApi
+    private val isNotSecuredApi: Flow<Boolean> = userPreferencesRepository.getIsNotSecuredApi()
 
-    val baseUrlUiState = baseUrl
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-            initialValue = ""
-        )
+    val isNotSecuredApiUiState = isNotSecuredApi.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = false
+    )
 
+    // Flow to observe isSwipeToDeleteDeactivated
+    private val isSwipeToDeleteDeactivated: Flow<Boolean> =
+        userPreferencesRepository.getIsSwipeToDeleteDeactivated()
+
+    val isSwipeToDeleteDeactivatedUiState = isSwipeToDeleteDeactivated.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = false
+    )
+
+    // Flow to observe baseUrl value
+    private val baseUrl: Flow<String> = userPreferencesRepository.getBaseUrl()
+
+    val baseUrlUiState = baseUrl.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = ""
+    )
+
+    // Flow to observe activeButtons value
     private val activeButtons: Flow<EnumMap<MainNavOption, Boolean>> =
         userPreferencesRepository.getActiveButtons()
 
-    open val activeButtonsUiState = activeButtons
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-            initialValue = EnumMap(MainNavOption::class.java)
+    open val activeButtonsUiState = activeButtons.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+        initialValue = EnumMap(MainNavOption::class.java)
 
-        )
+    )
 
     fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         viewModelScope.launch {
             userPreferencesRepository.updateActiveButtons(activeButtons)
+            updateUiState(uiState.value.copy(activeButtons = activeButtons))
         }
     }
 
-    fun selectLayout(isLinearLayout: Boolean) {
-        viewModelScope.launch {
-            userPreferencesRepository.saveLayoutPreference(isLinearLayout)
-        }
-    }
-
-    /*
+    /**
      * [onBoardingCompleted] change intro screen and
      * save the selection in DataStore through [userPreferencesRepository]
      */
@@ -104,7 +159,6 @@ open class UserPreferencesViewModel(
                     false
                 }
             ) {
-
                 if (baseUrl.endsWith("/")) {
                     userPreferencesRepository.saveBaseUrl(baseUrl)
                 } else {
@@ -125,107 +179,76 @@ open class UserPreferencesViewModel(
             }
             loginCompleted(false)
 
-            //onBoardingCompleted(false)
-
             // Logout from the app webserver
             userPreferencesRepository.logoutFromServer()
             SessionManager.clearSession()
         }
     }
 
-    fun testRetrofitConnection(context: Context) {
+    suspend fun testRetrofitConnection(context: Context) {
         // Show loading message
-        showToast(context, "Collegamento in corso...attendere")
+        ToastUtils.showToast(
+            context, Toast.LENGTH_LONG, context.getString(R.string.connecting_to_server)
+        )
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Perform a test API call using the repository's service
                 val response = userPreferencesRepository.testApiCall()
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorMessage(errorBody)
 
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
-                        200 -> showToast(context, "Collegamento riuscito ${response.code()}")
-
-                        401 -> showToast(
+                        200 -> ToastUtils.showToast(
                             context,
-                            "Collegamento riuscito, non autorizzato ${response.code()}"
+                            Toast.LENGTH_LONG,
+                            context.getString(R.string.error_api_not_found, response.code())
                         )
 
-                        404 -> showToast(
-                            context,
-                            "Collegamento riuscito, api non trovata ${response.code()}"
+                        401 -> NetworkSuccessHandler.handleUnauthorized(context, viewModelScope) {
+                            // Handle the unauthorized response
+                        }
+
+                        404 -> NetworkSuccessHandler.handleNotFound(
+                            context, viewModelScope, response.code()
                         )
 
-                        500 -> {
-                            showToast(
-                                context,
-                                "$errorMessage ${response.code()}"
-                            )
-                        }
+                        500, 503 -> NetworkSuccessHandler.handleServerError(
+                            context, response, viewModelScope
+                        )
 
-                        503 -> {
-                            showToast(
-                                context,
-                                "$errorMessage ${response.code()}"
-                            )
-                        }
-
-                        else -> showToast(context, "Errore api: ${response.code()}")
+                        else -> NetworkSuccessHandler.handleUnknownError(
+                            context, response, viewModelScope
+                        )
                     }
                 }
             } catch (e: IOException) {
                 // Handle IOException (e.g., network error)
-                showToast(context, "Network error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: HttpException) {
                 // Handle HttpException (e.g., non-2xx response)
-                showToast(context, "HTTP error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                showToast(context, "Connection timed out. Please try again later.")
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
                 // Handle generic exception
-                showToast(context, "An unexpected error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             }
         }
     }
 
-    private fun parseErrorMessage(errorBody: String?): String {
-        val jsonError = JSONObject(errorBody ?: "null")
-        return jsonError.optString("message")
-    }
-
-    private fun showToast(context: Context, message: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (message.isNotEmpty()) {
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            } else {
-                // Hide loading message by not showing any toast
-            }
+    fun setNotSecuredApi(isNotSecuredApi: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveIsNotSecuredApi(isNotSecuredApi)
         }
     }
 
-    fun setNotSecuredApi(context: Context) {
-        TODO("Not yet implemented")
-    }
-
-    fun setSwipeToDelete(context: Context) {
-
+    fun setSwipeToDelete(isSwipeToDeleteDeactivated: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveIsSwipeToDeleteDeactivated(isSwipeToDeleteDeactivated)
+        }
     }
 
 }
-
-data class DessertReleaseUiState(
-    val isLinearLayout: Boolean = true,
-    val toggleContentDescription: Int = 1,
-    //if (isLinearLayout) R.string.grid_layout_toggle else R.string.linear_layout_toggle,
-    val toggleIcon: Int = 2,
-    //if (isLinearLayout) R.drawable.ic_grid_layout else R.drawable.ic_linear_layout
-)
-
-data class IsLoggedInUiState(
-    val isOnBoardingCompleted: Boolean = false
-)
 

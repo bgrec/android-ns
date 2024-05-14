@@ -18,9 +18,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -58,6 +59,7 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import kotlinx.coroutines.launch
 import java.util.EnumMap
 
 @Composable
@@ -65,25 +67,34 @@ fun SettingsScreen(
     navController: NavController,
     viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-
     // Get the context
     val context = LocalContext.current
 
+    // Remember the coroutine scope
+    val coroutineScope = rememberCoroutineScope()
+
     // Collect the state from the view model and update the UI
-    val currentBaseUrlUiState by viewModel.baseUrlUiState.collectAsState()
-    val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
+    val userPreferencesUiState by viewModel.uiState.collectAsState()
+
+//    val currentBaseUrlUiState by viewModel.baseUrlUiState.collectAsState()
+//    val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
+//    val isNotSecuredApiUiState by viewModel.isNotSecuredApiUiState.collectAsState()
+//    val isSwipeToDeleteDeactivatedUiState by viewModel.isSwipeToDeleteDeactivatedUiState.collectAsState()
+
 
     // Local state to hold the current base URL
-    val urlState = remember { mutableStateOf(currentBaseUrlUiState) }
+    val urlState = remember { mutableStateOf(userPreferencesUiState.baseUrl) }
 
     // Update the local state when the base URL changes
-    LaunchedEffect(currentBaseUrlUiState) {
-        urlState.value = currentBaseUrlUiState
+    LaunchedEffect(userPreferencesUiState.baseUrl) {
+        urlState.value = userPreferencesUiState.baseUrl
     }
 
     SettingsComposable(navController = navController,
-        activeButtonsUiState = activeButtonsUiState,
+        activeButtonsState = userPreferencesUiState.activeButtons,
         currentBaseUrlState = urlState,
+        isNotSecuredApiState = userPreferencesUiState.isNotSecuredApi,
+        isSwipeToDeleteDeactivatedState = userPreferencesUiState.isSwipeToDeleteDeactivated,
         onSaveUrl = { url -> viewModel.setBaseUrl(url) },
         onSetOnboardingCompleted = { isOnboardingCompleted ->
             viewModel.onBoardingCompleted(
@@ -91,27 +102,33 @@ fun SettingsScreen(
             )
         },
         onUpdateActiveButtons = { updatedState -> viewModel.updateActiveButtons(updatedState) },
-        onTestConnection = { viewModel.testRetrofitConnection(context) },
-        onSetNotSecuredApi = { viewModel.setNotSecuredApi(context) },
-        onSetSwipeToDelete = { viewModel.setSwipeToDelete(context) }
-
-    )
-
-
+        onTestConnection = {
+            coroutineScope.launch {
+                viewModel.testRetrofitConnection(context)
+            }
+        },
+        onSetNotSecuredApi = { isNotSecuredApi -> viewModel.setNotSecuredApi(isNotSecuredApi) },
+        onSetSwipeToDeleteDeactivated = { isSwipeToDeleteDeactivated ->
+            viewModel.setSwipeToDelete(
+                isSwipeToDeleteDeactivated
+            )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsComposable(
     navController: NavController,
-    activeButtonsUiState: EnumMap<MainNavOption, Boolean>,
+    activeButtonsState: EnumMap<MainNavOption, Boolean>,
     currentBaseUrlState: MutableState<String>,
+    isNotSecuredApiState: Boolean,
+    isSwipeToDeleteDeactivatedState: Boolean,
     onSaveUrl: (String) -> Unit,
     onSetOnboardingCompleted: (Boolean) -> Unit,
     onUpdateActiveButtons: (EnumMap<MainNavOption, Boolean>) -> Unit,
     onTestConnection: () -> Unit,
-    onSetNotSecuredApi: () -> Unit,
-    onSetSwipeToDelete: () -> Unit
+    onSetNotSecuredApi: (Boolean) -> Unit,
+    onSetSwipeToDeleteDeactivated: (Boolean) -> Unit
 
 ) {
 
@@ -133,14 +150,14 @@ fun SettingsComposable(
             }
         })
     }, modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                //viewModel.setBaseUrl(urlState)
-                if (currentBaseUrlState.value.isNotEmpty()) {
-                    onSaveUrl(currentBaseUrlState.value)
-                }
-                focusManager.clearFocus()
-            })
-        }) { innerPadding ->
+        detectTapGestures(onTap = {
+            //viewModel.setBaseUrl(urlState)
+            if (currentBaseUrlState.value.isNotEmpty()) {
+                onSaveUrl(currentBaseUrlState.value)
+            }
+            focusManager.clearFocus()
+        })
+    }) { innerPadding ->
 
         val isLandscape =
             LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -169,7 +186,8 @@ fun SettingsComposable(
                 val url by rememberSaveable { mutableStateOf(currentBaseUrlState) }
                 val updatedUrlState by rememberUpdatedState(url.value)
 
-                OutlinedTextField(value = url.value,
+                OutlinedTextField(
+                    value = url.value,
                     singleLine = false,
                     onValueChange = {
                         url.value = it
@@ -206,8 +224,8 @@ fun SettingsComposable(
                     text = stringResource(R.string.private_webserver),
                     modifier = Modifier.weight(1f)
                 )
-                Switch(checked = false, onCheckedChange = { isChecked ->
-
+                Switch(checked = isNotSecuredApiState, onCheckedChange = { isChecked ->
+                    onSetNotSecuredApi(isChecked)
                 })
             }
 
@@ -225,8 +243,8 @@ fun SettingsComposable(
                     modifier = Modifier.weight(1f)
                 )
 
-                Switch(checked = false, onCheckedChange = { isChecked ->
-
+                Switch(checked = isSwipeToDeleteDeactivatedState, onCheckedChange = { isChecked ->
+                    onSetSwipeToDeleteDeactivated(isChecked)
                 })
             }
 
@@ -250,7 +268,7 @@ fun SettingsComposable(
             if (showDialog.value) {
                 MenuButtonsActivationDialog(
                     showDialog = showDialog,
-                    activeButtonsUiState = activeButtonsUiState,
+                    activeButtonsUiState = activeButtonsState,
                     onUpdateActiveButtons = onUpdateActiveButtons
                 )
             }
@@ -285,6 +303,11 @@ fun SettingsComposable(
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
             }
+
+            Spacer(modifier = Modifier.padding(16.dp))
+
+            Divider()
+
         }
     }
 }
@@ -307,22 +330,25 @@ fun MenuButtonsActivationDialog(
         )
     }
 
-    AlertDialog(onDismissRequest = { showDialog.value = false },
+    AlertDialog(
+        onDismissRequest = { showDialog.value = false },
         title = { Text(stringResource(R.string.dialog_button_settings)) },
         text = {
             LazyColumn(modifier = Modifier.wrapContentSize()) {
                 items(MainNavOption.entries.toList()) {
                     if ((stringResMap[it] != null)) {
-                        Row(modifier = Modifier.clickable(onClick = {
-                            val isChecked = !(activeButtonsUiState[it] ?: false)
-                            val updatedState = EnumMap(activeButtonsUiState)
-                            updatedState[it] = isChecked
+                        Row(
+                            modifier = Modifier.clickable(onClick = {
+                                val isChecked = !(activeButtonsUiState[it] ?: false)
+                                val updatedState = EnumMap(activeButtonsUiState)
+                                updatedState[it] = isChecked
 
-                            // Update the state
-                            onUpdateActiveButtons(updatedState)
-                        }),
+                                // Update the state
+                                onUpdateActiveButtons(updatedState)
+                            }),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Text(stringResource(stringResMap[it] ?: R.string.null_text))
 
                             Spacer(Modifier.weight(1f))
@@ -365,13 +391,15 @@ fun ButtonsActivationDialogPreview(
 fun SettingsScreenPreview() {
     MastroAndroidTheme {
         SettingsComposable(navController = NavController(LocalContext.current),
-            activeButtonsUiState = EnumMap(MainNavOption::class.java),
+            activeButtonsState = EnumMap(MainNavOption::class.java),
             currentBaseUrlState = remember { mutableStateOf("https://example.com/api") },
+            isNotSecuredApiState = false,
+            isSwipeToDeleteDeactivatedState = true,
             onSaveUrl = {},
             onSetOnboardingCompleted = {},
             onUpdateActiveButtons = {},
             onTestConnection = {},
             onSetNotSecuredApi = {},
-            onSetSwipeToDelete = {})
+            onSetSwipeToDeleteDeactivated = {})
     }
 }

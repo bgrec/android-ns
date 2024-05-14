@@ -22,6 +22,9 @@ import java.io.IOException
 import java.util.EnumMap
 import javax.inject.Inject
 
+/**
+ * Data class to hold user preferences
+ */
 data class UserPreferences(
     val searchValue: String = "",
     val isLinearLayout: Boolean = true,
@@ -33,10 +36,14 @@ data class UserPreferences(
     val userType: String = "",
     val userErpCode: Comparable<*> = 0,
     val appVersion: String = "",
-    val sessionToken: String = ""
-
+    val sessionToken: String = "",
+    val isNotSecuredApi: Boolean = false,
+    val isSwipeToDeleteDeactivated: Boolean = false
 )
 
+/**
+ * Data class to hold user preferences keys
+ */
 object UserPreferencesKeys {
     val SEARCH_VALUE = stringPreferencesKey("search_value")
     val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
@@ -49,10 +56,12 @@ object UserPreferencesKeys {
     val USER_ERP_CODE = stringPreferencesKey("user_erp_code")
     val APP_VERSION = stringPreferencesKey("app_version")
     val SESSION_KEY = stringPreferencesKey("session_key")
+    val IS_NOT_SECURED_API = booleanPreferencesKey("is_not_secured_api")
+    val IS_SWIPE_TO_DELETE_DEACTIVATED = booleanPreferencesKey("is_swipe_to_delete_deactivated")
 }
 
 /**
- * Class that handles saving and retrieving user preferences
+ * Repository class to handle user preferences
  */
 class UserPreferencesRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
@@ -62,7 +71,6 @@ class UserPreferencesRepository @Inject constructor(
     private val tag = "MastroAndroidUserPref."
     private val gson = Gson()
 
-
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         this.mastroAndroidApiService = newMastroAndroidApiService
     }
@@ -70,6 +78,7 @@ class UserPreferencesRepository @Inject constructor(
     /**
      * Get the user preferences flow.
      */
+
     private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data.catch { exception ->
         if (exception is IOException) {
             Log.e(tag, "Error reading preferences.", exception)
@@ -106,6 +115,9 @@ class UserPreferencesRepository @Inject constructor(
         val userErpCode = preferences[UserPreferencesKeys.USER_ERP_CODE] ?: 0
         val appVersion = preferences[UserPreferencesKeys.APP_VERSION] ?: ""
         val sessionToken = preferences[UserPreferencesKeys.SESSION_KEY] ?: ""
+        val isNotSecuredApi = preferences[UserPreferencesKeys.IS_NOT_SECURED_API] ?: false
+        val isSwipeToDeleteDeactivated =
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DEACTIVATED] ?: false
 
         return UserPreferences(
             searchValue,
@@ -118,7 +130,9 @@ class UserPreferencesRepository @Inject constructor(
             userType,
             userErpCode,
             appVersion,
-            sessionToken
+            sessionToken,
+            isNotSecuredApi,
+            isSwipeToDeleteDeactivated
         )
     }
 
@@ -136,13 +150,9 @@ class UserPreferencesRepository @Inject constructor(
             preferences[UserPreferencesKeys.USER_ERP_CODE] = userPreferences.userErpCode.toString()
             preferences[UserPreferencesKeys.APP_VERSION] = userPreferences.appVersion
             preferences[UserPreferencesKeys.SESSION_KEY] = userPreferences.sessionToken
-
-        }
-    }
-
-    suspend fun saveLayoutPreference(isLinearLayout: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[UserPreferencesKeys.IS_LINEAR_LAYOUT] = isLinearLayout
+            preferences[UserPreferencesKeys.IS_NOT_SECURED_API] = userPreferences.isNotSecuredApi
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DEACTIVATED] =
+                userPreferences.isSwipeToDeleteDeactivated
         }
     }
 
@@ -223,11 +233,8 @@ class UserPreferencesRepository @Inject constructor(
         return userPreferencesFlow.map { it.baseUrl }
     }
 
-    fun getIsLinearLayout(): Flow<Boolean> {
-        return userPreferencesFlow.map { it.isLinearLayout }
-    }
 
-    open fun getIsOnboarded(): Flow<Boolean> {
+    fun getIsOnboarded(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isOnboarded }
     }
 
@@ -310,5 +317,26 @@ class UserPreferencesRepository @Inject constructor(
 
     suspend fun logoutFromServer(): Response<JsonObject> {
         return mastroAndroidApiService.logout()
+    }
+
+    fun getIsNotSecuredApi(): Flow<Boolean> {
+        return userPreferencesFlow.map { it.isNotSecuredApi }
+    }
+
+    suspend fun saveIsNotSecuredApi(isNotSecuredApi: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.IS_NOT_SECURED_API] = isNotSecuredApi
+        }
+    }
+
+    fun getIsSwipeToDeleteDeactivated(): Flow<Boolean> {
+        return userPreferencesFlow.map { it.isSwipeToDeleteDeactivated }
+    }
+
+    suspend fun saveIsSwipeToDeleteDeactivated(isSwipeToDeleteDeactivated: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DEACTIVATED] =
+                isSwipeToDeleteDeactivated
+        }
     }
 }

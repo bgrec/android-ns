@@ -223,6 +223,7 @@
     <string name="new_order">Nuovo Ordine</string>
     <string name="select_a_date">Seleziona una data</string>
 
+    <string name="connecting_to_server">"Collegamento in corso…attendere"</string>
     <string name="error_connection_timeout">Connection timed out. Please try again later.</string>
     <string name="error_unexpected_error">An unexpected error occurred: %1$s</string>
     <string name="error_network_error">Network error occurred: %1$s</string>
