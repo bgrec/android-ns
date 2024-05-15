@@ -20,8 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -31,7 +31,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +51,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
@@ -74,13 +74,7 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     // Collect the state from the view model and update the UI
-    val userPreferencesUiState by viewModel.uiState.collectAsState()
-
-//    val currentBaseUrlUiState by viewModel.baseUrlUiState.collectAsState()
-//    val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
-//    val isNotSecuredApiUiState by viewModel.isNotSecuredApiUiState.collectAsState()
-//    val isSwipeToDeleteDeactivatedUiState by viewModel.isSwipeToDeleteDeactivatedUiState.collectAsState()
-
+    val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Local state to hold the current base URL
     val urlState = remember { mutableStateOf(userPreferencesUiState.baseUrl) }
@@ -151,7 +145,7 @@ fun SettingsComposable(
         })
     }, modifier = Modifier.pointerInput(Unit) {
         detectTapGestures(onTap = {
-            //viewModel.setBaseUrl(urlState)
+
             if (currentBaseUrlState.value.isNotEmpty()) {
                 onSaveUrl(currentBaseUrlState.value)
             }
@@ -211,7 +205,7 @@ fun SettingsComposable(
                 )
             }
 
-            Divider()
+            HorizontalDivider()
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -228,9 +222,6 @@ fun SettingsComposable(
                     onSetNotSecuredApi(isChecked)
                 })
             }
-
-            Spacer(modifier = Modifier)
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -248,21 +239,31 @@ fun SettingsComposable(
                 })
             }
 
-            Divider()
-
+            // Activate the buttons, show intro again, and close the dialog
+            HorizontalDivider()
             Spacer(modifier = Modifier.padding(16.dp))
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Button(modifier = Modifier.fillMaxWidth(), onClick = { showDialog.value = true }) {
+
+                Button(
+                    modifier = Modifier.weight(0.45f),
+                    onClick = { showDialog.value = true }) {
                     Text(stringResource(R.string.dialog_button_settings))
                 }
+                Spacer(modifier = Modifier.weight(0.1f))
+                Button(modifier = Modifier.weight(0.45f),
+                    onClick = {
+                        onSetOnboardingCompleted(false)
+                    }) {
+                    Text(text = stringResource(R.string.show_intro_again))
+                }
             }
+            Spacer(modifier = Modifier.padding(16.dp))
 
             // Show the dialog to activate the buttons
             if (showDialog.value) {
@@ -272,25 +273,9 @@ fun SettingsComposable(
                     onUpdateActiveButtons = onUpdateActiveButtons
                 )
             }
-            //
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                    onSetOnboardingCompleted(false)
-                }) {
-                    Text(text = stringResource(R.string.show_intro_again))
-                }
-            }
-            Spacer(modifier = Modifier.padding(16.dp))
-
-            Divider()
-
+            // Test the connection
+            HorizontalDivider()
             Spacer(modifier = Modifier.padding(16.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -303,10 +288,8 @@ fun SettingsComposable(
                     Text(text = stringResource(R.string.test_retrofit_button))
                 }
             }
-
             Spacer(modifier = Modifier.padding(16.dp))
-
-            Divider()
+            HorizontalDivider()
 
         }
     }

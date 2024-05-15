@@ -14,9 +14,9 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,12 +29,13 @@ import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory),
     // TODO: try to use hiltViewModel()
 ) {
 
@@ -47,16 +48,10 @@ fun MainCompose(
     // Get the current screen from the viewmodel
     val currentScreen by appNavigationViewModel.currentScreen
 
-    // Get the user onboarded status from the viewmodel
-    val isOnboarded by preferencesViewModel.isOnboardedUiState.collectAsState()
+    // Collect the state from the view model and update the UI
+    val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    //Get the user logged in status from the viewmodel
-    val isLoggedIn by preferencesViewModel.isLoggedInUiState.collectAsState()
-
-    // Get active buttons from UserPreferencesViewModel
-    val activeButtonsUiState by preferencesViewModel.activeButtonsUiState.collectAsState()
-
-    if (isLoggedIn && isOnboarded) {
+    if (userPreferencesUiState.isLoggedIn && userPreferencesUiState.isOnboarded) {
         // If the user is logged in and onboarded, navigate directly to the new home screen
         LaunchedEffect(Unit) {
             navController.navigate(MainNavOption.HomeScreen.name) {
@@ -97,16 +92,150 @@ fun MainCompose(
         }
     }
 
+//    ModalNavigationDrawer(drawerState = drawerState,
+//        gesturesEnabled = gesturesEnabled,
+//        drawerContent = {
+//            AppDrawerContent(
+//                drawerState = drawerState,
+//                menuItems = DrawerParams.createDrawerButtons(userPreferencesUiState.activeButtons),
+//                currentPick = currentScreen
+//                    ?: MainNavOption.HomeScreen,//defaultPick, //MainNavOption.LoginScreen
+//                onCurrentPickChange = { newCurrentPick ->
+//                    appNavigationViewModel.setCurrentScreen(newCurrentPick)
+//                },
+//            ) { onUserPickedOption ->
+//
+//                /*
+//                * When the user picks an option from the drawer, navigate to the corresponding screen,
+//                * close the drawer and update the current screen in the viewmodel
+//                 */
+//                appNavigationViewModel.setCurrentScreen(onUserPickedOption)
+//
+//                when (onUserPickedOption) {
+//                    MainNavOption.LoginScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(NavRoutes.MainRoute.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.HomeScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(NavRoutes.MainRoute.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.OldHomeScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.CustomersScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.CustomersPagedScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.ArticlesScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.ItemsScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.OrdersScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.SettingsScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(NavRoutes.MainRoute.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.CartScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.HomeScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.AboutScreen -> {
+//                        navController.navigate(onUserPickedOption.name) {
+//                            popUpTo(MainNavOption.SettingsScreen.name)
+//                        }
+//                    }
+//
+//                    MainNavOption.Logout -> {
+//                        viewModel.logout(navController)
+//                        //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
+//                    }
+//
+//                    else -> {
+//                        //appNavigationViewModel.setGesturesEnabled(false)
+//                    }
+//                }
+//            }
+//        })
+//    {
+//        NavHost(
+//            navController,
+//            startDestination =
+//            if (userPreferencesUiState.isOnboarded) {
+//                NavRoutes.MainRoute.name
+//            } else NavRoutes.IntroRoute.name
+//        ) {
+//            introGraph(navController)
+//            mainGraph(drawerState, navController)
+//        }
+//    }
+    NavigationDrawerComposable(drawerState = drawerState,
+        gesturesEnabled = gesturesEnabled,
+        navController = navController,
+        isOnboarded = userPreferencesUiState.isOnboarded,
+        activeButtons = userPreferencesUiState.activeButtons,
+        currentScreen = currentScreen,
+        onNewCurrentPickChange = { newCurrentPick ->
+            appNavigationViewModel.setCurrentScreen(newCurrentPick)
+        },
+        onLogout = { navControllera ->
+            viewModel.logout(navControllera)
+        })
+}
+
+@Composable
+fun NavigationDrawerComposable(
+    drawerState: DrawerState,
+    gesturesEnabled: Boolean,
+    isOnboarded: Boolean = true,
+    activeButtons: Map<MainNavOption, Boolean>,
+    navController: NavHostController,
+    currentScreen: MainNavOption? = null,
+    onNewCurrentPickChange: (MainNavOption) -> Unit,
+    onLogout: (NavHostController) -> Unit
+) {
     ModalNavigationDrawer(drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         drawerContent = {
             AppDrawerContent(
                 drawerState = drawerState,
-                menuItems = DrawerParams.createDrawerButtons(activeButtonsUiState),
+                menuItems = DrawerParams.createDrawerButtons(activeButtons),
                 currentPick = currentScreen
                     ?: MainNavOption.HomeScreen,//defaultPick, //MainNavOption.LoginScreen
                 onCurrentPickChange = { newCurrentPick ->
-                    appNavigationViewModel.setCurrentScreen(newCurrentPick)
+                    onNewCurrentPickChange(newCurrentPick)
                 },
             ) { onUserPickedOption ->
 
@@ -114,7 +243,7 @@ fun MainCompose(
                 * When the user picks an option from the drawer, navigate to the corresponding screen,
                 * close the drawer and update the current screen in the viewmodel
                  */
-                appNavigationViewModel.setCurrentScreen(onUserPickedOption)
+                onNewCurrentPickChange(onUserPickedOption)
 
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
@@ -184,13 +313,13 @@ fun MainCompose(
                     }
 
                     MainNavOption.Logout -> {
-                        preferencesViewModel.logout(navController)
+                        onLogout(navController)
                         //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
                     }
 
-                    else -> {
-                        //appNavigationViewModel.setGesturesEnabled(false)
-                    }
+//                    else -> {
+//                        //appNavigationViewModel.setGesturesEnabled(false)
+//                    }
                 }
             }
         })
@@ -317,8 +446,31 @@ object DrawerParams {
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
-fun MainActivityPreview() {
-    MainCompose()
+fun MainComposePreview() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val gesturesEnabled = true
+    val activeButtons = mapOf(
+        MainNavOption.HomeScreen to true,
+        MainNavOption.OldHomeScreen to true,
+        MainNavOption.CustomersScreen to true,
+        MainNavOption.CustomersPagedScreen to true,
+        MainNavOption.ArticlesScreen to true,
+        MainNavOption.ItemsScreen to true,
+        MainNavOption.OrdersScreen to true,
+        MainNavOption.CartScreen to true
+    )
+    val navController = rememberNavController()
+
+   MastroAndroidTheme {
+       NavigationDrawerComposable(
+           drawerState = drawerState,
+           gesturesEnabled =gesturesEnabled ,
+           activeButtons = activeButtons,
+           navController = navController,
+           onNewCurrentPickChange = {},
+           onLogout = {}
+       )
+   }
 }

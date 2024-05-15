@@ -14,11 +14,8 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -27,6 +24,20 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.EnumMap
 
+
+/*
+* sealed class UserPreferencesUiState {
+    object Loading : UserPreferencesUiState()
+    data class Success(
+        val isOnboarded: Boolean,
+        val isLoggedIn: Boolean,
+        // Other preferences
+    ) : UserPreferencesUiState()
+    data class Error(val message: String) : UserPreferencesUiState()
+}
+* */
+
+
 data class UserPreferencesUiState(
     val isOnboarded: Boolean = false,
     val isLoggedIn: Boolean = false,
@@ -34,6 +45,7 @@ data class UserPreferencesUiState(
     val isSwipeToDeleteDeactivated: Boolean = false,
     val baseUrl: String = "",
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
+    // collect it as collectAsStateWithLifecycle()
 )
 
 open class UserPreferencesViewModel(
@@ -41,96 +53,65 @@ open class UserPreferencesViewModel(
 ) : ViewModel() {
 
     // Mutable state flow for UI state
-    val uiState: StateFlow<UserPreferencesUiState> =
-        userPreferencesRepository.getIsOnboarded()
-            .zip(
-                userPreferencesRepository.getIsLoggedIn(),
-                userPreferencesRepository.getIsNotSecuredApi(),
-                userPreferencesRepository.getIsSwipeToDeleteDeactivated(),
-                userPreferencesRepository.getBaseUrl(),
-                userPreferencesRepository.getActiveButtons()
-            ) { isOnboarded, isLoggedIn, isNotSecuredApi, isSwipeToDeleteDeactivated, baseUrl, activeButtons ->
-                UserPreferencesUiState(
-                    isOnboarded = isOnboarded,
-                    isLoggedIn = isLoggedIn,
-                    isNotSecuredApi = isNotSecuredApi,
-                    isSwipeToDeleteDeactivated = isSwipeToDeleteDeactivated,
-                    baseUrl = baseUrl,
-                    activeButtons = activeButtons
-                )
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-                initialValue = UserPreferencesUiState()
-            )
+    private val _uiState = MutableStateFlow(UserPreferencesUiState())
+    val uiState: StateFlow<UserPreferencesUiState> = _uiState
 
 
     // Function to update UI state
     private fun updateUiState(newState: UserPreferencesUiState) {
-        //_uiState.value = newState
+        _uiState.value = newState
     }
 
-    // Flow to observe isOnboardingComplete value
-    private val isOnboarded: Flow<Boolean> = userPreferencesRepository.getIsOnboarded()
+    init {
 
-    val isOnboardedUiState = isOnboarded.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = false
-    )
+        // Observe changes in isOnboarded and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getIsOnboarded().collect { isOnboarded ->
+                updateUiState(uiState.value.copy(isOnboarded = isOnboarded))
+            }
+        }
 
-    // Flow to observe isLoggedIn value
-    private val isLoggedIn: Flow<Boolean> = userPreferencesRepository.getIsLoggedIn()
+        // Observe changes in isLoggedIn and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getIsLoggedIn().collect { isLoggedIn ->
+                updateUiState(uiState.value.copy(isLoggedIn = isLoggedIn))
+            }
+        }
 
-    val isLoggedInUiState = isLoggedIn.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = false
-    )
+        // Observe changes in isNotSecuredApi and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getIsNotSecuredApi().collect { isNotSecuredApi ->
+                updateUiState(uiState.value.copy(isNotSecuredApi = isNotSecuredApi))
+            }
+        }
 
-    // Flow to observe isNotSecuredApi
-    private val isNotSecuredApi: Flow<Boolean> = userPreferencesRepository.getIsNotSecuredApi()
+        // Observe changes in isSwipeToDeleteDeactivated and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getIsSwipeToDeleteDeactivated()
+                .collect { isSwipeToDeleteDeactivated ->
+                    updateUiState(uiState.value.copy(isSwipeToDeleteDeactivated = isSwipeToDeleteDeactivated))
+                }
+        }
 
-    val isNotSecuredApiUiState = isNotSecuredApi.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = false
-    )
+        // Observe changes in baseUrl and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getBaseUrl().collect { baseUrl ->
+                updateUiState(uiState.value.copy(baseUrl = baseUrl))
+            }
+        }
 
-    // Flow to observe isSwipeToDeleteDeactivated
-    private val isSwipeToDeleteDeactivated: Flow<Boolean> =
-        userPreferencesRepository.getIsSwipeToDeleteDeactivated()
-
-    val isSwipeToDeleteDeactivatedUiState = isSwipeToDeleteDeactivated.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = false
-    )
-
-    // Flow to observe baseUrl value
-    private val baseUrl: Flow<String> = userPreferencesRepository.getBaseUrl()
-
-    val baseUrlUiState = baseUrl.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = ""
-    )
-
-    // Flow to observe activeButtons value
-    private val activeButtons: Flow<EnumMap<MainNavOption, Boolean>> =
-        userPreferencesRepository.getActiveButtons()
-
-    open val activeButtonsUiState = activeButtons.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
-        initialValue = EnumMap(MainNavOption::class.java)
-
-    )
+        // Observe changes in activeButtons and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getActiveButtons().collect { activeButtons ->
+                updateUiState(uiState.value.copy(activeButtons = activeButtons))
+            }
+        }
+    }
 
     fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         viewModelScope.launch {
             userPreferencesRepository.updateActiveButtons(activeButtons)
-            updateUiState(uiState.value.copy(activeButtons = activeButtons))
+            //updateUiState(uiState.value.copy(activeButtons = activeButtons))
         }
     }
 
@@ -141,12 +122,6 @@ open class UserPreferencesViewModel(
     fun onBoardingCompleted(isOnBoardingCompleted: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveOnBoardingCompleted(isOnBoardingCompleted)
-        }
-    }
-
-    private fun loginCompleted(isLoggedIn: Boolean) {
-        viewModelScope.launch {
-            userPreferencesRepository.saveLoggedIn(isLoggedIn)
         }
     }
 
@@ -177,10 +152,13 @@ open class UserPreferencesViewModel(
                     inclusive = true
                 }
             }
-            loginCompleted(false)
+            // Update the logged-in status
+            userPreferencesRepository.saveLoggedIn(false)
 
             // Logout from the app webserver
             userPreferencesRepository.logoutFromServer()
+
+            // Clear the session
             SessionManager.clearSession()
         }
     }
@@ -252,3 +230,23 @@ open class UserPreferencesViewModel(
 
 }
 
+// Example
+//    // Flow to observe baseUrl value
+//    private val baseUrl: Flow<String> = userPreferencesRepository.getBaseUrl()
+//
+//    private val baseUrlUiState = baseUrl.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+//        initialValue = ""
+//    )
+//
+//    // Flow to observe activeButtons value
+//    private val activeButtons: Flow<EnumMap<MainNavOption, Boolean>> =
+//        userPreferencesRepository.getActiveButtons()
+//
+//    open val activeButtonsUiState = activeButtons.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(0), // adjust the duration as needed
+//        initialValue = EnumMap(MainNavOption::class.java)
+//
+//    )
