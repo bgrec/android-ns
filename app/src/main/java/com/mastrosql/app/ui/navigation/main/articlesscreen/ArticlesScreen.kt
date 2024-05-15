@@ -42,8 +42,6 @@ fun ArticlesScreen(
     when (articlesUiState) {
         is ArticlesUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(),
-            drawerState = drawerState,
-            navController = navController,
             loading = true
         )
 
@@ -70,7 +68,6 @@ fun ArticlesScreen(
             articlesUiState.exception,
             viewModel::getArticles,
             modifier = modifier.fillMaxSize(),
-            drawerState = drawerState,
             navController = navController
         )
     }

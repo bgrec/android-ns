@@ -53,6 +53,22 @@ fun CustomersList(
     }
 }
 
+/*
+* val listState = rememberLazyListState()
+
+LazyColumn(state = listState) {
+    // ...
+}
+
+val showButton by remember {
+    derivedStateOf {
+        listState.firstVisibleItemIndex > 0
+    }
+}
+
+AnimatedVisibility(visible = showButton) {
+    ScrollToTopButton()
+}*/
 
 // Function to filter the list based on the search text
 private fun filterCustomersList(

@@ -19,9 +19,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,10 +27,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
-import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.components.appbar.AppBar
@@ -42,56 +40,48 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.homescreen.ButtonItemsList.buttonItems
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import java.util.EnumMap
 
 @Composable
 fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     navController: NavController,
-    preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     // Get AppNavigationViewModel from LocalAppNavigationViewModelProvider
     val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
 
+    // Collect the state from the view model and update the UI
+    val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
     // Get active buttons from UserPreferencesViewModel
-    val activeButtonsUiState by rememberUpdatedState(preferencesViewModel.activeButtonsUiState.collectAsState())
+    val activeButtonsUiState by rememberUpdatedState(userPreferencesUiState.activeButtons)
 
     // Get the current orientation
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    Scaffold(
-        topBar = {
-            AppBar(
-                drawerState = drawerState,
-                title = R.string.drawer_home_menu,
-                showDrawerIconButton = false
-            )
-        }
-    ) { innerPadding ->
+    Scaffold(topBar = {
+        AppBar(
+            drawerState = drawerState,
+            title = R.string.drawer_home_menu,
+            showDrawerIconButton = false
+        )
+    }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
             if (isLandscape) {
-                MultiColumnButtons(
-                    activeButtonsUiState = activeButtonsUiState.value,
+                MultiColumnButtons(activeButtonsUiState = activeButtonsUiState,
                     navController = navController,
                     appNavigationViewModel = appNavigationViewModel,
-                    logout = { preferencesViewModel.logout(navController) }
-                )
+                    logout = { viewModel.logout(navController) })
             } else {
-                OneColumnButtons(
-                    activeButtonsUiState = activeButtonsUiState.value,
+                OneColumnButtons(activeButtonsUiState = activeButtonsUiState,
                     navController = navController,
                     appNavigationViewModel = appNavigationViewModel,
-                    logout = { preferencesViewModel.logout(navController) }
-                )
+                    logout = { viewModel.logout(navController) })
             }
         }
     }
@@ -120,11 +110,9 @@ fun OneColumnButtons(
         buttonItems.forEach { item ->
             if (item.destination in activeButtonsUiState && activeButtonsUiState[item.destination] == true) {
                 Spacer(Modifier.height(16.dp))
-                AppButton(
-                    modifier = buttonsModifier,
+                AppButton(modifier = buttonsModifier,
                     text = item.labelResId,
-                    onClick = { item.action(navController, appNavigationViewModel) }
-                )
+                    onClick = { item.action(navController, appNavigationViewModel) })
             }
         }
 
@@ -141,11 +129,10 @@ fun MultiColumnButtons(
     appNavigationViewModel: AppNavigationViewModel,
     logout: () -> Unit = {}
 ) {
-    val buttonsModifier = Modifier
-        .padding(8.dp)
+    val buttonsModifier = Modifier.padding(8.dp)
 
-    val filteredButtons = buttonItems
-        .filter { it.destination in activeButtonsUiState && activeButtonsUiState[it.destination] == true }
+    val filteredButtons =
+        buttonItems.filter { it.destination in activeButtonsUiState && activeButtonsUiState[it.destination] == true }
 
     val chunkSize = 2
     val items = filteredButtons.chunked(chunkSize)
@@ -159,12 +146,9 @@ fun MultiColumnButtons(
             Row(Modifier.fillMaxWidth()) {
                 chunk.forEach { button ->
                     Spacer(Modifier.width(16.dp))
-                    AppButton(
-                        modifier = buttonsModifier
-                            .weight(1f),
+                    AppButton(modifier = buttonsModifier.weight(1f),
                         text = button.labelResId,
-                        onClick = { button.action(navController, appNavigationViewModel) }
-                    )
+                        onClick = { button.action(navController, appNavigationViewModel) })
                 }
             }
         }
@@ -174,11 +158,9 @@ fun MultiColumnButtons(
             item {
                 Spacer(Modifier.width(16.dp))
                 // You can customize the text of the dummy button as needed
-                AppButton(
-                    modifier = buttonsModifier,
+                AppButton(modifier = buttonsModifier,
                     text = R.string.dummy_button,
-                    onClick = { /* No action needed */ }
-                )
+                    onClick = { /* No action needed */ })
             }
         }
         //Logout button always visible
@@ -191,15 +173,11 @@ fun MultiColumnButtons(
 
 @Composable
 fun LogoutButton(
-    modifier: Modifier,
-    logout: () -> Unit = {}
+    modifier: Modifier, logout: () -> Unit = {}
 ) {
-    AppButton(
-        modifier = modifier,
-        text = R.string.drawer_logout_description,
-        onClick = {
-            logout()
-        })
+    AppButton(modifier = modifier, text = R.string.drawer_logout_description, onClick = {
+        logout()
+    })
 }
 
 @Composable
@@ -207,7 +185,7 @@ fun LogoutButton(
 fun HomeScreenPreview() {
     HomeScreen(
         navController = NavController(LocalContext.current),
-        preferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+        viewModel = viewModel(factory = AppViewModelProvider.Factory)
     )
 }
 
@@ -220,12 +198,10 @@ fun OneColumnButtonsPreview() {
     MainNavOption.entries.forEach { option ->
         activeButtonsUiState[option] = true
     }
-    OneColumnButtons(
-        activeButtonsUiState = activeButtonsUiState,
+    OneColumnButtons(activeButtonsUiState = activeButtonsUiState,
         navController = NavController(LocalContext.current),
         appNavigationViewModel = AppNavigationViewModel(),
-        logout = {}
-    )
+        logout = {})
 }
 
 @Composable
@@ -236,10 +212,8 @@ fun MultiColumnButtonsPreview() {
     MainNavOption.entries.forEach { option ->
         activeButtonsUiState[option] = true
     }
-    MultiColumnButtons(
-        activeButtonsUiState = activeButtonsUiState,
+    MultiColumnButtons(activeButtonsUiState = activeButtonsUiState,
         navController = NavController(LocalContext.current),
         appNavigationViewModel = AppNavigationViewModel(),
-        logout = {}
-    )
+        logout = {})
 }

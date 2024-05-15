@@ -10,12 +10,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.R
+import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
+import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
@@ -31,8 +32,7 @@ import java.net.SocketTimeoutException
 sealed interface OrdersUiState {
 
     data class Success(
-        val ordersList: List<Order>,
-        val modifiedOrderId: MutableIntState
+        val ordersList: List<Order>, val modifiedOrderId: MutableIntState
     ) : OrdersUiState
 
     data class Error(val exception: Exception) : OrdersUiState
@@ -64,22 +64,18 @@ class OrdersViewModel(
     fun getOrders() {
         viewModelScope.launch {
             ordersUiState = OrdersUiState.Loading
-            ordersUiState =
-                try {
-                    val ordersListResult =
-                        ordersRepository.getOrders().items
-                    OrdersUiState
-                        .Success(
-                            ordersListResult,
-                            modifiedOrderId = _modifiedOrderId
-                        )
-                } catch (e: Exception) {
-                    when (e) {
-                        is IOException -> OrdersUiState.Error(e)
-                        is HttpException -> OrdersUiState.Error(e)
-                        else -> OrdersUiState.Error(e)
-                    }
+            ordersUiState = try {
+                val ordersListResult = ordersRepository.getOrders().items
+                OrdersUiState.Success(
+                        ordersListResult, modifiedOrderId = _modifiedOrderId
+                    )
+            } catch (e: Exception) {
+                when (e) {
+                    is IOException -> OrdersUiState.Error(e)
+                    is HttpException -> OrdersUiState.Error(e)
+                    else -> OrdersUiState.Error(e)
                 }
+            }
         }
     }
 
@@ -115,9 +111,7 @@ class OrdersViewModel(
                 handleResponse(context, response) {
                     launch {
                         ToastUtils.showToast(
-                            context,
-                            Toast.LENGTH_SHORT,
-                            "Modifica salvata con successo"
+                            context, Toast.LENGTH_SHORT, "Modifica salvata con successo"
                         )
                     }
 
@@ -128,24 +122,12 @@ class OrdersViewModel(
 
             } catch (e: Exception) {
                 // Handle exception
-                handleException(context, e)
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                handleSocketTimeoutException(context)
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             }
         }
-    }
-
-    /**
-     * Function to parse the error message from the error body
-     * @param errorBody The error body to parse
-     */
-    private fun parseErrorMessage(errorBody: String?): String {
-        if (errorBody != null) {
-            val jsonError = JSONObject(errorBody)
-            return jsonError.optString("message", "{}")
-        }
-        return "{}"
     }
 
     /**
@@ -167,7 +149,7 @@ class OrdersViewModel(
                             ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Ordine ${addedOrder.number} aggiunto con successo"
+                                context.getString(R.string.new_order_added, addedOrder.number)
                             )
                         }
                         _modifiedOrderId.intValue = addedOrder.id
@@ -196,10 +178,10 @@ class OrdersViewModel(
                 }
             } catch (e: Exception) {
                 // Handle exception
-                handleException(context, e)
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                handleSocketTimeoutException(context)
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             }
         }
     }
@@ -211,106 +193,29 @@ class OrdersViewModel(
      * @param onSuccess The lambda function to execute when the response is successful
      */
     private inline fun handleResponse(
-        context: Context,
-        response: Response<*>,
-        crossinline onSuccess: () -> Unit
+        context: Context, response: Response<*>, crossinline onSuccess: () -> Unit
     ) {
-        val errorBody = response.errorBody()?.string()
-        val errorMessage = parseErrorMessage(errorBody)
 
         when (response.code()) {
             200 -> onSuccess()
-            401 -> {
-                viewModelScope.launch {
-                    ToastUtils.showToast(
-                        context,
-                        Toast.LENGTH_SHORT,
-                        context.getString(R.string.error_unauthorized)
-                    )
-                }
+            401 -> NetworkSuccessHandler.handleUnauthorized(
+                context, viewModelScope
+            ) {
+                // Handle unauthorized
                 ordersUiState = OrdersUiState.Error(HttpException(response))
             }
 
-            404 -> viewModelScope.launch {
-                ToastUtils.showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Collegamento riuscito, api not trovata ${response.code()}"
-                )
-            }
+            404 -> NetworkSuccessHandler.handleNotFound(
+                context, viewModelScope, response.code()
+            )
 
-            500, 503 -> {
-                viewModelScope.launch {
-                    ToastUtils.showToast(
-                        context,
-                        Toast.LENGTH_SHORT,
-                        "$errorMessage ${response.code()}"
-                    )
-                }
-            }
+            500, 503 -> NetworkSuccessHandler.handleServerError(
+                context, response, viewModelScope
+            )
 
-            else -> viewModelScope.launch {
-                ToastUtils.showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    context.getString(R.string.error_api, response.code(), errorMessage)
-                )
-            }
-        }
-    }
-
-    /**
-     * Function to handle the exception
-     */
-    private fun handleException(context: Context, exception: Exception) {
-        when (exception) {
-            is IOException -> {
-                // Handle IOException (e.g., network error)
-                viewModelScope.launch {
-                    ToastUtils.showToast(
-                        context,
-                        Toast.LENGTH_LONG,
-                        context.getString(R.string.error_network_error, exception.message)
-                    )
-                }
-            }
-
-            is HttpException -> {
-                viewModelScope.launch {
-                    ToastUtils.showToast(
-                        context,
-                        Toast.LENGTH_LONG,
-                        context.getString(R.string.error_http, exception.message)
-                    )
-                }
-            }
-
-            else -> {
-                // Handle generic exception
-                viewModelScope.launch {
-                    ToastUtils.showToast(
-                        context,
-                        Toast.LENGTH_LONG,
-                        context.getString(R.string.error_unexpected_error, exception.message)
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * Function to handle the socket timeout exception
-     *
-     */
-    private fun handleSocketTimeoutException(context: Context) {
-        viewModelScope.launch {
-            ToastUtils.showToast(
-                context,
-                Toast.LENGTH_LONG,
-                context.getString(R.string.error_connection_timeout)
+            else -> NetworkSuccessHandler.handleUnknownError(
+                context, response, viewModelScope
             )
         }
     }
-
-
 }
