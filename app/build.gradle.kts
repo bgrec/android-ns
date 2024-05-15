@@ -1,11 +1,5 @@
 import java.util.Properties
 
-
-/*
-//@Suppress("DSL_SCOPE_VIOLATION")
-// Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
-*/
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -14,8 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.google.services)
-    //alias(libs.plugins.firebase.app.distribution)
-
+    alias(libs.plugins.firebase.app.distribution)
 }
 
 /*
@@ -29,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mastrosql.app"
-        minSdk = 28
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.1"
@@ -122,21 +115,13 @@ android {
         kotlinOptions {
             jvmTarget = "17"
         }
-        /*
-          * compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
-        }
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }*/
+
         buildFeatures {
             compose = true
             aidl = false
             buildConfig = true
             renderScript = false
             shaders = false
-
         }
 
         composeOptions {
@@ -149,8 +134,12 @@ android {
                 excludes += "/META-INF/DEPENDENCIES"
             }
         }
-
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildToolsVersion = "34.0.0"
 }
 
 // Function to load properties from a file
@@ -180,6 +169,7 @@ dependencies {
 // Hilt Dependency Injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    kapt(libs.hilt.gradle.plugin)
 
 // Hilt and instrumented tests.
     androidTestImplementation(libs.hilt.android.testing)
@@ -191,9 +181,13 @@ dependencies {
 
 // Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.androidx.lifecycle.compiler)
 
 // Room
     implementation(libs.androidx.room.runtime)
@@ -222,7 +216,8 @@ dependencies {
     implementation(libs.retrofit.gson)
 
 // Retrofit with Scalar Converter
-//implementation(libs.retrofit.scalars) removed because of use of jakeWharton converter below
+    //removed because of use of jakeWharton converter below
+    //implementation(libs.retrofit.scalars)
 
 // OkHttp
     implementation(libs.squareup.okhttp3)
@@ -233,6 +228,8 @@ dependencies {
 
 // Kotlinx Serialization
     implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.datetime)
+
 
 //DataStore
     implementation(libs.androidx.datastore.preferences)
@@ -253,7 +250,6 @@ dependencies {
 
 // Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.squareup.leakcanary.android)
@@ -264,12 +260,15 @@ dependencies {
 // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.test)
+    testImplementation(libs.kotlinx.test.junit)
+
 //testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.androidx.test.ext.junit.ktx)
     testImplementation(libs.androidx.test.runner)
-//testImplementation(libs.androidx.test.rules)
+    //testImplementation(libs.androidx.test.rules)
     testImplementation(libs.androidx.test.espresso.core)
     testImplementation(libs.androidx.work.testing)
     testImplementation(libs.hilt.android.testing)
@@ -280,10 +279,10 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
-//androidTestImplementation(libs.androidx.test.rules)
+    //androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
 
-// Coil
-//implementation("io.coil-kt:coil-compose:2.4.0")
+    // Coil
+    //implementation("io.coil-kt:coil-compose:2.4.0")
 }
