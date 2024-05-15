@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main
 
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -15,6 +16,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -201,7 +203,8 @@ fun MainCompose(
 //            mainGraph(drawerState, navController)
 //        }
 //    }
-    NavigationDrawerComposable(drawerState = drawerState,
+    NavigationDrawerComposable(
+        drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         navController = navController,
         isOnboarded = userPreferencesUiState.isOnboarded,
@@ -219,14 +222,16 @@ fun MainCompose(
 fun NavigationDrawerComposable(
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
-    isOnboarded: Boolean = true,
+    isOnboarded: Boolean = false,
     activeButtons: Map<MainNavOption, Boolean>,
     navController: NavHostController,
     currentScreen: MainNavOption? = null,
     onNewCurrentPickChange: (MainNavOption) -> Unit,
     onLogout: (NavHostController) -> Unit
 ) {
-    ModalNavigationDrawer(drawerState = drawerState,
+    ModalNavigationDrawer(
+        modifier = Modifier.navigationBarsPadding(),
+        drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         drawerContent = {
             AppDrawerContent(
@@ -446,7 +451,7 @@ object DrawerParams {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(apiLevel = 34, showBackground = true)
 @Composable
 fun MainComposePreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -463,14 +468,14 @@ fun MainComposePreview() {
     )
     val navController = rememberNavController()
 
-   MastroAndroidTheme {
-       NavigationDrawerComposable(
-           drawerState = drawerState,
-           gesturesEnabled =gesturesEnabled ,
-           activeButtons = activeButtons,
-           navController = navController,
-           onNewCurrentPickChange = {},
-           onLogout = {}
-       )
-   }
+    MastroAndroidTheme {
+        NavigationDrawerComposable(
+            drawerState = drawerState,
+            gesturesEnabled = gesturesEnabled,
+            activeButtons = activeButtons,
+            navController = navController,
+            onNewCurrentPickChange = {},
+            onLogout = {}
+        )
+    }
 }
