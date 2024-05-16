@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main
 
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -15,6 +16,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -92,126 +94,19 @@ fun MainCompose(
         }
     }
 
-//    ModalNavigationDrawer(drawerState = drawerState,
-//        gesturesEnabled = gesturesEnabled,
-//        drawerContent = {
-//            AppDrawerContent(
-//                drawerState = drawerState,
-//                menuItems = DrawerParams.createDrawerButtons(userPreferencesUiState.activeButtons),
-//                currentPick = currentScreen
-//                    ?: MainNavOption.HomeScreen,//defaultPick, //MainNavOption.LoginScreen
-//                onCurrentPickChange = { newCurrentPick ->
-//                    appNavigationViewModel.setCurrentScreen(newCurrentPick)
-//                },
-//            ) { onUserPickedOption ->
-//
-//                /*
-//                * When the user picks an option from the drawer, navigate to the corresponding screen,
-//                * close the drawer and update the current screen in the viewmodel
-//                 */
-//                appNavigationViewModel.setCurrentScreen(onUserPickedOption)
-//
-//                when (onUserPickedOption) {
-//                    MainNavOption.LoginScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(NavRoutes.MainRoute.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.HomeScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(NavRoutes.MainRoute.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.OldHomeScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.CustomersScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.CustomersPagedScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.ArticlesScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.ItemsScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.OrdersScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.SettingsScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(NavRoutes.MainRoute.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.CartScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.HomeScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.AboutScreen -> {
-//                        navController.navigate(onUserPickedOption.name) {
-//                            popUpTo(MainNavOption.SettingsScreen.name)
-//                        }
-//                    }
-//
-//                    MainNavOption.Logout -> {
-//                        viewModel.logout(navController)
-//                        //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
-//                    }
-//
-//                    else -> {
-//                        //appNavigationViewModel.setGesturesEnabled(false)
-//                    }
-//                }
-//            }
-//        })
-//    {
-//        NavHost(
-//            navController,
-//            startDestination =
-//            if (userPreferencesUiState.isOnboarded) {
-//                NavRoutes.MainRoute.name
-//            } else NavRoutes.IntroRoute.name
-//        ) {
-//            introGraph(navController)
-//            mainGraph(drawerState, navController)
-//        }
-//    }
-    NavigationDrawerComposable(drawerState = drawerState,
+    // Draw the navigation drawer
+    NavigationDrawerComposable(
+        drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
-        navController = navController,
+        navHostController = navController,
         isOnboarded = userPreferencesUiState.isOnboarded,
         activeButtons = userPreferencesUiState.activeButtons,
         currentScreen = currentScreen,
         onNewCurrentPickChange = { newCurrentPick ->
             appNavigationViewModel.setCurrentScreen(newCurrentPick)
         },
-        onLogout = { navControllera ->
-            viewModel.logout(navControllera)
+        onLogout = { navHostController ->
+            viewModel.logout(navHostController)
         })
 }
 
@@ -219,14 +114,16 @@ fun MainCompose(
 fun NavigationDrawerComposable(
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
-    isOnboarded: Boolean = true,
-    activeButtons: Map<MainNavOption, Boolean>,
-    navController: NavHostController,
+    isOnboarded: Boolean = false,
+    activeButtons: Map<MainNavOption, Boolean> ? = emptyMap(),
+    navHostController: NavHostController,
     currentScreen: MainNavOption? = null,
     onNewCurrentPickChange: (MainNavOption) -> Unit,
     onLogout: (NavHostController) -> Unit
 ) {
-    ModalNavigationDrawer(drawerState = drawerState,
+    ModalNavigationDrawer(
+        modifier = Modifier.navigationBarsPadding(),
+        drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         drawerContent = {
             AppDrawerContent(
@@ -247,73 +144,73 @@ fun NavigationDrawerComposable(
 
                 when (onUserPickedOption) {
                     MainNavOption.LoginScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
                     MainNavOption.HomeScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
                     MainNavOption.OldHomeScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.CustomersScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.CustomersPagedScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.ArticlesScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.ItemsScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.OrdersScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.SettingsScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(NavRoutes.MainRoute.name)
                         }
                     }
 
                     MainNavOption.CartScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
                     }
 
                     MainNavOption.AboutScreen -> {
-                        navController.navigate(onUserPickedOption.name) {
+                        navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.SettingsScreen.name)
                         }
                     }
 
                     MainNavOption.Logout -> {
-                        onLogout(navController)
+                        onLogout(navHostController)
                         //appNavigationViewModel.setCurrentScreen(MainNavOption.LoginScreen)
                     }
 
@@ -325,14 +222,14 @@ fun NavigationDrawerComposable(
         })
     {
         NavHost(
-            navController,
+            navHostController,
             startDestination =
             if (isOnboarded) {
                 NavRoutes.MainRoute.name
             } else NavRoutes.IntroRoute.name
         ) {
-            introGraph(navController)
-            mainGraph(drawerState, navController)
+            introGraph(navHostController)
+            mainGraph(drawerState, navHostController)
         }
     }
 }
@@ -344,7 +241,7 @@ enum class NavRoutes {
 object DrawerParams {
 
     // Function to create drawer buttons based on activeButtonsUiState
-    fun createDrawerButtons(activeButtonsUiState: Map<MainNavOption, Boolean>): List<AppDrawerItemInfo<MainNavOption>> {
+    fun createDrawerButtons(activeButtonsUiState: Map<MainNavOption, Boolean>?): List<AppDrawerItemInfo<MainNavOption>> {
         val buttons = arrayListOf<AppDrawerItemInfo<MainNavOption>>()
 
         //NewHome button always visible
@@ -356,7 +253,7 @@ object DrawerParams {
                 descriptionId = R.string.drawer_home_description
             )
         )
-        if (activeButtonsUiState[MainNavOption.OldHomeScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.OldHomeScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.OldHomeScreen,
@@ -367,7 +264,7 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.CustomersScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.CustomersScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.CustomersScreen,
@@ -378,7 +275,7 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.CustomersPagedScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.CustomersPagedScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.CustomersPagedScreen,
@@ -389,7 +286,7 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.ArticlesScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.ArticlesScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.ArticlesScreen,
@@ -400,7 +297,7 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.ItemsScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.ItemsScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.ItemsScreen,
@@ -411,7 +308,7 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.OrdersScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.OrdersScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.OrdersScreen,
@@ -422,7 +319,7 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState[MainNavOption.CartScreen] == true) {
+        if (activeButtonsUiState?.get(MainNavOption.CartScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.CartScreen,
@@ -446,31 +343,23 @@ object DrawerParams {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(apiLevel = 34, showBackground = true)
 @Composable
 fun MainComposePreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val gesturesEnabled = true
-    val activeButtons = mapOf(
-        MainNavOption.HomeScreen to true,
-        MainNavOption.OldHomeScreen to true,
-        MainNavOption.CustomersScreen to true,
-        MainNavOption.CustomersPagedScreen to true,
-        MainNavOption.ArticlesScreen to true,
-        MainNavOption.ItemsScreen to true,
-        MainNavOption.OrdersScreen to true,
-        MainNavOption.CartScreen to true
-    )
+    val gesturesEnabled = false
+    val activeButtons = null
     val navController = rememberNavController()
 
-   MastroAndroidTheme {
-       NavigationDrawerComposable(
-           drawerState = drawerState,
-           gesturesEnabled =gesturesEnabled ,
-           activeButtons = activeButtons,
-           navController = navController,
-           onNewCurrentPickChange = {},
-           onLogout = {}
-       )
-   }
+    MastroAndroidTheme {
+        NavigationDrawerComposable(
+            drawerState = drawerState,
+            gesturesEnabled = gesturesEnabled,
+            activeButtons = activeButtons,
+            currentScreen = MainNavOption.HomeScreen,
+            navHostController = navController,
+            onNewCurrentPickChange = {},
+            onLogout = {}
+        )
+    }
 }
