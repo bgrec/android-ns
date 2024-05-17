@@ -491,7 +491,7 @@ BEGIN
            CONAI,
            ESE_CONAI,
            CONTRO,
-           ORD_QT_ORD - ORD_QT_CON - QUAN AS ORD_QT_ORD,
+           IF (ORD_QT_ORD - ORD_QT_CON - QUAN > 0, ORD_QT_ORD - ORD_QT_CON - QUAN, 0) AS ORD_QT_ORD,
            0                              AS ORD_QT_CON,
            DESTINA,
            ''                             AS LOTTO,
@@ -663,4 +663,5 @@ GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
 
+# Example of handling an error in a stored procedure
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;

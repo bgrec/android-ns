@@ -237,6 +237,7 @@
     <string name="new_item_added">Articolo inserito con successo</string>
     <string name="item_deleted">Riga eliminata con successo %1$d</string>
     <string name="update_order_details">Modifiche salvate con successo %1$d</string>
+    <string name="row_duplicated">Riga duplicata con successo %1$d</string>
 
 
 </resources>

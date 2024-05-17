@@ -10,6 +10,9 @@ object OrderUtils {
     fun createNewOrderFromState(orderState: OrderState): Order {
         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY).format(Date())
 
+        //val deliveryDate = DateHelper.formatDateToInput(orderState.deliveryDate.value.text)
+        val deliveryDate = orderState.deliveryDate.value.text
+
         return Order(
             id = 0, // Set to 0 as it will be auto-generated
             clientId = orderState.customerId.intValue,
@@ -33,7 +36,7 @@ object OrderUtils {
             port = null,
             date = currentDate,
             notes = null,
-            deliveryDate = orderState.deliveryDate.value.text,
+            deliveryDate = deliveryDate,
             deliveryDeadline = null,
             deliveryType = null,
             deliveryState = 0,
