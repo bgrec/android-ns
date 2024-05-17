@@ -100,6 +100,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     private fun updateRepositories() {
+        loginRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         customersMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         customersPagedMasterDataRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         customerMasterDataWorkManagerRepository.updateMastroAndroidApiService(

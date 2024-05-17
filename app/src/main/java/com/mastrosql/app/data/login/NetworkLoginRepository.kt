@@ -30,5 +30,8 @@ class NetworkLoginRepository(
     override suspend fun loginCompleted(): Response<JsonObject> {
         return mastroAndroidApiService.getLoginCompleted()
     }
+    override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        this.mastroAndroidApiService = newMastroAndroidApiService
+    }
 }
 
