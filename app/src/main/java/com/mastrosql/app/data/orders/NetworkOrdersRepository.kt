@@ -8,6 +8,7 @@ import com.google.gson.JsonObject
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +43,12 @@ class NetworkOrdersRepository(
     override suspend fun getOrders(): OrdersResponse =
         mastroAndroidApiService.getAllOrders()
 
+    override suspend fun getOrderByOrderId(orderId: Int): OrdersResponse {
+
+        val filter = "{\"NUME\" : {\"\$eq\": $orderId}}"
+        return mastroAndroidApiService.getOrderByFilter(filter)
+    }
+
     override fun getAllOrdersStream(): Flow<List<Order>> {
         TODO("Not yet implemented")
     }
@@ -62,12 +69,26 @@ class NetworkOrdersRepository(
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject> {
+    override suspend fun updateDeliveryState(
+        orderId: Int,
+        deliveryState: Int
+    ): Response<JsonObject> {
         val body = JsonObject().apply {
             addProperty("orderId", orderId)
             addProperty("deliveryState", deliveryState)
         }
         return mastroAndroidApiService.updateDeliveryState(body)
+    }
+
+    override suspend fun addNewOrder(order: Order): Response<OrderAddResponse> {
+        val body = JsonObject().apply {
+            addProperty("clientId", order.clientId)
+            addProperty("destinationId", order.destinationId)
+            addProperty("description", order.description)
+            addProperty("insertDate", order.insertDate)
+            addProperty("deliveryDate", order.deliveryDate)
+        }
+        return mastroAndroidApiService.insertNewOrder(body)
     }
 
     //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }

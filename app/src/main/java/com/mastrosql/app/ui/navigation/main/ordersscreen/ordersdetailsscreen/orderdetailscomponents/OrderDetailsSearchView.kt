@@ -55,6 +55,7 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
             )
         },
         modifier = Modifier
+            .padding(2.dp)
             .fillMaxWidth()
             .focusRequester(focusRequester = focusRequester)
             .focusable()

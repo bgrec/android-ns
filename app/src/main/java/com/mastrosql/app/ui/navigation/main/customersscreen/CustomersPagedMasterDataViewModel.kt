@@ -48,9 +48,9 @@ class CustomersPagedMasterDataViewModel(
         appDatabase.customersMasterDataDao().getCustomersByBusinessName(query)
     }
 
-    init {
-        //getPagedCustomerMasterData()
-    }
+//    init {
+//        //getPagedCustomerMasterData()
+//    }
 
     @OptIn(ExperimentalPagingApi::class)
     fun getPagedCustomerMasterData(): Flow<PagingData<CustomerMasterData>> =

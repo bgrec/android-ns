@@ -112,7 +112,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         return try {
             context.dataStore.data.first()[UserPreferencesKeys.BASE_URL] ?: defaultBaseUrl!!
         } catch (e: Exception) {
-            Log.d("baseUrl", "Exception while reading BASE_URL from DataStore: ${e.message}")
+            Log.e("baseUrl", "Exception while reading BASE_URL from DataStore: ${e.message}")
             defaultBaseUrl!!
         }
     }

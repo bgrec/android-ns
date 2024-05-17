@@ -5,14 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,13 +31,33 @@ fun ErrorScreen(
     exception: Exception,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
     navController: NavController,
     preferencesViewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    ErrorComposable(
+        exception = exception,
+        retryAction = retryAction,
+        modifier = modifier,
+        verticalArrangement = verticalArrangement,
+        onUnauthorized = {
+            preferencesViewModel.logout(navController)
+        }
+    )
+}
+
+
+@Composable
+fun ErrorComposable(
+    exception: Exception,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
+    onUnauthorized: () -> Unit,
+) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = verticalArrangement,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -53,25 +69,22 @@ fun ErrorScreen(
             Text(stringResource(retry))
         }
         if (exception is HttpException && exception.code() == 401) {
-            preferencesViewModel.logout(navController)
+            onUnauthorized()
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ErrorScreenPreview() {
     val modifier = Modifier
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val navController = NavController(LocalContext.current)
-
     MastroAndroidTheme {
-        ErrorScreen(
+        ErrorComposable(
             exception = Exception("errore"),
             retryAction = {},
-            modifier,
-            drawerState,
-            navController
+            modifier = modifier,
+            verticalArrangement = Arrangement.Center,
+            onUnauthorized = {}
         )
     }
 }

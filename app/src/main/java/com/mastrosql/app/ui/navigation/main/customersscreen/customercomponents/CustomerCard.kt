@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -45,14 +45,17 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
 fun CustomerCard(
-    customerMasterData: CustomerMasterData, modifier: Modifier, navController: NavController
+    customerMasterData: CustomerMasterData,
+    onCustomerSelected: ((CustomerMasterData) -> Unit)? = null,
+    modifier: Modifier,
+    navController: NavController? = null
 ) {
     var showToast by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
     if (showToast) {
-        ShowToast(context, stringResource(R.string.costumer_error_toast))
+        ShowToast(context, stringResource(R.string.customer_error_toast))
         // Reset the showToast value after showing the toast
         showToast = false
     }
@@ -91,7 +94,7 @@ fun CustomerCard(
                 ) {
                     CustomerNameAndId(
                         id = customerMasterData.id,
-                        pIva = customerMasterData.vat,
+                        pIva = customerMasterData.vat ?: "",
                         businessName = customerMasterData.businessName
                     )
                     if (expanded) {
@@ -112,11 +115,22 @@ fun CustomerCard(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    CustomerNewOrderButton(
-                        onClick = {
-                            showToast = true
-                        },
-                    )
+                    //When the customer is selected, the button will navigate to the customer destinations
+                    if (onCustomerSelected != null) {
+                        SelectCustomerButton(
+                            onClick = {
+                                onCustomerSelected(customerMasterData)
+                            },
+                        )
+                    } else {
+                        EditCustomerButton(
+                            onClick = {
+                                showToast = true
+                                //TODO implement navigation
+                                //navController?.navigate("customer/${customerMasterData.id}")
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -149,7 +163,7 @@ private fun CustomerExpandButton(
 }
 
 @Composable
-private fun CustomerNewOrderButton(
+private fun EditCustomerButton(
     onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
@@ -157,6 +171,22 @@ private fun CustomerNewOrderButton(
     ) {
         Icon(
             Icons.Default.Edit,
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = stringResource(R.string.insert_article),
+            modifier = Modifier.size(35.dp)
+        )
+    }
+}
+
+@Composable
+private fun SelectCustomerButton(
+    onClick: () -> Unit, modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.Send,
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(R.string.insert_article),
             modifier = Modifier.size(35.dp)
@@ -174,7 +204,10 @@ private fun CustomerNewOrderButton(
 
 @Composable
 fun CustomerNameAndId(
-    id: Int, pIva: String, businessName: String?, modifier: Modifier = Modifier
+    id: Int,
+    pIva: String,
+    businessName: String?,
+    modifier: Modifier = Modifier
 ) {
     Column {
         Row(
@@ -196,7 +229,7 @@ fun CustomerNameAndId(
                 Spacer(modifier = Modifier.width(35.dp))
 
                 Text(
-                    text = stringResource(R.string.costumer_vat),
+                    text = stringResource(R.string.customer_vat),
                     style = MaterialTheme.typography.bodySmall,
                 )
 
@@ -246,7 +279,7 @@ fun CustomerAddress(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_taxId),
+                    text = stringResource(R.string.customer_taxId),
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -258,14 +291,13 @@ fun CustomerAddress(
             }
         }
 
-
         if (street != "") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_street),
+                    text = stringResource(R.string.customer_street),
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -283,7 +315,7 @@ fun CustomerAddress(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_postalCode),
+                    text = stringResource(R.string.customer_postalCode),
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -301,7 +333,7 @@ fun CustomerAddress(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_city),
+                    text = stringResource(R.string.customer_city),
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -313,14 +345,13 @@ fun CustomerAddress(
             }
         }
 
-
         if (province != "") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_province),
+                    text = stringResource(R.string.customer_province),
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -338,7 +369,7 @@ fun CustomerAddress(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_nation),
+                    text = stringResource(R.string.customer_nation),
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -356,7 +387,7 @@ fun CustomerAddress(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.costumer_businessName2),
+                    text = stringResource(R.string.customer_businessName2),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -372,13 +403,11 @@ fun CustomerAddress(
                 )
             }
         }
-
-
     }
 }
 
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun CustomerCardPreview() {
     MastroAndroidTheme {
@@ -393,8 +422,8 @@ fun CustomerCardPreview() {
                 "province",
                 "nation",
                 "businessName2",
-                emptyList(),
                 "taxId",
+                emptyList(),
                 Metadata("etag"),
                 0,
                 0L
@@ -404,7 +433,7 @@ fun CustomerCardPreview() {
 
 }
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun CustomerAddressPreview() {
     MastroAndroidTheme {
@@ -420,49 +449,3 @@ fun CustomerAddressPreview() {
         )
     }
 }
-
-/*
-@Composable
-fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
-        Column {
-            Image(
-                painter = painterResource(affirmation.imageResourceId),
-                contentDescription = stringResource(affirmation.stringResourceId),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(194.dp),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = LocalContext.current.getString(affirmation.stringResourceId),
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-    }
-}
- */
-
-/*/**
- * Composable that displays a photo of a dog.
- *
- * @param dogIcon is the resource ID for the image of the dog
- * @param modifier modifiers to set to this composable
- */
-@Composable
-fun DogIcon(@DrawableRes dogIcon: Int, modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier
-            .size(64.dp)
-            .padding(8.dp)
-            .clip(RoundedCornerShape(50)),
-        contentScale = ContentScale.Crop,
-        painter = painterResource(dogIcon),
-        /*
-         * Content Description is not needed here - image is decorative, and setting a null content
-         * description allows accessibility services to skip this element during navigation.
-         */
-        contentDescription = null
-    )
-}*/

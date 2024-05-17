@@ -1,7 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,11 +22,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
-    state: MutableState<TextFieldValue>,
+    searchTextState: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
@@ -36,8 +33,10 @@ fun OrderDetailList(
     onRemove: (Int) -> Unit,
     onDuplicate: (Int) -> Unit
 ) {
+    // MutableState to store the modified item id
     val modifiedItemId = remember { mutableIntStateOf(0) }
 
+    // LazyListState to scroll to the modified item
     val listState = rememberLazyListState()
 
     // Scroll to the modified item when the list changes
@@ -66,20 +65,23 @@ fun OrderDetailList(
             .fillMaxHeight()
     )
     {
-        val filteredList: List<OrderDetailsItem>
-        val searchedText = state.value.text
+//        val filteredList: List<OrderDetailsItem>
+        val searchedText = searchTextState.value.text
 
-        filteredList = if (searchedText.isEmpty()) {
-            orderDetailList
-        } else {
-            //Filter the list based on the search text on this fields
-            orderDetailList.filter {
-                (it.description?.contains(searchedText, ignoreCase = true) == true
-                        || it.articleId.toString()
-                    ?.contains(searchedText, ignoreCase = true) == true
-                        || it.sku?.contains(searchedText, ignoreCase = true) == true)
-            }
-        }
+//        filteredList = if (searchedText.isEmpty()) {
+//            orderDetailList
+//        } else {
+//            //Filter the list based on the search text on this fields
+//            orderDetailList.filter {
+//                (it.description?.contains(searchedText, ignoreCase = true) == true
+//                        || it.articleId.toString()
+//                    ?.contains(searchedText, ignoreCase = true) == true
+//                        || it.sku?.contains(searchedText, ignoreCase = true) == true)
+//            }
+//        }
+
+        val filteredList = filterOrderDetailList(orderDetailList, searchTextState.value.text)
+
         items(
             filteredList,
             key = {
@@ -108,6 +110,23 @@ fun OrderDetailList(
     }
 }
 
+// Filter the list based on the search text
+private fun filterOrderDetailList(
+    orderDetailList: List<OrderDetailsItem>,
+    searchText: String
+): List<OrderDetailsItem> {
+    return if (searchText.isEmpty()) {
+        orderDetailList
+    } else {
+        orderDetailList.asSequence()
+            .filter { item ->
+                item.description?.contains(searchText, ignoreCase = true) == true ||
+                        item.articleId.toString().contains(searchText, ignoreCase = true) ||
+                        item.sku?.contains(searchText, ignoreCase = true) == true
+            }
+            .toList() // Convert sequence back to list
+    }
+}
 
 /*
 @Preview

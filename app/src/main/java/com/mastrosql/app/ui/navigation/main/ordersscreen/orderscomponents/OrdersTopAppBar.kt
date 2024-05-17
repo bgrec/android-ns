@@ -1,7 +1,8 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,11 +42,12 @@ fun OrdersTopAppBar(
         actions = {
             IconButton(
                 onClick = { onAddOrderClick() },
-                //modifier = Modifier.padding(end = 16.dp) // Add padding to the button
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_new_order)
+                    Icons.Default.AddCircle,
+                    contentDescription = stringResource(R.string.add_new_order),
+                    modifier = Modifier.fillMaxSize(),
+                    //tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

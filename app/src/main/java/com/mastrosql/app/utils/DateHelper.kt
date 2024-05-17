@@ -1,7 +1,5 @@
 package com.mastrosql.app.utils
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -9,7 +7,7 @@ import java.time.format.DateTimeParseException
 class DateHelper {
 
     companion object {
-        @RequiresApi(Build.VERSION_CODES.O)
+
         fun formatDateToDisplay(date: String?): String {
             if (date.isNullOrEmpty()) {
                 return "" // Return empty string if Date is null
@@ -26,7 +24,6 @@ class DateHelper {
             }
         }
 
-        @RequiresApi(Build.VERSION_CODES.O)
         fun formatDateToInput(date: String?): String {
             if (date.isNullOrEmpty()) {
                 return "" // Return empty string if Date is null
@@ -42,7 +39,7 @@ class DateHelper {
                 "" // Return empty string if expirationDate is not in the expected format
             }
         }
-        @RequiresApi(Build.VERSION_CODES.O)
+
         fun isDateBeforeToday(date: String?): Boolean {
             if (date.isNullOrEmpty()) {
                 return false // Return false if Date is null or empty

@@ -43,7 +43,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,14 +66,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.intro.IntroNavOption
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
@@ -90,21 +90,17 @@ fun IntroScreen(
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.intro_title)
-                    )
-                })
-        },
-        modifier = Modifier
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            }) {
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(title = {
+            Text(
+                text = stringResource(R.string.intro_title)
+            )
+        })
+    }, modifier = Modifier.pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            focusManager.clearFocus()
+        })
+    }) {
         Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 modifier = Modifier
@@ -296,24 +292,20 @@ fun ConfigContent(
         )
 
         Spacer(Modifier.height(10.dp))
-        //TextField per inserire url
 
-
-        val activeButtonsUiState by viewModel.activeButtonsUiState.collectAsState()
+        // Collect the state from the view model and update the UI
+        val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         val focusRequester = remember { FocusRequester() }
 
-        val baseUrlUiState by viewModel.baseUrlUiState.collectAsState()
-
-        var urlState by remember { mutableStateOf(baseUrlUiState) }
+        var urlState by remember { mutableStateOf(userPreferencesUiState.baseUrl) }
 
         // Update the local state when the base URL changes
-        LaunchedEffect(baseUrlUiState) {
-            urlState = baseUrlUiState
+        LaunchedEffect(userPreferencesUiState.baseUrl) {
+            urlState = userPreferencesUiState.baseUrl
         }
 
-        OutlinedTextField(
-            value = urlState,
+        OutlinedTextField(value = urlState,
             singleLine = false,
             onValueChange = { newValue -> urlState = newValue },
             leadingIcon = { Icon(painterResource(R.drawable.bring_your_own_ip), null) },
@@ -325,12 +317,13 @@ fun ConfigContent(
                 focusManager.clearFocus()
             }),
             label = { Text(stringResource(R.string.label_url)) },
-            modifier = Modifier.focusRequester(focusRequester).onFocusChanged {
-                if(!it.isFocused) {
-                    viewModel.setBaseUrl(urlState)
-                }
-            }
-        )
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (!it.isFocused) {
+                        viewModel.setBaseUrl(urlState)
+                    }
+                })
 
         //fine TextField per inserire url
 
@@ -378,14 +371,14 @@ fun ConfigContent(
                         items(MainNavOption.entries.toList()) {
                             if ((stringResMap[it] != null)) {
                                 Row(
-                                    modifier = Modifier.clickable(
-                                        onClick = {
-                                            val isChecked = !(activeButtonsUiState[it] ?: false)
-                                            val updatedState = EnumMap(activeButtonsUiState)
-                                            updatedState[it] = isChecked
-                                            viewModel.updateActiveButtons(updatedState)
-                                        }
-                                    ),
+                                    modifier = Modifier.clickable(onClick = {
+                                        val isChecked =
+                                            !(userPreferencesUiState.activeButtons[it] ?: false)
+                                        val updatedState =
+                                            EnumMap(userPreferencesUiState.activeButtons)
+                                        updatedState[it] = isChecked
+                                        viewModel.updateActiveButtons(updatedState)
+                                    }),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
@@ -393,9 +386,11 @@ fun ConfigContent(
 
                                     Spacer(Modifier.weight(1f))
 
-                                    Switch(checked = activeButtonsUiState[it] ?: false,
+                                    Switch(checked = userPreferencesUiState.activeButtons[it]
+                                        ?: false,
                                         onCheckedChange = { isChecked ->
-                                            val updatedState = EnumMap(activeButtonsUiState)
+                                            val updatedState =
+                                                EnumMap(userPreferencesUiState.activeButtons)
                                             updatedState[it] = isChecked
                                             viewModel.updateActiveButtons(updatedState)
                                         })
@@ -697,7 +692,7 @@ fun DrawerContent(navController: NavController) {
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
 fun IntroScreenPreview() {
     MastroAndroidTheme {

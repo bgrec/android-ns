@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class SyncDataViewModel(private val customersRepository: CustomersMasterDataRepository) :
+class SyncDataViewModel(customersRepository: CustomersMasterDataRepository) :
     ViewModel() {
 
     //Whether the work is BLOCKED, CANCELLED, ENQUEUED, FAILED, RUNNING or SUCCEEDED.

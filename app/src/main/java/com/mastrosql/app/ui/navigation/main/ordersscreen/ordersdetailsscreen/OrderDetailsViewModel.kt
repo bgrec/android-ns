@@ -1,9 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -12,17 +10,19 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mastrosql.app.R
+import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
+import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.utils.DateHelper
-import kotlinx.coroutines.CoroutineScope
+import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -63,7 +63,7 @@ class OrderDetailsViewModel(
     val orderId: StateFlow<Int?> = _orderId
 
     private val _orderDescription: MutableStateFlow<String?> = MutableStateFlow(
-        savedStateHandle.get<String?>(OrderDetailsDestination.ORDER_DESCRIPTION_ARG)
+        savedStateHandle.get(OrderDetailsDestination.ORDER_DESCRIPTION_ARG)
     )
     private val orderDescription: StateFlow<String?> = _orderDescription
 
@@ -165,104 +165,63 @@ class OrderDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.sendScannedCode(orderId, scannedCode)
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorMessage(errorBody)
 
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> {
-                            showToast(
+                            ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Articolo inserito con successo " //${response.code()}
+                                context.getString(R.string.new_item_added)
                             )
                             // Refresh the list
                             getOrderDetails()
                         }
 
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Modifiche non salvate, non autorizzato"
-                            )
+                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                            context,
+                            viewModelScope
+                        ) {
+                            // Handle unauthorized
                             orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
                         }
-                        //TODO: Add other status codes and handle them
-                        404 -> showToast(
+
+                        404 -> NetworkSuccessHandler.handleNotFound(
                             context,
-                            Toast.LENGTH_LONG,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
+                            viewModelScope,
+                            response.code()
                         )
 
-                        500 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
-                            )
-                        }
-
-                        503 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "$errorMessage ${response.code()}"
-                            )
-                        }
-
-                        else -> showToast(
+                        500, 503 -> NetworkSuccessHandler.handleServerError(
                             context,
-                            Toast.LENGTH_LONG,
-                            "Errore api: ${response.code()}"
+                            response,
+                            viewModelScope
+                        )
+
+                        else -> NetworkSuccessHandler.handleUnknownError(
+                            context,
+                            response,
+                            viewModelScope
                         )
                     }
                 }
 
             } catch (e: IOException) {
                 // Handle IOException (e.g., network error)
-                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: HttpException) {
                 // Handle HttpException (e.g., non-2xx response)
-                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
-                )
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
                 // Handle generic exception
-                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             }
         }
     }
-
-    //Get the message in the body
-    private fun parseErrorMessage(errorBody: String?): String {
-        if (errorBody != null) {
-            val jsonError = JSONObject(errorBody)
-            return jsonError.optString("message", "{}")
-        }
-        return "{}"
-    }
-
-
-    private fun showToast(context: Context, toastLength: Int, message: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (message.isNotEmpty()) {
-                val toast = Toast.makeText(context, message, toastLength)
-                //Error for toast gravity with message
-                //toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            } else {
-                // Hide loading message by not showing any toast
-            }
-        }
-    }
-
 
     //delete the item of orderDetail
     fun deleteDetailItem(context: Context, orderDetailId: Int) {
@@ -274,55 +233,49 @@ class OrderDetailsViewModel(
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> {
-                            showToast(
+                            ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                "Riga eliminata con successo ${response.code()}"
+                                context.getString(R.string.item_deleted, response.code())
                             )
                             // Refresh the list
                             getOrderDetails()
                         }
 
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Modifiche non salvate, non autorizzato"
-                            )
+                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                            context,
+                            viewModelScope
+                        ) {
+                            // Handle unauthorized
                             orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
                         }
 
-                        //TODO: Add other status codes and handle them
-                        404 -> showToast(
+                        404 -> NetworkSuccessHandler.handleNotFound(
                             context,
-                            Toast.LENGTH_LONG,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
+                            viewModelScope,
+                            response.code()
                         )
 
-                        else -> showToast(
+                        else -> NetworkSuccessHandler.handleUnknownError(
                             context,
-                            Toast.LENGTH_LONG,
-                            "Errore api: ${response.code()}"
+                            response,
+                            viewModelScope
                         )
                     }
                 }
 
             } catch (e: IOException) {
                 // Handle IOException (e.g., network error)
-                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: HttpException) {
                 // Handle HttpException (e.g., non-2xx response)
-                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
-                )
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
                 // Handle generic exception
-                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             }
         }
     }
@@ -331,13 +284,12 @@ class OrderDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.duplicateDetailItem(orderDetailId)
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorMessage(errorBody)
+
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> {
-                            showToast(
+                            ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
                                 //"$errorMessage ${response.code()}"
@@ -349,51 +301,44 @@ class OrderDetailsViewModel(
 
                         }
 
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Modifiche non salvate, non autorizzato"
-                            )
+                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                            context,
+                            viewModelScope
+                        ) {
+                            // Handle unauthorized
                             orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
                         }
 
-                        //TODO: Add other status codes and handle them
-                        404 -> showToast(
+                        404 -> NetworkSuccessHandler.handleNotFound(
                             context,
-                            Toast.LENGTH_LONG,
-                            "errore ${response.code()}"
+                            viewModelScope,
+                            response.code()
                         )
 
-                        else -> showToast(
+                        else -> NetworkSuccessHandler.handleUnknownError(
                             context,
-                            Toast.LENGTH_LONG,
-                            "Errore api: ${response.code()}"
+                            response,
+                            viewModelScope
                         )
                     }
                 }
 
             } catch (e: IOException) {
                 // Handle IOException (e.g., network error)
-                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: HttpException) {
                 // Handle HttpException (e.g., non-2xx response)
-                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
-                )
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
                 // Handle generic exception
-                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateDetailsItem(
         orderDetailsItemId: Int, quantity: Double,
         batch: String,
@@ -421,7 +366,6 @@ class OrderDetailsViewModel(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun updateDetailsItemData(
         context: Context,
         orderDetailsItemId: Int,
@@ -439,70 +383,85 @@ class OrderDetailsViewModel(
                 )
 
                 val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorMessage(errorBody)
+
                 // Handle the response status code
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         200 -> {
-                            showToast(
+                            ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
                                 //"$errorMessage ${response.code()}"
-                                "Modifiche salvate con successo ${response.code()}"
+                                context.getString(R.string.update_order_details, response.code())
                             )
                             // Refresh the list
                             //getOrderDetails()
 
-                            updateDetailsItem(orderDetailsItemId, quantity, batch, expirationDate)
+                            updateDetailsItem(
+                                orderDetailsItemId,
+                                quantity,
+                                batch,
+                                expirationDate
+                            )
                             //getOrderDetails()
                         }
 
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "Modifiche non salvate, non autorizzato"
-                            )
-                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
+                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                            context,
+                            viewModelScope
+                        ) {
+                            orderDetailsUiState =
+                                OrderDetailsUiState.Error(HttpException(response))
                         }
 
-                        //TODO: Add other status codes and handle them
-                        404 -> showToast(
+                        404 -> NetworkSuccessHandler.handleNotFound(
                             context,
-                            Toast.LENGTH_LONG,
-                            "errore ${response.code()}"
+                            viewModelScope,
+                            response.code()
                         )
 
-                        else -> showToast(
+                        500, 503 -> NetworkSuccessHandler.handleServerError(
                             context,
-                            Toast.LENGTH_LONG,
-                            "Errore api: ${response.code()}"
+                            response,
+                            viewModelScope
                         )
+
+                        else -> NetworkSuccessHandler.handleUnknownError(
+                            context,
+                            response,
+                            viewModelScope
+                        )
+
                     }
                 }
 
             } catch (e: IOException) {
                 // Handle IOException (e.g., network error)
-                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: HttpException) {
                 // Handle HttpException (e.g., non-2xx response)
-                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             } catch (e: SocketTimeoutException) {
                 // Handle socket timeout exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
-                )
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
                 // Handle generic exception
-                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
             }
         }
     }
 }
 
-//Function to find the modified item in the list
+/**
+ * Function to find the modified item in the list
+ * @param other The other list to compare
+ * @param idExtractor The lambda function to extract the id from the item
+ * @param comparator The lambda function to compare the items
+ * @return The index of the modified item or null if there is no modification
+ * @see findModifiedItemOld
+ * @see findModifiedItem
+ */
+
 fun <T, K : Comparable<K>> List<T>.findModifiedItem(
     other: List<T>,
     idExtractor: (T) -> K,

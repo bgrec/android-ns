@@ -13,11 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersUiState
@@ -27,15 +27,17 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Delive
 fun EditDeliveryStateDialog(
     showDeliveryDialog: MutableState<Boolean>,
     ordersUiState: OrdersUiState.Success,
-    selectedDeliveryState: MutableIntState,
     onUpdateDeliveryState: (Int, Int) -> Unit
 ) {
+
+    // MutableIntState to keep track of the selected delivery state
+    val selectedDeliveryState = remember { mutableIntStateOf(0) }
 
     // LaunchedEffect to set the initial value when the dialog is opened
     LaunchedEffect(showDeliveryDialog) {
         if (showDeliveryDialog.value) {
             val modifiedOrder =
-                ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.value }
+                ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.intValue }
             val modifiedOrderDeliveryState = modifiedOrder?.deliveryState
             if (modifiedOrderDeliveryState != null) {
                 selectedDeliveryState.intValue = modifiedOrderDeliveryState
@@ -49,17 +51,6 @@ fun EditDeliveryStateDialog(
         title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
         text = {
             Column(modifier = Modifier.wrapContentSize()) {
-
-                // List of delivery types
-//                val deliveryStates = listOf(
-//                    DeliveryState(0, R.string.order_deliveryState_value0, Color.Red),
-//                    DeliveryState(1, R.string.order_deliveryState_value1, Color.Green),
-//                    DeliveryState(2, R.string.order_deliveryState_value2, Color.Black),
-//                    DeliveryState(
-//                        3, R.string.order_deliveryState_value3, Color.Magenta
-//                    )
-//                )
-
                 deliveryStates.forEach { deliveryState ->
                     Row(
                         modifier = Modifier
@@ -96,7 +87,7 @@ fun EditDeliveryStateDialog(
             TextButton(onClick = {
                 showDeliveryDialog.value = false
                 onUpdateDeliveryState(
-                    ordersUiState.modifiedOrderId.value,
+                    ordersUiState.modifiedOrderId.intValue,
                     selectedDeliveryState.intValue
                 )
             }) {

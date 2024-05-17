@@ -5,8 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.core.content.ContextCompat.startActivity
 import androidx.credentials.CreatePasswordRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -28,16 +26,19 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
+import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
-import kotlinx.coroutines.CoroutineScope
+import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+
+const val CREDENTIAL_DIALER_CODE = "*#*#66382723#*#*"
 
 class LoginViewModel(
     private val loginRepository: LoginRepository,
@@ -51,24 +52,22 @@ class LoginViewModel(
     }
 
     fun login(
-        context: Context,
-        username: String,
-        password: String,
-        isCredentialManagerLogin: Boolean
+        context: Context, username: String, password: String, isCredentialManagerLogin: Boolean
     ) {
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Perform the login request and handle the response
                 val response = loginRepository.login(username, password)
 
-                //The server responds with a temporary redirect that is ../authentication/status
-                //but the session cookie is set before redirect so in RetrofitInstance the redirect is not followed
+                /** The server responds with a temporary redirect that is ../authentication/status
+                 * but the session cookie is set before redirect
+                 * so in RetrofitInstance the redirect is not followed
+                 * (there is a flag to not follow redirects)
+                 */
+
                 if (response.code() == 307) {
                     val cookies = response.headers().values("Set-Cookie")
                     val sessionCookie = extractSessionCookie(cookies)
-
-                    Log.d("LoginViewModel", "Session cookie: $sessionCookie")
 
                     // Set the session cookie in the SessionManager singleton if it is not empty
                     if (sessionCookie.isNotEmpty()) {
@@ -81,114 +80,77 @@ class LoginViewModel(
                         saveNewCredential(context, username, password)
                     }
 
-                    // Save the logged in state in the data store
+                    //Save the logged in state in the data store
                     userPreferencesRepository.saveLoggedIn(true)
 
                 } else {
 
                     when (response.code()) {
-
-                        401 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_LONG,
-                                " Credenziali non valide o errate ${response.code()}"
-                            )
+                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                            context, viewModelScope
+                        ) {
+                            // Handle unauthorized error
                         }
 
-                        404 -> showToast(
-                            context,
-                            Toast.LENGTH_LONG,
-                            "Collegamento riuscito, api not trovata ${response.code()}"
+                        404 -> NetworkSuccessHandler.handleNotFound(
+                            context, viewModelScope, response.code()
                         )
 
-                        500 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                "${response.code()}"
-                            )
-                        }
+                        500, 503 -> NetworkSuccessHandler.handleServerError(
+                            context, response, viewModelScope
+                        )
 
-                        503 -> {
-                            showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                " ${response.code()}"
-                            )
-                        }
-
-                        else -> {
-                            showToast(context, Toast.LENGTH_LONG, "Errore api: ${response.code()}")
-                        }
+                        else -> NetworkSuccessHandler.handleUnknownError(
+                            context, response, viewModelScope
+                        )
                     }
 
+                    //Save the logged in state in the data store
                     userPreferencesRepository.saveLoggedIn(false)
                 }
 
             } catch (e: IOException) {
-                // Handle IOException (e.g., network error)
-                showToast(context, Toast.LENGTH_LONG, "Network error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(
+                    context, e, viewModelScope
+                )
             } catch (e: HttpException) {
-                // Handle HttpException (e.g., non-2xx response)
-                showToast(context, Toast.LENGTH_LONG, "HTTP error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(
+                    context, e, viewModelScope
+                )
             } catch (e: SocketTimeoutException) {
-                // Handle socket timeout exception
-                showToast(
-                    context,
-                    Toast.LENGTH_LONG,
-                    "Connection timed out. Please try again later."
+                NetworkExceptionHandler.handleSocketTimeoutException(
+                    context, viewModelScope
                 )
             } catch (e: Exception) {
-                // Handle generic exception
-                showToast(context, Toast.LENGTH_LONG, "An unexpected error occurred: ${e.message}")
+                NetworkExceptionHandler.handleException(
+                    context, e, viewModelScope
+                )
             }
         }
     }
 
-    // Extract the session cookie from the response headers
+    /**
+     * Extract the session cookie from the list of cookies returned by the server.
+     */
     private fun extractSessionCookie(cookies: List<String>): String {
         return cookies.firstOrNull { it.startsWith("session_") } ?: ""
     }
 
-    //Get the message in the body
-    private fun parseErrorMessage(errorBody: String?): String {
-        val jsonError = JSONObject(errorBody ?: "{}")
-        return jsonError.optString("message")
-    }
-
-    private fun showToast(context: Context, toastLength: Int, message: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (message.isNotEmpty()) {
-                val toast = Toast.makeText(context, message, toastLength)
-                //Error for toast gravity with message
-                //toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            } else {
-                // Hide loading message by not showing any toast
-            }
-        }
-    }
-
     private suspend fun saveNewCredential(
-        activityContext: Context,
-        username: String,
-        password: String
+        activityContext: Context, username: String, password: String
     ) {
+
         // Initialize a CreatePasswordRequest object.
-        val createPasswordRequest =
-            CreatePasswordRequest(id = username, password = password)
+        val createPasswordRequest = CreatePasswordRequest(id = username, password = password)
 
         // Create credential and handle result.
         viewModelScope.launch {
             try {
-                val result =
-                    credentialManager.createCredential(
-                        // Use an activity based context to avoid undefined
-                        // system UI launching behavior.
-                        activityContext,
-                        createPasswordRequest
-                    )
+                val result = credentialManager.createCredential(
+                    // Use an activity based context to avoid undefined
+                    // system UI launching behavior.
+                    activityContext, createPasswordRequest
+                )
                 // Handle the result of registering or updating password
 
             } catch (e: CreateCredentialException) {
@@ -209,15 +171,13 @@ class LoginViewModel(
 
     fun getCredentials(activityContext: Context)/*: PasswordCredential?*/ {
 
-        // Retrieves the user's saved password for your app from their
-        // password provider.
+        // Retrieves the user's saved password from the credential provider.
         val getPasswordOption = GetPasswordOption()
 
         /*
-        // Get passkey from the user's public key credential provider.
+         // Get passkey from the user's public key credential provider.
         val getPublicKeyCredentialOption = GetPublicKeyCredentialOption(
-            requestJson = requestJson
-        )
+            requestJson = requestJson)
         */
 
         val getCredRequest = GetCredentialRequest(
@@ -234,8 +194,7 @@ class LoginViewModel(
                 val result = credentialManager.getCredential(
                     // Use an activity-based context to avoid undefined system UI
                     // launching behavior.
-                    context = activityContext,
-                    request = getCredRequest
+                    context = activityContext, request = getCredRequest
                 )
                 handleSignIn(result, activityContext)
             } catch (e: GetCredentialException) {
@@ -253,7 +212,8 @@ class LoginViewModel(
                 // Retry-able error. Consider retrying the call.
                 Log.e("LoginViewModel", "Retry-able error. Consider retrying the call", e)
             } catch (e: NoCredentialException) {
-                launchDialer(activityContext, "*#*#66382723#*#*")
+                ToastUtils.showToast(activityContext, Toast.LENGTH_SHORT, "NoCredentialException")
+                launchDialer(activityContext)
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)
             } catch (e: Exception) {
@@ -263,7 +223,8 @@ class LoginViewModel(
     }
 
 
-    private fun launchDialer(context: Context, code: String) {
+    private fun launchDialer(context: Context) {
+        val code = CREDENTIAL_DIALER_CODE
         val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$code"))
         context.startActivity(intent)
     }
@@ -301,8 +262,6 @@ class LoginViewModel(
         when (e) {
             is CreatePublicKeyCredentialDomException -> {
                 // Handle the passkey DOM errors thrown according to the
-                // WebAuthn spec.
-
                 // handlePasskeyError(e.domError)
             }
 
@@ -335,11 +294,12 @@ class LoginViewModel(
     }
 
 }
-/*
-On Begin Sign In Failure: 16: Caller has been temporarily blocked due to too many canceled sign-in prompts.
-If you encounter this 24-hour cooldown period during development, you can reset it by clearing Google Play services' app storage.
 
-Alternatively, to toggle this cooldown on a test device or emulator,
- go to the Dialer app and input the following code: *#*#66382723#*#*.
-  The Dialer app clears all input and may close, but there isn't a confirmation message.
+/*
+    On Begin Sign In Failure: 16: Caller has been temporarily blocked due to too many canceled sign-in prompts.
+    If you encounter this 24-hour cooldown period during development, you can reset it by clearing Google Play services' app storage.
+
+    Alternatively, to toggle this cooldown on a test device or emulator,
+    go to the Dialer app and input the following code: *#*#66382723#*#*.
+    The Dialer app clears all input and may close, but there isn't a confirmation message.
  */

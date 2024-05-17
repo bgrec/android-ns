@@ -33,7 +33,6 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 
-@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun SearchBarOld(customerMasterDataList: List<CustomerMasterData>, navController: NavController) {
@@ -83,7 +82,7 @@ fun SearchBarOld(customerMasterDataList: List<CustomerMasterData>, navController
             }
             CustomersList(
                 customerMasterDataList = customerMasterDataList,
-                state = remember { mutableStateOf(TextFieldValue("")) },
+                searchedTextState = remember { mutableStateOf(TextFieldValue("")) },
                 modifier = Modifier.padding(4.dp),
                 navController = navController
             )

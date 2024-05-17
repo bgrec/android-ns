@@ -1,8 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -21,6 +19,7 @@ import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -45,7 +45,6 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsUiState
 import com.mastrosql.app.utils.DateHelper
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditOrderDetailsItem(
     showEditDialog: MutableState<Boolean>,
@@ -54,8 +53,15 @@ fun EditOrderDetailsItem(
     onEditOrderDetailsItem: (Int, Double, String, String) -> Unit,
 
     ) {
-    //create a FocusManager
+
+    // Get the focus manager
     val focusManager = LocalFocusManager.current
+
+    // Get the context
+    val context = LocalContext.current
+
+    //Description of the dialog, if the item is not null, show the row details
+    val dialogDescriptionState = remember { mutableStateOf("") }
 
     // LaunchedEffect to set the initial value when the dialog is opened
     LaunchedEffect(showEditDialog) {
@@ -66,6 +72,7 @@ fun EditOrderDetailsItem(
 
                 orderDetailsUiState.modifiedOrderDetailsItem =
                     orderDetailsUiState.orderDetailsList[index]
+
 
                 val initialBatch = orderDetailsUiState.modifiedOrderDetailsItem!!.batch ?: ""
                 orderDetailsItemState.batch.value = TextFieldValue(initialBatch)
@@ -78,7 +85,19 @@ fun EditOrderDetailsItem(
                 )
                 orderDetailsItemState.expirationDate.value = TextFieldValue(initialExpirationDate)
 
+                if (orderDetailsUiState.modifiedOrderDetailsItem != null) {
+                    dialogDescriptionState.value = context.getString(
+                        R.string.order_details_dialog_edit_title_row,
+                        orderDetailsUiState.modifiedOrderDetailsItem?.orderRow ?: 0,
+                        orderDetailsUiState.modifiedOrderDetailsItem?.articleId ?: 0,
+                        orderDetailsUiState.modifiedOrderDetailsItem?.sku ?: ""
+                    )
+                }
+
+                //Log.d("dialogDescriptionState", dialogDescriptionState.value)
             } else {
+                dialogDescriptionState.value =
+                    context.getString(R.string.order_details_dialog_edit_title)
                 Log.e("OrderDetailsScreen", "Invalid index: $index")
             }
 
@@ -89,26 +108,14 @@ fun EditOrderDetailsItem(
 
             // Hide the keyboard when focusing on the quantity field if needed
             //keyboardController?.hide()
-        }
-    }
 
-    //Description of the dialog, if the item is not null, show the row details
-    var dialogDescription = stringResource(
-        R.string.order_details_dialog_edit_title
-    )
-    if (orderDetailsUiState.modifiedOrderDetailsItem != null) {
-        dialogDescription = stringResource(
-            R.string.order_details_dialog_edit_title_row,
-            orderDetailsUiState.modifiedOrderDetailsItem?.orderRow ?: 0,
-            orderDetailsUiState.modifiedOrderDetailsItem?.articleId ?: 0,
-            orderDetailsUiState.modifiedOrderDetailsItem?.sku ?: ""
-        )
+        }
     }
 
     // Show the edit dialog when the state is true
     AlertDialog(modifier = Modifier.wrapContentSize(),
         onDismissRequest = { showEditDialog.value = false },
-        title = { Text(dialogDescription) },
+        title = { Text(dialogDescriptionState.value) },
         text = {
             val showDatePickerDialog = remember { mutableStateOf(false) }
 
@@ -189,10 +196,10 @@ fun EditOrderDetailsItem(
                     ) {
                         Icon(
                             Icons.Default.RemoveCircle,
-                            contentDescription = "Scala la quantità",
+                            contentDescription = stringResource(R.string.decrease_quantity_by_one),
                             modifier = Modifier.fillMaxSize(),
                             tint = if (getOrderQuantity(orderDetailsItemState) <= 0)
-                                Color.Gray else Color.Black
+                                Color.Gray else MaterialTheme.colorScheme.primary
                         )
 
                     }
@@ -285,8 +292,9 @@ fun EditOrderDetailsItem(
                     }) {
                         Icon(
                             Icons.Default.AddCircle,
-                            contentDescription = "Scala la quantità",
-                            modifier = Modifier.fillMaxSize()
+                            contentDescription = stringResource(R.string.increase_quantity_by_one),
+                            modifier = Modifier.fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }

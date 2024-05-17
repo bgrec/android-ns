@@ -6,9 +6,6 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * For GSON Serialization  use @SerializedName(value = "DESCRI")
@@ -22,45 +19,45 @@ data class Order(
     @PrimaryKey(autoGenerate = false)
     @SerializedName("NUME") val id: Int,
     @SerializedName("CODI") val clientId: Int?,
-    @SerializedName("ragSoc") val businessName: String?,
+    @SerializedName("RAGIONESOCIALE") val businessName: String?,
     @SerializedName("VIA") val street: String?,
     @SerializedName("CAP") val postalCode: String?,
     @SerializedName("CITTA") val city: String?,
     @SerializedName("PROV") val province: String?,
     @SerializedName("NAZIONE") val nation: String?,
     @SerializedName("DESTINA") val destinationId: Int?,
-    @SerializedName("destinaDescri") val destinationName: String?,
+    @SerializedName("DESTINAZIONEDESCRI") val destinationName: String?,
     @SerializedName("DESCRI") val description: String?,
-    @SerializedName("nLav") val sequence: Int?,
+    @SerializedName("NUMEROLAV") val sequence: Int?,
     @SerializedName("DATAI") val insertDate: String?,
     @SerializedName("AGENTE") val agent: String?,
     @SerializedName("TRASPO") val transportHandler: String?,
     @SerializedName("COLLI") val parcels: Int?,
-    @SerializedName("vettNume") val carrierId: Int?,
+    @SerializedName("VETTORENUME") val carrierId: Int?,
     @SerializedName("VETTORE") val carrierName: String?,
     @SerializedName("PESO") val weight: Double?,
-    @SerializedName("numeOrdi") val port: String?,
-    @SerializedName("dataOrdi") val date: String?,
+    @SerializedName("NUMEROORDI") val port: String?,
+    @SerializedName("DATAORDI") val date: String?,
     @SerializedName("NOTE") val notes: String?,
-    @SerializedName("dConsegna") val deliveryDate: String?,
+    @SerializedName("DATACONSEGNA") val deliveryDate: String?,
     @SerializedName("TASSATIVA") val deliveryDeadline: Boolean?,
     @SerializedName("CONSEGNA") val deliveryType: Int?,
-    @SerializedName("statoCons") val deliveryState: Int?,
+    @SerializedName("STATOCONSEGNA") val deliveryState: Int?,
     @SerializedName("URGENTE") val urgent: Boolean?,
     @SerializedName("PARZIALE") val partial: Int?,
     @SerializedName("NUMERO") val number: Int?,
 
     @TypeConverters(OrderMetadataTypeConverter::class)
-    @SerializedName("_metadata") val metadata: Metadata,
+    @SerializedName("_metadata") val metadata: Metadata?,
 
     @TypeConverters(OrderLinksTypeConverter::class)
-    @SerializedName("links") val links: List<Link>,
+    @SerializedName("links") val links: List<Link>?,
 
-    @ColumnInfo(name = "page") var page: Int,
+    @ColumnInfo(name = "page") var page: Int?,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
 ) {
-    val insertDate2: Date?
-        get() = SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(insertDate)
+    /*val insertDate2: Date?
+        get() = insertDate?.let { SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(it) }*/
 }
 
 

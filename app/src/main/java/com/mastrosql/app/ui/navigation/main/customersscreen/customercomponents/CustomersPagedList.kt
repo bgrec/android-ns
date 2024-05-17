@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,8 +63,6 @@ fun CustomersPagedList(
             //CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             LoadingScreen(
                 modifier = modifier.fillMaxSize(),
-                drawerState = drawerState,
-                navController = navController,
                 loading = true
             )
         }
@@ -77,7 +74,6 @@ fun CustomersPagedList(
                 (loadState.refresh as LoadState.Error).error as Exception,
                 { customers.refresh() },
                 modifier = modifier.fillMaxSize(),
-                drawerState = drawerState,
                 navController = navController
             )
         }

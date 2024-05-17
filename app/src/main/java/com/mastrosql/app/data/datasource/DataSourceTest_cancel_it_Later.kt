@@ -5,7 +5,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMaster
 
 class DataSourceTest_cancel_it_Later {
     fun loadItems(): List<ItemTest> {
-        return listOf<ItemTest>(
+        return listOf(
             ItemTest(1, "ean1", "description1"),
             ItemTest(2, "ean2", "description2"),
             ItemTest(3, "ean3", "description3"),
@@ -59,7 +59,7 @@ class DataSourceTest_cancel_it_Later {
     }
 
     private fun loadCustomers(): List<CustomerMasterData> {
-        return listOf<CustomerMasterData>(
+        return listOf(
             /* CustomerMasterData(1, "description1"),
              CustomerMasterData(2, "description2"),
              CustomerMasterData(3, "description3"),
@@ -109,7 +109,7 @@ class DataSourceTest_cancel_it_Later {
     ): List<CustomerMasterData> {
         // Filter the list
         //return list.filter { it.description?.contains(query, ignoreCase = true) ?: false }
-        return list.filter { it.businessName.contains(query, ignoreCase = true) }
+        return list.filter { it.businessName?.contains(query, ignoreCase = true) ?: true }
     }
 
     fun loadFilteredClientsByDescription(query: String): List<CustomerMasterData> {

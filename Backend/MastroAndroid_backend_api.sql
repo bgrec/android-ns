@@ -1,55 +1,32 @@
-/*CREATE OR REPLACE VIEW `ordersRowsView`
-AS
-SELECT
-    rig_ordc.NUME_PRO AS NUME_PRO,
-    rig_ordc.NUME AS NUME,
-    rig_ordc.STAMP AS STAM,
-    rig_ordc.RIGA AS RIGA,
-    rig_ordc.CORTO AS CORTO,
-    TRIM(rig_ordc.ART_CODI) AS ART_CODI,
-    TRIM(rig_ordc.ART_CFOR) AS ART_CFOR,
-    TRIM(rig_ordc.DESCRI) AS DESCRI,
-    TRIM(rig_ordc.LIBE) AS LIBE,
-    TRIM(rig_ordc.IVA) AS IVA,
-    rig_ordc.IVA_PERC AS IVA_PERC,
-    rig_ordc.COST AS COST,
-    rig_ordc.VEND AS VEND,
-    TRIM(lis_ordr.MISU) AS MISU,
-    lis_ordr.QTA AS QTA,
-    lis_ordr.QTA_CONS AS QTA_CONS,
-    lis_ordr.QTA_CONS AS QTA_CONS,
-    lis_ordr.QTA_CONS AS*/
-
-
 ####################################################################################################
 CREATE OR REPLACE VIEW `ordersview`
 AS
 SELECT lis_ordc.NUME                                                AS NUME,
        lis_ordc.CODI                                                AS CODI,
-       IFNULL(TRIM(clienti.DESCRI), '')                             AS RAG_SOC,
+       IFNULL(TRIM(clienti.DESCRI), '')                             AS RAGIONESOCIALE,
        IFNULL(IFNULL(TRIM(destina.VIA), TRIM(clienti.VIA)), '')     AS VIA,
        IFNULL(IFNULL(TRIM(destina.CAP), TRIM(clienti.CAP)), '')     AS CAP,
        IFNULL(IFNULL(TRIM(destina.CITTA), TRIM(clienti.CITTA)), '') AS CITTA,
        IFNULL(IFNULL(TRIM(destina.PROV), TRIM(clienti.PROV)), '')   AS PROV,
        IFNULL(TRIM(clienti.NAZIONE), '')                            AS NAZIONE,
        IFNULL(TRIM(lis_ordc.DESCRI), '')                            AS DESCRI,
-       IFNULL(TRIM(destina.DESCRI), '')                             AS DESTINA_DESCRI,
-       lis_ordc.N_LAV                                               AS N_LAV,
+       IFNULL(TRIM(destina.DESCRI), '')                             AS DESTINAZIONEDESCRI,
+       lis_ordc.N_LAV                                               AS NUMEROLAV,
        lis_ordc.DATAI                                               AS DATAI,
        lis_ordc.AGENTE                                              AS AGENTE,
        lis_ordc.DESTINA                                             AS DESTINA,
        TRIM(lis_ordc.TRASPO)                                        AS TRASPO,
        lis_ordc.COLLI                                               AS COLLI,
        IFNULL(TRIM(lis_ordc.VETTORE), TRIM(vettori.DESCRI))         AS VETTORE,
-       lis_ordc.VETT_NUME                                           AS VETT_NUME,
+       lis_ordc.VETT_NUME                                           AS VETTORENUME,
        lis_ordc.PESO                                                AS PESO,
-       TRIM(lis_ordc.NUME_ORDI)                                     AS NUME_ORDI,
-       lis_ordc.DATA_ORDI                                           AS DATA_ORDI,
+       TRIM(lis_ordc.NUME_ORDI)                                     AS NUMEROORDI,
+       lis_ordc.DATA_ORDI                                           AS DATAORDI,
        TRIM(lis_ordc.NOTE)                                          AS NOTE,
-       lis_ordc.D_CONSEGNA                                          AS D_CONSEGNA,
+       lis_ordc.D_CONSEGNA                                          AS DATACONSEGNA,
        lis_ordc.TASSATIVA                                           AS TASSATIVA,
        lis_ordc.CONSEGNA                                            AS CONSEGNA,
-       lis_ordc.STATO_CONS                                          AS STATO_CONS,
+       lis_ordc.STATO_CONS                                          AS STATOCONSEGNA,
        lis_ordc.URGENTE                                             AS URGENTE,
        lis_ordc.PARZIALE                                            AS PARZIALE,
        lis_ordc.NUMERO                                              AS NUMERO
@@ -60,7 +37,7 @@ FROM lis_ordc
          LEFT JOIN destina ON lis_ordc.DESTINA = destina.PROG_TUTTO
          LEFT JOIN vettori ON lis_ordc.VETT_NUME = vettori.NUME
 WHERE lis_ordc.DATAI >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-  AND !lis_ordc.CONSOLI
+  AND NOT lis_ordc.CONSOLI
 
 ORDER BY lis_ordc.DATAI DESC;
 
@@ -560,7 +537,7 @@ CREATE PROCEDURE UpdateOrderRow(
 )
 BEGIN
     DECLARE updatedDate DATE;
-    IF expirationDate IS NULL OR expirationDate = '' OR expirationDate= 'null' THEN
+    IF expirationDate IS NULL OR expirationDate = '' OR expirationDate = 'null' THEN
         SET expirationDate = NULL;
     ELSE
         SET updatedDate = STR_TO_DATE(expirationDate, '%d/%m/%Y');
@@ -594,6 +571,76 @@ BEGIN
     ORDER BY RIGA;
 END;
 
+####################################################################################################
+CREATE OR REPLACE VIEW clientsdestinationsview
+AS
+(
+SELECT destina.PROG_TUTTO   AS PROG_TUTTO,
+       destina.CODI         AS CODI,
+       TRIM(destina.DESCRI) AS DESCRI,
+       TRIM(destina.VIA)    AS VIA,
+       TRIM(destina.CAP)    AS CAP,
+       TRIM(destina.CITTA)  AS CITTA,
+       TRIM(destina.PROV)   AS PROV
+FROM destina
+WHERE destina.CODI IN (SELECT CODI FROM clientsview));
+
+####################################################################################################
+CREATE VIEW test as
+(
+select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c
+from clienti
+         left join destina on clienti.CODI = destina.CODI);
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS InsertNewOrder;
+CREATE PROCEDURE InsertNewOrder(
+    IN clientId INT,
+    IN destinationId INT,
+    IN description VARCHAR(255),
+    IN insertDate VARCHAR(255),
+    IN deliveryDate VARCHAR(255)
+)
+BEGIN
+
+    DECLARE lastOrderId INT;
+    DECLARE insertDateAsDate DATE;
+    DECLARE deliveryDateAsDate DATE;
+    DECLARE orderNumber INT;
+
+    IF insertDate IS NULL OR insertDate = '' OR insertDate = 'null' THEN
+        SET insertDate = CURDATE();
+    ELSE
+        SET insertDateAsDate = STR_TO_DATE(insertDate, '%d/%m/%Y');
+    END IF;
+
+    IF deliveryDate IS NULL OR deliveryDate = '' OR deliveryDate = 'null' THEN
+        SET deliveryDateAsDate = NULL;
+    ELSE
+        SET deliveryDateAsDate = STR_TO_DATE(deliveryDate, '%d/%m/%Y');
+    END IF;
+
+    SELECT MAX(NUMERO) + 1 INTO orderNumber FROM lis_ordc WHERE YEAR(DATAI) = YEAR(insertDateAsDate);
+
+    INSERT INTO lis_ordc (CODI, DESTINA, DESCRI, DATAI, D_CONSEGNA, NUMERO)
+    VALUES (clientId, destinationId, description, insertDateAsDate, deliveryDateAsDate, orderNumber);
+
+    SELECT NUME
+    INTO lastOrderId
+    FROM lis_ordc
+    WHERE CODI = clientId
+      AND DESTINA = destinationId
+      AND DESCRI = description
+      AND DATAI = insertDateAsDate
+      # AND D_CONSEGNA = deliveryDateAsDate # This condition is not necessary because the delivery date can be NULL
+      AND NUMERO = orderNumber
+    ORDER BY NUME DESC
+    LIMIT 1;
+
+    -- Return the last order details based on the last order number
+    SELECT * FROM ordersview WHERE NUME = lastOrderId LIMIT 1;
+END;
+
 
 ####################################################################################################
 
@@ -614,5 +661,6 @@ FLUSH PRIVILEGES;
 CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
 GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+
 
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;

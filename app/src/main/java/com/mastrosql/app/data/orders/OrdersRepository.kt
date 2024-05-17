@@ -5,6 +5,7 @@ import androidx.work.WorkInfo
 import com.google.gson.JsonObject
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -45,4 +46,7 @@ interface OrdersRepository {
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 
     suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject>
+
+    suspend fun addNewOrder(order: Order): Response<OrderAddResponse>
+    suspend fun getOrderByOrderId(orderId: Int): OrdersResponse
 }
