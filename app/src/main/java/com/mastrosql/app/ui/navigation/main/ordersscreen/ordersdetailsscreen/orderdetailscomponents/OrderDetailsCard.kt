@@ -54,6 +54,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,6 +80,7 @@ import kotlinx.coroutines.launch
 fun OrderDetailsCard(
     orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
+    isDeleteRowActive: Boolean,
     onRemove: (Int) -> Unit,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
@@ -98,9 +100,10 @@ fun OrderDetailsCard(
             exit = shrinkOut(animationSpec = tween(700)) + fadeOut(),
         ) {
             SwipeToDismissItem(
+                modifier = modifier,
                 visibleState = visibleState,
                 orderDetailsItem = orderDetailsItem,
-                modifier = modifier,
+                isDeleteRowActive = isDeleteRowActive,
                 showEditDialog = showEditDialog,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
@@ -145,9 +148,10 @@ fun OrderDetailsCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissItem(
+    modifier: Modifier,
     visibleState: MutableTransitionState<Boolean>,
     orderDetailsItem: OrderDetailsItem,
-    modifier: Modifier,
+    isDeleteRowActive: Boolean,
     showEditDialog: MutableState<Boolean>,
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
@@ -158,7 +162,9 @@ private fun SwipeToDismissItem(
             //Swipe actions
             when (it) {
                 SwipeToDismissBoxValue.EndToStart -> {
-                    visibleState.targetState = false
+                    if (isDeleteRowActive) {
+                        visibleState.targetState = false
+                    }
                     true
                 }
 
@@ -437,13 +443,14 @@ fun OrderDetailDescriptionAndId(
 
 @Composable
 fun OrderDetailDescriptionAndId2(
+    modifier: Modifier = Modifier,
     batch: String?,
     expirationDate: String?,
     quantity: Double,
     orderedQuantity: Double,
     shippedQuantity: Double,
-    modifier: Modifier = Modifier
-) {
+
+    ) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -642,12 +649,83 @@ fun QuantityText(
     )
 }
 
-/*@Preview
+@Preview(showBackground = true)
 @Composable
-fun OrderDetailCardPreview() {
+fun OrderDetailInfoPreview() {
     MastroAndroidTheme {
-        OrderDetailCard(
-            orderDetail = OrderDetailsItem(
+        OrderDetailInfo(
+            completeDescription = "completeDescription", modifier = Modifier
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+
+fun QuantityTablePreview() {
+    MastroAndroidTheme {
+        QuantityTable(1.0, 1.0, 1.0)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuantityTextPreview() {
+    MastroAndroidTheme {
+        QuantityText("1.0", true, Modifier)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderDetailDescriptionAndIdPreview() {
+    MastroAndroidTheme {
+        OrderDetailDescriptionAndId(1, "sku", "description")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderDetailDescriptionAndId2Preview() {
+    MastroAndroidTheme {
+        OrderDetailDescriptionAndId2(
+            batch = "batch",
+            expirationDate = "2023-01-01",
+            quantity = 1.0,
+            orderedQuantity = 1.0,
+            shippedQuantity = 1.0
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderDetailExpandButtonPreview() {
+    MastroAndroidTheme {
+        OrderDetailExpandButton(false, {})
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun SwipeToDismissBackgroundPreview() {
+    MastroAndroidTheme {
+        SwipeToDismissBackground(
+            dismissState = rememberSwipeToDismissBoxState()
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun SwipeToDismissItemPreview() {
+    MastroAndroidTheme {
+        SwipeToDismissItem(
+            modifier = Modifier,
+            visibleState = MutableTransitionState(true),
+            orderDetailsItem = OrderDetailsItem(
                 id = 1,
                 orderId = 1,
                 orderRow = 1,
@@ -678,24 +756,67 @@ fun OrderDetailCardPreview() {
                 batch = "batch",
                 expirationDate = "2023-01-01",
                 links = listOf(),
-                metadata = Metadata(
+                metadata = com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.Metadata(
                     etag = "etag"
                 ),
-
-                page = 0,
-                lastUpdated = System.currentTimeMillis()
-            ), modifier = Modifier, navController = NavController(LocalContext.current)
-        )
+                page = 0
+            ),
+            isDeleteRowActive = true,
+            showEditDialog = remember { mutableStateOf(false) },
+            modifiedItemId = remember { mutableIntStateOf(0) },
+            onDuplicate = {})
     }
+}
 
-}*/
-
-@Preview(apiLevel = 34, showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun OrderDetailInfoPreview() {
+fun OrderDetailsCardPreview() {
     MastroAndroidTheme {
-        OrderDetailInfo(
-            completeDescription = "completeDescription", modifier = Modifier
+        OrderDetailsCard(
+            orderDetailsItem = OrderDetailsItem(
+                id = 1,
+                orderId = 1,
+                orderRow = 1,
+                confirmed = true,
+                articleId = 1,
+                sku = "sku",
+                vendorSku = "vendorSku",
+                description = "description",
+                completeDescription = "completeDescription",
+                quantity = 1.0,
+                tmpQuantity = 1.0,
+                returnedQuantity = 1.0,
+                weight = 1.0,
+                cost = "1.0",
+                price = "1.0",
+                vat = "vat",
+                vatValue = 1.0,
+                discount = 1.0,
+                discount1 = 1.0,
+                discount2 = 1.0,
+                discount3 = 1.0,
+                catalogPrice = 1.0,
+                measureUnit = "measureUnit",
+                rowType = 1,
+                packSize = "packSize",
+                orderedQuantity = 1.0,
+                shippedQuantity = 1.0,
+                batch = "batch",
+                expirationDate = "2023-01-01",
+                links = listOf(),
+                metadata = com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.Metadata(
+                    etag = "etag"
+                ),
+                page = 0
+            ),
+            modifier = Modifier,
+            isDeleteRowActive = true,
+            onRemove = {},
+            showEditDialog = remember { mutableStateOf(false) },
+            snackbarHostState = SnackbarHostState(),
+            listState = LazyListState(),
+            modifiedItemId = remember { mutableIntStateOf(0) },
+            onDuplicate = {}
         )
     }
 }

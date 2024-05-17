@@ -38,6 +38,7 @@ import java.net.URL
  * App container for Dependency injection.
  *
  */
+
 interface AppContainer {
     val loginRepository: LoginRepository
     val customersMasterDataRepository: CustomersMasterDataRepository
@@ -63,10 +64,14 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override lateinit var mastroAndroidApiService: MastroAndroidApiService
 
+    companion object {
+        private const val DEFAULT_BASE_URL = "https://nipeservice.com"
+    }
+
     private val defaultBaseUrl = if (isDevBuild()) {
         BuildConfig.API_URL.takeIf { isValidUrl(it) }
     } else {
-        "https://nipeservice.com"
+        DEFAULT_BASE_URL
     }
 
     init {
@@ -149,25 +154,19 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val articlesRepository: ArticlesRepository by lazy {
         NetworkArticlesRepository(
-            mastroAndroidApiService,
-            AppDatabase.getInstance(context).articlesDao(),
-            context
+            mastroAndroidApiService, AppDatabase.getInstance(context).articlesDao(), context
         )
     }
 
     override val ordersRepository: OrdersRepository by lazy {
         NetworkOrdersRepository(
-            mastroAndroidApiService,
-            AppDatabase.getInstance(context).ordersDao(),
-            context
+            mastroAndroidApiService, AppDatabase.getInstance(context).ordersDao(), context
         )
     }
 
     override val orderDetailsRepository: OrderDetailsRepository by lazy {
         NetworkOrderDetailsRepository(
-            mastroAndroidApiService,
-            AppDatabase.getInstance(context).orderDetailsDao(),
-            context
+            mastroAndroidApiService, AppDatabase.getInstance(context).orderDetailsDao(), context
         )
     }
 
@@ -188,48 +187,3 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }*/
 
 }
-
-
-/*class ImgurApi private constructor() {
-
-    private val imgurService: ImgurService
-
-    init {
-        val client = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor())
-            .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        imgurService = retrofit.create(ImgurService::class.java)
-    }
-
-    fun uploadImage(imageUri: Uri): Call<PostImageResponse> {
-        val imageFile = File(imageUri.path!!)
-        val requestFile = RequestBody.create(MEDIA_TYPE_PNG, imageFile)
-        val body = MultipartBody.Part.createFormData("image", "image.png", requestFile)
-        return imgurService.postImage(body)
-    }
-
-    private class AuthInterceptor : Interceptor {
-
-        @Throws(IOException::class)
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val request = chain.request()
-            val headers = request.headers().newBuilder()
-                .add("Authorization", "Client-ID ${Constants.IMGUR_CLIENT_ID}")
-                .build()
-            val authenticatedRequest = request.newBuilder().headers(headers).build()
-            return chain.proceed(authenticatedRequest)
-        }
-    }
-
-    companion object {
-
-        private val MEDIA_TYPE_PNG = MediaType.parse("image/png")
-        val instance: Lazy<ImgurApi> = lazy { ImgurApi() }
-    }
-}
-*/

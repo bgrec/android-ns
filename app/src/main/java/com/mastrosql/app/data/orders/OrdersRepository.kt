@@ -16,6 +16,15 @@ import retrofit2.Response
 interface OrdersRepository {
 
     val outputWorkInfo: Flow<WorkInfo>
+
+    /**
+     * Update the [MastroAndroidApiService] to be used by the repository.
+     */
+    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
+
+    /**
+     * Retrieve all the Orders from the the given data source.
+     */
     suspend fun getOrders(): OrdersResponse
     //suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 
@@ -43,10 +52,25 @@ interface OrdersRepository {
      * Update order in the data source
      */
     suspend fun updateOrder(order: Order)
-    fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 
+    /**
+     * Update the delivery state of the order in the data source
+     */
     suspend fun updateDeliveryState(orderId: Int, deliveryState: Int): Response<JsonObject>
 
+    /**
+     * Add a new order to the data source
+     */
     suspend fun addNewOrder(order: Order): Response<OrderAddResponse>
+
+    /**
+     * Retrieve an Order from the given data source that matches with the [orderId].
+     */
     suspend fun getOrderByOrderId(orderId: Int): OrdersResponse
+
+    /**
+     * Edit an order in the data source
+     */
+    suspend fun editOrder(order: Order): Response<OrderAddResponse>
+
 }
