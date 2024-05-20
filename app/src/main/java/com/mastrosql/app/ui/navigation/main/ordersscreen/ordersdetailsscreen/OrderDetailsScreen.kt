@@ -13,8 +13,6 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -61,7 +59,6 @@ import kotlinx.coroutines.launch
 fun OrderDetailsScreen(
     navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
-    drawerState: DrawerState,
     navController: NavController,
     viewModel: OrderDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
@@ -191,108 +188,11 @@ fun OrderDetailResultScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                focusManager.clearFocus()
-            })
-        },
-        topBar = {
-            OrderDetailsTopAppBar(
-                title = stringResource(
-                    OrderDetailsDestination.titleRes,
-                    orderDetailsUiState.orderId ?: 0,
-                    orderDetailsUiState.orderDescription ?: ""
-                ),
-                canNavigateBack = true,
-                navigateUp = navigateBack,
-                onAddItemClick = {
-                    navigateToNewItem(orderDetailsUiState.orderId ?: 0)
-                },
-            )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    showBottomSheet.value = true
-                    scannerState.isKeyboardVisible.value = false
-                },
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.QrCodeScanner,
-                    contentDescription = stringResource(id = R.string.open_scanner)
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
+//
 
-        ) { innerPadding ->
-
-        //Box used for pull to refresh
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState)
-        ) {
-            Column(
-                modifier = modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                // Screen content
-                val textState = remember { mutableStateOf(TextFieldValue("")) }
-
-                OrderDetailsSearchView(state = textState)
-
-                OrderDetailList(orderDetailList = orderDetailsUiState.orderDetailsList,
-                    modifiedIndex = orderDetailsUiState.modifiedIndex,
-                    searchTextState = textState,
-                    modifier = Modifier
-                        .padding(0.dp, 8.dp)
-                        .weight(if (showBottomSheet.value) 0.5f else 1f),
-                    showEditDialog = showEditDialog,
-                    snackbarHostState = snackbarHostState,
-                    onRemove = { orderDetailsItemId ->
-                        viewModel.deleteDetailItem(context, orderDetailsItemId)
-                    },
-                    onDuplicate = { orderDetailsItemId ->
-                        viewModel.duplicateDetailItem(context, orderDetailsItemId)
-                    })
-
-                if (showEditDialog.value) {
-                    EditOrderDetailsItem(showEditDialog = showEditDialog,
-                        orderDetailsUiState = orderDetailsUiState,
-                        orderDetailsItemState = orderDetailsItemState,
-                        onEditOrderDetailsItem = { orderDetailsItemId, quantity, batch, expirationDate ->
-                            viewModel.updateDetailsItemData(
-                                context = context,
-                                orderDetailsItemId = orderDetailsItemId,
-                                quantity = quantity,
-                                batch = batch,
-                                expirationDate = expirationDate
-                            )
-                        })
-                }
-                if (showBottomSheet.value) {
-                    ScanCodeBottomSheet(showBottomSheet = showBottomSheet,
-                        orderDetailsUiState = orderDetailsUiState,
-                        scannerState = scannerState,
-                        onSendScannedCode = { orderId, scannedCode ->
-                            viewModel.sendScannedCode(context, orderId, scannedCode)
-                        })
-                }
-            }
-
-            PullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
-    }
 }
+
+
 
 @Preview
 @Composable
@@ -300,7 +200,6 @@ fun OrdersScreenPreview() {
     OrderDetailsScreen(
         navigateToNewItem = {},
         navigateBack = {},
-        drawerState = DrawerState(DrawerValue.Closed),
         navController = NavController(LocalContext.current)
     )
 }

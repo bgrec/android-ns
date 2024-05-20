@@ -89,7 +89,10 @@ fun OrderDetailsCard(
     onDuplicate: (Int) -> Unit,
 ) {
 
+    val scope = rememberCoroutineScope()
     val visibleState = remember { MutableTransitionState(true) }
+    val messageText = stringResource(R.string.deleted_item_snackbar_text)
+    val dismissText = stringResource(R.string.dismiss_button)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -110,11 +113,6 @@ fun OrderDetailsCard(
             )
         }
     }
-
-    val scope = rememberCoroutineScope()
-
-    val messageText = stringResource(R.string.deleted_item_snackbar_text)
-    val dismissText = stringResource(R.string.dismiss_button)
 
     if (!visibleState.targetState && visibleState.isIdle) {
         LaunchedEffect(visibleState.targetState) {
@@ -363,10 +361,10 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
+    modifier: Modifier = Modifier,
     modifiedItemId: Int?,
     orderDetailsItemId: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val defaultTint = MaterialTheme.colorScheme.secondary
     //val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
