@@ -101,6 +101,7 @@ fun OrderDetailList(
                 listState = listState,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
+                isDeleteRowActive = true
             )
         }
 
