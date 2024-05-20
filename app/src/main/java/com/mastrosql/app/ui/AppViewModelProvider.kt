@@ -90,6 +90,7 @@ object AppViewModelProvider {
             OrderDetailsViewModel(
                 this.createSavedStateHandle(),
                 mastroAndroidApplication().appContainer.orderDetailsRepository,
+                mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }
 
