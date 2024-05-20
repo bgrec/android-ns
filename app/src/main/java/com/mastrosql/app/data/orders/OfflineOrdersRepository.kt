@@ -43,4 +43,8 @@ class OfflineOrdersRepository(
     override suspend fun getOrderByOrderId(orderId: Int): OrdersResponse {
         TODO("Not yet implemented")
     }
+
+    override suspend fun editOrder(order: Order): Response<OrderAddResponse> {
+        TODO("Not yet implemented")
+    }
 }

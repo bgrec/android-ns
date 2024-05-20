@@ -48,6 +48,10 @@ class NetworkOrdersRepository(
         return mastroAndroidApiService.getOrderByFilter(filter)
     }
 
+    override suspend fun editOrder(order: Order): Response<OrderAddResponse> {
+        TODO("Not yet implemented")
+    }
+
     override fun getAllOrdersStream(): Flow<List<Order>> {
         TODO("Not yet implemented")
     }
