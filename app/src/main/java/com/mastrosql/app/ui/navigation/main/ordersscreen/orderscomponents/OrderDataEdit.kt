@@ -30,12 +30,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderUtils
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
 @Composable
@@ -77,8 +80,7 @@ fun OrderDataEdit(
         .padding(horizontal = 8.dp)
 
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val showDatePickerDialog = remember { mutableStateOf(false) }
 
@@ -124,8 +126,7 @@ fun OrderDataEdit(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextField(
-                modifier = textFieldModifier
-                    .focusRequester(focusRequester),
+                modifier = textFieldModifier.focusRequester(focusRequester),
                 value = orderState.orderDescription.value,
                 label = { Text(stringResource(id = R.string.order_description)) },
                 onValueChange = { orderState.orderDescription.value = it },
@@ -137,25 +138,27 @@ fun OrderDataEdit(
         }
         Spacer(modifier = Modifier.padding(4.dp))
 
+        val isDateValid = remember(orderState.deliveryDate.value.text) {
+            DateHelper.formatDateToInput(orderState.deliveryDate.value.text).isNotEmpty()
+        }
+        val isDateBeforeToday = remember(orderState.deliveryDate.value.text) {
+            DateHelper.isDateBeforeToday(orderState.deliveryDate.value.text)
+        }
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextField(
-                modifier = textFieldModifier.clickable(onClick = {
-                    showDatePickerDialog.value = true
-                }),
+            TextField(modifier = textFieldModifier.clickable(onClick = {
+                showDatePickerDialog.value = true
+            }),
                 singleLine = true,
                 value = orderState.deliveryDate.value,
-                label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
+                label = { Text(stringResource(R.string.order_deliveryDate)) },
                 onValueChange = {
                     orderState.deliveryDate.value = it
                 },
                 readOnly = false,
-                isError = orderState.deliveryDate.value.text.isNotEmpty() && DateHelper.formatDateToInput(
-                    orderState.deliveryDate.value.text
-                ).isEmpty() && DateHelper.isDateBeforeToday(
-                    orderState.deliveryDate.value.text
-                ),
+                isError = orderState.deliveryDate.value.text.isNotEmpty() && (!isDateValid || isDateBeforeToday),
                 //visualTransformation = DateTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done
@@ -169,13 +172,13 @@ fun OrderDataEdit(
                             contentDescription = stringResource(R.string.select_a_date)
                         )
                     }
-                })
+                },
+                placeholder = { Text("gg/mm/aaaa") })
         }
 
         if (showDatePickerDialog.value) {
             DateEditDialog(
-                showDatePickerDialog = showDatePickerDialog,
-                orderState = orderState
+                showDatePickerDialog = showDatePickerDialog, orderState = orderState
             )
         }
 
@@ -188,22 +191,54 @@ fun OrderDataEdit(
 
         ) {
 
-            TextButton(
-                onClick = { onDismissButton(false) }
-            ) {
+            TextButton(onClick = { onDismissButton(false) }) {
                 Text(stringResource(id = R.string.dismiss_button))
             }
 
-            TextButton(
-                onClick = {
-                    val newOrder = OrderUtils.createNewOrderFromState(orderState)
-                    onConfirmButton(newOrder)
-                }
-            ) {
+            TextButton(onClick = {
+                val newOrder = OrderUtils.createNewOrderFromState(orderState)
+                onConfirmButton(newOrder)
+            }) {
                 Text(stringResource(id = R.string.confirm_button))
             }
 
             Spacer(modifier = Modifier.padding(16.dp))
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderDataEditPreview() {
+    MastroAndroidTheme {
+        OrderDataEdit(customer = CustomerMasterData(
+            id = 1,
+            businessName = "Customer 1",
+            street = "Street 1",
+            postalCode = "12345",
+            city = "City 1",
+            province = "Province 1",
+            nation = "Nation 1",
+            businessName2 = "Customer 1",
+            taxId = "taxId 1",
+            vat = "vat 1",
+            links = emptyList(),
+            metadata = Metadata(etag = ""),
+            page = 0
+        ), destination = DestinationData(
+            id = 1,
+            customerId = 1,
+            destinationName = "Destination 1",
+            street = "Street 1",
+            postalCode = "12345",
+            city = "City 1",
+            province = "Province 1",
+            links = emptyList(),
+            metadata = com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.Metadata(
+                etag = ""
+            ),
+            page = 0
+
+        ), onDismissButton = {}, onConfirmButton = {})
     }
 }

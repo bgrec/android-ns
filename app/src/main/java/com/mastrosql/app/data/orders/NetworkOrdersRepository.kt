@@ -40,8 +40,7 @@ class NetworkOrdersRepository(
      * Fetches list of CustomersMasterData from mastroAndroidApi
      * */
 
-    override suspend fun getOrders(): OrdersResponse =
-        mastroAndroidApiService.getAllOrders()
+    override suspend fun getOrders(): OrdersResponse = mastroAndroidApiService.getAllOrders()
 
     override suspend fun getOrderByOrderId(orderId: Int): OrdersResponse {
 
@@ -70,8 +69,7 @@ class NetworkOrdersRepository(
     }
 
     override suspend fun updateDeliveryState(
-        orderId: Int,
-        deliveryState: Int
+        orderId: Int, deliveryState: Int
     ): Response<JsonObject> {
         val body = JsonObject().apply {
             addProperty("orderId", orderId)
@@ -81,17 +79,20 @@ class NetworkOrdersRepository(
     }
 
     override suspend fun addNewOrder(order: Order): Response<OrderAddResponse> {
+
+        val deliveryDateFormated = if (order.deliveryDate == "") {
+            "null"
+        } else {
+            order.deliveryDate
+        }
+
         val body = JsonObject().apply {
             addProperty("clientId", order.clientId)
             addProperty("destinationId", order.destinationId)
             addProperty("description", order.description)
             addProperty("insertDate", order.insertDate)
-            addProperty("deliveryDate", order.deliveryDate)
+            addProperty("deliveryDate", deliveryDateFormated)
         }
         return mastroAndroidApiService.insertNewOrder(body)
     }
-
-    //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }
-
-
 }

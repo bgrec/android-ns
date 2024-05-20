@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.R
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
+import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
@@ -34,7 +35,8 @@ sealed interface OrderDetailsUiState {
         var modifiedOrderDetailsItem: OrderDetailsItem? = null,
         val modifiedIndex: MutableIntState? = null,
         val orderId: Int? = null,
-        val orderDescription: String? = null
+        val orderDescription: String? = null,
+        val isDeleteRowActive: Boolean = true
     ) : OrderDetailsUiState
 
     data class Error(val exception: Exception) : OrderDetailsUiState
@@ -50,6 +52,7 @@ sealed interface OrderDetailsUiState {
 class OrderDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val orderDetailsRepository: OrderDetailsRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     var orderDetailsUiState: OrderDetailsUiState by mutableStateOf(OrderDetailsUiState.Loading)
@@ -69,6 +72,19 @@ class OrderDetailsViewModel(
 
     init {
         getOrderDetails()
+        getIsDeleteRowActive()
+    }
+
+    private fun getIsDeleteRowActive() {
+        viewModelScope.launch {
+            userPreferencesRepository.getIsSwipeToDeleteDeactivated()
+                .collect { isDeleteRowActive ->
+                    orderDetailsUiState =
+                        (orderDetailsUiState as? OrderDetailsUiState.Success)?.copy(
+                            isDeleteRowActive = isDeleteRowActive
+                        ) ?: orderDetailsUiState
+                }
+        }
     }
 
     /**
@@ -292,8 +308,7 @@ class OrderDetailsViewModel(
                             ToastUtils.showToast(
                                 context,
                                 Toast.LENGTH_SHORT,
-                                //"$errorMessage ${response.code()}"
-                                "Riga duplicata con successo ${response.code()}"
+                                context.getString(R.string.row_duplicated, response.code())
                             )
                             // Refresh the list
                             getOrderDetails()
@@ -381,8 +396,6 @@ class OrderDetailsViewModel(
                     batch,
                     expirationDate
                 )
-
-                val errorBody = response.errorBody()?.string()
 
                 // Handle the response status code
                 withContext(Dispatchers.Main) {

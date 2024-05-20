@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -36,7 +35,7 @@ fun NewOrderBottomSheet(
     val showCustomersList = remember { mutableStateOf(true) }
 
     // State to control the bottom sheet
-    // Skip partially expanded state whith skipPartiallyExpanded = true
+    // Skip partially expanded state with skipPartiallyExpanded = true
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
