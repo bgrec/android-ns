@@ -238,6 +238,7 @@
     <string name="item_deleted">Riga eliminata con successo %1$d</string>
     <string name="update_order_details">Modifiche salvate con successo %1$d</string>
     <string name="row_duplicated">Riga duplicata con successo %1$d</string>
+    <string name="delivery_state_updated">Stato consegna aggiornato con successo!</string>
 
 
 </resources>

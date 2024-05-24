@@ -110,7 +110,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                         navController.navigateUp()
                     },
                     navController = navController,
-                    drawerState = drawerState
+                    //drawerState = drawerState
                 )
 
             }

@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsUiState
@@ -327,4 +329,28 @@ private fun getOrderQuantity(orderDetailsItemState: OrderDetailsItemState): Doub
         0.0
     else
         orderDetailsItemState.quantity.value.text.toDouble()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EditOrderDetailsItemPreview(
+) {
+    val showEditDialog = remember { mutableStateOf(true) }
+    val orderDetailsUiState = OrderDetailsUiState.Success(
+        orderDetailsList = emptyList(),
+        modifiedIndex = remember { mutableIntStateOf(1) },
+        modifiedOrderDetailsItem = null
+    )
+    val orderDetailsItemState = OrderDetailsItemState(
+        batch = remember { mutableStateOf(TextFieldValue("batch")) },
+        quantity = remember { mutableStateOf(TextFieldValue("123")) },
+        expirationDate = remember { mutableStateOf(TextFieldValue("01/01/2024")) }
+    )
+
+    EditOrderDetailsItem(
+        showEditDialog = showEditDialog,
+        orderDetailsUiState = orderDetailsUiState,
+        orderDetailsItemState = orderDetailsItemState,
+        onEditOrderDetailsItem = { _, _, _, _ -> }
+    )
 }

@@ -67,8 +67,8 @@ class OrdersViewModel(
             ordersUiState = try {
                 val ordersListResult = ordersRepository.getOrders().items
                 OrdersUiState.Success(
-                        ordersListResult, modifiedOrderId = _modifiedOrderId
-                    )
+                    ordersListResult, modifiedOrderId = _modifiedOrderId
+                )
             } catch (e: Exception) {
                 when (e) {
                     is IOException -> OrdersUiState.Error(e)
@@ -111,7 +111,8 @@ class OrdersViewModel(
                 handleResponse(context, response) {
                     launch {
                         ToastUtils.showToast(
-                            context, Toast.LENGTH_SHORT, "Modifica salvata con successo"
+                            context, Toast.LENGTH_SHORT,
+                            context.getString(R.string.delivery_state_updated)
                         )
                     }
 
