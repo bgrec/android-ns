@@ -46,7 +46,7 @@ fun OldHomeScreen(
             )
         },
         bottomBar = {
-            BottomBar(drawerState = drawerState, navController = navController)
+            BottomBar(/*drawerState = drawerState, */navController = navController)
         },
     ) {
         Column(

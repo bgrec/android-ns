@@ -60,6 +60,9 @@ data class OrderDetailsItem(
         get() = expirationDate?.let { SimpleDateFormat("yyyy-MM-dd", Locale.ITALY).parse(it) }
 }
 
+/**
+ *  Metadata from the API
+ */
 @Serializable
 data class Metadata(
     @SerializedName("etag") val etag: String

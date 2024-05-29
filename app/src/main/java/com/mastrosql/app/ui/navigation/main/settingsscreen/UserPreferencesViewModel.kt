@@ -56,7 +56,6 @@ open class UserPreferencesViewModel(
     private val _uiState = MutableStateFlow(UserPreferencesUiState())
     val uiState: StateFlow<UserPreferencesUiState> = _uiState
 
-
     // Function to update UI state
     private fun updateUiState(newState: UserPreferencesUiState) {
         _uiState.value = newState
