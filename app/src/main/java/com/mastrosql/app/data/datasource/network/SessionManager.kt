@@ -11,16 +11,25 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+/**
+ * Class to manage the session cookie used for network requests.
+ */
 object SessionManager {
 
     private val SESSION_KEY = stringPreferencesKey(UserPreferencesKeys.SESSION_KEY.name)
     private var sessionCookie: String? = null
     private var dataStore: DataStore<Preferences>? = null
 
+    /**
+     * Set the [DataStore] to store the session cookie.
+     */
     fun setDataStore(dataStore: DataStore<Preferences>) {
         this.dataStore = dataStore
     }
 
+    /**
+     * Set the session cookie.
+     */
     fun setSessionCookie(cookieSession: String) {
         sessionCookie = cookieSession
         CoroutineScope(Dispatchers.IO).launch {
@@ -29,6 +38,9 @@ object SessionManager {
 
     }
 
+    /**
+     * Get the session cookie.
+     */
     fun getSessionCookie(): String? {
         return sessionCookie ?: runBlocking {
             getSessionFromDataStore()
@@ -44,6 +56,10 @@ object SessionManager {
             preferences[SESSION_KEY] = session
         }
     }
+
+    /**
+     * Clear the session cookie.
+     */
     fun clearSession() {
         sessionCookie = null
         CoroutineScope(Dispatchers.IO).launch {
@@ -53,6 +69,9 @@ object SessionManager {
         }
     }
 
+    /**
+     * Check if the user is logged in.
+     */
     suspend fun logoutNotAuthorized() {
         dataStore?.edit { preferences ->
             preferences[UserPreferencesKeys.IS_LOGGED_IN] = false

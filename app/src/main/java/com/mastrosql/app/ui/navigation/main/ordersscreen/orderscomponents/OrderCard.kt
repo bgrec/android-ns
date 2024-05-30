@@ -34,18 +34,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
+/**
+ * Order card composable that displays the order information.
+ */
 @Composable
 fun OrderCard(
     order: Order,
@@ -124,7 +125,6 @@ fun OrderCard(
 
                         },
                         modifiedOrderId = modifiedOrderId?.intValue
-
                     )
                 }
             }
@@ -364,7 +364,10 @@ fun OrderInfo(
     }
 }
 
-@Preview(apiLevel = 33)
+/**
+ * Preview for [OrderCard]
+ */
+@Preview(showBackground = true)
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
@@ -405,7 +408,7 @@ fun OrderCardPreview() {
             lastUpdated = System.currentTimeMillis()
         ),
             modifier = Modifier,
-           // navController = NavController(LocalContext.current),
+            // navController = NavController(LocalContext.current),
             navigateToOrderDetails = { _, _ -> },
             modifiedOrderId = remember { mutableIntStateOf(0) },
             showDeliveryDialog = remember { mutableStateOf(false) })
@@ -413,7 +416,10 @@ fun OrderCardPreview() {
 }
 
 
-@Preview(apiLevel = 33)
+/**
+ * Preview for [OrderInfo]
+ */
+@Preview(showBackground = true)
 @Composable
 fun OrderInfoPreview() {
     MastroAndroidTheme {

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.R
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
@@ -25,23 +26,34 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 
+/**
+ * Sealed class for the UI state of the OrderDetails screen
+ */
 sealed interface OrderDetailsUiState {
 
+    /**
+     * Success state for the OrderDetails screen
+     */
+    @Suppress("KDocMissingDocumentation")
     data class Success(
         val orderDetailsList: List<OrderDetailsItem>,
         var modifiedOrderDetailsItem: OrderDetailsItem? = null,
         val modifiedIndex: MutableIntState? = null,
         val orderId: Int? = null,
         val orderDescription: String? = null,
-        val isDeleteRowActive: Boolean = true
+        val swipeActionsPreferences: SwipeActionsPreferences
     ) : OrderDetailsUiState
 
+    @Suppress("KDocMissingDocumentation")
     data class Error(val exception: Exception) : OrderDetailsUiState
+
+    @Suppress("KDocMissingDocumentation")
     data object Loading : OrderDetailsUiState
 }
 
 /**
- * Factory for [OrderDetailsViewModel] that takes [OrderDetailsRepository] and [UserPreferencesRepository] as a dependencies
+ * Factory for [OrderDetailsViewModel] that takes [OrderDetailsRepository]
+ * and [UserPreferencesRepository] as a dependencies
  */
 
 class OrderDetailsViewModel(
@@ -65,24 +77,32 @@ class OrderDetailsViewModel(
     )
     private val orderDescription: StateFlow<String?> = _orderDescription
 
+    private var _swipeActionsPreferences: SwipeActionsPreferences = SwipeActionsPreferences()
+
     init {
-        getOrderDetails()
-        getIsDeleteRowActive()
+        viewModelScope.launch {
+            getSwipeActionsPreferences()
+            getOrderDetails()
+        }
     }
 
     /**
      * Gets the value of isDeleteRowActive from the UserPreferencesRepository and updates the
      * [OrderDetailsUiState] with the new value.
      */
-    private fun getIsDeleteRowActive() {
+    private fun getSwipeActionsPreferences() {
         viewModelScope.launch {
-            userPreferencesRepository.getIsSwipeToDeleteDeactivated().collect { isDeleteRowActive ->
-                val currentState = orderDetailsUiState.value
-                if (currentState is OrderDetailsUiState.Success) {
-                    _orderDetailsUiState.value =
-                        currentState.copy(isDeleteRowActive = isDeleteRowActive)
-                }
+            userPreferencesRepository.getSwipeActionsPreferences().collect {
+                _swipeActionsPreferences = it
+                updateUiStateWithSwipePreferences(it)
             }
+        }
+    }
+
+    private fun updateUiStateWithSwipePreferences(preferences: SwipeActionsPreferences) {
+        val currentState = _orderDetailsUiState.value
+        if (currentState is OrderDetailsUiState.Success) {
+            _orderDetailsUiState.value = currentState.copy(swipeActionsPreferences = preferences)
         }
     }
 
@@ -154,7 +174,8 @@ class OrderDetailsViewModel(
                         modifiedIndex = mutableIntStateOf(modifiedIndex),
                         modifiedOrderDetailsItem = modifiedOrderDetailsItem,
                         orderId = orderId.value,
-                        orderDescription = orderDescription.value
+                        orderDescription = orderDescription.value,
+                        swipeActionsPreferences = _swipeActionsPreferences
                     )
                 } catch (e: Exception) {
                     OrderDetailsUiState.Error(e)
@@ -195,7 +216,8 @@ class OrderDetailsViewModel(
                     //modifiedIndex = modifiedIndex?.let { mutableIntStateOf(it) },
                     modifiedIndex = mutableIntStateOf(modifiedIndex),
                     orderId = orderId.value,
-                    orderDescription = orderDescription.value
+                    orderDescription = orderDescription.value,
+                    swipeActionsPreferences = _swipeActionsPreferences
                 )
             } catch (e: Exception) {
                 OrderDetailsUiState.Error(e)
@@ -294,7 +316,8 @@ class OrderDetailsViewModel(
                     orderDetailsList = orderDetailsList,
                     modifiedIndex = mutableIntStateOf(index),
                     orderId = orderId.value,
-                    orderDescription = orderDescription.value
+                    orderDescription = orderDescription.value,
+                    swipeActionsPreferences = _swipeActionsPreferences
                 )
             }
         }

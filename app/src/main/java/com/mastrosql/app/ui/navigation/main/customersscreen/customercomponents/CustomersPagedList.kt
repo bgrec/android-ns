@@ -44,7 +44,7 @@ import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 @Composable
 fun CustomersPagedList(
     customers: LazyPagingItems<CustomerMasterData>,

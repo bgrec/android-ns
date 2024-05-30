@@ -28,7 +28,10 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Customers screen to display the list of customers.
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun CustomersScreen(
     drawerState: DrawerState,
@@ -61,6 +64,9 @@ fun CustomersScreen(
 
 }
 
+/**
+ * Customers result screen to display the list of customers.
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun CustomersResultScreen(
@@ -94,6 +100,10 @@ fun CustomersResultScreen(
     }
 }
 
+/**
+ * Preview for [CustomersScreen]
+ */
+@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun CustomersScreenPreview() {

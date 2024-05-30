@@ -18,7 +18,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun NewOrderBottomSheet(
     modifier: Modifier,
@@ -74,6 +74,7 @@ fun NewOrderBottomSheet(
     }
 }
 
+@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun NewOrderBottomSheetPreview() {

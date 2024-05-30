@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mastrosql.app.R
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
@@ -116,6 +117,7 @@ fun OrderDetailResultScreen(
     // Get the context
     val context = LocalContext.current
 
+    // Create a coroutine scope
     val coroutineScope = rememberCoroutineScope()
 
     // State to track if we returned from the NewItemScreen - ArticleScreen
@@ -218,6 +220,8 @@ fun OrderDetails(
         }
     }
 
+    // Register the receiver when the composable is first composed
+    // and unregister it when the composable is disposed
     DisposableEffect(Unit) {
         val filter = IntentFilter(ACTION_DATA_CODE_RECEIVED)
         context.registerReceiver(scanReceiver, filter)
@@ -240,8 +244,7 @@ fun OrderDetails(
     }
 
     //State to hold the modified order details item
-    val orderDetailsItemState
-            by remember { mutableStateOf(OrderDetailsItemState()) }
+    val orderDetailsItemState by remember { mutableStateOf(OrderDetailsItemState()) }
 
     // State to hold the scanner state
     val scannerState by remember { mutableStateOf(ScannerState()) }
@@ -289,9 +292,7 @@ fun OrderDetails(
 
         //Box used for pull to refresh
         Box(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
             //.pullRefresh(pullRefreshState)
         ) {
             Column(
@@ -304,7 +305,10 @@ fun OrderDetails(
 
                 OrderDetailsSearchView(state = textState)
 
-                OrderDetailList(orderDetailList = orderDetailsUiState.orderDetailsList,
+                val swipeActionsPreferences = orderDetailsUiState.swipeActionsPreferences
+
+                OrderDetailList(
+                    orderDetailList = orderDetailsUiState.orderDetailsList,
                     modifiedIndex = orderDetailsUiState.modifiedIndex,
                     searchTextState = textState,
                     modifier = Modifier
@@ -317,7 +321,9 @@ fun OrderDetails(
                     },
                     onDuplicate = { orderDetailsItemId ->
                         onDuplicate(orderDetailsItemId)
-                    })
+                    },
+                    swipeActionsPreferences = swipeActionsPreferences
+                )
 
                 if (showEditDialog.value) {
                     EditOrderDetailsItem(showEditDialog = showEditDialog,
@@ -369,7 +375,7 @@ fun OrdersScreenPreview() {
             orderId = 1,
             orderDescription = "Order Description",
             orderDetailsList = emptyList(),
-            modifiedIndex = null
+            swipeActionsPreferences = SwipeActionsPreferences()
         ),
         coroutineScope = rememberCoroutineScope(),
         onRefresh = {},

@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,28 +16,27 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 
+/**
+ * A list of
+ */
 @Composable
 fun OrdersList(
     modifier: Modifier,
+    listState: LazyListState,
     ordersList: List<Order>,
     modifiedOrderId: MutableIntState?,
     searchTextState: MutableState<TextFieldValue>,
-    navController: NavController,
     navigateToOrderDetails: (Int, String?) -> Unit,
     showDeliveryDialog: MutableState<Boolean>
 ) {
-    val listState = rememberLazyListState()
-    // Scroll to the modified item when the list changes
     LaunchedEffect(ordersList) {
         modifiedOrderId?.intValue.let { modifiedOrderId ->
             if (modifiedOrderId != null && modifiedOrderId > 0) {
@@ -95,14 +94,18 @@ private fun filterOrders(ordersList: List<Order>, searchedText: String): List<Or
         }
 }
 
-@Preview
+/**
+ * Preview for [OrdersList]
+ */
+@Preview(showBackground = true)
 @Composable
 fun OrdersListPreview() {
     MastroAndroidTheme {
         OrdersList(
+            modifier = Modifier.padding(8.dp),
+            listState = remember { LazyListState() },
             ordersList = listOf(
                 Order(
-
                     id = 2,
                     clientId = 1,
                     businessName = "businessName",
@@ -176,8 +179,6 @@ fun OrdersListPreview() {
                 )
             ),
             searchTextState = remember { mutableStateOf(TextFieldValue("")) },
-            modifier = Modifier.padding(8.dp),
-            navController = NavController(LocalContext.current),
             modifiedOrderId = remember { mutableIntStateOf(0) },
             navigateToOrderDetails = { _, _ -> },
             showDeliveryDialog = remember { mutableStateOf(false) }

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsUiState
 
 /**
@@ -246,7 +247,8 @@ fun KeyboardBarcodeReaderPreview() {
     KeyboardBarcodeReader(
         scannerState = ScannerState(),
         orderDetailsUiState = OrderDetailsUiState.Success(
-            orderDetailsList = emptyList()
+            orderDetailsList = emptyList(),
+            swipeActionsPreferences = SwipeActionsPreferences()
         ),
         onSendScannedCode = { _, _ -> },
         focusRequester = FocusRequester(),

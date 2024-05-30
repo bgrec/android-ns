@@ -21,7 +21,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Dialog to edit the date.
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun DateEditDialog(
     showDatePickerDialog: MutableState<Boolean>,
@@ -69,6 +72,10 @@ fun DateEditDialog(
     }
 }
 
+/**
+ * Preview the [DateEditDialog].
+ */
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun DateEditDialogPreview() {

@@ -86,7 +86,7 @@ open class UserPreferencesViewModel(
 
         // Observe changes in isSwipeToDeleteDeactivated and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository.getIsSwipeToDeleteDeactivated()
+            userPreferencesRepository.getIsSwipeToDeleteDisabled()
                 .collect { isSwipeToDeleteDeactivated ->
                     updateUiState(uiState.value.copy(isSwipeToDeleteDeactivated = isSwipeToDeleteDeactivated))
                 }
@@ -221,9 +221,15 @@ open class UserPreferencesViewModel(
         }
     }
 
-    fun setSwipeToDelete(isSwipeToDeleteDeactivated: Boolean) {
+    fun setSwipeToDelete(isSwipeToDeleteDisabled: Boolean) {
         viewModelScope.launch {
-            userPreferencesRepository.saveIsSwipeToDeleteDeactivated(isSwipeToDeleteDeactivated)
+            userPreferencesRepository.saveIsSwipeToDeleteDisabled(isSwipeToDeleteDisabled)
+        }
+    }
+
+    fun setSwipeToDuplicate(isSwipeToDuplicateDisabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveIsSwipeToDuplicateDisabled(isSwipeToDuplicateDisabled)
         }
     }
 

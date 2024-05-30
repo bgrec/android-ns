@@ -16,7 +16,10 @@ import androidx.compose.ui.res.stringResource
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.OnClickFunction
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Top app bar
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun SettingsTopAppBar(
     title: String,

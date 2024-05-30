@@ -35,7 +35,7 @@ object ItemEntryDestination : NavigationDestination {
     override val titleRes = R.string.item_entry_title
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun ItemEntryScreen(
     navigateBack: () -> Unit,

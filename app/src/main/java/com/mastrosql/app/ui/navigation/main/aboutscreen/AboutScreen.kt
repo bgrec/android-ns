@@ -35,12 +35,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * About screen to display app information.
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun AboutScreen(navController: NavController = rememberNavController(), context: Context) {
     Scaffold(topBar = {
-        CenterAlignedTopAppBar(
-            title = { Text(stringResource(R.string.drawer_about)) },
+        CenterAlignedTopAppBar(title = { Text(stringResource(R.string.drawer_about)) },
             navigationIcon = {
                 IconButton(onClick = {
                     navController.navigate(MainNavOption.SettingsScreen.name) {
@@ -99,7 +101,7 @@ fun AboutScreen(navController: NavController = rememberNavController(), context:
     }
 }
 
-// navController.navigate(com.mastrosql.app.ui.navigation.intro.IntroNavOption.MotivationScreen.name)
+//navController.navigate(com.mastrosql.app.ui.navigation.intro.IntroNavOption.MotivationScreen.name)
 
 // Function to get the app version
 private fun getAppVersion(context: Context): String {
@@ -136,6 +138,10 @@ private fun getBuildDate(context: Context): String {
     }
 }
 
+/**
+ * Preview the AboutScreen composable
+ */
+@ExperimentalMaterial3Api
 @AllScreenPreview
 @Composable
 fun AboutScreenPreview() {

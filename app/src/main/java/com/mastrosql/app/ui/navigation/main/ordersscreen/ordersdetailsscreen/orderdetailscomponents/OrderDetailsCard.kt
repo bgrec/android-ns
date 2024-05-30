@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
+import android.util.Log
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -58,6 +59,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +70,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
@@ -76,23 +79,48 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
 
+/**
+ * OrderDetailsCard composable to display the order details card
+ */
 @Composable
 fun OrderDetailsCard(
-    orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    isDeleteRowActive: Boolean,
-    onRemove: (Int) -> Unit,
+    orderDetailsItem: OrderDetailsItem,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     listState: LazyListState,
     modifiedItemId: MutableIntState?,
+    onRemove: (Int) -> Unit,
     onDuplicate: (Int) -> Unit,
+    swipeActionsPreferences: SwipeActionsPreferences
 ) {
 
-    val scope = rememberCoroutineScope()
+    // CoroutineScope to launch the snackbar
+    val coroutineScope = rememberCoroutineScope()
+
+    // MutableTransitionState to handle the visibility of the card
     val visibleState = remember { MutableTransitionState(true) }
+
+    // Message text for the snackbar when the item is deleted
     val messageText = stringResource(R.string.deleted_item_snackbar_text)
+    // Dismiss text for the snackbar
     val dismissText = stringResource(R.string.dismiss_button)
+
+    val isDeleteDisabled = rememberSaveable {
+        mutableStateOf(swipeActionsPreferences.isDeleteDisabled)
+    }
+    val isDuplicateDisabled = rememberSaveable {
+        mutableStateOf(swipeActionsPreferences.isDuplicateDisabled)
+    }
+
+    Log.d(
+        "9SwipeActionsPreferences",
+        "isDeleteDisabled: ${isDeleteDisabled}"
+    )
+    Log.d(
+        "9SwipeActionsPreferences",
+        "isDuplicateDisabled: ${isDuplicateDisabled}"
+    )
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -106,7 +134,8 @@ fun OrderDetailsCard(
                 modifier = modifier,
                 visibleState = visibleState,
                 orderDetailsItem = orderDetailsItem,
-                isDeleteRowActive = isDeleteRowActive,
+                isDeleteRowDisabled = swipeActionsPreferences.isDeleteDisabled,
+                isDuplicateRowDisabled = swipeActionsPreferences.isDuplicateDisabled,
                 showEditDialog = showEditDialog,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
@@ -116,7 +145,7 @@ fun OrderDetailsCard(
 
     if (!visibleState.targetState && visibleState.isIdle) {
         LaunchedEffect(visibleState.targetState) {
-            scope.launch {
+            coroutineScope.launch {
                 val result = snackbarHostState.showSnackbar(
                     message = messageText,
                     actionLabel = dismissText,
@@ -149,40 +178,38 @@ private fun SwipeToDismissItem(
     modifier: Modifier,
     visibleState: MutableTransitionState<Boolean>,
     orderDetailsItem: OrderDetailsItem,
-    isDeleteRowActive: Boolean,
+    isDeleteRowDisabled: Boolean,
+    isDuplicateRowDisabled: Boolean,
     showEditDialog: MutableState<Boolean>,
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-
             //Swipe actions
             when (it) {
                 SwipeToDismissBoxValue.EndToStart -> {
-                    if (isDeleteRowActive) {
-                        visibleState.targetState = false
-                    }
+                    visibleState.targetState = false
                     true
                 }
 
                 SwipeToDismissBoxValue.StartToEnd -> {
                     onDuplicate(orderDetailsItem.id)
-                    false
+                    true
                 }
 
                 else -> false
             }
 
         },
-        positionalThreshold = { distance -> distance * 0.65f })
+        positionalThreshold = { distance -> distance * 0.55f })
 
 
     SwipeToDismissBox(
         state = dismissState,
         modifier = Modifier,
-        enableDismissFromEndToStart = true,
-        enableDismissFromStartToEnd = true,
+        enableDismissFromEndToStart = !isDeleteRowDisabled,
+        enableDismissFromStartToEnd = !isDuplicateRowDisabled,
         backgroundContent = {
             SwipeToDismissBackground(
                 dismissState = dismissState,
@@ -198,7 +225,7 @@ private fun SwipeToDismissItem(
         })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 private fun SwipeToDismissBackground(
     dismissState: SwipeToDismissBoxState
@@ -704,7 +731,7 @@ fun OrderDetailExpandButtonPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun SwipeToDismissBackgroundPreview() {
@@ -715,7 +742,6 @@ fun SwipeToDismissBackgroundPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun SwipeToDismissItemPreview() {
@@ -759,7 +785,8 @@ fun SwipeToDismissItemPreview() {
                 ),
                 page = 0
             ),
-            isDeleteRowActive = true,
+            isDeleteRowDisabled = true,
+            isDuplicateRowDisabled = true,
             showEditDialog = remember { mutableStateOf(false) },
             modifiedItemId = remember { mutableIntStateOf(0) },
             onDuplicate = {})
@@ -808,13 +835,13 @@ fun OrderDetailsCardPreview() {
                 page = 0
             ),
             modifier = Modifier,
-            isDeleteRowActive = true,
             onRemove = {},
             showEditDialog = remember { mutableStateOf(false) },
             snackbarHostState = SnackbarHostState(),
             listState = LazyListState(),
             modifiedItemId = remember { mutableIntStateOf(0) },
-            onDuplicate = {}
+            onDuplicate = {},
+            swipeActionsPreferences = SwipeActionsPreferences()
         )
     }
 }

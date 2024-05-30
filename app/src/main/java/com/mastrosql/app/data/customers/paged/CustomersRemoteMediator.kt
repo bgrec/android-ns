@@ -27,7 +27,7 @@ private const val CACHE_TIMEOUT = 1L  //1 hour
 /** page is the offset of the database key (id) to be used as the anchor for this query
  */
 
-@OptIn(ExperimentalPagingApi::class)
+@ExperimentalPagingApi
 class CustomersRemoteMediator(
     private val query: String,
     private val appDatabase: AppDatabase,
