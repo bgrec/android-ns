@@ -53,6 +53,7 @@ fun OrdersScreen(
     navController: NavController,
     viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+    // State
     val ordersUiState = viewModel.ordersUiState
 
 
@@ -178,7 +179,7 @@ fun OrdersResultScreen(
 
         if (showEditDeliveryDialog.value) {
             // Edit delivery Alert dialog, used to update the delivery state of an order
-            EditDeliveryStateDialog(showDeliveryDialog = showEditDeliveryDialog,
+            EditDeliveryStateDialog(showEditDeliveryDialog = showEditDeliveryDialog,
                 ordersUiState = ordersUiState,
                 onUpdateDeliveryState = { orderId, deliveryState ->
                     viewModel.updateDeliveryState(
@@ -190,6 +191,7 @@ fun OrdersResultScreen(
         if (showEditOrderDataDialog.value) {
             // Order data dialog, used to show the order data
             EditOrderDataDialog(
+                showEditOrderDataDialog = showEditDeliveryDialog,
                 //showOrderDataDialog = showEditOrderDataDialog,
                 //ordersUiState = ordersUiState,
                 onDismissButton = { showEditOrderDataDialog.value = it })

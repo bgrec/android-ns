@@ -1,21 +1,31 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
@@ -28,6 +38,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 @Composable
 fun EditOrderDataDialog(
     modifier: Modifier = Modifier,
+    showEditOrderDataDialog: MutableState<Boolean>,
     Order: Order? = null,
     onDismissButton: (Boolean) -> Unit = {},
     onConfirmButton: (Order) -> Unit = {},
@@ -36,63 +47,146 @@ fun EditOrderDataDialog(
     //State to hold the modified order details item
     val orderState = remember { mutableStateOf(OrderState()) }
 
-//    // Create a FocusRequester
-//    val focusRequester = remember { FocusRequester() }
-//    LaunchedEffect(Unit) {
-//        focusRequester.requestFocus()
-//    }
+    // Create a FocusRequester
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
+    androidx.compose.material3.AlertDialog(
+        modifier = Modifier.wrapContentSize(),
+        onDismissRequest = { showEditOrderDataDialog.value = false },
+        title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
+        text = {
+            Column(
+                modifier = Modifier.wrapContentSize()
+            ) {
+
+                val textFieldModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+
+                Row {
+                    Text(
+                        text = stringResource(R.string.new_order),
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextField(
+                        modifier = textFieldModifier,
+                        value = orderState.value.customerName.value,
+                        label = { Text(stringResource(id = R.string.businessName)) },
+                        onValueChange = { },
+                        readOnly = true,
+                    )
+                }
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextField(
+                        modifier = textFieldModifier.focusRequester(focusRequester),
+                        value = "ss",//orderState.orderDescription.value,
+                        label = { Text(stringResource(id = R.string.order_description)) },
+                        onValueChange = { /*orderState.orderDescription.value = it*/ },
+//                        isError = orderState.orderDescription.value.text.isEmpty(),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                DeliveryStates.deliveryStates.forEach { deliveryState ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                onClick = {
+//                                    selectedDeliveryState.intValue =
+//                                        deliveryState.state //deve fare stessa cosa del onClick RadioButton
+                                }
+                            ),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+//                        RadioButton(
+//                            selected = selectedDeliveryState.intValue == deliveryState.state,
+//                            onClick = {
+//                                selectedDeliveryState.intValue = deliveryState.state
+//                            },
+//                            colors = RadioButtonDefaults.colors(deliveryState.color),
+//                        )
+                        Text(text = stringResource(deliveryState.nameState))
+                    }
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                showEditOrderDataDialog.value = false
+            }) {
+                Text(stringResource(R.string.dismiss_button))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                showEditOrderDataDialog.value = false
+//                onUpdateDeliveryState(
+//                    ordersUiState.modifiedOrderId.intValue,
+//                    selectedDeliveryState.intValue
+//                )
+            }) {
+                Text(stringResource(R.string.confirm_button))
+            }
+        }
+    )
+}
 
 //    orderState.value.customerId.intValue = customer?.id ?: 0
 //    orderState.value.customerName.value = TextFieldValue(customer?.businessName ?: "")
 //    orderState.value.destinationId.intValue = destination?.id ?: 0
 //    orderState.value.destinationName.value = TextFieldValue(destination?.destinationName ?: "")
 
-    val textFieldModifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 8.dp)
-
-    Column(
-        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val showDatePickerDialog = remember { mutableStateOf(false) }
-
-        //Title of the dialog
-        Row {
-            Text(
-                text = stringResource(R.string.new_order),
-                fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-        Spacer(modifier = Modifier.padding(8.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextField(
-                modifier = textFieldModifier,
-                value = orderState.value.customerName.value,
-                label = { Text(stringResource(id = R.string.businessName)) },
-                onValueChange = { },
-                readOnly = true,
-            )
-        }
-        Spacer(modifier = Modifier.padding(4.dp))
-
-//        if (destination != null) {
-//            Row(
-//                horizontalArrangement = Arrangement.SpaceBetween
-//            ) {
-//                TextField(
-//                    modifier = textFieldModifier,
-//                    value = orderState.value.destinationName.value,
-//                    label = { Text(stringResource(id = R.string.destination_description)) },
-//                    onValueChange = { },
-//                    readOnly = true,
-//                )
-//            }
-//            Spacer(modifier = Modifier.padding(4.dp))
+//    val textFieldModifier = Modifier
+//        .fillMaxWidth()
+//        .padding(horizontal = 8.dp)
+//
+//    Column(
+//        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        val showDatePickerDialog = remember { mutableStateOf(false) }
+//
+//        //Title of the dialog
+//        Row {
+//            Text(
+//                text = stringResource(R.string.new_order),
+//                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+//                style = MaterialTheme.typography.titleLarge
+//            )
 //        }
+//        Spacer(modifier = Modifier.padding(8.dp))
+//
+//        Row(
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            TextField(
+//                modifier = textFieldModifier,
+//                value = orderState.value.customerName.value,
+//                label = { Text(stringResource(id = R.string.businessName)) },
+//                onValueChange = { },
+//                readOnly = true,
+//            )
+//        }
+//        Spacer(modifier = Modifier.padding(4.dp))
+//
 //
 //        Row(
 //            horizontalArrangement = Arrangement.SpaceBetween
@@ -101,10 +195,10 @@ fun EditOrderDataDialog(
 //                modifier = textFieldModifier.focusRequester(focusRequester),
 //                value = orderState.value.orderDescription.value,
 //                label =
-//)
-
-    }
-}
+//            )
+//
+//        }
+//    }
 //@ExperimentalMaterial3Api
 //@Composable
 //fun EditOrderData(

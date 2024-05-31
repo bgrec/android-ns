@@ -25,7 +25,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Delive
 
 @Composable
 fun EditDeliveryStateDialog(
-    showDeliveryDialog: MutableState<Boolean>,
+    showEditDeliveryDialog: MutableState<Boolean>,
     ordersUiState: OrdersUiState.Success,
     onUpdateDeliveryState: (Int, Int) -> Unit
 ) {
@@ -34,8 +34,8 @@ fun EditDeliveryStateDialog(
     val selectedDeliveryState = remember { mutableIntStateOf(0) }
 
     // LaunchedEffect to set the initial value when the dialog is opened
-    LaunchedEffect(showDeliveryDialog) {
-        if (showDeliveryDialog.value) {
+    LaunchedEffect(showEditDeliveryDialog) {
+        if (showEditDeliveryDialog.value) {
             val modifiedOrder =
                 ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.intValue }
             val modifiedOrderDeliveryState = modifiedOrder?.deliveryState
@@ -47,7 +47,7 @@ fun EditDeliveryStateDialog(
 
     AlertDialog(
         modifier = Modifier.wrapContentSize(),
-        onDismissRequest = { showDeliveryDialog.value = false },
+        onDismissRequest = { showEditDeliveryDialog.value = false },
         title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
         text = {
             Column(modifier = Modifier.wrapContentSize()) {
@@ -78,14 +78,14 @@ fun EditDeliveryStateDialog(
         },
         dismissButton = {
             TextButton(onClick = {
-                showDeliveryDialog.value = false
+                showEditDeliveryDialog.value = false
             }) {
                 Text(stringResource(R.string.dismiss_button))
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                showDeliveryDialog.value = false
+                showEditDeliveryDialog.value = false
                 onUpdateDeliveryState(
                     ordersUiState.modifiedOrderId.intValue,
                     selectedDeliveryState.intValue
