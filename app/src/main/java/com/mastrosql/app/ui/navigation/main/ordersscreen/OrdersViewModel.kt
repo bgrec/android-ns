@@ -25,29 +25,38 @@ import java.net.SocketTimeoutException
 /**
  * Interface [OrdersUiState] to represent the different states of the Orders screen.
  * The states are:
- * - [OrdersUiState.Success]: Represents the successful state of the Orders screen with the list of orders.
+ * - [OrdersUiState.Success]: Represents the successful state of the
+ *   Orders screen with the list of orders.
  * - [OrdersUiState.Error]: Represents the error state of the Orders screen with the exception.
  * - [OrdersUiState.Loading]: Represents the loading state of the Orders screen.
  */
 sealed interface OrdersUiState {
 
+    /**
+     * Success state of the Orders screen with the list of orders.
+     */
+    @Suppress("KDocMissingDocumentation")
     data class Success(
         val ordersList: List<Order>, val modifiedOrderId: MutableIntState
     ) : OrdersUiState
 
+    @Suppress("KDocMissingDocumentation")
     data class Error(val exception: Exception) : OrdersUiState
+
+    @Suppress("KDocMissingDocumentation")
     data object Loading : OrdersUiState
 }
 
 /**
  * Factory for [OrdersViewModel] that takes [OrdersRepository] as a dependency
- *
  */
-
 class OrdersViewModel(
     private val ordersRepository: OrdersRepository,
 ) : ViewModel() {
 
+    /**
+     * Mutable state to hold the OrdersUiState
+     */
     var ordersUiState: OrdersUiState by mutableStateOf(OrdersUiState.Loading)
         private set
 
@@ -111,7 +120,8 @@ class OrdersViewModel(
                 handleResponse(context, response) {
                     launch {
                         ToastUtils.showToast(
-                            context, Toast.LENGTH_SHORT,
+                            context,
+                            Toast.LENGTH_SHORT,
                             context.getString(R.string.delivery_state_updated)
                         )
                     }

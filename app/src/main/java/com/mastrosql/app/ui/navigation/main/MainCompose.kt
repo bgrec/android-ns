@@ -2,6 +2,7 @@ package com.mastrosql.app.ui.navigation.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -38,6 +39,7 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 /**
  * Main composable for the app
  */
+@ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
@@ -120,6 +122,7 @@ fun MainCompose(
 /**
  * Navigation drawer composable
  */
+@ExperimentalMaterialApi
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
@@ -372,8 +375,9 @@ object DrawerParams {
 }
 
 /**
- * Preview for [MainCompose]
+ *  Preview for [MainCompose]
  */
+@ExperimentalMaterialApi
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Preview(apiLevel = 34, showBackground = true)

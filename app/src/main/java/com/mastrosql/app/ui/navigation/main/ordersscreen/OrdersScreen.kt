@@ -35,6 +35,7 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditOrderDataDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.NewOrderBottomSheet
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
@@ -61,8 +62,7 @@ fun OrdersScreen(
 
     when (ordersUiState) {
         is OrdersUiState.Loading -> LoadingScreen(
-            modifier = modifier.fillMaxSize(),
-            loading = true
+            modifier = modifier.fillMaxSize(), loading = true
         )
 
         is OrdersUiState.Success -> OrdersResultScreen(
@@ -101,17 +101,22 @@ fun OrdersResultScreen(
     // Context used to show the toast
     val context = LocalContext.current
 
-    // State to control the delivery dialog visibility
-    val showDeliveryDialog = remember { mutableStateOf(false) }
-
-
     // CoroutineScope to handle scrolling actions
     val coroutineScope = rememberCoroutineScope()
+
+    // State to control the delivery dialog visibility
+    val showEditDeliveryDialog = remember { mutableStateOf(false) }
+
+    // State to control the order data dialog visibility
+    val showEditOrderDataDialog = remember { mutableStateOf(false) }
 
     // State to control the bottom sheet visibility
     val showBottomSheet = remember { mutableStateOf(false) }
 
+    // Lazy list state to handle the scroll actions
     val listState = rememberLazyListState()
+
+    // State to show the floating button
     val showFloatingButton by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex > 0
@@ -120,13 +125,11 @@ fun OrdersResultScreen(
 
     Scaffold(
         topBar = {
-            OrdersTopAppBar(
-                drawerState = drawerState,
+            OrdersTopAppBar(drawerState = drawerState,
                 title = stringResource(R.string.clients_orders_bar_title),
                 onAddOrderClick = {
                     showBottomSheet.value = true
-                }
-            )
+                })
         },
         floatingActionButton = {
             AnimatedVisibility(visible = showFloatingButton) {
@@ -168,37 +171,40 @@ fun OrdersResultScreen(
                 modifiedOrderId = ordersUiState.modifiedOrderId,
                 searchTextState = textState,
                 navigateToOrderDetails = navigateToOrderDetails,
-                showDeliveryDialog = showDeliveryDialog
+                showEditDeliveryDialog = showEditDeliveryDialog,
+                showEditOrderDataDialog = showEditOrderDataDialog
             )
         }
 
-        if (showDeliveryDialog.value) {
+        if (showEditDeliveryDialog.value) {
             // Edit delivery Alert dialog, used to update the delivery state of an order
-            EditDeliveryStateDialog(
-                showDeliveryDialog = showDeliveryDialog,
+            EditDeliveryStateDialog(showDeliveryDialog = showEditDeliveryDialog,
                 ordersUiState = ordersUiState,
                 onUpdateDeliveryState = { orderId, deliveryState ->
                     viewModel.updateDeliveryState(
-                        context = context,
-                        orderId = orderId,
-                        deliveryState = deliveryState
+                        context = context, orderId = orderId, deliveryState = deliveryState
                     )
-                }
-            )
+                })
+        }
+
+        if (showEditOrderDataDialog.value) {
+            // Order data dialog, used to show the order data
+            EditOrderDataDialog(
+                //showOrderDataDialog = showEditOrderDataDialog,
+                //ordersUiState = ordersUiState,
+                onDismissButton = { showEditOrderDataDialog.value = it })
         }
 
         if (showBottomSheet.value) {
             // Bottom sheet to add a new order
-            NewOrderBottomSheet(
-                navController = navController,
+            NewOrderBottomSheet(navController = navController,
                 showBottomSheet = showBottomSheet,
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
                 onConfirmButton = { order ->
                     viewModel.addNewOrder(context, order)
                     showBottomSheet.value = false
-                }
-            )
+                })
         }
     }
 }

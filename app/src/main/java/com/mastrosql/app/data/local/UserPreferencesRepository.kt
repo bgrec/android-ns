@@ -370,8 +370,11 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    /**
+     * Get the swipe actions preferences.
+     */
     fun getSwipeActionsPreferences(): Flow<SwipeActionsPreferences> {
-        return userPreferencesFlow.map { userPreferences ->
+        return userPreferencesFlow.map {
             SwipeActionsPreferences(
                 isDeleteDisabled = getIsSwipeToDeleteDisabled().first(),
                 isDuplicateDisabled = getIsSwipeToDuplicateDisabled().first()

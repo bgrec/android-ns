@@ -35,7 +35,8 @@ fun OrdersList(
     modifiedOrderId: MutableIntState?,
     searchTextState: MutableState<TextFieldValue>,
     navigateToOrderDetails: (Int, String?) -> Unit,
-    showDeliveryDialog: MutableState<Boolean>
+    showEditDeliveryDialog: MutableState<Boolean>,
+    showEditOrderDataDialog: MutableState<Boolean>
 ) {
     LaunchedEffect(ordersList) {
         modifiedOrderId?.intValue.let { modifiedOrderId ->
@@ -74,7 +75,8 @@ fun OrdersList(
                 //navController = navController,
                 navigateToOrderDetails = navigateToOrderDetails,
                 modifiedOrderId = modifiedOrderId,
-                showDeliveryDialog = showDeliveryDialog
+                showEditDeliveryDialog = showEditDeliveryDialog,
+                showEditOrderDataDialog = showEditOrderDataDialog
             )
         }
 
@@ -181,7 +183,8 @@ fun OrdersListPreview() {
             searchTextState = remember { mutableStateOf(TextFieldValue("")) },
             modifiedOrderId = remember { mutableIntStateOf(0) },
             navigateToOrderDetails = { _, _ -> },
-            showDeliveryDialog = remember { mutableStateOf(false) }
+            showEditDeliveryDialog = remember { mutableStateOf(false) },
+            showEditOrderDataDialog = remember { mutableStateOf(false) }
         )
     }
 }

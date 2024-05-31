@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +20,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,8 +41,12 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderUtils
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
+/**
+ * OrderDataEdit composable to display the order details for editing.
+ */
+@ExperimentalMaterial3Api
 @Composable
-fun OrderDataEdit(
+fun EditOrderData(
     modifier: Modifier = Modifier,
     customer: CustomerMasterData? = null,
     destination: DestinationData? = null,
@@ -51,24 +55,18 @@ fun OrderDataEdit(
 ) {
 
     //State to hold the modified order details item
-    val orderState by remember {
-        mutableStateOf(
-            OrderState(
-                mutableIntStateOf(0),
-                mutableStateOf(TextFieldValue("")),
-                mutableIntStateOf(0),
-                mutableStateOf(TextFieldValue("")),
-                mutableStateOf(TextFieldValue("")),
-                mutableStateOf(TextFieldValue(""))
-            )
-        )
-    }
+    val orderState by remember { mutableStateOf(OrderState()) }
 
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(orderState) {
         focusRequester.requestFocus()
     }
+
+//    val focusRequester = remember { FocusRequester() }
+//    LaunchedEffect(Unit) { // Trigger only once on composition
+//        focusRequester.requestFocus()
+//    }
 
     orderState.customerId.intValue = customer?.id ?: 0
     orderState.customerName.value = TextFieldValue(customer?.businessName ?: "")
@@ -94,6 +92,7 @@ fun OrderDataEdit(
         }
         Spacer(modifier = Modifier.padding(8.dp))
 
+        // Customer Name (Read-only)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -107,6 +106,7 @@ fun OrderDataEdit(
         }
         Spacer(modifier = Modifier.padding(4.dp))
 
+        // Destination Name (Read-only if destination is not null)
         if (destination != null) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -122,6 +122,7 @@ fun OrderDataEdit(
             Spacer(modifier = Modifier.padding(4.dp))
         }
 
+        // Order Description
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -145,6 +146,7 @@ fun OrderDataEdit(
             DateHelper.isDateBeforeToday(orderState.deliveryDate.value.text)
         }
 
+        // Delivery Date
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -207,11 +209,15 @@ fun OrderDataEdit(
     }
 }
 
+/**
+ * OrderState
+ */
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun OrderDataEditPreview() {
     MastroAndroidTheme {
-        OrderDataEdit(customer = CustomerMasterData(
+        EditOrderData(customer = CustomerMasterData(
             id = 1,
             businessName = "Customer 1",
             street = "Street 1",

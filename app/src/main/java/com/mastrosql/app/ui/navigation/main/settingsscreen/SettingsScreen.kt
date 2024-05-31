@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 import java.util.EnumMap
 
 /**
- *
+ * Settings screen for the app
  */
 @ExperimentalMaterial3Api
 @Composable
@@ -92,7 +92,8 @@ fun SettingsScreen(
         activeButtonsState = userPreferencesUiState.activeButtons,
         currentBaseUrlState = urlState,
         isNotSecuredApiState = userPreferencesUiState.isNotSecuredApi,
-        isSwipeToDeleteDisabledState = userPreferencesUiState.isSwipeToDeleteDeactivated,
+        isSwipeToDeleteDisabledState = userPreferencesUiState.isSwipeToDeleteDisabled,
+        isSwipeToDuplicateDisabledState = userPreferencesUiState.isSwipeToDuplicateDisabled,
         onSaveUrl = { url -> viewModel.setBaseUrl(url) },
         onSetOnboardingCompleted = { isOnboardingCompleted ->
             viewModel.onBoardingCompleted(
@@ -106,14 +107,14 @@ fun SettingsScreen(
             }
         },
         onSetNotSecuredApi = { isNotSecuredApi -> viewModel.setNotSecuredApi(isNotSecuredApi) },
-        onSetSwipeToDeleteDisabled = { isSwipeToDeleteDeactivated ->
+        onSetSwipeToDeleteDisabled = { isSwipeToDeleteDisabled ->
             viewModel.setSwipeToDelete(
-                isSwipeToDeleteDeactivated
+                isSwipeToDeleteDisabled
             )
         },
-        onSetSwipeToDuplicateDisabled = { isSwipeToDuplicateDeactivated ->
+        onSetSwipeToDuplicateDisabled = { isSwipeToDuplicateDisabled ->
             viewModel.setSwipeToDuplicate(
-                isSwipeToDuplicateDeactivated
+                isSwipeToDuplicateDisabled
             )
         })
 }
@@ -278,16 +279,13 @@ fun SettingsComposable(
                     .padding(16.dp)
             ) {
 
-                Button(
-                    modifier = Modifier.weight(0.45f),
-                    onClick = { showDialog.value = true }) {
+                Button(modifier = Modifier.weight(0.45f), onClick = { showDialog.value = true }) {
                     Text(stringResource(R.string.dialog_button_settings))
                 }
                 Spacer(modifier = Modifier.weight(0.1f))
-                Button(modifier = Modifier.weight(0.45f),
-                    onClick = {
-                        onSetOnboardingCompleted(false)
-                    }) {
+                Button(modifier = Modifier.weight(0.45f), onClick = {
+                    onSetOnboardingCompleted(false)
+                }) {
                     Text(text = stringResource(R.string.show_intro_again))
                 }
             }
@@ -389,6 +387,9 @@ fun MenuButtonsActivationDialog(
     )
 }
 
+/**
+ * Preview for the buttons activation dialog
+ */
 @Preview(showBackground = true)
 @Composable
 fun ButtonsActivationDialogPreview(
@@ -400,6 +401,9 @@ fun ButtonsActivationDialogPreview(
     }
 }
 
+/**
+ * Preview for the settings screen
+ */
 @ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable

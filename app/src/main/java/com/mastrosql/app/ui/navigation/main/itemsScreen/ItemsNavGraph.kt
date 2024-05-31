@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.itemsScreen
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import androidx.navigation.navArgument
 /**
  * Provides Navigation graph for the items application.
  */
+@ExperimentalMaterial3Api
 @Composable
 fun ItemsNavHost(
     navController: NavHostController,

@@ -1,12 +1,10 @@
 package com.mastrosql.app.data.local
 
-import javax.inject.Singleton
-
 /**
  * Preferences for swipe actions.
  */
 @Suppress("KDocMissingDocumentation")
-@Singleton
+//@Singleton
 class SwipeActionsPreferences(
     isDeleteDisabled: Boolean = false,
     isDuplicateDisabled: Boolean = false

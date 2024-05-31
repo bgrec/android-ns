@@ -63,7 +63,7 @@ fun NewOrderBottomSheet(
                 navController = navController
             )
         } else {
-            OrderDataEdit(
+            EditOrderData(
                 modifier = modifier,
                 customer = selectedCustomerMasterData,
                 destination = selectedDestination,
