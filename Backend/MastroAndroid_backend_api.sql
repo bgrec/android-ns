@@ -378,40 +378,77 @@ DROP PROCEDURE IF EXISTS OrderBarcodeReader;
 CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
 BEGIN
     DECLARE articleId VARCHAR(6);
+    DECLARE batch VARCHAR(100) DEFAULT '';
     DECLARE rowExists INT;
+    DECLARE quantity DECIMAL(11, 5) DEFAULT 1;
 
-    IF LENGTH(scannedCode) < 8 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido', MYSQL_ERRNO = 5400;
-
+    IF LENGTH(scannedCode) = 8 THEN
+        -- Extract the first four characters from the scanned code for the article ID
+        SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
+        SET quantity = 1;
+    ELSEIF LENGTH(scannedCode) = 20 THEN
+        -- Extract the first four characters from the scanned code for the article ID
+        SET articleId = CAST(SUBSTR(scannedCode, 1, 5) AS SIGNED);
+        -- Extract the batch number from the scanned code
+        SET batch = TRIM(REPLACE(REPLACE(SUBSTR(scannedCode, 6, 15), 'x', ''), 'X', ''));
+        -- Get the quantity per package for the given article
+        CALL GetArticlePackageQuantity(articleId, @quantity);
+        IF @quantity > 0 THEN
+            SET quantity = @quantity;
+        END IF;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Barcode non valido', MYSQL_ERRNO = 5400;
     END IF;
-    -- Extract the first four characters from the scanned code
-    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
 
     -- Check if a row with the given conditions exists
-    SELECT COUNT(*)
-    INTO rowExists
-    FROM rig_ordc
-    WHERE NUME = orderId
-      AND CORTO = articleId;
+    IF LENGTH(scannedCode) = 8 THEN
+        SELECT COUNT(*)
+        INTO rowExists
+        FROM rig_ordc
+        WHERE NUME = orderId
+          AND CORTO = articleId;
+    ELSEIF LENGTH(scannedCode) = 20 THEN
+        SELECT COUNT(*)
+        INTO rowExists
+        FROM rig_ordc
+        WHERE NUME = orderId
+          AND CORTO = articleId
+          AND LOTTO = batch;
+    END IF;
 
     -- If the row does not exist, insert a new row into the rig_ordc table
     IF rowExists = 0 THEN
-        -- Insert a new row into the rig_ordc table with the scanned code
-        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
+        CALL InsertRowIntoRigOrdC(orderId, articleId, quantity, 1, batch, NULL);
     ELSE
         -- Update the row in the rig_ordc table with the scanned code
-        UPDATE rig_ordc
-        SET QUAN = QUAN + 1
-        WHERE NUME = orderId
-          AND CORTO = articleId
-        ORDER BY NUME_PRO
-        LIMIT 1;
+        IF LENGTH(scannedCode) = 8 THEN
+            UPDATE rig_ordc
+            SET QUAN = QUAN + quantity
+            WHERE NUME = orderId
+              AND CORTO = articleId;
+        ELSEIF LENGTH(scannedCode) = 20 THEN
+            UPDATE rig_ordc
+            SET QUAN = QUAN + quantity
+            WHERE NUME = orderId
+              AND CORTO = articleId
+              AND LOTTO = batch;
+        END IF;
     END IF;
 
 END;
 
 ####################################################################################################
+DROP PROCEDURE IF EXISTS GetArticlePackageQuantity;
+CREATE PROCEDURE GetArticlePackageQuantity(IN articleId INT, OUT packageQuantity DECIMAL(11, 5))
+BEGIN
+    SELECT QT_CONF INTO packageQuantity FROM arti WHERE CORTO = articleId;
 
+    IF packageQuantity IS NULL THEN
+        SET packageQuantity = 0;
+    END IF;
+END;
+
+####################################################################################################
 DROP PROCEDURE IF EXISTS InsertArticleIntoDocument;
 CREATE PROCEDURE InsertArticleIntoDocument(
     IN documentId INT,
@@ -491,13 +528,13 @@ BEGIN
            CONAI,
            ESE_CONAI,
            CONTRO,
-           IF (ORD_QT_ORD - ORD_QT_CON - QUAN > 0, ORD_QT_ORD - ORD_QT_CON - QUAN, 0) AS ORD_QT_ORD,
-           0                              AS ORD_QT_CON,
+           IF(ORD_QT_ORD - ORD_QT_CON - QUAN > 0, ORD_QT_ORD - ORD_QT_CON - QUAN, 0) AS ORD_QT_ORD,
+           0                                                                         AS ORD_QT_CON,
            DESTINA,
-           ''                             AS LOTTO,
-           NULL                           AS DATA_SCA,
+           ''                                                                        AS LOTTO,
+           NULL                                                                      AS DATA_SCA,
            RAEE,
-           NULL                           AS DATA_LOTTO,
+           NULL                                                                      AS DATA_LOTTO,
            PADRE_DIST,
            EXTRA
     FROM rig_ordc

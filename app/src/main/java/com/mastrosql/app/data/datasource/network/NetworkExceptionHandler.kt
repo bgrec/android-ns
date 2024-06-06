@@ -1,7 +1,6 @@
 package com.mastrosql.app.data.datasource.network
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.mastrosql.app.R
 import com.mastrosql.app.utils.ToastUtils
@@ -75,7 +74,7 @@ object NetworkExceptionHandler {
                     ),
                     coroutineScope
                 )
-                Log.d("NetworkExceptionHandler", exception.message ?: "")
+                //Log.d("NetworkExceptionHandler", exception.message ?: "")
             }
         }
     }

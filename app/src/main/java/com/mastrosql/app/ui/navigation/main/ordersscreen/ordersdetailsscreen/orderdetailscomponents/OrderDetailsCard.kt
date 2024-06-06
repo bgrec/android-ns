@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
-import android.util.Log
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -112,16 +111,6 @@ fun OrderDetailsCard(
     val isDuplicateDisabled = rememberSaveable {
         mutableStateOf(swipeActionsPreferences.isDuplicateDisabled)
     }
-
-    Log.d(
-        "9SwipeActionsPreferences",
-        "isDeleteDisabled: ${isDeleteDisabled}"
-    )
-    Log.d(
-        "9SwipeActionsPreferences",
-        "isDuplicateDisabled: ${isDuplicateDisabled}"
-    )
-
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
