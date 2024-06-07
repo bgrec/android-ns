@@ -254,6 +254,7 @@ ALTER TABLE rig_ordc
 ####################################################################################################
 ### Insert a new row into the rig_ordc table, used by the OrderBarcodeReader procedure
 DROP PROCEDURE IF EXISTS InsertRowIntoRigOrdC;
+--
 CREATE PROCEDURE InsertRowIntoRigOrdC(
     IN orderId INT,
     IN articleId INT,
@@ -362,14 +363,14 @@ BEGIN
     INSERT INTO rig_ordc (NUME, N_TIPO, DOC_DATA, DOC_NUME, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
                           QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
                           LISTINO, MISU, DATA, STAM, COLL, SETTORE, REPA, QT_CONF, REPA_CAS, CONTRO,
-                          ORD_QT_ORD, LOTTO, DATA_SCA)
+                          ORD_QT_ORD, LOTTO, DATA_SCA, VARIE)
     VALUES (orderId, 6, docDate, docNumber, clientId, lastRow + 1, articleId, articleCode, articleSupplierCode,
             articleDescription, quantity, agentId, agentPerc1, agentPerc2, articlePrice, articleCost, articleVat,
             articleVatPercentage,
             articleDiscount, articleDiscount1, articleDiscount2, 0, articleListPrice, articleUnitOfMeasure,
             CURRENT_DATE(), 1, 1,
             articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleCounterParty,
-            orderedQuantity, batch, expiryDate);
+            orderedQuantity, batch, expiryDate, 'NEW');
 END;
 
 
@@ -486,7 +487,7 @@ BEGIN
                           ART_CFOR, DESCRI, QUAN, PROV_1, PROV_2, AGENTE, COLLI, PESO, VEND, COSTO, IVA,
                           IVA_PERC, SCON, SCON_1, SCON_2, LISTINO, MISU, DATA, STAM, SELE, LIBE, COLL, SETTORE, REPA,
                           QT_CONF, REPA_CAS, CONAI_L, CONAI, ESE_CONAI, CONTRO, ORD_QT_ORD, ORD_QT_CON, DESTINA, LOTTO,
-                          DATA_SCA, RAEE, DATA_LOTTO, PADRE_DIST, EXTRA)
+                          DATA_SCA, RAEE, DATA_LOTTO, PADRE_DIST, EXTRA, VARIE)
     SELECT NUME,
            N_TIPO,
            DOC_DATA,
@@ -536,7 +537,8 @@ BEGIN
            RAEE,
            NULL                                                                      AS DATA_LOTTO,
            PADRE_DIST,
-           EXTRA
+           EXTRA,
+           'NEW'                                                                   AS VARIE
     FROM rig_ordc
     WHERE NUME_PRO = orderDetailId
     LIMIT 1;

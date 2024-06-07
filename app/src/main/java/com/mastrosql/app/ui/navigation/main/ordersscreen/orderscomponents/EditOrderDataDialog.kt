@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,18 +17,19 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersUiState
 
 /**
  * OrderDataEdit composable to display the order details for editing.
@@ -39,13 +40,29 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 fun EditOrderDataDialog(
     modifier: Modifier = Modifier,
     showEditOrderDataDialog: MutableState<Boolean>,
-    Order: Order? = null,
-    onDismissButton: (Boolean) -> Unit = {},
-    onConfirmButton: (Order) -> Unit = {},
+    ordersUiState: OrdersUiState.Success,
+    onUpdateOrderData: (String) -> Unit = {}
 ) {
-
     //State to hold the modified order details item
-    val orderState = remember { mutableStateOf(OrderState()) }
+    val orderState by remember { mutableStateOf(OrderState()) }
+
+
+    // LaunchedEffect to set the initial value when the dialog is opened
+    LaunchedEffect(showEditOrderDataDialog) {
+        if (showEditOrderDataDialog.value) {
+            val modifiedOrder =
+                ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.intValue }
+            if (modifiedOrder != null) {
+                orderState.customerId.intValue = modifiedOrder.clientId ?: 0
+                orderState.customerName.value = TextFieldValue(modifiedOrder.businessName ?: "")
+                orderState.destinationId.intValue = modifiedOrder.destinationId ?: 0
+                orderState.destinationName.value =
+                    TextFieldValue(modifiedOrder.destinationName ?: "")
+                orderState.orderDescription.value = TextFieldValue(modifiedOrder.description ?: "")
+                orderState.deliveryDate.value = TextFieldValue(modifiedOrder.deliveryDate ?: "")
+            }
+        }
+    }
 
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
@@ -53,8 +70,7 @@ fun EditOrderDataDialog(
         focusRequester.requestFocus()
     }
 
-    androidx.compose.material3.AlertDialog(
-        modifier = Modifier.wrapContentSize(),
+    AlertDialog(modifier = Modifier.wrapContentSize(),
         onDismissRequest = { showEditOrderDataDialog.value = false },
         title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
         text = {
@@ -80,7 +96,7 @@ fun EditOrderDataDialog(
                 ) {
                     TextField(
                         modifier = textFieldModifier,
-                        value = orderState.value.customerName.value,
+                        value = orderState.customerName.value,
                         label = { Text(stringResource(id = R.string.businessName)) },
                         onValueChange = { },
                         readOnly = true,
@@ -102,31 +118,6 @@ fun EditOrderDataDialog(
                         )
                     )
                 }
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                DeliveryStates.deliveryStates.forEach { deliveryState ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-//                                    selectedDeliveryState.intValue =
-//                                        deliveryState.state //deve fare stessa cosa del onClick RadioButton
-                                }
-                            ),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-//                        RadioButton(
-//                            selected = selectedDeliveryState.intValue == deliveryState.state,
-//                            onClick = {
-//                                selectedDeliveryState.intValue = deliveryState.state
-//                            },
-//                            colors = RadioButtonDefaults.colors(deliveryState.color),
-//                        )
-                        Text(text = stringResource(deliveryState.nameState))
-                    }
-                }
             }
         },
         dismissButton = {
@@ -146,8 +137,7 @@ fun EditOrderDataDialog(
             }) {
                 Text(stringResource(R.string.confirm_button))
             }
-        }
-    )
+        })
 }
 
 //    orderState.value.customerId.intValue = customer?.id ?: 0

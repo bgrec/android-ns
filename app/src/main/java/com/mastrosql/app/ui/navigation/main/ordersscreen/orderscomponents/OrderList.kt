@@ -24,7 +24,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 /**
- * A list of
+ * A list of [Order]s
  */
 @Composable
 fun OrdersList(
@@ -48,22 +48,17 @@ fun OrdersList(
     }
 
     LazyColumn(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.background),
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
         //pass the listState to the LazyColumn to be able to scroll to the modified item
         state = listState,
         //.focusable()
-    )
-    {
+    ) {
 
         val filteredList = filterOrders(ordersList, searchTextState.value.text)
 
-        items(
-            filteredList,
-            key = {
-                it.id
-            })
-        { order ->
+        items(filteredList, key = {
+            it.id
+        }) { order ->
 
             OrderCard(
                 order = order,
@@ -84,15 +79,14 @@ fun OrdersList(
 }
 
 private fun filterOrders(ordersList: List<Order>, searchedText: String): List<Order> {
-    return if (searchedText.isEmpty())
-        ordersList
-    else
-        ordersList.filter {
-            it.description?.contains(searchedText, ignoreCase = true) ?: true
-                    ||
-                    it.businessName?.contains(searchedText, ignoreCase = true) ?: true
-                    || it.city?.contains(searchedText, ignoreCase = true) ?: true
-        }
+    return if (searchedText.isEmpty()) ordersList
+    else ordersList.filter {
+        it.description?.contains(
+            searchedText, ignoreCase = true
+        ) ?: true || it.businessName?.contains(
+            searchedText, ignoreCase = true
+        ) ?: true || it.city?.contains(searchedText, ignoreCase = true) ?: true
+    }
 }
 
 /**
@@ -102,8 +96,7 @@ private fun filterOrders(ordersList: List<Order>, searchedText: String): List<Or
 @Composable
 fun OrdersListPreview() {
     MastroAndroidTheme {
-        OrdersList(
-            modifier = Modifier.padding(8.dp),
+        OrdersList(modifier = Modifier.padding(8.dp),
             listState = remember { LazyListState() },
             ordersList = listOf(
                 Order(
@@ -141,8 +134,7 @@ fun OrdersListPreview() {
                     metadata = Metadata("etag"),
                     page = 0,
                     lastUpdated = System.currentTimeMillis()
-                ),
-                Order(
+                ), Order(
                     id = 1,
                     clientId = 1,
                     businessName = "businessName",
@@ -183,7 +175,6 @@ fun OrdersListPreview() {
             modifiedOrderId = remember { mutableIntStateOf(0) },
             navigateToOrderDetails = { _, _ -> },
             showEditDeliveryDialog = remember { mutableStateOf(false) },
-            showEditOrderDataDialog = remember { mutableStateOf(false) }
-        )
+            showEditOrderDataDialog = remember { mutableStateOf(false) })
     }
 }

@@ -56,7 +56,6 @@ fun OrdersScreen(
     // State
     val ordersUiState = viewModel.ordersUiState
 
-
     val modifier = Modifier
         .fillMaxSize()
         .fillMaxWidth()
@@ -191,10 +190,17 @@ fun OrdersResultScreen(
         if (showEditOrderDataDialog.value) {
             // Order data dialog, used to show the order data
             EditOrderDataDialog(
-                showEditOrderDataDialog = showEditDeliveryDialog,
-                //showOrderDataDialog = showEditOrderDataDialog,
-                //ordersUiState = ordersUiState,
-                onDismissButton = { showEditOrderDataDialog.value = it })
+                modifier = modifier,
+                showEditOrderDataDialog = showEditOrderDataDialog,
+                ordersUiState = ordersUiState,
+//                onUpdateOrderData = { orderId, orderData ->
+//                    viewModel.updateOrderData(
+//                        context = context,
+//                        orderId = orderId,
+//                        orderData = orderData
+//                    )
+//                }
+            )
         }
 
         if (showBottomSheet.value) {
@@ -204,7 +210,9 @@ fun OrdersResultScreen(
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
                 onConfirmButton = { order ->
-                    viewModel.addNewOrder(context, order)
+                    viewModel.addNewOrder(
+                        context, order
+                    )
                     showBottomSheet.value = false
                 })
         }

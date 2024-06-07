@@ -18,6 +18,9 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 
+/**
+ * A bottom sheet to create a new order
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun NewOrderBottomSheet(
@@ -41,12 +44,9 @@ fun NewOrderBottomSheet(
     ModalBottomSheet(
         onDismissRequest = {
             showBottomSheet.value = false
-        },
-        sheetState = sheetState,
-        modifier = Modifier
-            .nestedScroll(
-                connection = rememberNestedScrollInteropConnection()
-            )
+        }, sheetState = sheetState, modifier = Modifier.nestedScroll(
+            connection = rememberNestedScrollInteropConnection()
+        )
 
     ) {
         if (showCustomersList.value) {
@@ -59,8 +59,7 @@ fun NewOrderBottomSheet(
 
                     showCustomersList.value = !selectionCompleted
 
-                },
-                navController = navController
+                }, navController = navController
             )
         } else {
             EditOrderData(
@@ -74,6 +73,9 @@ fun NewOrderBottomSheet(
     }
 }
 
+/**
+ * Preview the [NewOrderBottomSheet]
+ */
 @ExperimentalMaterial3Api
 @Preview
 @Composable

@@ -105,6 +105,7 @@ fun OrderCard(
                             carrierName = order.carrierName,
                             notes = order.notes,
                             onOrderInfoClick = {
+                                modifiedOrderId?.intValue = order.id
                                 showEditOrderDataDialog.value = true
                             })
                     }

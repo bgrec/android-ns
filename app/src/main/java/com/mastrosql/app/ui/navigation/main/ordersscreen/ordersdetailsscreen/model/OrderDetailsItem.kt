@@ -15,6 +15,7 @@ import java.util.Locale
  * For JSON Kotlin Serialization use @SerialName( value = "DESCRI")
  */
 
+@Suppress("KDocMissingDocumentation")
 @Entity(tableName = "order_details")
 @Serializable
 data class OrderDetailsItem(
@@ -49,6 +50,7 @@ data class OrderDetailsItem(
     @SerializedName("ordQtCon") val shippedQuantity: Double?,
     @SerializedName("LOTTO") val batch: String?,
     @SerializedName("dataSca") val expirationDate: String?, //use formatDate(expirationDate)
+    @SerializedName("VARIE") val various: String?,
 
     @TypeConverters(OrderDetailsMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata?,
     @TypeConverters(OrderDetailLinksTypeConverter::class) @SerializedName("links") val links: List<Link>,
