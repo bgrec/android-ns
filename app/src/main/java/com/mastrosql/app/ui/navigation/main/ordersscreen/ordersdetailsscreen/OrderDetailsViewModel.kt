@@ -92,10 +92,12 @@ class OrderDetailsViewModel(
      */
     private fun getSwipeActionsPreferences() {
         viewModelScope.launch {
-            userPreferencesRepository.getSwipeActionsPreferences().collect {
-                _swipeActionsPreferences = it
-                updateUiStateWithSwipePreferences(it)
-            }
+            userPreferencesRepository
+                .getSwipeActionsPreferences()
+                .collect {
+                    _swipeActionsPreferences = it
+                    updateUiStateWithSwipePreferences(it)
+                }
         }
     }
 
@@ -407,5 +409,3 @@ fun <T> List<T>.findModifiedItemOld(other: List<T>, comparator: (T, T) -> Boolea
     }
     return null
 }
-
-

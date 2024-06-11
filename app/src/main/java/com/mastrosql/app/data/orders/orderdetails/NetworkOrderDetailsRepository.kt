@@ -31,8 +31,10 @@ class NetworkOrderDetailsRepository(
     // set context as application context from parameter passed
     private val workManager = WorkManager.getInstance(context)
 
-    override val outputWorkInfo: Flow<WorkInfo> =
-        workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
+    override val outputWorkInfo: Flow<WorkInfo> = workManager
+        .getWorkInfosByTagLiveData(TAG_OUTPUT)
+        .asFlow()
+        .mapNotNull {
             if (it.isNotEmpty()) it.first() else null
         }
 
@@ -101,10 +103,7 @@ class NetworkOrderDetailsRepository(
     }
 
     override suspend fun updateDetailItem(
-        orderDetailId: Int,
-        quantity: Double,
-        batch: String,
-        expirationDate: String
+        orderDetailId: Int, quantity: Double, batch: String, expirationDate: String
     ): Response<JsonObject> {
 
         val expirationDateFormated = if (expirationDate == "") {

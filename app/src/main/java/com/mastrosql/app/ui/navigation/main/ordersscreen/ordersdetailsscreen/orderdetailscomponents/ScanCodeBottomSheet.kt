@@ -74,9 +74,7 @@ fun ScanCodeBottomSheet(
             showBottomSheet.value = false
             scannerState.isTextInputFocused.value = false
             scannerState.isTextFieldPressed.value = false
-        },
-        sheetState = sheetState,
-        modifier = Modifier.nestedScroll(
+        }, sheetState = sheetState, modifier = Modifier.nestedScroll(
             connection = rememberNestedScrollInteropConnection()
         )
     ) {
@@ -103,12 +101,10 @@ fun KeyboardBarcodeReader(
 ) {
 
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
 
             val rowKeyboardController = LocalSoftwareKeyboardController.current
@@ -127,37 +123,30 @@ fun KeyboardBarcodeReader(
             }
 
             // Icon button to show or hide the software keyboard
-            IconButton(
-                onClick = {
-                    // Toggle keyboard visibility
-                    scannerState.isKeyboardVisible.value =
-                        if (scannerState.isKeyboardVisible.value) {
-                            rowKeyboardController?.hide()
-                            false
-                        } else {
-                            rowKeyboardController?.show()
-                            scannerState.isTextFieldPressed.value = true
-                            true
-                        }
+            IconButton(onClick = {
+                // Toggle keyboard visibility
+                scannerState.isKeyboardVisible.value = if (scannerState.isKeyboardVisible.value) {
+                    rowKeyboardController?.hide()
+                    false
+                } else {
+                    rowKeyboardController?.show()
+                    scannerState.isTextFieldPressed.value = true
+                    true
                 }
-            ) {
+            }) {
                 Icon(Icons.Default.Keyboard, contentDescription = "Keyboard")
             }
 
             // Text input to read scanned codes
-            OutlinedTextField(
-                value = scannerState.scannedCode.value,
+            OutlinedTextField(value = scannerState.scannedCode.value,
                 onValueChange = {
                     scannerState.scannedCode.value = it
                     // Check if the last character is a newline character
                     if (it.endsWith("\n")) {
                         // Call ViewModel method to send scanned code to server
-                        if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0
-                            && scannerState.scannedCode.value.isNotEmpty()
-                        ) {
+                        if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
                             onSendScannedCode(
-                                orderDetailsUiState.orderId,
-                                scannerState.scannedCode.value
+                                orderDetailsUiState.orderId, scannerState.scannedCode.value
                             )
                         }
                         // Clear the scanned code after sending
@@ -166,68 +155,55 @@ fun KeyboardBarcodeReader(
                 },
                 label = { Text(stringResource(R.string.order_details_qr_scan_text)) },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Send
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Send
                 ),
-                keyboardActions = KeyboardActions(
-                    onSend = {
-                        // Call ViewModel method to send scanned code to server
-                        if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0
-                            && scannerState.scannedCode.value.isNotEmpty()
-                        ) {
-                            onSendScannedCode(
-                                orderDetailsUiState.orderId,
-                                scannerState.scannedCode.value
-                            )
-                        }
-                        // Clear the scanned code after sending
-                        scannerState.scannedCode.value = ""
-
-                        rowKeyboardController?.hide()
-                        scannerState.isKeyboardVisible.value = false
-                        scannerState.isTextFieldPressed.value = false
+                keyboardActions = KeyboardActions(onSend = {
+                    // Call ViewModel method to send scanned code to server
+                    if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
+                        onSendScannedCode(
+                            orderDetailsUiState.orderId, scannerState.scannedCode.value
+                        )
                     }
-                ),
+                    // Clear the scanned code after sending
+                    scannerState.scannedCode.value = ""
+
+                    rowKeyboardController?.hide()
+                    scannerState.isKeyboardVisible.value = false
+                    scannerState.isTextFieldPressed.value = false
+                }),
 
                 modifier = Modifier
                     .weight(0.5f)
                     .padding(horizontal = 8.dp)
                     .focusRequester(focusRequester),
 
-                interactionSource = remember { MutableInteractionSource() }
-                    .also { interactionSource ->
-                        LaunchedEffect(interactionSource) {
-                            interactionSource.interactions.collect {
-                                if (it is PressInteraction.Release) {
-                                    // works like onClick for the text field
-                                    scannerState.isTextFieldPressed.value = true
-                                }
+                interactionSource = remember { MutableInteractionSource() }.also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect {
+                            if (it is PressInteraction.Release) {
+                                // works like onClick for the text field
+                                scannerState.isTextFieldPressed.value = true
                             }
                         }
                     }
-            )
+                })
 
             // Button to send the scanned code to the server
-            IconButton(
-                onClick = {
-                    rowKeyboardController?.hide()
-                    scannerState.isKeyboardVisible.value = false
-                    scannerState.isTextFieldPressed.value = false
+            IconButton(onClick = {
+                rowKeyboardController?.hide()
+                scannerState.isKeyboardVisible.value = false
+                scannerState.isTextFieldPressed.value = false
 
-                    // Call ViewModel method to send scanned code to server
-                    if (orderDetailsUiState.orderId != null
-                        && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()
-                    ) {
-                        onSendScannedCode(
-                            orderDetailsUiState.orderId,
-                            scannerState.scannedCode.value
-                        )
-                    }
-
-                    // Clear the scanned code after sending
-                    scannerState.scannedCode.value = ""
+                // Call ViewModel method to send scanned code to server
+                if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
+                    onSendScannedCode(
+                        orderDetailsUiState.orderId, scannerState.scannedCode.value
+                    )
                 }
-            ) {
+
+                // Clear the scanned code after sending
+                scannerState.scannedCode.value = ""
+            }) {
                 Icon(
                     Icons.AutoMirrored.Filled.Send,
                     contentDescription = stringResource(R.string.send_scanned_code)
@@ -247,8 +223,7 @@ fun KeyboardBarcodeReaderPreview() {
     KeyboardBarcodeReader(
         scannerState = ScannerState(),
         orderDetailsUiState = OrderDetailsUiState.Success(
-            orderDetailsList = emptyList(),
-            swipeActionsPreferences = SwipeActionsPreferences()
+            orderDetailsList = emptyList(), swipeActionsPreferences = SwipeActionsPreferences()
         ),
         onSendScannedCode = { _, _ -> },
         focusRequester = FocusRequester(),

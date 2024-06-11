@@ -387,6 +387,7 @@ BEGIN
         -- Extract the first four characters from the scanned code for the article ID
         SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
         SET quantity = 1;
+        SET @quantity = 1;
     ELSEIF LENGTH(scannedCode) = 20 THEN
         -- Extract the first four characters from the scanned code for the article ID
         SET articleId = CAST(SUBSTR(scannedCode, 1, 5) AS SIGNED);
@@ -552,14 +553,31 @@ BEGIN
 END;
 
 ####################################################################################################
-DROP PROCEDURE IF EXISTS ModifyOrderDeliveryState;
-CREATE PROCEDURE ModifyOrderDeliveryState(
+DROP PROCEDURE IF EXISTS UpdateOrderDeliveryState;
+CREATE PROCEDURE UpdateOrderDeliveryState(
     IN orderId INT,
     IN deliveryState INT
 )
 BEGIN
     UPDATE lis_ordc
     SET STATO_CONS = deliveryState
+    WHERE NUME = orderId;
+
+    SELECT * FROM ordersview WHERE NUME = orderId;
+
+END;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS UpdateOrderData;
+CREATE PROCEDURE UpdateOrderData(
+    IN orderId INT,
+    IN description VARCHAR(255),
+    IN deliveryDate VARCHAR(255)
+)
+BEGIN
+    UPDATE lis_ordc
+    SET DESCRI = description,
+        D_CONSEGNA = deliveryDate
     WHERE NUME = orderId;
 
     SELECT * FROM ordersview WHERE NUME = orderId;
