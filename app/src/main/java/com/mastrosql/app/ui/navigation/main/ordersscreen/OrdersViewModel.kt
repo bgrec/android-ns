@@ -14,6 +14,8 @@ import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrderState
+import com.mastrosql.app.utils.DateHelper
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -95,12 +97,35 @@ class OrdersViewModel(
      * @param deliveryState The new delivery state of the order
      *
      */
-    private fun updateOrdersItem(orderId: Int, deliveryState: Int) {
+    @Suppress("Destructure")
+    private fun updateOrdersItemDeliveryState(orderId: Int, deliveryState: Int) {
         (ordersUiState as? OrdersUiState.Success)?.let { successState ->
             val ordersList = successState.ordersList.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
             if (index != -1) {
                 ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
+                ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(orderId))
+            }
+        }
+    }
+
+    /**
+     * Function to update the state of the order in the list
+     * @param orderState The order state to update
+     *
+     */
+    private fun updateOrdersItemData(orderState: OrderState) {
+        val orderId = orderState.orderId.value
+        val orderDescription = orderState.orderDescription.value.text
+        val orderDeliveryDate = DateHelper.formatDateToInput(orderState.deliveryDate.value.text)
+
+        (ordersUiState as? OrdersUiState.Success)?.let { successState ->
+            val ordersList = successState.ordersList.toMutableList()
+            val index = ordersList.indexOfFirst { it.id == orderId }
+            if (index != -1) {
+                ordersList[index] = ordersList[index].copy(
+                    description = orderDescription, deliveryDate = orderDeliveryDate
+                )
                 ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(orderId))
             }
         }
@@ -128,7 +153,7 @@ class OrdersViewModel(
 
                     //If the response is successful, update the delivery state of the order
                     // without refreshing the list
-                    updateOrdersItem(orderId, deliveryState)
+                    updateOrdersItemDeliveryState(orderId, deliveryState)
                 }
 
             } catch (e: Exception) {
@@ -228,5 +253,38 @@ class OrdersViewModel(
                 context, response, viewModelScope
             )
         }
+    }
+
+    /**
+     * Function to update the order data in the database
+     */
+    fun updateOrderData(context: Context, orderState: OrderState) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = ordersRepository.updateOrderData(orderState)
+
+                handleResponse(context, response) {
+                    launch {
+                        ToastUtils.showToast(
+                            context,
+                            Toast.LENGTH_SHORT,
+                            context.getString(R.string.order_update_text)
+                        )
+                    }
+
+                    //If the response is successful, update the state of the order
+                    // without refreshing the list
+                    updateOrdersItemData(orderState)
+                }
+
+            } catch (e: Exception) {
+                // Handle exception
+                NetworkExceptionHandler.handleException(context, e, viewModelScope)
+            } catch (e: SocketTimeoutException) {
+                // Handle socket timeout exception
+                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
+            }
+        }
+
     }
 }

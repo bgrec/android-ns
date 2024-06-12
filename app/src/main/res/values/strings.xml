@@ -241,6 +241,7 @@
     <string name="row_duplicated">Riga duplicata con successo %1$d</string>
     <string name="delivery_state_updated">Stato consegna aggiornato con successo!</string>
     <string name="send_scanned_code">Send Scanned Code</string>
+    <string name="order_update_text">Modifiche ordine salvate con successo</string>
 
 
 </resources>

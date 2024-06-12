@@ -140,7 +140,9 @@ fun EditOrderData(
         Spacer(modifier = Modifier.padding(4.dp))
 
         val isDateValid = remember(orderState.deliveryDate.value.text) {
-            DateHelper.formatDateToInput(orderState.deliveryDate.value.text).isNotEmpty()
+            DateHelper
+                .formatDateToInput(orderState.deliveryDate.value.text)
+                .isNotEmpty()
         }
         val isDateBeforeToday = remember(orderState.deliveryDate.value.text) {
             DateHelper.isDateBeforeToday(orderState.deliveryDate.value.text)

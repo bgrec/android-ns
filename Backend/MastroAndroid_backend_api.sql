@@ -568,19 +568,28 @@ BEGIN
 END;
 
 ####################################################################################################
-DROP PROCEDURE IF EXISTS UpdateOrderData;
-CREATE PROCEDURE UpdateOrderData(
+DROP PROCEDURE IF EXISTS UpdateOrder;
+CREATE PROCEDURE UpdateOrder(
     IN orderId INT,
     IN description VARCHAR(255),
     IN deliveryDate VARCHAR(255)
 )
 BEGIN
+    DECLARE deliveryDateAsDate DATE;
+
+    IF deliveryDate IS NULL OR deliveryDate = '' OR deliveryDate = 'null' THEN
+        SET deliveryDateAsDate = NULL;
+    ELSE
+        SET deliveryDateAsDate = STR_TO_DATE(deliveryDate, '%d/%m/%Y');
+    END IF;
+
     UPDATE lis_ordc
     SET DESCRI = description,
-        D_CONSEGNA = deliveryDate
+        D_CONSEGNA = deliveryDateAsDate
     WHERE NUME = orderId;
 
-    SELECT * FROM ordersview WHERE NUME = orderId;
+    -- Return the last order details based on the last order number
+    SELECT * FROM ordersview WHERE NUME = orderId LIMIT 1;
 
 END;
 

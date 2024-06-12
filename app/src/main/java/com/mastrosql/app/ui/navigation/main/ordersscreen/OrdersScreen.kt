@@ -188,19 +188,15 @@ fun OrdersResultScreen(
         }
 
         if (showEditOrderDataDialog.value) {
-            // Order data dialog, used to show the order data
-            EditOrderDataDialog(
-                modifier = modifier,
+            // Order data Alert dialog, used to show and edit the order data
+            EditOrderDataDialog(modifier = modifier,
                 showEditOrderDataDialog = showEditOrderDataDialog,
                 ordersUiState = ordersUiState,
-//                onUpdateOrderData = { orderId, orderData ->
-//                    viewModel.updateOrderData(
-//                        context = context,
-//                        orderId = orderId,
-//                        orderData = orderData
-//                    )
-//                }
-            )
+                onUpdateOrderData = { orderState ->
+                    viewModel.updateOrderData(
+                        context = context, orderState = orderState
+                    )
+                })
         }
 
         if (showBottomSheet.value) {

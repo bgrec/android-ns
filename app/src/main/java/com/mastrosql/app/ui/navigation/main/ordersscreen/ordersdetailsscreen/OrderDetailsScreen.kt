@@ -2,7 +2,6 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
 import android.content.IntentFilter
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -217,7 +216,7 @@ fun OrderDetails(
             scannedCode = barcode
 
             // Handle the scanned code
-            Log.d("OrderDetailsScreen", "Scanned code: $barcode")
+            //Log.d("OrderDetailsScreen", "Scanned code: $barcode")
             onSendScannedCode(orderDetailsUiState.orderId ?: 0, barcode)
         }
     }

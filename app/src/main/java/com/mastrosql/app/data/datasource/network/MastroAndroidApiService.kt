@@ -140,6 +140,10 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    @PUT("UpdateOrder")
+    suspend fun updateOrder(
+        @Body body: JsonObject
+    ): Response<OrderAddResponse>
 
     /**
      * ****************************************************************************************

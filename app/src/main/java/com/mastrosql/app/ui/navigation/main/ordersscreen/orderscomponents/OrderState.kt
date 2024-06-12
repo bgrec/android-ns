@@ -11,6 +11,7 @@ import androidx.compose.ui.text.input.TextFieldValue
  */
 @Suppress("KDocMissingDocumentation")
 data class OrderState(
+    var orderId: MutableIntState = mutableIntStateOf(0),
     var customerId: MutableIntState = mutableIntStateOf(0),
     var customerName: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue("")),
     var destinationId: MutableIntState = mutableIntStateOf(0),

@@ -27,8 +27,7 @@ import java.util.Locale
 @ExperimentalMaterial3Api
 @Composable
 fun DateEditDialog(
-    showDatePickerDialog: MutableState<Boolean>,
-    orderState: OrderState
+    showDatePickerDialog: MutableState<Boolean>, orderState: OrderState
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {
@@ -79,17 +78,15 @@ fun DateEditDialog(
 @Preview(showBackground = true)
 @Composable
 fun DateEditDialogPreview() {
-    DateEditDialog(
-        showDatePickerDialog = remember { mutableStateOf(true) },
-        orderState = remember {
-            OrderState(
-                mutableIntStateOf(0),
-                mutableStateOf(TextFieldValue("")),
-                mutableIntStateOf(0),
-                mutableStateOf(TextFieldValue("")),
-                mutableStateOf(TextFieldValue("")),
-                mutableStateOf(TextFieldValue(""))
-            )
-        }
-    )
+    DateEditDialog(showDatePickerDialog = remember { mutableStateOf(true) }, orderState = remember {
+        OrderState(
+            mutableIntStateOf(0),
+            mutableIntStateOf(0),
+            mutableStateOf(TextFieldValue("")),
+            mutableIntStateOf(0),
+            mutableStateOf(TextFieldValue("")),
+            mutableStateOf(TextFieldValue("")),
+            mutableStateOf(TextFieldValue(""))
+        )
+    })
 }

@@ -7,6 +7,7 @@ import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrderState
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
@@ -15,6 +16,7 @@ import retrofit2.Response
  */
 interface OrdersRepository {
 
+    @Suppress("KDocMissingDocumentation")
     val outputWorkInfo: Flow<WorkInfo>
 
     /**
@@ -71,6 +73,6 @@ interface OrdersRepository {
     /**
      * Edit an order in the data source
      */
-    suspend fun editOrder(order: Order): Response<OrderAddResponse>
+    suspend fun updateOrderData(orderState: OrderState): Response<OrderAddResponse>
 
 }

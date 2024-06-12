@@ -11,6 +11,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrderState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import retrofit2.Response
@@ -31,8 +32,10 @@ class NetworkOrdersRepository(
 
     private val workManager = WorkManager.getInstance(context)
 
-    override val outputWorkInfo: Flow<WorkInfo> =
-        workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
+    override val outputWorkInfo: Flow<WorkInfo> = workManager
+        .getWorkInfosByTagLiveData(TAG_OUTPUT)
+        .asFlow()
+        .mapNotNull {
             if (it.isNotEmpty()) it.first() else null
         }
 
@@ -46,10 +49,6 @@ class NetworkOrdersRepository(
 
         val filter = "{\"NUME\" : {\"\$eq\": $orderId}}"
         return mastroAndroidApiService.getOrderByFilter(filter)
-    }
-
-    override suspend fun editOrder(order: Order): Response<OrderAddResponse> {
-        TODO("Not yet implemented")
     }
 
     override fun getAllOrdersStream(): Flow<List<Order>> {
@@ -81,6 +80,22 @@ class NetworkOrdersRepository(
         }
         return mastroAndroidApiService.updateDeliveryState(body)
     }
+
+    override suspend fun updateOrderData(orderState: OrderState): Response<OrderAddResponse> {
+        val deliveryDateFormated = if (orderState.deliveryDate.value.text == "") {
+            "null"
+        } else {
+            orderState.deliveryDate.value.text
+        }
+
+        val body = JsonObject().apply {
+            addProperty("orderId", orderState.orderId.intValue)
+            addProperty("description", orderState.orderDescription.value.text)
+            addProperty("deliveryDate", deliveryDateFormated)
+        }
+        return mastroAndroidApiService.updateOrder(body)
+    }
+
 
     override suspend fun addNewOrder(order: Order): Response<OrderAddResponse> {
 
