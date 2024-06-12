@@ -65,11 +65,15 @@ class OrderDetailsViewModel(
     // Mutable state flow for UI state
     private val _orderDetailsUiState =
         MutableStateFlow<OrderDetailsUiState>(OrderDetailsUiState.Loading)
+
+    @Suppress("KDocMissingDocumentation")
     val orderDetailsUiState: StateFlow<OrderDetailsUiState> = _orderDetailsUiState
 
     private val _orderId: MutableStateFlow<Int?> = MutableStateFlow(
         savedStateHandle[OrderDetailsDestination.ORDER_ID_ARG]
     )
+
+    @Suppress("KDocMissingDocumentation")
     val orderId: StateFlow<Int?> = _orderId
 
     private val _orderDescription: MutableStateFlow<String?> = MutableStateFlow(

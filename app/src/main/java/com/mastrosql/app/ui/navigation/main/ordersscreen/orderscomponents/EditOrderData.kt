@@ -246,7 +246,6 @@ fun OrderDataEditPreview() {
                 etag = ""
             ),
             page = 0
-
         ), onDismissButton = {}, onConfirmButton = {})
     }
 }

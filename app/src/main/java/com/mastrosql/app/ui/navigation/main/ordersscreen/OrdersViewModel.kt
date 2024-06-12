@@ -119,8 +119,8 @@ class OrdersViewModel(
         val orderDescription = orderState.orderDescription.value.text
         val orderDeliveryDate = DateHelper.formatDateToInput(orderState.deliveryDate.value.text)
 
-        (ordersUiState as? OrdersUiState.Success)?.let { successState ->
-            val ordersList = successState.ordersList.toMutableList()
+        (ordersUiState as? OrdersUiState.Success)?.let { (ordersList1, modifiedOrderId) ->
+            val ordersList = ordersList1.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
             if (index != -1) {
                 ordersList[index] = ordersList[index].copy(
@@ -285,6 +285,5 @@ class OrdersViewModel(
                 NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             }
         }
-
     }
 }
