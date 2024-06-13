@@ -21,7 +21,7 @@ object ItemEditDestination : NavigationDestination {
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun ItemEditScreen(
     navigateBack: () -> Unit,
@@ -57,7 +57,9 @@ fun ItemEditScreen(
         )
     }
 }
+
 //TODO check the use of Divider() composable
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun ItemEditScreenPreview() {

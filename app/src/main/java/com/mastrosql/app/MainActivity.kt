@@ -1,11 +1,12 @@
 package com.mastrosql.app
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.mastrosql.app.ui.navigation.ProvideAppNavigationViewModel
@@ -13,11 +14,17 @@ import com.mastrosql.app.ui.navigation.main.MainCompose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Main entry point for the app.
+ */
 @AndroidEntryPoint
 @ExperimentalAnimationApi
+@ExperimentalFoundationApi
 class MainActivity : ComponentActivity() {
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @ExperimentalMaterialApi
+    @ExperimentalMaterial3Api
+    //@RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -30,14 +37,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // Provide AppNavigationViewModel to the entire app using CompositionLocal
-
                     ProvideAppNavigationViewModel {
-
                         // MainCompose is the main entry point for the app
                         MainCompose()
-
                     }
-
                     //TODO - Add permissions request here
 
                     /*
@@ -79,7 +82,8 @@ class MainActivity : ComponentActivity() {
 
                              Text(text = textToShow)
                              Spacer(modifier = Modifier.height(8.dp))
-                             Button(onClick = { multiplePermissionsState.launchMultiplePermissionRequest() }) {
+                             Button(onClick = {
+                                multiplePermissionsState.launchMultiplePermissionRequest() }) {
                                  Text(buttonText)
                              }
                          }

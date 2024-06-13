@@ -20,8 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 
+/**
+ * OrderDetailsList composable to display the list of order details
+ */
 @Composable
 fun OrderDetailList(
     orderDetailList: List<OrderDetailsItem>,
@@ -31,7 +35,8 @@ fun OrderDetailList(
     snackbarHostState: SnackbarHostState,
     modifiedIndex: MutableIntState?,
     onRemove: (Int) -> Unit,
-    onDuplicate: (Int) -> Unit
+    onDuplicate: (Int) -> Unit,
+    swipeActionsPreferences: SwipeActionsPreferences
 ) {
     // MutableState to store the modified item id
     val modifiedItemId = remember { mutableIntStateOf(0) }
@@ -65,21 +70,8 @@ fun OrderDetailList(
             .fillMaxHeight()
     )
     {
-//        val filteredList: List<OrderDetailsItem>
-        val searchedText = searchTextState.value.text
 
-//        filteredList = if (searchedText.isEmpty()) {
-//            orderDetailList
-//        } else {
-//            //Filter the list based on the search text on this fields
-//            orderDetailList.filter {
-//                (it.description?.contains(searchedText, ignoreCase = true) == true
-//                        || it.articleId.toString()
-//                    ?.contains(searchedText, ignoreCase = true) == true
-//                        || it.sku?.contains(searchedText, ignoreCase = true) == true)
-//            }
-//        }
-
+        //Filter the list based on the search text
         val filteredList = filterOrderDetailList(orderDetailList, searchTextState.value.text)
 
         items(
@@ -101,6 +93,7 @@ fun OrderDetailList(
                 listState = listState,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
+                swipeActionsPreferences = swipeActionsPreferences
             )
         }
 

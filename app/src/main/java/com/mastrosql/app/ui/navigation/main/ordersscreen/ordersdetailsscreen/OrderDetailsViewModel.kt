@@ -3,16 +3,14 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.R
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
@@ -28,25 +26,34 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 
+/**
+ * Sealed class for the UI state of the OrderDetails screen
+ */
 sealed interface OrderDetailsUiState {
 
+    /**
+     * Success state for the OrderDetails screen
+     */
+    @Suppress("KDocMissingDocumentation")
     data class Success(
         val orderDetailsList: List<OrderDetailsItem>,
         var modifiedOrderDetailsItem: OrderDetailsItem? = null,
         val modifiedIndex: MutableIntState? = null,
         val orderId: Int? = null,
         val orderDescription: String? = null,
-        val isDeleteRowActive: Boolean = true
+        val swipeActionsPreferences: SwipeActionsPreferences
     ) : OrderDetailsUiState
 
+    @Suppress("KDocMissingDocumentation")
     data class Error(val exception: Exception) : OrderDetailsUiState
 
+    @Suppress("KDocMissingDocumentation")
     data object Loading : OrderDetailsUiState
-
 }
 
 /**
- * Factory for [OrderDetailsViewModel] that takes [OrderDetailsRepository] as a dependency
+ * Factory for [OrderDetailsViewModel] that takes [OrderDetailsRepository]
+ * and [UserPreferencesRepository] as a dependencies
  */
 
 class OrderDetailsViewModel(
@@ -55,35 +62,86 @@ class OrderDetailsViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    var orderDetailsUiState: OrderDetailsUiState by mutableStateOf(OrderDetailsUiState.Loading)
-        private set
+    // Mutable state flow for UI state
+    private val _orderDetailsUiState =
+        MutableStateFlow<OrderDetailsUiState>(OrderDetailsUiState.Loading)
 
-    //private val orderId: Int = checkNotNull(savedStateHandle[OrderDetailsDestination.orderIdArg])
+    @Suppress("KDocMissingDocumentation")
+    val orderDetailsUiState: StateFlow<OrderDetailsUiState> = _orderDetailsUiState
+
     private val _orderId: MutableStateFlow<Int?> = MutableStateFlow(
-        //savedStateHandle.get(OrderDetailsDestination.ORDER_ID_ARG)
         savedStateHandle[OrderDetailsDestination.ORDER_ID_ARG]
     )
+
+    @Suppress("KDocMissingDocumentation")
     val orderId: StateFlow<Int?> = _orderId
 
     private val _orderDescription: MutableStateFlow<String?> = MutableStateFlow(
-        savedStateHandle.get(OrderDetailsDestination.ORDER_DESCRIPTION_ARG)
+        savedStateHandle[OrderDetailsDestination.ORDER_DESCRIPTION_ARG]
     )
     private val orderDescription: StateFlow<String?> = _orderDescription
 
+    private var _swipeActionsPreferences: SwipeActionsPreferences = SwipeActionsPreferences()
+
     init {
-        getOrderDetails()
-        getIsDeleteRowActive()
+        viewModelScope.launch {
+            getSwipeActionsPreferences()
+            getOrderDetails()
+        }
     }
 
-    private fun getIsDeleteRowActive() {
+    /**
+     * Gets the value of isDeleteRowActive from the UserPreferencesRepository and updates the
+     * [OrderDetailsUiState] with the new value.
+     */
+    private fun getSwipeActionsPreferences() {
         viewModelScope.launch {
-            userPreferencesRepository.getIsSwipeToDeleteDeactivated()
-                .collect { isDeleteRowActive ->
-                    orderDetailsUiState =
-                        (orderDetailsUiState as? OrderDetailsUiState.Success)?.copy(
-                            isDeleteRowActive = isDeleteRowActive
-                        ) ?: orderDetailsUiState
+            userPreferencesRepository
+                .getSwipeActionsPreferences()
+                .collect {
+                    _swipeActionsPreferences = it
+                    updateUiStateWithSwipePreferences(it)
                 }
+        }
+    }
+
+    private fun updateUiStateWithSwipePreferences(preferences: SwipeActionsPreferences) {
+        val currentState = _orderDetailsUiState.value
+        if (currentState is OrderDetailsUiState.Success) {
+            _orderDetailsUiState.value = currentState.copy(swipeActionsPreferences = preferences)
+        }
+    }
+
+    /**
+     * Handles the network response and updates the [OrderDetailsUiState] accordingly.
+     */
+    private fun handleNetworkResponse(
+        context: Context, response: retrofit2.Response<*>, onSuccess: suspend () -> Unit
+    ) = viewModelScope.launch {
+        when (response.code()) {
+            200 -> onSuccess()
+            401 -> NetworkSuccessHandler.handleUnauthorized(context, viewModelScope) {
+                _orderDetailsUiState.value = OrderDetailsUiState.Error(HttpException(response))
+            }
+
+            404 -> NetworkSuccessHandler.handleNotFound(context, viewModelScope, response.code())
+            500, 503 -> NetworkSuccessHandler.handleServerError(context, response, viewModelScope)
+            else -> NetworkSuccessHandler.handleUnknownError(context, response, viewModelScope)
+        }
+    }
+
+    /**
+     * Handles the exception and updates the [OrderDetailsUiState] accordingly.
+     */
+    private fun handleException(context: Context, e: Exception) = viewModelScope.launch {
+        when (e) {
+            is SocketTimeoutException -> NetworkExceptionHandler.handleSocketTimeoutException(
+                context, viewModelScope
+            )
+
+            is IOException -> NetworkExceptionHandler.handleException(context, e, viewModelScope)
+            is HttpException -> NetworkExceptionHandler.handleException(context, e, viewModelScope)
+            else -> NetworkExceptionHandler.handleException(context, e, viewModelScope)
         }
     }
 
@@ -93,294 +151,188 @@ class OrderDetailsViewModel(
      */
     fun getOrderDetails() {
         viewModelScope.launch {
-            orderDetailsUiState = try {
-                // Store the current list as the old list before making the call
-                val orderDetailsListOld =
-                    (orderDetailsUiState as? OrderDetailsUiState.Success)?.orderDetailsList
+            _orderDetailsUiState.value = withContext(Dispatchers.IO) {
+                try {
+                    // Store the current list as the old list before making the call
+                    val previousOrderDetailsList =
+                        (orderDetailsUiState.value as? OrderDetailsUiState.Success)?.orderDetailsList
 
-                // Get the order details from the repository
-                val orderDetailsListResult =
-                    orderDetailsRepository.getOrderDetails(orderId.value).items
+                    // Get the order details from the repository
+                    val currentOrderDetailsListResult =
+                        orderDetailsRepository.getOrderDetails(orderId.value).items
 
-                //
-                val modifiedIndex =
-                    orderDetailsListOld?.findModifiedItem(
-                        orderDetailsListResult,
-                        OrderDetailsItem::id
+                    // Find the modified item index in the list
+                    val modifiedIndex = previousOrderDetailsList?.findModifiedItem(
+                        currentOrderDetailsListResult, OrderDetailsItem::id
                     ) { oldItem, newItem ->
                         // If the item id and quantity are the same, the item is not modified
                         oldItem.id == newItem.id && oldItem.quantity == newItem.quantity
                         //oldItem != newItem
                     } ?: -1
 
-                // Get the modified order details item
-                var modifiedOrderDetailsItem: OrderDetailsItem? = null
-                if (modifiedIndex >= 0 && modifiedIndex < orderDetailsListResult.size) {
-                    modifiedOrderDetailsItem = orderDetailsListResult[modifiedIndex]
-                }
+                    // Get the modified order details item
+                    val modifiedOrderDetailsItem =
+                        currentOrderDetailsListResult.getOrNull(modifiedIndex)
 
-                // Update the UI state with the new list
-                OrderDetailsUiState.Success(
-                    orderDetailsList = orderDetailsListResult,
-                    modifiedIndex = mutableIntStateOf(modifiedIndex),
-                    modifiedOrderDetailsItem = modifiedOrderDetailsItem,
-                    orderId = orderId.value,
-                    orderDescription = orderDescription.value
-                )
-            } catch (e: IOException) {
-                OrderDetailsUiState.Error(e)
-            } catch (e: HttpException) {
-                OrderDetailsUiState.Error(e)
-            } catch (e: Exception) {
-                OrderDetailsUiState.Error(e)
+                    // Update the UI state with the new list
+                    OrderDetailsUiState.Success(
+                        orderDetailsList = currentOrderDetailsListResult,
+                        modifiedIndex = mutableIntStateOf(modifiedIndex),
+                        modifiedOrderDetailsItem = modifiedOrderDetailsItem,
+                        orderId = orderId.value,
+                        orderDescription = orderDescription.value,
+                        swipeActionsPreferences = _swipeActionsPreferences
+                    )
+                } catch (e: Exception) {
+                    OrderDetailsUiState.Error(e)
+                }
             }
         }
     }
 
+    /**
+     * Gets all OrderDetailsItem from the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
+     * Currently not used in the app.
+     */
     fun getAllOrderDetails() {
         viewModelScope.launch {
-            orderDetailsUiState = OrderDetailsUiState.Loading
-            orderDetailsUiState = try {
+            _orderDetailsUiState.value = OrderDetailsUiState.Loading
+            _orderDetailsUiState.value = try {
 
                 // Store the current list as the old list before making the call
-                val orderDetailsListOld =
-                    (orderDetailsUiState as? OrderDetailsUiState.Success)?.orderDetailsList
+                val previousOrderDetailsList =
+                    (orderDetailsUiState.value as? OrderDetailsUiState.Success)?.orderDetailsList
 
                 // Get the order details from the repository
-                val orderDetailsListResult = orderDetailsRepository.getAllOrderDetails().items
+                val currentOrderDetailsListResult =
+                    orderDetailsRepository.getAllOrderDetails().items
 
                 // Find the modified item in the list
-                val modifiedIndex =
-                    orderDetailsListOld?.findModifiedItem(
-                        orderDetailsListResult,
-                        OrderDetailsItem::id
-                    ) { oldItem, newItem ->
-                        // If the item id is the same but the quantity is different, the item is modified
-                        oldItem.id == newItem.id && oldItem.quantity != newItem.quantity
-                    } ?: -1
+                val modifiedIndex = previousOrderDetailsList?.findModifiedItem(
+                    currentOrderDetailsListResult, OrderDetailsItem::id
+                ) { oldItem, newItem ->
+                    // If the item id is the same but the quantity is different, the item is modified
+                    oldItem.id == newItem.id && oldItem.quantity != newItem.quantity
+                } ?: -1
 
                 // Update the UI state with the new list
                 OrderDetailsUiState.Success(
-                    orderDetailsList = orderDetailsListResult,
+                    orderDetailsList = currentOrderDetailsListResult,
                     //modifiedIndex = modifiedIndex?.let { mutableIntStateOf(it) },
                     modifiedIndex = mutableIntStateOf(modifiedIndex),
                     orderId = orderId.value,
-                    orderDescription = orderDescription.value
+                    orderDescription = orderDescription.value,
+                    swipeActionsPreferences = _swipeActionsPreferences
                 )
-            } catch (e: IOException) {
-                OrderDetailsUiState.Error(e)
-            } catch (e: HttpException) {
-                OrderDetailsUiState.Error(e)
             } catch (e: Exception) {
                 OrderDetailsUiState.Error(e)
             }
         }
     }
 
+    /**
+     * Sends the scanned code to the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
+     */
     fun sendScannedCode(context: Context, orderId: Int, scannedCode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.sendScannedCode(orderId, scannedCode)
-
-                // Handle the response status code
-                withContext(Dispatchers.Main) {
-                    when (response.code()) {
-                        200 -> {
-                            ToastUtils.showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                context.getString(R.string.new_item_added)
-                            )
-                            // Refresh the list
-                            getOrderDetails()
-                        }
-
-                        401 -> NetworkSuccessHandler.handleUnauthorized(
-                            context,
-                            viewModelScope
-                        ) {
-                            // Handle unauthorized
-                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
-                        }
-
-                        404 -> NetworkSuccessHandler.handleNotFound(
-                            context,
-                            viewModelScope,
-                            response.code()
+                handleNetworkResponse(context, response) {
+                    withContext(Dispatchers.Main) {
+                        ToastUtils.showToast(
+                            context, Toast.LENGTH_SHORT, context.getString(R.string.new_item_added)
                         )
-
-                        500, 503 -> NetworkSuccessHandler.handleServerError(
-                            context,
-                            response,
-                            viewModelScope
-                        )
-
-                        else -> NetworkSuccessHandler.handleUnknownError(
-                            context,
-                            response,
-                            viewModelScope
-                        )
+                        getOrderDetails()
                     }
                 }
-
-            } catch (e: IOException) {
-                // Handle IOException (e.g., network error)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: HttpException) {
-                // Handle HttpException (e.g., non-2xx response)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: SocketTimeoutException) {
-                // Handle socket timeout exception
-                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
-                // Handle generic exception
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
+                handleException(context, e)
             }
         }
     }
 
-    //delete the item of orderDetail
+    /**
+     * Deletes the OrderDetailsItem from the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
+     */
     fun deleteDetailItem(context: Context, orderDetailId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.deleteDetailItem(orderDetailId)
-
-                // Handle the response status code
-                withContext(Dispatchers.Main) {
-                    when (response.code()) {
-                        200 -> {
-                            ToastUtils.showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                context.getString(R.string.item_deleted, response.code())
-                            )
-                            // Refresh the list
-                            getOrderDetails()
-                        }
-
-                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                handleNetworkResponse(context, response) {
+                    withContext(Dispatchers.Main) {
+                        ToastUtils.showToast(
                             context,
-                            viewModelScope
-                        ) {
-                            // Handle unauthorized
-                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
-                        }
-
-                        404 -> NetworkSuccessHandler.handleNotFound(
-                            context,
-                            viewModelScope,
-                            response.code()
+                            Toast.LENGTH_SHORT,
+                            context.getString(R.string.item_deleted, response.code())
                         )
-
-                        else -> NetworkSuccessHandler.handleUnknownError(
-                            context,
-                            response,
-                            viewModelScope
-                        )
+                        getOrderDetails()
                     }
                 }
-
-            } catch (e: IOException) {
-                // Handle IOException (e.g., network error)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: HttpException) {
-                // Handle HttpException (e.g., non-2xx response)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: SocketTimeoutException) {
-                // Handle socket timeout exception
-                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
-                // Handle generic exception
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
+                handleException(context, e)
             }
         }
     }
 
+    /**
+     * Duplicates the OrderDetailsItem from the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
+     */
     fun duplicateDetailItem(context: Context, orderDetailId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.duplicateDetailItem(orderDetailId)
-
-                // Handle the response status code
-                withContext(Dispatchers.Main) {
-                    when (response.code()) {
-                        200 -> {
-                            ToastUtils.showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                context.getString(R.string.row_duplicated, response.code())
-                            )
-                            // Refresh the list
-                            getOrderDetails()
-
-
-                        }
-
-                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                handleNetworkResponse(context, response) {
+                    withContext(Dispatchers.Main) {
+                        ToastUtils.showToast(
                             context,
-                            viewModelScope
-                        ) {
-                            // Handle unauthorized
-                            orderDetailsUiState = OrderDetailsUiState.Error(HttpException(response))
-                        }
-
-                        404 -> NetworkSuccessHandler.handleNotFound(
-                            context,
-                            viewModelScope,
-                            response.code()
+                            Toast.LENGTH_SHORT,
+                            context.getString(R.string.row_duplicated, response.code())
                         )
-
-                        else -> NetworkSuccessHandler.handleUnknownError(
-                            context,
-                            response,
-                            viewModelScope
-                        )
+                        getOrderDetails()
                     }
                 }
-
-            } catch (e: IOException) {
-                // Handle IOException (e.g., network error)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: HttpException) {
-                // Handle HttpException (e.g., non-2xx response)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: SocketTimeoutException) {
-                // Handle socket timeout exception
-                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
-                // Handle generic exception
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
+                handleException(context, e)
             }
         }
     }
 
+    /**
+     * Updates the OrderDetailsItem from the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
+     */
     private fun updateDetailsItem(
-        orderDetailsItemId: Int, quantity: Double,
-        batch: String,
-        expirationDate: String
+        orderDetailsItemId: Int, quantity: Double, batch: String, expirationDate: String
     ) {
-        if (orderDetailsUiState is OrderDetailsUiState.Success) {
-            val orderDetailsList =
-                (orderDetailsUiState as OrderDetailsUiState.Success).orderDetailsList.toMutableList()
+        val currentState = _orderDetailsUiState.value
+        if (currentState is OrderDetailsUiState.Success) {
+            val orderDetailsList = currentState.orderDetailsList.toMutableList()
             val index = orderDetailsList.indexOfFirst { it.id == orderDetailsItemId }
             if (index != -1) {
                 val formattedExpirationDate = DateHelper.formatDateToInput(expirationDate)
 
                 orderDetailsList[index] = orderDetailsList[index].copy(
-                    quantity = quantity,
-                    batch = batch,
-                    expirationDate = formattedExpirationDate
+                    quantity = quantity, batch = batch, expirationDate = formattedExpirationDate
                 )
-                orderDetailsUiState = OrderDetailsUiState.Success(
+                _orderDetailsUiState.value = OrderDetailsUiState.Success(
                     orderDetailsList = orderDetailsList,
                     modifiedIndex = mutableIntStateOf(index),
                     orderId = orderId.value,
-                    orderDescription = orderDescription.value
+                    orderDescription = orderDescription.value,
+                    swipeActionsPreferences = _swipeActionsPreferences
                 )
             }
         }
     }
 
+    /**
+     * Updates the OrderDetailsItem from the MastroAndroid API Retrofit service and updates the
+     * [OrderDetailsItem] [List] [MutableList].
+     */
     fun updateDetailsItemData(
         context: Context,
         orderDetailsItemId: Int,
@@ -391,75 +343,20 @@ class OrderDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = orderDetailsRepository.updateDetailItem(
-                    orderDetailsItemId,
-                    quantity,
-                    batch,
-                    expirationDate
+                    orderDetailsItemId, quantity, batch, expirationDate
                 )
-
-                // Handle the response status code
-                withContext(Dispatchers.Main) {
-                    when (response.code()) {
-                        200 -> {
-                            ToastUtils.showToast(
-                                context,
-                                Toast.LENGTH_SHORT,
-                                //"$errorMessage ${response.code()}"
-                                context.getString(R.string.update_order_details, response.code())
-                            )
-                            // Refresh the list
-                            //getOrderDetails()
-
-                            updateDetailsItem(
-                                orderDetailsItemId,
-                                quantity,
-                                batch,
-                                expirationDate
-                            )
-                            //getOrderDetails()
-                        }
-
-                        401 -> NetworkSuccessHandler.handleUnauthorized(
+                handleNetworkResponse(context, response) {
+                    withContext(Dispatchers.Main) {
+                        ToastUtils.showToast(
                             context,
-                            viewModelScope
-                        ) {
-                            orderDetailsUiState =
-                                OrderDetailsUiState.Error(HttpException(response))
-                        }
-
-                        404 -> NetworkSuccessHandler.handleNotFound(
-                            context,
-                            viewModelScope,
-                            response.code()
+                            Toast.LENGTH_SHORT,
+                            context.getString(R.string.update_order_details, response.code())
                         )
-
-                        500, 503 -> NetworkSuccessHandler.handleServerError(
-                            context,
-                            response,
-                            viewModelScope
-                        )
-
-                        else -> NetworkSuccessHandler.handleUnknownError(
-                            context,
-                            response,
-                            viewModelScope
-                        )
-
+                        updateDetailsItem(orderDetailsItemId, quantity, batch, expirationDate)
                     }
                 }
-
-            } catch (e: IOException) {
-                // Handle IOException (e.g., network error)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: HttpException) {
-                // Handle HttpException (e.g., non-2xx response)
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
-            } catch (e: SocketTimeoutException) {
-                // Handle socket timeout exception
-                NetworkExceptionHandler.handleSocketTimeoutException(context, viewModelScope)
             } catch (e: Exception) {
-                // Handle generic exception
-                NetworkExceptionHandler.handleException(context, e, viewModelScope)
+                handleException(context, e)
             }
         }
     }
@@ -476,9 +373,7 @@ class OrderDetailsViewModel(
  */
 
 fun <T, K : Comparable<K>> List<T>.findModifiedItem(
-    other: List<T>,
-    idExtractor: (T) -> K,
-    comparator: (T, T) -> Boolean
+    other: List<T>, idExtractor: (T) -> K, comparator: (T, T) -> Boolean
 ): Int? {
     // If sizes are different, there is a modification
     if (this.size < other.size) {
@@ -498,7 +393,10 @@ fun <T, K : Comparable<K>> List<T>.findModifiedItem(
 }
 
 
-//Old function to find the modified item in the list not used anymore
+/**
+ * Not used in the app
+ * Function to find the modified item in the list
+ */
 fun <T> List<T>.findModifiedItemOld(other: List<T>, comparator: (T, T) -> Boolean): Int? {
     // If sizes are different, there is a modification
     if (this.size < other.size) {
@@ -515,5 +413,3 @@ fun <T> List<T>.findModifiedItemOld(other: List<T>, comparator: (T, T) -> Boolea
     }
     return null
 }
-
-

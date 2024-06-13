@@ -17,8 +17,9 @@ import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 
 /**
- * Top level composable that represents screens for the application.
+ *  Top level composable that represents screens for the application.
  */
+@ExperimentalMaterial3Api
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ItemsComposable(navController: NavHostController = rememberNavController()) {
@@ -28,8 +29,7 @@ fun ItemsComposable(navController: NavHostController = rememberNavController()) 
 /**
  * App bar to display title and conditionally display the back navigation.
  */
-
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun ItemsTopAppBar(
     title: String,

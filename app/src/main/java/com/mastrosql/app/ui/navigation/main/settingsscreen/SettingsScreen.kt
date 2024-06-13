@@ -62,6 +62,10 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
+/**
+ * Settings screen for the app
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(
     navController: NavController,
@@ -88,7 +92,8 @@ fun SettingsScreen(
         activeButtonsState = userPreferencesUiState.activeButtons,
         currentBaseUrlState = urlState,
         isNotSecuredApiState = userPreferencesUiState.isNotSecuredApi,
-        isSwipeToDeleteDeactivatedState = userPreferencesUiState.isSwipeToDeleteDeactivated,
+        isSwipeToDeleteDisabledState = userPreferencesUiState.isSwipeToDeleteDisabled,
+        isSwipeToDuplicateDisabledState = userPreferencesUiState.isSwipeToDuplicateDisabled,
         onSaveUrl = { url -> viewModel.setBaseUrl(url) },
         onSetOnboardingCompleted = { isOnboardingCompleted ->
             viewModel.onBoardingCompleted(
@@ -102,28 +107,37 @@ fun SettingsScreen(
             }
         },
         onSetNotSecuredApi = { isNotSecuredApi -> viewModel.setNotSecuredApi(isNotSecuredApi) },
-        onSetSwipeToDeleteDeactivated = { isSwipeToDeleteDeactivated ->
+        onSetSwipeToDeleteDisabled = { isSwipeToDeleteDisabled ->
             viewModel.setSwipeToDelete(
-                isSwipeToDeleteDeactivated
+                isSwipeToDeleteDisabled
+            )
+        },
+        onSetSwipeToDuplicateDisabled = { isSwipeToDuplicateDisabled ->
+            viewModel.setSwipeToDuplicate(
+                isSwipeToDuplicateDisabled
             )
         })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Composable for the settings screen
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun SettingsComposable(
     navController: NavController,
     activeButtonsState: EnumMap<MainNavOption, Boolean>,
     currentBaseUrlState: MutableState<String>,
     isNotSecuredApiState: Boolean,
-    isSwipeToDeleteDeactivatedState: Boolean,
+    isSwipeToDeleteDisabledState: Boolean = false,
+    isSwipeToDuplicateDisabledState: Boolean = false,
     onSaveUrl: (String) -> Unit,
     onSetOnboardingCompleted: (Boolean) -> Unit,
     onUpdateActiveButtons: (EnumMap<MainNavOption, Boolean>) -> Unit,
     onTestConnection: () -> Unit,
     onSetNotSecuredApi: (Boolean) -> Unit,
-    onSetSwipeToDeleteDeactivated: (Boolean) -> Unit
-
+    onSetSwipeToDeleteDisabled: (Boolean) -> Unit,
+    onSetSwipeToDuplicateDisabled: (Boolean) -> Unit
 ) {
 
     // Focus requester and manager
@@ -207,12 +221,14 @@ fun SettingsComposable(
 
             HorizontalDivider()
 
+            val rowModifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                modifier = rowModifier
             ) {
                 Text(
                     text = stringResource(R.string.private_webserver),
@@ -225,17 +241,30 @@ fun SettingsComposable(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                modifier = rowModifier
             ) {
                 Text(
-                    text = stringResource(R.string.delete_permission_menu),
+                    text = stringResource(R.string.delete_row_disabled),
                     modifier = Modifier.weight(1f)
                 )
 
-                Switch(checked = isSwipeToDeleteDeactivatedState, onCheckedChange = { isChecked ->
-                    onSetSwipeToDeleteDeactivated(isChecked)
+                Switch(checked = isSwipeToDeleteDisabledState, onCheckedChange = { isChecked ->
+                    onSetSwipeToDeleteDisabled(isChecked)
+                })
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = rowModifier
+            ) {
+                Text(
+                    text = stringResource(R.string.duplicate_row_disabled),
+                    modifier = Modifier.weight(1f)
+                )
+
+                Switch(checked = isSwipeToDuplicateDisabledState, onCheckedChange = { isChecked ->
+                    onSetSwipeToDuplicateDisabled(isChecked)
                 })
             }
 
@@ -250,16 +279,13 @@ fun SettingsComposable(
                     .padding(16.dp)
             ) {
 
-                Button(
-                    modifier = Modifier.weight(0.45f),
-                    onClick = { showDialog.value = true }) {
+                Button(modifier = Modifier.weight(0.45f), onClick = { showDialog.value = true }) {
                     Text(stringResource(R.string.dialog_button_settings))
                 }
                 Spacer(modifier = Modifier.weight(0.1f))
-                Button(modifier = Modifier.weight(0.45f),
-                    onClick = {
-                        onSetOnboardingCompleted(false)
-                    }) {
+                Button(modifier = Modifier.weight(0.45f), onClick = {
+                    onSetOnboardingCompleted(false)
+                }) {
                     Text(text = stringResource(R.string.show_intro_again))
                 }
             }
@@ -295,6 +321,9 @@ fun SettingsComposable(
     }
 }
 
+/**
+ * Top app bar for the settings screen
+ */
 @Composable
 fun MenuButtonsActivationDialog(
     showDialog: MutableState<Boolean>,
@@ -358,6 +387,9 @@ fun MenuButtonsActivationDialog(
     )
 }
 
+/**
+ * Preview for the buttons activation dialog
+ */
 @Preview(showBackground = true)
 @Composable
 fun ButtonsActivationDialogPreview(
@@ -369,6 +401,10 @@ fun ButtonsActivationDialogPreview(
     }
 }
 
+/**
+ * Preview for the settings screen
+ */
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
@@ -377,12 +413,13 @@ fun SettingsScreenPreview() {
             activeButtonsState = EnumMap(MainNavOption::class.java),
             currentBaseUrlState = remember { mutableStateOf("https://example.com/api") },
             isNotSecuredApiState = false,
-            isSwipeToDeleteDeactivatedState = true,
+            isSwipeToDeleteDisabledState = true,
             onSaveUrl = {},
             onSetOnboardingCompleted = {},
             onUpdateActiveButtons = {},
             onTestConnection = {},
             onSetNotSecuredApi = {},
-            onSetSwipeToDeleteDeactivated = {})
+            onSetSwipeToDeleteDisabled = {},
+            onSetSwipeToDuplicateDisabled = {})
     }
 }

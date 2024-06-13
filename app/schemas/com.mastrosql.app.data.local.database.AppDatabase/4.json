@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "84719ca2cd566dec81b7a3a742e1de40",
+    "identityHash": "4b01b467def1c7ca5596ba42c3c47837",
     "entities": [
       {
         "tableName": "items",
@@ -752,7 +752,7 @@
       },
       {
         "tableName": "order_details",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `orderRow` INTEGER, `confirmed` INTEGER, `articleId` INTEGER, `sku` TEXT, `vendorSku` TEXT, `description` TEXT, `completeDescription` TEXT, `quantity` REAL, `tmpQuantity` REAL, `returnedQuantity` REAL, `weight` REAL, `cost` TEXT, `price` TEXT, `vat` TEXT, `vatValue` REAL, `discount` REAL, `discount1` REAL, `discount2` REAL, `discount3` REAL, `catalogPrice` REAL, `measureUnit` TEXT, `rowType` INTEGER, `packSize` TEXT, `orderedQuantity` REAL, `shippedQuantity` REAL, `batch` TEXT, `expirationDate` TEXT, `metadata` TEXT, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `orderRow` INTEGER, `confirmed` INTEGER, `articleId` INTEGER, `sku` TEXT, `vendorSku` TEXT, `description` TEXT, `completeDescription` TEXT, `quantity` REAL, `tmpQuantity` REAL, `returnedQuantity` REAL, `weight` REAL, `cost` TEXT, `price` TEXT, `vat` TEXT, `vatValue` REAL, `discount` REAL, `discount1` REAL, `discount2` REAL, `discount3` REAL, `catalogPrice` REAL, `measureUnit` TEXT, `rowType` INTEGER, `packSize` TEXT, `orderedQuantity` REAL, `shippedQuantity` REAL, `batch` TEXT, `expirationDate` TEXT, `various` TEXT, `metadata` TEXT, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -925,6 +925,12 @@
           {
             "fieldPath": "expirationDate",
             "columnName": "expirationDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "various",
+            "columnName": "various",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -1134,7 +1140,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '84719ca2cd566dec81b7a3a742e1de40')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4b01b467def1c7ca5596ba42c3c47837')"
     ]
   }
 }

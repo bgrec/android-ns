@@ -4,10 +4,16 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
+/**
+ * Helper class to handle date formatting and validation.
+ */
 class DateHelper {
 
     companion object {
 
+        /**
+         * Format the date to display in the UI.
+         */
         fun formatDateToDisplay(date: String?): String {
             if (date.isNullOrEmpty()) {
                 return "" // Return empty string if Date is null
@@ -24,6 +30,9 @@ class DateHelper {
             }
         }
 
+        /**
+         * Format the date for the backend.
+         */
         fun formatDateToInput(date: String?): String {
             if (date.isNullOrEmpty()) {
                 return "" // Return empty string if Date is null
@@ -40,6 +49,9 @@ class DateHelper {
             }
         }
 
+        /**
+         * Check if the date is before today.
+         */
         fun isDateBeforeToday(date: String?): Boolean {
             if (date.isNullOrEmpty()) {
                 return false // Return false if Date is null or empty

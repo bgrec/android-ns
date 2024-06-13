@@ -28,7 +28,7 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 
 @Composable
 fun BottomBar(
-    drawerState: DrawerState? = null,
+    //drawerState: DrawerState? = null,
     navController: NavController,
 ) {
     BottomAppBar {
@@ -70,7 +70,7 @@ fun BottomBarAction(bottomBarAction: BottomBarAction) {
 fun BottomBarPreview() {
     val scope = rememberCoroutineScope()
     BottomBar(
-        drawerState = null,
+        //drawerState = null,
         navController = NavController(LocalContext.current),
     )
 }

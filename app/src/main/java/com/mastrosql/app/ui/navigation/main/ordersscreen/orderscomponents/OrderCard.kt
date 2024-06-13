@@ -33,26 +33,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
+/**
+ * Order card composable that displays the order information.
+ */
 @Composable
 fun OrderCard(
     order: Order,
     modifier: Modifier,
     navigateToOrderDetails: (Int, String?) -> Unit,
     modifiedOrderId: MutableIntState?,
-    showDeliveryDialog: MutableState<Boolean>
+    showEditDeliveryDialog: MutableState<Boolean>,
+    showEditOrderDataDialog: MutableState<Boolean>
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -93,15 +97,17 @@ fun OrderCard(
                         deliveryState = order.deliveryState,
                         onRowClick = {
                             modifiedOrderId?.intValue = order.id
-                            showDeliveryDialog.value = true
+                            showEditDeliveryDialog.value = true
                         })
                     if (expanded) {
-                        OrderInfo(
-                            destinationName = order.destinationName,
+                        OrderInfo(destinationName = order.destinationName,
                             deliveryDate = DateHelper.formatDateToDisplay(order.deliveryDate),
                             carrierName = order.carrierName,
-                            notes = order.notes
-                        )
+                            notes = order.notes,
+                            onOrderInfoClick = {
+                                modifiedOrderId?.intValue = order.id
+                                showEditOrderDataDialog.value = true
+                            })
                     }
                 }
                 //Spacer(Modifier.weight(1f))
@@ -124,7 +130,6 @@ fun OrderCard(
 
                         },
                         modifiedOrderId = modifiedOrderId?.intValue
-
                     )
                 }
             }
@@ -134,7 +139,9 @@ fun OrderCard(
 
 @Composable
 private fun OrderExpandButton(
-    expanded: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    expanded: Boolean,
+    onClick: () -> Unit,
 ) {
     IconButton(
         onClick = onClick
@@ -152,9 +159,9 @@ private fun OrderExpandButton(
 private fun OrderDetailsEditButton(
     modifier: Modifier = Modifier,
     orderId: Int,
+    modifiedOrderId: Int?,
     orderDescription: String?,
-    onEditClick: (Int, String?) -> Unit,
-    modifiedOrderId: Int?
+    onEditClick: (Int, String?) -> Unit
 ) {
     val defaultTint = MaterialTheme.colorScheme.secondary
     val orderEditButtonTint = remember { mutableStateOf(defaultTint) }
@@ -280,13 +287,19 @@ fun OrderInfo(
     destinationName: String?,
     deliveryDate: String?,
     carrierName: String? = "",
-    notes: String? = null
+    notes: String? = null,
+    onOrderInfoClick: () -> Unit = {}
 
 ) {
+    val focusRequester = remember { FocusRequester() }
     Column(
-        modifier = modifier.padding(
-            top = 4.dp
-        )
+        modifier = modifier
+            .padding(top = 4.dp)
+            .clickable(onClick = {
+                onOrderInfoClick()
+                focusRequester.requestFocus()
+            })
+            .focusRequester(focusRequester)
     ) {
 
         Row(
@@ -318,7 +331,6 @@ fun OrderInfo(
                 style = MaterialTheme.typography.bodySmall
             )
         }
-
 
         Row(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
@@ -364,7 +376,10 @@ fun OrderInfo(
     }
 }
 
-@Preview(apiLevel = 33)
+/**
+ * Preview for [OrderCard]
+ */
+@Preview(showBackground = true)
 @Composable
 fun OrderCardPreview() {
     MastroAndroidTheme {
@@ -405,15 +420,19 @@ fun OrderCardPreview() {
             lastUpdated = System.currentTimeMillis()
         ),
             modifier = Modifier,
-           // navController = NavController(LocalContext.current),
+            // navController = NavController(LocalContext.current),
             navigateToOrderDetails = { _, _ -> },
             modifiedOrderId = remember { mutableIntStateOf(0) },
-            showDeliveryDialog = remember { mutableStateOf(false) })
+            showEditDeliveryDialog = remember { mutableStateOf(false) },
+            showEditOrderDataDialog = remember { mutableStateOf(false) })
     }
 }
 
 
-@Preview(apiLevel = 33)
+/**
+ * Preview for [OrderInfo]
+ */
+@Preview(showBackground = true)
 @Composable
 fun OrderInfoPreview() {
     MastroAndroidTheme {
@@ -427,3 +446,36 @@ fun OrderInfoPreview() {
     }
 }
 
+/**
+ * Preview for [OrderDescriptionAndId]
+ */
+@Preview(showBackground = true)
+@Composable
+fun OrderDescriptionAndIdPreview() {
+    MastroAndroidTheme {
+        OrderDescriptionAndId(
+            orderId = 1,
+            insertDate = "insertDate",
+            deliveryState = 1,
+            businessName = "businessName",
+            description = "description",
+            modifier = Modifier
+        )
+    }
+}
+
+/**
+ * Preview for [OrderDetailsEditButton]
+ */
+@Preview(showBackground = true)
+@Composable
+fun OrderDetailsEditButtonPreview() {
+    MastroAndroidTheme {
+        OrderDetailsEditButton(
+            orderId = 1,
+            orderDescription = "description",
+            onEditClick = { _, _ -> },
+            modifiedOrderId = 1
+        )
+    }
+}

@@ -1,6 +1,8 @@
 package com.mastrosql.app.ui.navigation.main
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -24,6 +26,11 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.Ord
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 
+/**
+ * Main navigation graph for the app.
+ */
+@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
 
     navigation(
@@ -110,7 +117,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                         navController.navigateUp()
                     },
                     navController = navController,
-                    drawerState = drawerState
+                    //drawerState = drawerState
                 )
 
             }

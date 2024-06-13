@@ -15,17 +15,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersUiState
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.DeliveryStates.deliveryStates
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
+/**
+ * Composable function to show the dialog to edit the delivery state of an order
+ */
 @Composable
 fun EditDeliveryStateDialog(
-    showDeliveryDialog: MutableState<Boolean>,
+    showEditDeliveryDialog: MutableState<Boolean>,
     ordersUiState: OrdersUiState.Success,
     onUpdateDeliveryState: (Int, Int) -> Unit
 ) {
@@ -34,8 +40,8 @@ fun EditDeliveryStateDialog(
     val selectedDeliveryState = remember { mutableIntStateOf(0) }
 
     // LaunchedEffect to set the initial value when the dialog is opened
-    LaunchedEffect(showDeliveryDialog) {
-        if (showDeliveryDialog.value) {
+    LaunchedEffect(showEditDeliveryDialog) {
+        if (showEditDeliveryDialog.value) {
             val modifiedOrder =
                 ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.intValue }
             val modifiedOrderDeliveryState = modifiedOrder?.deliveryState
@@ -45,22 +51,18 @@ fun EditDeliveryStateDialog(
         }
     }
 
-    AlertDialog(
-        modifier = Modifier.wrapContentSize(),
-        onDismissRequest = { showDeliveryDialog.value = false },
+    AlertDialog(modifier = Modifier.wrapContentSize(),
+        onDismissRequest = { showEditDeliveryDialog.value = false },
         title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
         text = {
             Column(modifier = Modifier.wrapContentSize()) {
                 deliveryStates.forEach { deliveryState ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                    selectedDeliveryState.intValue =
-                                        deliveryState.state //deve fare stessa cosa del onClick RadioButton
-                                }
-                            ),
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = {
+                            selectedDeliveryState.intValue =
+                                deliveryState.state //deve fare stessa cosa del onClick RadioButton
+                        }),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -78,21 +80,34 @@ fun EditDeliveryStateDialog(
         },
         dismissButton = {
             TextButton(onClick = {
-                showDeliveryDialog.value = false
+                showEditDeliveryDialog.value = false
             }) {
                 Text(stringResource(R.string.dismiss_button))
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                showDeliveryDialog.value = false
+                showEditDeliveryDialog.value = false
                 onUpdateDeliveryState(
-                    ordersUiState.modifiedOrderId.intValue,
-                    selectedDeliveryState.intValue
+                    ordersUiState.modifiedOrderId.intValue, selectedDeliveryState.intValue
                 )
             }) {
                 Text(stringResource(R.string.confirm_button))
             }
-        }
-    )
+        })
+}
+
+/**
+ * Preview function for EditDeliveryStateDialog
+ */
+@Composable
+@Preview(showBackground = true)
+fun EditDeliveryStateDialogPreview() {
+    MastroAndroidTheme {
+        EditDeliveryStateDialog(showEditDeliveryDialog = mutableStateOf(true),
+            ordersUiState = OrdersUiState.Success(
+                ordersList = emptyList(), modifiedOrderId = mutableIntStateOf(0)
+            ),
+            onUpdateDeliveryState = { _, _ -> })
+    }
 }

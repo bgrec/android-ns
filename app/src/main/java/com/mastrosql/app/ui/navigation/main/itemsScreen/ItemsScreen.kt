@@ -48,7 +48,7 @@ object ItemsDestination : NavigationDestination {
 /**
  * Entry route for Items screen
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ItemsScreen(
