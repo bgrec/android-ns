@@ -43,10 +43,13 @@ interface ArticlesRepository {
      */
     suspend fun updateArticle(article: Article)
 
+    /**
+     * Update the [MastroAndroidApiService] used by the repository.
+     */
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
+
+
     suspend fun insertArticleIntoDocument(
-        documentId: Int,
-        documentType: String,
-        articleId: Int
+        documentId: Int, documentType: String, articleId: Int
     ): Response<JsonObject>
 }
