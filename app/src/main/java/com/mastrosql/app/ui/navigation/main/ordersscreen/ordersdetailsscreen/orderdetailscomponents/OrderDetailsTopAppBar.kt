@@ -1,8 +1,9 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,19 +14,21 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 /**
  * App bar to display title and conditionally display the back navigation.
  */
 
 // TODO: Add the OrderDetailsTopAppBar composable here from file
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun OrderDetailsTopAppBar(
+    modifier: Modifier = Modifier,
     title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navigateUp: () -> Unit = {},
     onAddItemClick: () -> Unit = {}
@@ -61,13 +64,29 @@ fun OrderDetailsTopAppBar(
         actions = {
             IconButton(
                 onClick = { onAddItemClick() },
-                //modifier = Modifier.padding(end = 16.dp) // Add padding to the button
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Default.AddCircle,
+                    modifier = Modifier.fillMaxSize(),
                     contentDescription = stringResource(R.string.order_details_add_button)
                 )
             }
         }
     )
+}
+
+/**
+ * Preview for [OrderDetailsTopAppBar]
+ */
+@ExperimentalMaterial3Api
+@Preview(showBackground = true)
+@Composable
+fun OrderDetailsTopAppBarPreview() {
+    MastroAndroidTheme {
+        OrderDetailsTopAppBar(
+            title = "Order Details",
+            canNavigateBack = true,
+            onAddItemClick = {}
+        )
+    }
 }

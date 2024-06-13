@@ -10,7 +10,7 @@ class NetworkLoginRepository(
     private var mastroAndroidApiService: MastroAndroidApiService,
 ) : LoginRepository {
 
-    @OptIn(ExperimentalEncodingApi::class)
+    @ExperimentalEncodingApi
     override suspend fun login(username: String, password: String): Response<JsonObject> {
         val authenticationAppName = "MySQL Internal"
         val base64String =
@@ -30,6 +30,7 @@ class NetworkLoginRepository(
     override suspend fun loginCompleted(): Response<JsonObject> {
         return mastroAndroidApiService.getLoginCompleted()
     }
+
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         this.mastroAndroidApiService = newMastroAndroidApiService
     }

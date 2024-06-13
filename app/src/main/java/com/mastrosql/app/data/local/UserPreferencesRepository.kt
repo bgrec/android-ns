@@ -25,6 +25,7 @@ import javax.inject.Inject
 /**
  * Data class to hold user preferences
  */
+@Suppress("KDocMissingDocumentation")
 data class UserPreferences(
     val searchValue: String = "",
     val isLinearLayout: Boolean = true,
@@ -38,26 +39,31 @@ data class UserPreferences(
     val appVersion: String = "",
     val sessionToken: String = "",
     val isNotSecuredApi: Boolean = false,
-    val isSwipeToDeleteDeactivated: Boolean = false
+    val isSwipeToDeleteDisabled: Boolean = false,
+    val isSwipeToDuplicateDisabled: Boolean = false
 )
 
 /**
  * Data class to hold user preferences keys
  */
+@Suppress("KDocMissingDocumentation")
 object UserPreferencesKeys {
-    val SEARCH_VALUE = stringPreferencesKey("search_value")
-    val IS_LINEAR_LAYOUT = booleanPreferencesKey("is_linear_layout")
-    val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
-    val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-    val BASE_URL = stringPreferencesKey("base_url")
-    val ACTIVE_BUTTONS = stringPreferencesKey("active_buttons")
-    val USERNAME = stringPreferencesKey("username")
-    val USER_TYPE = stringPreferencesKey("user_type")
-    val USER_ERP_CODE = stringPreferencesKey("user_erp_code")
-    val APP_VERSION = stringPreferencesKey("app_version")
-    val SESSION_KEY = stringPreferencesKey("session_key")
-    val IS_NOT_SECURED_API = booleanPreferencesKey("is_not_secured_api")
-    val IS_SWIPE_TO_DELETE_DEACTIVATED = booleanPreferencesKey("is_swipe_to_delete_deactivated")
+    val SEARCH_VALUE: Preferences.Key<String> = stringPreferencesKey("search_value")
+    val IS_LINEAR_LAYOUT: Preferences.Key<Boolean> = booleanPreferencesKey("is_linear_layout")
+    val IS_ONBOARDED: Preferences.Key<Boolean> = booleanPreferencesKey("is_onboarded")
+    val IS_LOGGED_IN: Preferences.Key<Boolean> = booleanPreferencesKey("is_logged_in")
+    val BASE_URL: Preferences.Key<String> = stringPreferencesKey("base_url")
+    val ACTIVE_BUTTONS: Preferences.Key<String> = stringPreferencesKey("active_buttons")
+    val USERNAME: Preferences.Key<String> = stringPreferencesKey("username")
+    val USER_TYPE: Preferences.Key<String> = stringPreferencesKey("user_type")
+    val USER_ERP_CODE: Preferences.Key<String> = stringPreferencesKey("user_erp_code")
+    val APP_VERSION: Preferences.Key<String> = stringPreferencesKey("app_version")
+    val SESSION_KEY: Preferences.Key<String> = stringPreferencesKey("session_key")
+    val IS_NOT_SECURED_API: Preferences.Key<Boolean> = booleanPreferencesKey("is_not_secured_api")
+    val IS_SWIPE_TO_DELETE_DISABLED: Preferences.Key<Boolean> =
+        booleanPreferencesKey("is_swipe_to_delete_disabled")
+    val IS_SWIPE_TO_DUPLICATE_DISABLED: Preferences.Key<Boolean> =
+        booleanPreferencesKey("is_swipe_to_duplicate_disabled")
 }
 
 /**
@@ -71,6 +77,9 @@ class UserPreferencesRepository @Inject constructor(
     private val tag = "MastroAndroidUserPref."
     private val gson = Gson()
 
+    /**
+     * Update the MastroAndroidApiService instance after changing the base URL
+     */
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         this.mastroAndroidApiService = newMastroAndroidApiService
     }
@@ -78,7 +87,6 @@ class UserPreferencesRepository @Inject constructor(
     /**
      * Get the user preferences flow.
      */
-
     private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data.catch { exception ->
         if (exception is IOException) {
             Log.e(tag, "Error reading preferences.", exception)
@@ -116,8 +124,10 @@ class UserPreferencesRepository @Inject constructor(
         val appVersion = preferences[UserPreferencesKeys.APP_VERSION] ?: ""
         val sessionToken = preferences[UserPreferencesKeys.SESSION_KEY] ?: ""
         val isNotSecuredApi = preferences[UserPreferencesKeys.IS_NOT_SECURED_API] ?: false
-        val isSwipeToDeleteDeactivated =
-            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DEACTIVATED] ?: false
+        val isSwipeToDeleteDisabled =
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DISABLED] ?: false
+        val isSwipeToDuplicateDisabled =
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DUPLICATE_DISABLED] ?: false
 
         return UserPreferences(
             searchValue,
@@ -132,10 +142,14 @@ class UserPreferencesRepository @Inject constructor(
             appVersion,
             sessionToken,
             isNotSecuredApi,
-            isSwipeToDeleteDeactivated
+            isSwipeToDeleteDisabled,
+            isSwipeToDuplicateDisabled
         )
     }
 
+    /**
+     * Update the user preferences.
+     */
     suspend fun updateUserPreferences(userPreferences: UserPreferences) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.SEARCH_VALUE] = userPreferences.searchValue
@@ -151,11 +165,16 @@ class UserPreferencesRepository @Inject constructor(
             preferences[UserPreferencesKeys.APP_VERSION] = userPreferences.appVersion
             preferences[UserPreferencesKeys.SESSION_KEY] = userPreferences.sessionToken
             preferences[UserPreferencesKeys.IS_NOT_SECURED_API] = userPreferences.isNotSecuredApi
-            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DEACTIVATED] =
-                userPreferences.isSwipeToDeleteDeactivated
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DISABLED] =
+                userPreferences.isSwipeToDeleteDisabled
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DUPLICATE_DISABLED] =
+                userPreferences.isSwipeToDuplicateDisabled
         }
     }
 
+    /**
+     * Save the isOnboarded status.
+     */
     suspend fun saveOnBoardingCompleted(isOnboarded: Boolean) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.IS_ONBOARDED] = isOnboarded
@@ -329,14 +348,37 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
-    fun getIsSwipeToDeleteDeactivated(): Flow<Boolean> {
-        return userPreferencesFlow.map { it.isSwipeToDeleteDeactivated }
+    fun getIsSwipeToDeleteDisabled(): Flow<Boolean> {
+        return userPreferencesFlow.map { it.isSwipeToDeleteDisabled }
     }
 
-    suspend fun saveIsSwipeToDeleteDeactivated(isSwipeToDeleteDeactivated: Boolean) {
+    suspend fun saveIsSwipeToDeleteDisabled(isSwipeToDeleteDisabled: Boolean) {
         dataStore.edit { preferences ->
-            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DEACTIVATED] =
-                isSwipeToDeleteDeactivated
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DISABLED] =
+                isSwipeToDeleteDisabled
+        }
+    }
+
+    fun getIsSwipeToDuplicateDisabled(): Flow<Boolean> {
+        return userPreferencesFlow.map { it.isSwipeToDuplicateDisabled }
+    }
+
+    suspend fun saveIsSwipeToDuplicateDisabled(isSwipeToDuplicateDisabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DUPLICATE_DISABLED] =
+                isSwipeToDuplicateDisabled
+        }
+    }
+
+    /**
+     * Get the swipe actions preferences.
+     */
+    fun getSwipeActionsPreferences(): Flow<SwipeActionsPreferences> {
+        return userPreferencesFlow.map {
+            SwipeActionsPreferences(
+                isDeleteDisabled = getIsSwipeToDeleteDisabled().first(),
+                isDuplicateDisabled = getIsSwipeToDuplicateDisabled().first()
+            )
         }
     }
 }

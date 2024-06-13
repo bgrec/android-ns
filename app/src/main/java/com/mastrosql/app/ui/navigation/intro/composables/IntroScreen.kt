@@ -79,7 +79,8 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
 @Composable
 fun IntroScreen(
     navController: NavController,

@@ -5,8 +5,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Utility class to create a new order from the order state.
+ */
 object OrderUtils {
 
+    /**
+     * Create a new order from the order state.
+     */
     fun createNewOrderFromState(orderState: OrderState): Order {
         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY).format(Date())
 

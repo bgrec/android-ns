@@ -10,7 +10,13 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Response
 
+/**
+ * Class to handle the error response from the network
+ */
 object NetworkSuccessHandler {
+    /**
+     * Function to handle the   response from the API
+     */
     inline fun handleUnauthorized(
         context: Context,
         coroutineScope: CoroutineScope,
@@ -25,7 +31,9 @@ object NetworkSuccessHandler {
         onUnauthorized()
     }
 
-    //404
+    /**
+     * Function to handle the 404 response from the API
+     */
     fun handleNotFound(
         context: Context,
         coroutineScope: CoroutineScope,
@@ -38,7 +46,9 @@ object NetworkSuccessHandler {
         )
     }
 
-    //500, 503
+    /**
+     * Function to handle the 500 and 503 response from the API
+     */
     fun handleServerError(
         context: Context,
         response: Response<*>,
@@ -54,6 +64,9 @@ object NetworkSuccessHandler {
         )
     }
 
+    /**
+     * Function to handle the unknown error response from the API
+     */
     fun handleUnknownError(
         context: Context,
         response: Response<*>,
@@ -68,6 +81,9 @@ object NetworkSuccessHandler {
         )
     }
 
+    /**
+     * Function to show a toast message
+     */
     fun showToastMessage(
         context: Context,
         message: String,

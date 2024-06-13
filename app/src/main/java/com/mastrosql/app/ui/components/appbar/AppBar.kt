@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun AppBar(
     drawerState: DrawerState? = null,

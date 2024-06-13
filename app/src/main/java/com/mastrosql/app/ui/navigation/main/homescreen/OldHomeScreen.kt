@@ -1,35 +1,27 @@
 package com.mastrosql.app.ui.navigation.main.homescreen
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.isTraversalGroup
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
-import com.mastrosql.app.data.datasource.DataSourceTest_cancel_it_Later
-import com.mastrosql.app.ui.components.bottombar.BottomBar
-import com.mastrosql.app.ui.navigation.main.cartscreen.CartViewModel
-import com.mastrosql.app.ui.navigation.main.itemsScreen.itemComponents.ItemsList
-import com.mastrosql.app.ui.navigation.main.itemsScreen.itemComponents.ItemsSearchSuggestionList
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.*
+import androidx.compose.ui.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.semantics.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import androidx.navigation.*
+import com.mastrosql.app.data.datasource.*
+import com.mastrosql.app.ui.components.bottombar.*
+import com.mastrosql.app.ui.navigation.main.cartscreen.*
+import com.mastrosql.app.ui.navigation.main.itemsScreen.itemComponents.*
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ *
+ */
+@ExperimentalMaterial3Api
 @Composable
 fun OldHomeScreen(
     drawerState: DrawerState,
@@ -46,7 +38,7 @@ fun OldHomeScreen(
             )
         },
         bottomBar = {
-            BottomBar(drawerState = drawerState, navController = navController)
+            BottomBar(/*drawerState = drawerState, */navController = navController)
         },
     ) {
         Column(
@@ -61,6 +53,9 @@ fun OldHomeScreen(
     }
 }
 
+/**
+ *
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun SearchBar(drawerState: DrawerState, navController: NavController, viewModel: CartViewModel) {
@@ -122,12 +117,19 @@ fun SearchBar(drawerState: DrawerState, navController: NavController, viewModel:
     }
 }
 
+/**
+ *
+ */
 @Preview(apiLevel = 33)
 @Composable
 fun SearchBarPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
 }
 
+/**
+ * Preview for [OldHomeScreen]
+ */
+@ExperimentalMaterial3Api
 @Preview(apiLevel = 33)
 @Composable
 fun HomeScreenOldPreview() {

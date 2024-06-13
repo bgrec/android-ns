@@ -1,6 +1,8 @@
 package com.mastrosql.app.ui.navigation.main
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -11,6 +13,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -33,6 +36,12 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Orders
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
+/**
+ * Main composable for the app
+ */
+@ExperimentalMaterialApi
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
 @Composable
 fun MainCompose(
     navController: NavHostController = rememberNavController(),
@@ -110,12 +119,18 @@ fun MainCompose(
         })
 }
 
+/**
+ * Navigation drawer composable
+ */
+@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
 @Composable
 fun NavigationDrawerComposable(
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
     isOnboarded: Boolean = false,
-    activeButtons: Map<MainNavOption, Boolean> ? = emptyMap(),
+    activeButtons: Map<MainNavOption, Boolean>? = emptyMap(),
     navHostController: NavHostController,
     currentScreen: MainNavOption? = null,
     onNewCurrentPickChange: (MainNavOption) -> Unit,
@@ -234,13 +249,29 @@ fun NavigationDrawerComposable(
     }
 }
 
+/**
+ * Main navigation graph
+ */
 enum class NavRoutes {
-    IntroRoute, MainRoute
+    /**
+     * Intro route
+     */
+    IntroRoute,
+
+    /**
+     * Main route
+     */
+    MainRoute
 }
 
+/**
+ * Drawer button parameters
+ */
 object DrawerParams {
 
-    // Function to create drawer buttons based on activeButtonsUiState
+    /**
+     * Function to create drawer buttons based on activeButtonsUiState
+     */
     fun createDrawerButtons(activeButtonsUiState: Map<MainNavOption, Boolean>?): List<AppDrawerItemInfo<MainNavOption>> {
         val buttons = arrayListOf<AppDrawerItemInfo<MainNavOption>>()
 
@@ -343,6 +374,12 @@ object DrawerParams {
     }
 }
 
+/**
+ *  Preview for [MainCompose]
+ */
+@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
 @Preview(apiLevel = 34, showBackground = true)
 @Composable
 fun MainComposePreview() {

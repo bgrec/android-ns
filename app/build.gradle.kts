@@ -24,8 +24,8 @@ android {
         applicationId = "com.mastrosql.app"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.1"
+        versionCode = 2
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "com.mastrosql.app.HiltTestRunner"
         vectorDrawables {
@@ -39,6 +39,22 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val propertiesFile = file("../../../src/keystore/release-signing.properties")
+            if (!propertiesFile.exists()) {
+                //throw IllegalArgumentException("Keystore file not found")
+                println("Keystore file not found, verify the path and try again")
+            } else {
+                val props = loadProperties(propertiesFile)
+                keyAlias = props["keyAlias"] as String
+                keyPassword = props["keyPassword"] as String
+                storeFile = file(props["storeFile"] as String)
+                storePassword = props["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -49,7 +65,7 @@ android {
             // Load properties from the file
             val propertiesFile = file("../app/config/release.properties")
             val props = loadProperties(propertiesFile)
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
 
             // Configure properties from the file
             props.forEach { (key, value) ->
@@ -92,6 +108,7 @@ android {
             // Load properties from the file
             val propertiesFile = file("../app/config/staging.properties")
             val props = loadProperties(propertiesFile)
+            signingConfig = signingConfigs.getByName("release")
 
             // Configure properties from the file
             props.forEach { (key, value) ->
@@ -140,9 +157,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildToolsVersion = "34.0.0"
+
+    lint {
+        checkOnly += "NewApi"
+        checkOnly += "HandlerLeak"
+    }
 }
 
-// Function to load properties from a file
+/**
+ * Function to load properties from a file
+ */
 fun loadProperties(propertiesFile: File): Properties {
     val props = Properties()
     try {

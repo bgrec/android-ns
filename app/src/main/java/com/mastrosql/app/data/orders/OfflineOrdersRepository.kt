@@ -7,14 +7,18 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrderState
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
+/**
+ * Repository that provides insert, update, delete, and retrieve of [Order] from a given data source.
+ */
 class OfflineOrdersRepository(
     private val ordersDao: OrdersDao, override val outputWorkInfo: Flow<WorkInfo>
 ) : OrdersRepository {
     override suspend fun getOrders(): OrdersResponse {
-        TODO()
+        TODO("Not yet implemented")
     }
 
     override fun getAllOrdersStream(): Flow<List<Order>> = ordersDao.getAllOrders()
@@ -43,4 +47,9 @@ class OfflineOrdersRepository(
     override suspend fun getOrderByOrderId(orderId: Int): OrdersResponse {
         TODO("Not yet implemented")
     }
+
+    override suspend fun updateOrderData(orderState: OrderState): Response<OrderAddResponse> {
+        TODO("Not yet implemented")
+    }
+
 }

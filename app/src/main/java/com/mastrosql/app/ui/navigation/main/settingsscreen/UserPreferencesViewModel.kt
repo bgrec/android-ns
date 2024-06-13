@@ -35,27 +35,39 @@ import java.util.EnumMap
     ) : UserPreferencesUiState()
     data class Error(val message: String) : UserPreferencesUiState()
 }
-* */
+*
+*/
 
 
+/**
+ * UI state for the user preferences screen.
+ */
+@Suppress("KDocMissingDocumentation")
 data class UserPreferencesUiState(
     val isOnboarded: Boolean = false,
     val isLoggedIn: Boolean = false,
     val isNotSecuredApi: Boolean = false,
-    val isSwipeToDeleteDeactivated: Boolean = false,
+    val isSwipeToDeleteDisabled: Boolean = false,
+    val isSwipeToDuplicateDisabled: Boolean = false,
     val baseUrl: String = "",
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
     // collect it as collectAsStateWithLifecycle()
 )
 
+/**
+ * ViewModel for the user preferences screen.
+ */
 open class UserPreferencesViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
     // Mutable state flow for UI state
     private val _uiState = MutableStateFlow(UserPreferencesUiState())
-    val uiState: StateFlow<UserPreferencesUiState> = _uiState
 
+    /**
+     * UI state for the user preferences screen.
+     */
+    val uiState: StateFlow<UserPreferencesUiState> = _uiState
 
     // Function to update UI state
     private fun updateUiState(newState: UserPreferencesUiState) {
@@ -85,11 +97,25 @@ open class UserPreferencesViewModel(
             }
         }
 
-        // Observe changes in isSwipeToDeleteDeactivated and update UI state accordingly
+        // Observe changes in isSwipeToDeleteDisabled and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository.getIsSwipeToDeleteDeactivated()
-                .collect { isSwipeToDeleteDeactivated ->
-                    updateUiState(uiState.value.copy(isSwipeToDeleteDeactivated = isSwipeToDeleteDeactivated))
+            userPreferencesRepository.getIsSwipeToDeleteDisabled()
+                .collect { isSwipeToDeleteDisabled ->
+                    updateUiState(
+                        uiState.value
+                            .copy(isSwipeToDeleteDisabled = isSwipeToDeleteDisabled)
+                    )
+                }
+        }
+
+        // Observe changes in isSwipeToDuplicateDisabled and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getIsSwipeToDuplicateDisabled()
+                .collect { isSwipeToDuplicateDisabled ->
+                    updateUiState(
+                        uiState.value
+                            .copy(isSwipeToDuplicateDisabled = isSwipeToDuplicateDisabled)
+                    )
                 }
         }
 
@@ -108,6 +134,9 @@ open class UserPreferencesViewModel(
         }
     }
 
+    /**
+     *
+     */
     fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         viewModelScope.launch {
             userPreferencesRepository.updateActiveButtons(activeButtons)
@@ -125,6 +154,9 @@ open class UserPreferencesViewModel(
         }
     }
 
+    /**
+     *
+     */
     fun setBaseUrl(baseUrl: String) {
         viewModelScope.launch {
             if (try {
@@ -143,6 +175,9 @@ open class UserPreferencesViewModel(
         }
     }
 
+    /**
+     *
+     */
     open fun logout(navController: NavController) {
         viewModelScope.launch {
             // Navigate to the login screen
@@ -163,6 +198,9 @@ open class UserPreferencesViewModel(
         }
     }
 
+    /**
+     *
+     */
     suspend fun testRetrofitConnection(context: Context) {
         // Show loading message
         ToastUtils.showToast(
@@ -216,15 +254,30 @@ open class UserPreferencesViewModel(
         }
     }
 
+    /**
+     *
+     */
     fun setNotSecuredApi(isNotSecuredApi: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveIsNotSecuredApi(isNotSecuredApi)
         }
     }
 
-    fun setSwipeToDelete(isSwipeToDeleteDeactivated: Boolean) {
+    /**
+     *
+     */
+    fun setSwipeToDelete(isSwipeToDeleteDisabled: Boolean) {
         viewModelScope.launch {
-            userPreferencesRepository.saveIsSwipeToDeleteDeactivated(isSwipeToDeleteDeactivated)
+            userPreferencesRepository.saveIsSwipeToDeleteDisabled(isSwipeToDeleteDisabled)
+        }
+    }
+
+    /**
+     *
+     */
+    fun setSwipeToDuplicate(isSwipeToDuplicateDisabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveIsSwipeToDuplicateDisabled(isSwipeToDuplicateDisabled)
         }
     }
 

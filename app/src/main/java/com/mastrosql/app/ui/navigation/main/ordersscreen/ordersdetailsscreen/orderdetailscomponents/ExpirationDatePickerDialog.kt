@@ -25,7 +25,7 @@ import java.util.Locale
 //val snackScope = rememberCoroutineScope()
 //SnackbarHost(hostState = snackState, Modifier)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun ExpirationDatePickerDialog(
     showDatePickerDialog: MutableState<Boolean>,
@@ -78,6 +78,7 @@ fun ExpirationDatePickerDialog(
     }
 }
 
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun ExpirationDatePickerDialogPreview() {
