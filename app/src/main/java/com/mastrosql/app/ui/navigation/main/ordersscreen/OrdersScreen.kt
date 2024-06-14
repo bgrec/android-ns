@@ -214,3 +214,127 @@ fun OrdersResultScreen(
         }
     }
 }
+
+/**
+ * Orders result screen composable, displays the list of orders.
+ */
+/*@Composable
+fun OrdersResult(
+
+) {
+    // Context used to show the toast
+    val context = LocalContext.current
+
+    // CoroutineScope to handle scrolling actions
+    val coroutineScope = rememberCoroutineScope()
+
+    // State to control the delivery dialog visibility
+    val showEditDeliveryDialog = remember { mutableStateOf(false) }
+
+    // State to control the order data dialog visibility
+    val showEditOrderDataDialog = remember { mutableStateOf(false) }
+
+    // State to control the bottom sheet visibility
+    val showBottomSheet = remember { mutableStateOf(false) }
+
+    // Lazy list state to handle the scroll actions
+    val listState = rememberLazyListState()
+
+    // State to show the floating button
+    val showFloatingButton by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            OrdersTopAppBar(drawerState = drawerState,
+                title = stringResource(R.string.clients_orders_bar_title),
+                onAddOrderClick = {
+                    showBottomSheet.value = true
+                })
+        },
+        floatingActionButton = {
+            AnimatedVisibility(visible = showFloatingButton) {
+                FloatingActionButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowUpward,
+                        contentDescription = stringResource(R.string.order_entry_title)
+                    )
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            // verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val textState = remember { mutableStateOf(TextFieldValue("")) }
+
+            // Search view for filtering the orders list
+            OrdersSearchView(state = textState)
+
+            // Orders list, lazy column with the orders
+            OrdersList(
+                modifier = Modifier.padding(4.dp),
+                listState = listState,
+                ordersList = ordersUiState.ordersList,
+                modifiedOrderId = ordersUiState.modifiedOrderId,
+                searchTextState = textState,
+                navigateToOrderDetails = navigateToOrderDetails,
+                showEditDeliveryDialog = showEditDeliveryDialog,
+                showEditOrderDataDialog = showEditOrderDataDialog
+            )
+        }
+
+        if (showEditDeliveryDialog.value) {
+            // Edit delivery Alert dialog, used to update the delivery state of an order
+            EditDeliveryStateDialog(showEditDeliveryDialog = showEditDeliveryDialog,
+                ordersUiState = ordersUiState,
+                onUpdateDeliveryState = { orderId, deliveryState ->
+                    viewModel.updateDeliveryState(
+                        context = context, orderId = orderId, deliveryState = deliveryState
+                    )
+                })
+        }
+
+        if (showEditOrderDataDialog.value) {
+            // Order data Alert dialog, used to show and edit the order data
+            EditOrderDataDialog(modifier = modifier,
+                showEditOrderDataDialog = showEditOrderDataDialog,
+                ordersUiState = ordersUiState,
+                onUpdateOrderData = { orderState ->
+                    viewModel.updateOrderData(
+                        context = context, orderState = orderState
+                    )
+                })
+        }
+
+        if (showBottomSheet.value) {
+            // Bottom sheet to add a new order
+            NewOrderBottomSheet(navController = navController,
+                showBottomSheet = showBottomSheet,
+                modifier = modifier,
+                onDismissButton = { showBottomSheet.value = it },
+                onConfirmButton = { order ->
+                    viewModel.addNewOrder(
+                        context, order
+                    )
+                    showBottomSheet.value = false
+                })
+        }
+    }
+}*/
