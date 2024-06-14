@@ -105,15 +105,34 @@ object NetworkSuccessHandler {
     private fun parseErrorMessage(context: Context, response: Response<*>): String {
         val errorBody: String? = response.errorBody()?.string()
         val responseBody: String = errorBody ?: ""
+
+        /**
+         * Parses the error message from the response body if it is not empty.
+         * Returns an empty string if no error message is found or an unexpected error occurs.
+         */
         return if (responseBody.isNotEmpty()) {
+
+            /**
+             * Parses the error message from a JSON response body.
+             */
             try {
                 val jsonError = JSONObject(responseBody)
                 jsonError.optString("message", "")
-            } catch (e: Exception) {
+            }
+
+            /**
+             * Catches and handles any exception that occurs while parsing a JSON response.
+             */
+            catch (e: Exception) {
                 Log.e("NetworkExceptionHandler", "Error parsing response ${e.message} ")
                 context.getString(R.string.error_unexpected_error, e.message ?: "")
             }
-        } else {
+        }
+
+        /**
+         * Parses the error message from a JSON response body.
+         */
+        else {
             context.getString(R.string.error_unexpected_error, "")
         }
     }

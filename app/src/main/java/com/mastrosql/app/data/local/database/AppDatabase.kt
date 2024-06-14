@@ -82,6 +82,10 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
     ]*/
 )
 
+/**
+ * Annotation to specify the type converters used by Room for custom data types when storing and retrieving from the database.
+ * Each converter class listed should implement the TypeConverter interface to facilitate conversion to and from database-compatible types.
+ */
 @TypeConverters(
     ItemMetadataTypeConverter::class,
     CustomerLinksTypeConverter::class,
@@ -96,28 +100,89 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
     DestinationsLinksTypeConverter::class
 )
 
+/**
+ * Abstract database class that extends RoomDatabase and provides access to various DAOs for interacting with
+ * different entities in the database.
+ */
 abstract class AppDatabase : RoomDatabase() {
 
     //abstract fun mastroDbDao(): MastroDbDao
 
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the Item entity in the database.
+     */
     abstract fun itemDao(): ItemDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the CustomersMasterData entity in the database.
+     */
     abstract fun customersMasterDataDao(): CustomersMasterDataDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the CustomersRemoteKeys entity in the database.
+     */
     abstract fun customersRemoteKeysDao(): CustomersRemoteKeysDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the Articles entity in the database.
+     */
     abstract fun articlesDao(): ArticlesDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the remote keys related to the Articles entity in the database.
+     */
     abstract fun articlesRemoteKeysDao(): ArticlesRemoteKeysDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the Orders entity in the database.
+     */
     abstract fun ordersDao(): OrdersDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the OrdersRemoteKeys entity in the database.
+     */
     abstract fun ordersRemoteKeysDao(): OrdersRemoteKeysDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the OrderDetails entity in the database.
+     */
     abstract fun orderDetailsDao(): OrderDetailsDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the OrderDetailsRemoteKeys entity in the database.
+     */
     abstract fun orderDetailRemoteKeysDao(): OrderDetailsRemoteKeysDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the DestinationsData entity in the database.
+     */
     abstract fun destinationsDataDao(): DestinationsDataDao
 
+
+    /**
+     * The singleton instance of the AppDatabase class, which provides access to the application's Room database.
+     * It initializes and manages the database creation process using Room's databaseBuilder.
+     */
     companion object {
         @Volatile
         private var Instance: AppDatabase? = null
 
+        /**
+         * Retrieves the singleton instance of the AppDatabase. If an instance already exists, it returns it;
+         * otherwise, it creates a new database instance using Room's databaseBuilder.
+         */
         fun getInstance(context: Context): AppDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
+
+            /**
+             * Retrieves the singleton instance of the AppDatabase. If an instance already exists, it returns it;
+             * otherwise, it creates a new database instance using Room's databaseBuilder.
+             */
             return Instance ?: synchronized(this) {
+
+                /**
+                 * Creates a new Room database builder instance for AppDatabase.
+                 */
                 Room.databaseBuilder(
                     context,
                     AppDatabase::class.java,

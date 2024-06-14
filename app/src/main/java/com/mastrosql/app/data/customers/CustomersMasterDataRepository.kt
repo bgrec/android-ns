@@ -14,10 +14,30 @@ import kotlinx.coroutines.flow.Flow
 
 interface CustomersMasterDataRepository : DataSyncOperations<CustomerMasterData> {
 
+    /**
+     * Flow representing the current state of work associated with a specific tag.
+     * Observing this flow allows monitoring the progress and status of work enqueued with the given tag.
+     */
     val outputWorkInfo: Flow<WorkInfo>
-    suspend fun getCustomersMasterData(): CustomersMasterDataResponse
-    suspend fun getDestinationsData(): DestinationsDataResponse
-    suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 
+    /**
+     * Retrieves customers master data from a remote source.
+     * This function is suspendable and returns a [CustomersMasterDataResponse] object.
+     */
+    suspend fun getCustomersMasterData(): CustomersMasterDataResponse
+
+/**
+ * Retrieves destinations data from the server.
+ */
+    suspend fun getDestinationsData(): DestinationsDataResponse
+
+/**
+ * Inserts or updates customers master data received from the server.
+ */
+suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
+
+/**
+ * Updates the [MastroAndroidApiService] instance used for API communication.
+ */
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }

@@ -7,7 +7,15 @@ import okhttp3.Response
 Class to add the session cookie to the request header
 
  */
+
+/**
+ * Adds session cookie to the request headers.
+ */
 class AddCookieInterceptor : Interceptor {
+
+    /**
+     * Retrieves all articles with specified offset and limit.
+     */
     override fun intercept(chain: Interceptor.Chain): Response {
         val sessionCookie = SessionManager.getSessionCookie()
         //Log.d("AddCookieInterceptor", "Adding cookie to request: $sessionCookie")
