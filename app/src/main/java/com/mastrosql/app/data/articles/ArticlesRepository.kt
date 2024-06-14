@@ -51,6 +51,7 @@ interface ArticlesRepository {
     /**
      * Inserts an article into a document.
      */
+
     suspend fun insertArticleIntoDocument(
         documentId: Int, documentType: String, articleId: Int
     ): Response<JsonObject>
