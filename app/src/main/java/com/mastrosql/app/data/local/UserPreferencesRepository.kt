@@ -88,10 +88,25 @@ class UserPreferencesRepository @Inject constructor(
      * Get the user preferences flow.
      */
     private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data.catch { exception ->
+
+    /**
+     * Handles exceptions that occur when reading preferences. If the [exception] is an instance of [IOException],
+     * logs an error message with the specified [tag] and emits empty preferences.
+     */
         if (exception is IOException) {
             Log.e(tag, "Error reading preferences.", exception)
             emit(emptyPreferences())
-        } else {
+        }
+
+        /**
+         * Handles exceptions that occur during preferences reading. If the [exception] is an instance of [IOException],
+         * logs an error message with the specified [tag] and emits empty preferences. Otherwise, invokes [handleError]
+         * to handle the exception.
+         *
+         * After handling the exception or successful preferences retrieval, maps the retrieved [preferences] to user-specific
+         * preferences using [mapUserPreferences].
+         */
+        else {
             handleError(tag, exception)
         }
         handleError(tag, exception)
@@ -99,6 +114,12 @@ class UserPreferencesRepository @Inject constructor(
         mapUserPreferences(preferences)
     }
 
+    /**
+     * Maps raw [preferences] data to [UserPreferences] object.
+     *
+     * This function extracts various user-specific preferences from the provided [preferences] object
+     * and constructs a [UserPreferences] instance.
+     */
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
 
         val searchValue = preferences[UserPreferencesKeys.SEARCH_VALUE] ?: ""
@@ -108,14 +129,29 @@ class UserPreferencesRepository @Inject constructor(
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
         val activeButtonsJson = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]
         val activeButtons = if (activeButtonsJson != null) {
+
+            /**
+             * Converts a JSON string representing enum key-value pairs into an EnumMap.
+             */
             try {
                 activeButtonsJson.toEnumMap()
-            } catch (e: Exception) {
+            }
+
+            /**
+             * Handles exceptions encountered while parsing JSON representing active buttons into an EnumMap.
+             * Logs the error and provides a fallback EnumMap of type [MainNavOption].
+             */
+            catch (e: Exception) {
                 // Handle enum mismatch or JSON parsing error
                 Log.e("UserPreferences", "Error parsing activeButtons JSON", e)
                 EnumMap(MainNavOption::class.java) // Provide fallback value
             }
-        } else {
+        }
+
+        /**
+         * Provides a default EnumMap of [MainNavOption] when the preferences for active buttons are empty.
+         */
+        else {
             EnumMap(MainNavOption::class.java) // Provide default value if preferences are empty
         }
         val username = preferences[UserPreferencesKeys.USERNAME] ?: ""
@@ -181,12 +217,18 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    /**
+     * Saves the user's logged-in status to DataStore.
+     */
     suspend fun saveLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.IS_LOGGED_IN] = isLoggedIn
         }
     }
 
+    /**
+     * Saves the base URL used for network requests to DataStore and updates the Retrofit service instance.
+     */
     suspend fun saveBaseUrl(baseUrl: String) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.BASE_URL] = baseUrl
@@ -195,38 +237,60 @@ class UserPreferencesRepository @Inject constructor(
         appContainer.updateRetrofitService(baseUrl)
     }
 
+    /**
+     * Saves the active buttons configuration to DataStore.
+     */
     suspend fun saveActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.ACTIVE_BUTTONS] = activeButtons.toJsonString()
         }
     }
 
+    /**
+     * Saves the username to DataStore preferences.
+     */
     suspend fun saveUsername(username: String) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.USERNAME] = username
         }
     }
 
+    /**
+     * Saves the username to DataStore preferences.
+     */
     suspend fun saveUserType(userType: String) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.USER_TYPE] = userType
         }
     }
 
+    /**
+     * Saves the user ERP code to DataStore preferences.
+     */
     suspend fun saveUserErpCode(userErpCode: Comparable<*>) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.USER_ERP_CODE] = userErpCode.toString()
         }
     }
 
+    /**
+     * Fetches the initial user preferences from DataStore and maps them to [UserPreferences].
+     * This function retrieves the preferences synchronously as a first element of the flow.
+     */
     suspend fun fetchInitialPreferences() =
         mapUserPreferences(dataStore.data.first().toPreferences())
 
+    /**
+     * Converts this EnumMap to its JSON representation using Gson.
+     */
     // Function to serialize a EnumMap to a JSON string
     private fun EnumMap<MainNavOption, Boolean>.toJsonString(): String {
         return gson.toJson(this)
     }
 
+    /**
+     * Converts this JSON string to an EnumMap<MainNavOption, Boolean>.
+     */
     // Function to deserialize a JSON string to a EnumMap
     private fun String.toEnumMap(): EnumMap<MainNavOption, Boolean> {
         //return gson.fromJson(this, object : TypeToken<EnumMap<MainNavOption, Boolean>>() {}.type)
@@ -237,6 +301,9 @@ class UserPreferencesRepository @Inject constructor(
         // Convert HashMap<String, Boolean> to EnumMap<MainNavOption, Boolean>
         val enumMap: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
 
+        /**
+         * Converts this JSON string to an EnumMap<MainNavOption, Boolean>.
+         */
         for ((key, value) in map) {
             val option = MainNavOption.valueOf(key)
             enumMap[option] = value
@@ -244,85 +311,143 @@ class UserPreferencesRepository @Inject constructor(
         return enumMap
     }
 
+    /**
+     * Retrieves a Flow of EnumMap<MainNavOption, Boolean> representing the active buttons preferences.
+     */
     fun getActiveButtons(): Flow<EnumMap<MainNavOption, Boolean>> {
         return userPreferencesFlow.map { it.activeButtons }
     }
 
+    /**
+     * Retrieves a Flow of String representing the base URL preference.
+     */
     fun getBaseUrl(): Flow<String> {
         return userPreferencesFlow.map { it.baseUrl }
     }
 
-
+    /**
+     * Retrieves a Flow of Boolean representing the onboarded status preference.
+     */
     fun getIsOnboarded(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isOnboarded }
     }
 
+    /**
+     * Retrieves a Flow of Boolean representing the logged-in status preference.
+     */
     fun getIsLoggedIn(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isLoggedIn }
     }
 
+    /**
+     * Retrieves a Flow of String representing the username preference.
+     */
     fun getUsername(): Flow<String> {
         return userPreferencesFlow.map { it.username }
     }
 
+/**
+ * Retrieves a Flow of String representing the user type preference.
+ */
     fun getUserType(): Flow<String> {
         return userPreferencesFlow.map { it.userType }
     }
 
+    /**
+     * Retrieves a Flow of Comparable representing the user ERP code preference.
+     */
     fun getUserErpCode(): Flow<Comparable<*>> {
         return userPreferencesFlow.map { it.userErpCode }
     }
 
+    /**
+     * Retrieves a Flow of String representing the search value preference.
+     */
     fun getSearchValue(): Flow<String> {
         return userPreferencesFlow.map { it.searchValue }
     }
 
+    /**
+     * Retrieves a Flow of String representing the application version preference.
+     */
     fun getAppVersion(): Flow<String> {
         return userPreferencesFlow.map { it.appVersion }
     }
 
+    /**
+     * Saves the application version to preferences asynchronously.
+     */
     suspend fun saveAppVersion(appVersion: String) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.APP_VERSION] = appVersion
         }
     }
 
+    /**
+     * Updates the active buttons configuration in preferences asynchronously.
+     */
     suspend fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.ACTIVE_BUTTONS] = activeButtons.toJsonString()
         }
     }
 
+    /**
+     * Handles errors encountered while reading preferences.
+     */
     private fun handleError(tag: String, exception: Throwable) {
+
+        /**
+         * Handles IOException encountered while reading preferences.
+         */
         if (exception is IOException) {
             Log.e(tag, "Error reading preferences", exception)
-        } else {
+        }
+
+        /**
+         * Handles exceptions other than IOException encountered while reading preferences.
+         */
+        else {
             Log.e(tag, "Error reading preferences for key: Unknown", exception)
             throw exception
         }
     }
 
+    /**
+     * Performs a test API call asynchronously.
+     */
     suspend fun testApiCall(): Response<JsonObject> {
         return mastroAndroidApiService.testApiCall()
     }
 
+    /**
+     * Saves the session token to dataStore asynchronously.
+     */
     suspend fun saveSessionToken(sessionToken: String) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.SESSION_KEY] = sessionToken
         }
     }
 
+    /**
+     * Retrieves the session token as a flow from user preferences.
+     */
     fun getSessionToken(): Flow<String> {
         return userPreferencesFlow.map { it.sessionToken }
     }
 
+    /**
+     * Saves the user's login status and related details to the DataStore.
+     */
     suspend fun saveLoggedIn(
         isLoggedIn: Boolean,
         username: String,
         userType: String,
         userErpCode: Comparable<*>,
         sessionToken: String
-    ) {
+    )
+
+    {
         dataStore.edit { preferences ->
             // Save login status and user details
             preferences[UserPreferencesKeys.IS_LOGGED_IN] = isLoggedIn
@@ -334,24 +459,53 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    /**
+     * Initiates a logout request to the server using the MastroAndroidApiService.
+     * This function sends a logout request and expects a response containing a JsonObject.
+     */
     suspend fun logoutFromServer(): Response<JsonObject> {
         return mastroAndroidApiService.logout()
     }
 
+    /**
+     * Retrieves the flow of the 'isNotSecuredApi' boolean value from the user preferences.
+     *
+     * This function maps the current user preferences flow to retrieve the boolean value
+     * indicating whether the API is considered not secured.
+     */
     fun getIsNotSecuredApi(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isNotSecuredApi }
     }
 
+    /**
+     * Suspended function to save the 'isNotSecuredApi' boolean value into user preferences.
+     *
+     * This function updates the user preferences with the provided boolean value indicating
+     * whether the API is considered not secured.
+     */
     suspend fun saveIsNotSecuredApi(isNotSecuredApi: Boolean) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.IS_NOT_SECURED_API] = isNotSecuredApi
         }
     }
 
-    fun getIsSwipeToDeleteDisabled(): Flow<Boolean> {
+        /**
+         * Returns a Flow representing the 'isSwipeToDeleteDisabled' boolean value from user preferences.
+         *
+         * This function provides a Flow that emits the current state of 'isSwipeToDeleteDisabled' from
+         * the user preferences data, allowing observers to reactively receive updates when the value changes.
+         */
+        fun getIsSwipeToDeleteDisabled(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isSwipeToDeleteDisabled }
     }
 
+    /**
+     * Saves the 'isSwipeToDeleteDisabled' boolean flag to user preferences.
+     *
+     * This function updates the 'isSwipeToDeleteDisabled' flag in the user preferences data store
+     * with the provided boolean value. It uses DataStore's edit block to ensure thread safety and
+     * atomic updates.
+     */
     suspend fun saveIsSwipeToDeleteDisabled(isSwipeToDeleteDisabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DISABLED] =
@@ -359,10 +513,23 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    /**
+     * Retrieves the 'isSwipeToDuplicateDisabled' flag as a Flow<Boolean>.
+     *
+     * This function retrieves the current state of the 'isSwipeToDuplicateDisabled' flag from
+     * the user preferences data flow. Changes to this preference will emit updates downstream
+     * through the Flow.
+     */
     fun getIsSwipeToDuplicateDisabled(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isSwipeToDuplicateDisabled }
     }
 
+    /**
+     * Saves the 'isSwipeToDuplicateDisabled' flag to user preferences.
+     *
+     * This function updates the 'isSwipeToDuplicateDisabled' flag in the data store with the provided
+     * boolean value. Changes to this preference will be persisted immediately.
+     */
     suspend fun saveIsSwipeToDuplicateDisabled(isSwipeToDuplicateDisabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.IS_SWIPE_TO_DUPLICATE_DISABLED] =

@@ -23,12 +23,19 @@ class NetworkCustomersMasterDataRepository(
     context: Context
 ) : CustomersMasterDataRepository {
 
+    /**
+     * Updates the [MastroAndroidApiService] instance used for network operations.
+     */
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         this.mastroAndroidApiService = newMastroAndroidApiService
     }
 
     private val workManager = WorkManager.getInstance(context)
 
+    /**
+     * Retrieves a [Flow] of [WorkInfo] objects from WorkManager by the specified tag.
+     * Filters out empty results and emits the first non-null [WorkInfo] if available.
+     */
     override val outputWorkInfo: Flow<WorkInfo> =
         workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
             if (it.isNotEmpty()) it.first() else null
@@ -41,23 +48,37 @@ class NetworkCustomersMasterDataRepository(
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse =
         mastroAndroidApiService.getAllCustomersMasterData()
 
+    /**
+     * Retrieves destinations data from the MastroAndroidApiService.
+     */
     override suspend fun getDestinationsData(): DestinationsDataResponse =
         mastroAndroidApiService.getAllDestinationsData()
 
-
+    /**
+     * Inserts or updates customers master data received from the server.
+     */
     override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) {
 
     }
 
+    /**
+     * Fetches customer master data from the server and returns it as a list.
+     */
     override suspend fun fetchDataFromServer(): List<CustomerMasterData> {
         val customerMasterDataResponse = getCustomersMasterData()
         return customerMasterDataResponse.items
     }
 
+    /**
+     * Inserts or updates a list of CustomerMasterData objects in the local database.
+     */
     override suspend fun insertOrUpdateData(data: List<CustomerMasterData>) {
         customerMasterDataDao.insertAll(data)
     }
 
+    /**
+     * Deletes all CustomerMasterData entries from the local database.
+     */
     override suspend fun deleteData() {
         customerMasterDataDao.deleteAll()
     }

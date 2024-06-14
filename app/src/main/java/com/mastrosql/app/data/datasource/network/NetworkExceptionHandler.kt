@@ -13,8 +13,20 @@ import kotlinx.coroutines.launch
  */
 
 sealed class NetworkException(message: String) : Exception(message) {
+
+    /**
+     * Custom IOException class that extends NetworkException.
+     */
     class IOException(message: String) : NetworkException(message)
+
+    /**
+     * Custom HttpException class that extends NetworkException.
+     */
     class HttpException(message: String) : NetworkException(message)
+
+    /**
+     * Custom UnknownException class that extends NetworkException.
+     */
     class UnknownException(message: String) : NetworkException(message)
 }
 
@@ -31,7 +43,15 @@ object NetworkExceptionHandler {
         exception: Exception,
         coroutineScope: CoroutineScope
     ) {
+
+        /**
+         * Handles different types of NetworkException and displays corresponding error messages.
+         */
         when (exception) {
+
+            /**
+             * Handles IOException derived from NetworkException and displays a network error message.
+             */
             is NetworkException.IOException -> {
                 showToastMessage(
                     context,
@@ -43,6 +63,9 @@ object NetworkExceptionHandler {
                 )
             }
 
+            /**
+             * Handles HttpException derived from NetworkException and displays an HTTP error message.
+             */
             is NetworkException.HttpException -> {
                 showToastMessage(
                     context,
@@ -54,6 +77,9 @@ object NetworkExceptionHandler {
                 )
             }
 
+            /**
+             * Handles UnknownException derived from NetworkException and displays an unexpected error message.
+             */
             is NetworkException.UnknownException -> {
                 showToastMessage(
                     context,
@@ -65,6 +91,10 @@ object NetworkExceptionHandler {
                 )
             }
 
+        /**
+         * Handles any other types of NetworkException that are not explicitly handled.
+         * Displays an unexpected error message if the exception type is unknown.
+         */
             else -> {
                 showToastMessage(
                     context,
@@ -87,6 +117,10 @@ object NetworkExceptionHandler {
         context: Context,
         coroutineScope: CoroutineScope
     ) {
+
+        /**
+         * Launches a coroutine to display a Toast message indicating a connection timeout error.
+         */
         coroutineScope.launch {
             ToastUtils.showToast(
                 context,
@@ -96,11 +130,19 @@ object NetworkExceptionHandler {
         }
     }
 
+    /**
+     * Shows a toast message on the UI thread using the provided context and coroutine scope.
+     */
     private fun showToastMessage(
         context: Context,
         message: String,
         coroutineScope: CoroutineScope
-    ) {
+    )
+
+        /**
+         * Shows a toast message on the UI thread using the provided context and coroutine scope.
+         */
+    {
         coroutineScope.launch {
             ToastUtils.showToast(
                 context,
