@@ -97,3 +97,6 @@ class ScanReceiver(private val onScanReceived: (String) -> Unit) : BroadcastRece
  *     registerReceiver(receiver, filter);
  *     }
  *  */
+
+
+/* For zebra https://github.com/darryncampbell/DataWedgeKotlin*/
