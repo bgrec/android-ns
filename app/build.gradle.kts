@@ -9,12 +9,21 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.app.distribution)
+    alias(libs.plugins.org.jetbrains.dokka)
 }
 
 /*
 tasks.register("clean",Delete::class){
     delete(rootProject.buildDir)
 }*/
+
+tasks.dokkaHtml {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/html"))
+}
+
+tasks.dokkaGfm {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/markdown"))
+}
 
 android {
     namespace = "com.mastrosql.app"
@@ -180,6 +189,7 @@ fun loadProperties(propertiesFile: File): Properties {
 
 
 dependencies {
+
 
 // Zebra
     compileOnly(libs.symbol.emdk)
