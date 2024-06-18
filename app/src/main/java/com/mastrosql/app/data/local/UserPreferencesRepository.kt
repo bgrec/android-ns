@@ -32,6 +32,7 @@ data class UserPreferences(
     val isOnboarded: Boolean = false,
     val isLoggedIn: Boolean = false,
     val baseUrl: String = "",
+    val baseUrl2: String = "",
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java),
     val username: String = "",
     val userType: String = "",
@@ -53,6 +54,7 @@ object UserPreferencesKeys {
     val IS_ONBOARDED: Preferences.Key<Boolean> = booleanPreferencesKey("is_onboarded")
     val IS_LOGGED_IN: Preferences.Key<Boolean> = booleanPreferencesKey("is_logged_in")
     val BASE_URL: Preferences.Key<String> = stringPreferencesKey("base_url")
+    val BASE_URL2: Preferences.Key<String> = stringPreferencesKey("base_url2")
     val ACTIVE_BUTTONS: Preferences.Key<String> = stringPreferencesKey("active_buttons")
     val USERNAME: Preferences.Key<String> = stringPreferencesKey("username")
     val USER_TYPE: Preferences.Key<String> = stringPreferencesKey("user_type")
@@ -87,37 +89,46 @@ class UserPreferencesRepository @Inject constructor(
     /**
      * Get the user preferences flow.
      */
-    private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data.catch { exception ->
+    private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
+        .catch { exception ->
 
-    /**
-     * Handles exceptions that occur when reading preferences. If the [exception] is an instance of [IOException],
-     * logs an error message with the specified [tag] and emits empty preferences.
-     */
-        if (exception is IOException) {
-            Log.e(tag, "Error reading preferences.", exception)
-            emit(emptyPreferences())
-        }
+            /**
+             * Handles exceptions that occur when reading preferences.
+             * If the [exception] is an instance of [IOException],
+             * logs an error message with the specified [tag] and emits empty preferences.
+             */
+            if (exception is IOException) {
+                Log.e(tag, "Error reading preferences.", exception)
+                emit(emptyPreferences())
+            }
 
-        /**
-         * Handles exceptions that occur during preferences reading. If the [exception] is an instance of [IOException],
-         * logs an error message with the specified [tag] and emits empty preferences. Otherwise, invokes [handleError]
-         * to handle the exception.
-         *
-         * After handling the exception or successful preferences retrieval, maps the retrieved [preferences] to user-specific
-         * preferences using [mapUserPreferences].
-         */
-        else {
+            /**
+             * Handles exceptions that occur during preferences reading.
+             * If the [exception] is an instance of [IOException],
+             * logs an error message with the specified [tag] and emits empty preferences.
+             * Otherwise, invokes [handleError]
+             * to handle the exception.
+             *
+             * After handling the exception or successful preferences retrieval,
+             * maps the retrieved raw [UserPreferences] to user-specific
+             * preferences using [mapUserPreferences].
+             */
+            else {
+                Log.e(tag, "Error reading preferences for key: Unknown", exception)
+                handleError(tag, exception)
+            }
+            Log.e(tag, "Error reading preferences for key: Unknown", exception)
             handleError(tag, exception)
         }
-        handleError(tag, exception)
-    }.map { preferences ->
-        mapUserPreferences(preferences)
-    }
+        .map { preferences ->
+            mapUserPreferences(preferences)
+        }
 
     /**
      * Maps raw [preferences] data to [UserPreferences] object.
      *
-     * This function extracts various user-specific preferences from the provided [preferences] object
+     * This function extracts various user-specific preferences
+     * from the provided [preferences] object
      * and constructs a [UserPreferences] instance.
      */
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
@@ -127,9 +138,11 @@ class UserPreferencesRepository @Inject constructor(
         val isOnboarded = preferences[UserPreferencesKeys.IS_ONBOARDED] ?: false
         val isLoggedIn = preferences[UserPreferencesKeys.IS_LOGGED_IN] ?: false
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
+        val baseUrl2 = preferences[UserPreferencesKeys.BASE_URL2] ?: ""
         val activeButtonsJson = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]
-        val activeButtons = if (activeButtonsJson != null) {
 
+        //Active buttons EnumMap
+        val activeButtons = if (activeButtonsJson != null) {
             /**
              * Converts a JSON string representing enum key-value pairs into an EnumMap.
              */
@@ -138,7 +151,8 @@ class UserPreferencesRepository @Inject constructor(
             }
 
             /**
-             * Handles exceptions encountered while parsing JSON representing active buttons into an EnumMap.
+             * Handles exceptions encountered while parsing JSON
+             * representing active buttons into an EnumMap.
              * Logs the error and provides a fallback EnumMap of type [MainNavOption].
              */
             catch (e: Exception) {
@@ -149,11 +163,13 @@ class UserPreferencesRepository @Inject constructor(
         }
 
         /**
-         * Provides a default EnumMap of [MainNavOption] when the preferences for active buttons are empty.
+         * Provides a default EnumMap of [MainNavOption] when preferences are empty.
          */
         else {
             EnumMap(MainNavOption::class.java) // Provide default value if preferences are empty
         }
+        //End of active buttons EnumMap
+
         val username = preferences[UserPreferencesKeys.USERNAME] ?: ""
         val userType = preferences[UserPreferencesKeys.USER_TYPE] ?: ""
         val userErpCode = preferences[UserPreferencesKeys.USER_ERP_CODE] ?: 0
@@ -171,6 +187,7 @@ class UserPreferencesRepository @Inject constructor(
             isOnboarded,
             isLoggedIn,
             baseUrl,
+            baseUrl2,
             activeButtons,
             username,
             userType,
@@ -193,6 +210,7 @@ class UserPreferencesRepository @Inject constructor(
             preferences[UserPreferencesKeys.IS_ONBOARDED] = userPreferences.isOnboarded
             preferences[UserPreferencesKeys.IS_LOGGED_IN] = userPreferences.isLoggedIn
             preferences[UserPreferencesKeys.BASE_URL] = userPreferences.baseUrl
+            preferences[UserPreferencesKeys.BASE_URL2] = userPreferences.baseUrl2
             preferences[UserPreferencesKeys.ACTIVE_BUTTONS] =
                 userPreferences.activeButtons.toJsonString()
             preferences[UserPreferencesKeys.USERNAME] = userPreferences.username
@@ -227,14 +245,46 @@ class UserPreferencesRepository @Inject constructor(
     }
 
     /**
-     * Saves the base URL used for network requests to DataStore and updates the Retrofit service instance.
+     * Saves the base URL used for network requests to DataStore
+     * and updates the Retrofit service instance.
      */
-    suspend fun saveBaseUrl(baseUrl: String) {
+    suspend fun savePrimaryBaseUrl(baseUrl: String) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.BASE_URL] = baseUrl
         }
         //Create a new Retrofit instance with the new base URL
         appContainer.updateRetrofitService(baseUrl)
+    }
+
+    /**
+     * Saves the secondary base URL used for network requests to DataStore
+     * and updates the Retrofit service instance.
+     */
+    suspend fun saveSecondaryBaseUrl(baseUrl2: String) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.BASE_URL2] = baseUrl2
+        }
+        //Create a new Retrofit instance with the new base URL
+        //appContainer.updateRetrofitService(baseUrl2) // No need to update the Retrofit service
+    }
+
+    /**
+     * Switches the base URL used for network requests to the other base URL
+     */
+    suspend fun switchBaseUrl() {
+        dataStore.edit { preferences ->
+            val currentBaseUrl = preferences[UserPreferencesKeys.BASE_URL]
+            val newBaseUrl = if (currentBaseUrl == preferences[UserPreferencesKeys.BASE_URL2]) {
+                preferences[UserPreferencesKeys.BASE_URL]
+            } else {
+                preferences[UserPreferencesKeys.BASE_URL2]
+            }
+
+            newBaseUrl?.let {
+                preferences[UserPreferencesKeys.BASE_URL] = it
+                appContainer.updateRetrofitService(it)
+            }
+        }
     }
 
     /**
@@ -277,8 +327,11 @@ class UserPreferencesRepository @Inject constructor(
      * Fetches the initial user preferences from DataStore and maps them to [UserPreferences].
      * This function retrieves the preferences synchronously as a first element of the flow.
      */
-    suspend fun fetchInitialPreferences() =
-        mapUserPreferences(dataStore.data.first().toPreferences())
+    suspend fun fetchInitialPreferences() = mapUserPreferences(
+        dataStore.data
+            .first()
+            .toPreferences()
+    )
 
     /**
      * Converts this EnumMap to its JSON representation using Gson.
@@ -346,9 +399,9 @@ class UserPreferencesRepository @Inject constructor(
         return userPreferencesFlow.map { it.username }
     }
 
-/**
- * Retrieves a Flow of String representing the user type preference.
- */
+    /**
+     * Retrieves a Flow of String representing the user type preference.
+     */
     fun getUserType(): Flow<String> {
         return userPreferencesFlow.map { it.userType }
     }
@@ -445,9 +498,7 @@ class UserPreferencesRepository @Inject constructor(
         userType: String,
         userErpCode: Comparable<*>,
         sessionToken: String
-    )
-
-    {
+    ) {
         dataStore.edit { preferences ->
             // Save login status and user details
             preferences[UserPreferencesKeys.IS_LOGGED_IN] = isLoggedIn
@@ -489,13 +540,13 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
-        /**
-         * Returns a Flow representing the 'isSwipeToDeleteDisabled' boolean value from user preferences.
-         *
-         * This function provides a Flow that emits the current state of 'isSwipeToDeleteDisabled' from
-         * the user preferences data, allowing observers to reactively receive updates when the value changes.
-         */
-        fun getIsSwipeToDeleteDisabled(): Flow<Boolean> {
+    /**
+     * Returns a Flow representing the 'isSwipeToDeleteDisabled' boolean value from user preferences.
+     *
+     * This function provides a Flow that emits the current state of 'isSwipeToDeleteDisabled' from
+     * the user preferences data, allowing observers to reactively receive updates when the value changes.
+     */
+    fun getIsSwipeToDeleteDisabled(): Flow<Boolean> {
         return userPreferencesFlow.map { it.isSwipeToDeleteDisabled }
     }
 
@@ -508,8 +559,7 @@ class UserPreferencesRepository @Inject constructor(
      */
     suspend fun saveIsSwipeToDeleteDisabled(isSwipeToDeleteDisabled: Boolean) {
         dataStore.edit { preferences ->
-            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DISABLED] =
-                isSwipeToDeleteDisabled
+            preferences[UserPreferencesKeys.IS_SWIPE_TO_DELETE_DISABLED] = isSwipeToDeleteDisabled
         }
     }
 

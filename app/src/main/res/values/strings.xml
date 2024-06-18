@@ -242,6 +242,7 @@
     <string name="delivery_state_updated">Stato consegna aggiornato con successo!</string>
     <string name="send_scanned_code">Send Scanned Code</string>
     <string name="order_update_text">Modifiche ordine salvate con successo</string>
+    <string name="label_url2">Inserire URL2 - seconda azienda</string>
 
 
 </resources>

@@ -649,13 +649,6 @@ FROM destina
 WHERE destina.CODI IN (SELECT CODI FROM clientsview));
 
 ####################################################################################################
-CREATE VIEW test as
-(
-select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c
-from clienti
-         left join destina on clienti.CODI = destina.CODI);
-
-####################################################################################################
 DROP PROCEDURE IF EXISTS InsertNewOrder;
 CREATE PROCEDURE InsertNewOrder(
     IN clientId INT,
@@ -728,3 +721,13 @@ FLUSH PRIVILEGES;
 
 # Example of handling an error in a stored procedure
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS SupportedVersion;
+CREATE PROCEDURE SupportedVersion()
+BEGIN
+    DECLARE supported_version VARCHAR(255);
+
+    SET supported_version = '1.0.0';
+    SELECT supported_version AS version;
+END;

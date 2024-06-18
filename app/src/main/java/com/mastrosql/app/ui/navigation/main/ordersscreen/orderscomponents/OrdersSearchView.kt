@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
+/**
+ * SearchView for the OrdersScreen
+ */
 @Composable
 fun OrdersSearchView(state: MutableState<TextFieldValue>) {
 
@@ -42,8 +45,7 @@ fun OrdersSearchView(state: MutableState<TextFieldValue>) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
-    TextField(
-        value = state.value,
+    TextField(value = state.value,
         onValueChange = { value ->
             state.value = value
         },
@@ -77,16 +79,14 @@ fun OrdersSearchView(state: MutableState<TextFieldValue>) {
         },
         trailingIcon = {
             if (state.value != TextFieldValue("")) {
-                IconButton(
-                    onClick = {
-                        state.value =
-                            TextFieldValue("") // Remove text from TextField when you press the 'X' icon
-                        keyboardController?.hide() // Hide the keyboard
-                        focusRequester.freeFocus() // Remove focus from the TextField
-                        isEditing = false // Change the state to not editing
+                IconButton(onClick = {
+                    state.value =
+                        TextFieldValue("") // Remove text from TextField when you press the 'X' icon
+                    keyboardController?.hide() // Hide the keyboard
+                    focusRequester.freeFocus() // Remove focus from the TextField
+                    isEditing = false // Change the state to not editing
 
-                    }
-                ) {
+                }) {
                     Icon(
                         Icons.Default.Close,
                         contentDescription = "",
@@ -101,13 +101,11 @@ fun OrdersSearchView(state: MutableState<TextFieldValue>) {
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Search
         ),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                keyboardController?.hide()
-                focusRequester.freeFocus()
-                isEditing = false
-            }
-        )
+        keyboardActions = KeyboardActions(onSearch = {
+            keyboardController?.hide()
+            focusRequester.freeFocus()
+            isEditing = false
+        })
         //shape = RectangleShape, // The TextFiled has rounded corners top left and right by default
         /* colors = TextFieldDefaults.textFieldColors(
             textColor = Color.White,
@@ -122,6 +120,9 @@ fun OrdersSearchView(state: MutableState<TextFieldValue>) {
     )
 }
 
+/**
+ * SearchView for the OrdersScreen
+ */
 @Preview(showBackground = true)
 @Composable
 fun SearchViewPreview() {

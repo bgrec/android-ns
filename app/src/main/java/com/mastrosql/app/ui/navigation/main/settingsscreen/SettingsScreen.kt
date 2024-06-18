@@ -62,6 +62,9 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
+private const val PRIMARY_URL = 1
+private const val SECONDARY_URL = 2
+
 /**
  * Settings screen for the app
  */
@@ -83,18 +86,30 @@ fun SettingsScreen(
     // Local state to hold the current base URL
     val urlState = remember { mutableStateOf(userPreferencesUiState.baseUrl) }
 
+    // Local state to hold the current base URL
+    val urlState2 = remember { mutableStateOf(userPreferencesUiState.baseUrl2) }
+
     // Update the local state when the base URL changes
     LaunchedEffect(userPreferencesUiState.baseUrl) {
         urlState.value = userPreferencesUiState.baseUrl
+        urlState2.value = userPreferencesUiState.baseUrl2
     }
 
+    // Composable for the settings screen
     SettingsComposable(navController = navController,
         activeButtonsState = userPreferencesUiState.activeButtons,
         currentBaseUrlState = urlState,
+        currentBaseUrlState2 = urlState2,
         isNotSecuredApiState = userPreferencesUiState.isNotSecuredApi,
         isSwipeToDeleteDisabledState = userPreferencesUiState.isSwipeToDeleteDisabled,
         isSwipeToDuplicateDisabledState = userPreferencesUiState.isSwipeToDuplicateDisabled,
-        onSaveUrl = { url -> viewModel.setBaseUrl(url) },
+        onSaveUrl = { primaryOrSecondary, url ->
+            if (primaryOrSecondary == PRIMARY_URL) {
+                viewModel.setPrimaryBaseUrl(url)
+            } else {
+                viewModel.setSecondaryBaseUrl(url)
+            }
+        },
         onSetOnboardingCompleted = { isOnboardingCompleted ->
             viewModel.onBoardingCompleted(
                 isOnboardingCompleted
@@ -128,10 +143,11 @@ fun SettingsComposable(
     navController: NavController,
     activeButtonsState: EnumMap<MainNavOption, Boolean>,
     currentBaseUrlState: MutableState<String>,
+    currentBaseUrlState2: MutableState<String>,
     isNotSecuredApiState: Boolean,
     isSwipeToDeleteDisabledState: Boolean = false,
     isSwipeToDuplicateDisabledState: Boolean = false,
-    onSaveUrl: (String) -> Unit,
+    onSaveUrl: (Int, String) -> Unit,
     onSetOnboardingCompleted: (Boolean) -> Unit,
     onUpdateActiveButtons: (EnumMap<MainNavOption, Boolean>) -> Unit,
     onTestConnection: () -> Unit,
@@ -161,7 +177,10 @@ fun SettingsComposable(
         detectTapGestures(onTap = {
 
             if (currentBaseUrlState.value.isNotEmpty()) {
-                onSaveUrl(currentBaseUrlState.value)
+                onSaveUrl(PRIMARY_URL, currentBaseUrlState.value)
+            }
+            if (currentBaseUrlState2.value.isNotEmpty()) {
+                onSaveUrl(SECONDARY_URL, currentBaseUrlState2.value)
             }
             focusManager.clearFocus()
         })
@@ -190,33 +209,66 @@ fun SettingsComposable(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                ) {
+                    val url by rememberSaveable { mutableStateOf(currentBaseUrlState) }
+                    val updatedUrlState by rememberUpdatedState(url.value)
 
-                val url by rememberSaveable { mutableStateOf(currentBaseUrlState) }
-                val updatedUrlState by rememberUpdatedState(url.value)
+                    //Primary URL
+                    OutlinedTextField(value = url.value,
+                        singleLine = false,
+                        onValueChange = {
+                            url.value = it
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painterResource(R.drawable.bring_your_own_ip),
+                                contentDescription = stringResource(R.string.label_url)
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            // Update the URL
+                            onSaveUrl(PRIMARY_URL, updatedUrlState)
+                            focusManager.clearFocus()
+                        }),
+                        label = { Text(stringResource(R.string.label_url)) },
+                        modifier = Modifier.focusRequester(focusRequester)
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
 
-                OutlinedTextField(
-                    value = url.value,
-                    singleLine = false,
-                    onValueChange = {
-                        url.value = it
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painterResource(R.drawable.bring_your_own_ip),
-                            contentDescription = stringResource(R.string.label_url)
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(onDone = {
-                        // Update the URL
-                        onSaveUrl(updatedUrlState)
-                        focusManager.clearFocus()
-                    }),
-                    label = { Text(stringResource(R.string.label_url)) },
-                    modifier = Modifier.focusRequester(focusRequester)
-                )
+                    // Secondary URL
+                    val url2 by rememberSaveable { mutableStateOf(currentBaseUrlState) }
+                    val updatedUrlState2 by rememberUpdatedState(url2.value)
+
+                    OutlinedTextField(value = url2.value,
+                        singleLine = false,
+                        onValueChange = {
+                            url2.value = it
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painterResource(R.drawable.bring_your_own_ip),
+                                contentDescription = stringResource(R.string.label_url2)
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            // Update the URL
+                            onSaveUrl(SECONDARY_URL, updatedUrlState2)
+                            focusManager.clearFocus()
+                        }),
+                        label = { Text(stringResource(R.string.label_url2)) },
+                        modifier = Modifier.focusRequester(focusRequester)
+                    )
+                }
             }
 
             HorizontalDivider()
@@ -342,8 +394,7 @@ fun MenuButtonsActivationDialog(
         )
     }
 
-    AlertDialog(
-        onDismissRequest = { showDialog.value = false },
+    AlertDialog(onDismissRequest = { showDialog.value = false },
         title = { Text(stringResource(R.string.dialog_button_settings)) },
         text = {
             LazyColumn(modifier = Modifier.wrapContentSize()) {
@@ -412,9 +463,10 @@ fun SettingsScreenPreview() {
         SettingsComposable(navController = NavController(LocalContext.current),
             activeButtonsState = EnumMap(MainNavOption::class.java),
             currentBaseUrlState = remember { mutableStateOf("https://example.com/api") },
+            currentBaseUrlState2 = remember { mutableStateOf("https://example.com/api2") },
             isNotSecuredApiState = false,
             isSwipeToDeleteDisabledState = true,
-            onSaveUrl = {},
+            onSaveUrl = { _, _ -> },
             onSetOnboardingCompleted = {},
             onUpdateActiveButtons = {},
             onTestConnection = {},
