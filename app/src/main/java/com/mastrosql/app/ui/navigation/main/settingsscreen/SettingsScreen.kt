@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -62,8 +63,8 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
-private const val PRIMARY_URL = 1
-private const val SECONDARY_URL = 2
+private const val PRIMARY_URL = 0
+private const val SECONDARY_URL = 1
 
 /**
  * Settings screen for the app
@@ -85,29 +86,41 @@ fun SettingsScreen(
 
     // Local state to hold the current base URL
     val urlState = remember { mutableStateOf(userPreferencesUiState.baseUrl) }
+    val urlNameState = remember { mutableStateOf(userPreferencesUiState.baseUrlName) }
 
     // Local state to hold the current base URL
-    val urlState2 = remember { mutableStateOf(userPreferencesUiState.baseUrl2) }
+    val url2State = remember { mutableStateOf(userPreferencesUiState.baseUrl2) }
+    val url2NameState = remember { mutableStateOf(userPreferencesUiState.baseUrl2Name) }
 
     // Update the local state when the base URL changes
     LaunchedEffect(userPreferencesUiState.baseUrl) {
         urlState.value = userPreferencesUiState.baseUrl
-        urlState2.value = userPreferencesUiState.baseUrl2
+        urlNameState.value = userPreferencesUiState.baseUrlName
+    }
+
+    // Update the local state when the base URL2 changes
+    LaunchedEffect(userPreferencesUiState.baseUrl2) {
+        url2State.value = userPreferencesUiState.baseUrl2
+        url2NameState.value = userPreferencesUiState.baseUrl2Name
     }
 
     // Composable for the settings screen
     SettingsComposable(navController = navController,
         activeButtonsState = userPreferencesUiState.activeButtons,
         currentBaseUrlState = urlState,
-        currentBaseUrlState2 = urlState2,
+        currentBaseUrlNameState = urlNameState,
+        currentBaseUrl2State = url2State,
+        currentBaseUrl2NameState = url2NameState,
         isNotSecuredApiState = userPreferencesUiState.isNotSecuredApi,
         isSwipeToDeleteDisabledState = userPreferencesUiState.isSwipeToDeleteDisabled,
         isSwipeToDuplicateDisabledState = userPreferencesUiState.isSwipeToDuplicateDisabled,
-        onSaveUrl = { primaryOrSecondary, url ->
+        onSaveUrl = { primaryOrSecondary, url, name ->
             if (primaryOrSecondary == PRIMARY_URL) {
                 viewModel.setPrimaryBaseUrl(url)
+                viewModel.setPrimaryBaseUrlName(name)
             } else {
                 viewModel.setSecondaryBaseUrl(url)
+                viewModel.setSecondaryBaseUrlName(name)
             }
         },
         onSetOnboardingCompleted = { isOnboardingCompleted ->
@@ -143,11 +156,13 @@ fun SettingsComposable(
     navController: NavController,
     activeButtonsState: EnumMap<MainNavOption, Boolean>,
     currentBaseUrlState: MutableState<String>,
-    currentBaseUrlState2: MutableState<String>,
+    currentBaseUrlNameState: MutableState<String>,
+    currentBaseUrl2State: MutableState<String>,
+    currentBaseUrl2NameState: MutableState<String>,
     isNotSecuredApiState: Boolean,
     isSwipeToDeleteDisabledState: Boolean = false,
     isSwipeToDuplicateDisabledState: Boolean = false,
-    onSaveUrl: (Int, String) -> Unit,
+    onSaveUrl: (Int, String, String) -> Unit,
     onSetOnboardingCompleted: (Boolean) -> Unit,
     onUpdateActiveButtons: (EnumMap<MainNavOption, Boolean>) -> Unit,
     onTestConnection: () -> Unit,
@@ -177,10 +192,10 @@ fun SettingsComposable(
         detectTapGestures(onTap = {
 
             if (currentBaseUrlState.value.isNotEmpty()) {
-                onSaveUrl(PRIMARY_URL, currentBaseUrlState.value)
+                onSaveUrl(PRIMARY_URL, currentBaseUrlState.value, currentBaseUrlNameState.value)
             }
-            if (currentBaseUrlState2.value.isNotEmpty()) {
-                onSaveUrl(SECONDARY_URL, currentBaseUrlState2.value)
+            if (currentBaseUrl2State.value.isNotEmpty()) {
+                onSaveUrl(SECONDARY_URL, currentBaseUrl2State.value, currentBaseUrl2NameState.value)
             }
             focusManager.clearFocus()
         })
@@ -189,185 +204,280 @@ fun SettingsComposable(
         val isLandscape =
             LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .then(if (isLandscape) Modifier.verticalScroll(rememberScrollState()) else Modifier),
+                .then(
+                    if (isLandscape) Modifier.verticalScroll(rememberScrollState()) else Modifier
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            BackHandler(true) {
-                navController.navigate(MainNavOption.LoginScreen.name) {
-                    popUpTo(NavRoutes.MainRoute.name)
+            item {
+                BackHandler(true) {
+                    navController.navigate(MainNavOption.LoginScreen.name) {
+                        popUpTo(NavRoutes.MainRoute.name)
+                    }
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Column(
+            item {
+                Row(
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp)
+                    ) {
+                        val url by rememberSaveable { mutableStateOf(currentBaseUrlState) }
+                        val updatedUrlState by rememberUpdatedState(url.value)
+
+                        val urlName by rememberSaveable { mutableStateOf(currentBaseUrlNameState) }
+                        val updatedUrlNameState by rememberUpdatedState(urlName.value)
+
+                        Column(
+                            modifier = Modifier
+//                            .weight(1f)
+//                            .padding(16.dp)
+                        ) {
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+//                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                TextField(
+                                    modifier = Modifier.focusRequester(focusRequester),
+                                    value = urlName.value,
+                                    onValueChange = {
+                                        urlName.value = it
+                                    },
+                                    label = { Text(stringResource(R.string.label_url_name)) },
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+//                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                //Primary URL
+                                OutlinedTextField(
+                                    value = url.value,
+                                    singleLine = false,
+                                    onValueChange = {
+                                        url.value = it
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.bring_your_own_ip),
+                                            contentDescription = stringResource(R.string.label_url)
+                                        )
+                                    },
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        // Update the URL
+                                        onSaveUrl(PRIMARY_URL, updatedUrlState, updatedUrlNameState)
+                                        focusManager.clearFocus()
+                                    }),
+                                    label = { Text(stringResource(R.string.label_url)) },
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.padding(8.dp))
+
+                        Column(
+                            modifier = Modifier
+//                            .weight(1f)
+//                            .padding(16.dp)
+                        ) {
+                            // Secondary URL
+                            val url2 by rememberSaveable { mutableStateOf(currentBaseUrl2State) }
+                            val updatedUrl2State by rememberUpdatedState(url2.value)
+                            val url2Name by rememberSaveable {
+                                mutableStateOf(
+                                    currentBaseUrl2NameState
+                                )
+                            }
+                            val updatedUrl2NameState by rememberUpdatedState(url2Name.value)
+
+                            TextField(
+                                modifier = Modifier.focusRequester(focusRequester),
+                                value = url2Name.value,
+                                onValueChange = {
+                                    url2Name.value = it
+                                },
+                                label = { Text(stringResource(R.string.label_url2_name)) },
+                            )
+
+                            OutlinedTextField(value = url2.value,
+                                singleLine = false,
+                                onValueChange = {
+                                    url2.value = it
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        painterResource(R.drawable.bring_your_own_ip),
+                                        contentDescription = stringResource(R.string.label_url2)
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(onDone = {
+                                    // Update the URL
+                                    onSaveUrl(SECONDARY_URL, updatedUrl2State, updatedUrl2NameState)
+                                    focusManager.clearFocus()
+                                }),
+                                label = { Text(stringResource(R.string.label_url2)) },
+                                modifier = Modifier.focusRequester(focusRequester)
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
+                HorizontalDivider()
+            }
+
+
+            item {
+                val rowModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = rowModifier
+                ) {
+                    Text(
+                        text = stringResource(R.string.private_webserver),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(checked = isNotSecuredApiState, onCheckedChange = { isChecked ->
+                        onSetNotSecuredApi(isChecked)
+                    })
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = rowModifier
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete_row_disabled),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Switch(checked = isSwipeToDeleteDisabledState, onCheckedChange = { isChecked ->
+                        onSetSwipeToDeleteDisabled(isChecked)
+                    })
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = rowModifier
+                ) {
+                    Text(
+                        text = stringResource(R.string.duplicate_row_disabled),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Switch(checked = isSwipeToDuplicateDisabledState,
+                        onCheckedChange = { isChecked ->
+                            onSetSwipeToDuplicateDisabled(isChecked)
+                        })
+                }
+            }
+
+            item {
+                // Activate the buttons, show intro again, and close the dialog
+                HorizontalDivider()
+            }
+            item {
+                Spacer(modifier = Modifier.padding(8.dp))
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    val url by rememberSaveable { mutableStateOf(currentBaseUrlState) }
-                    val updatedUrlState by rememberUpdatedState(url.value)
 
-                    //Primary URL
-                    OutlinedTextField(value = url.value,
-                        singleLine = false,
-                        onValueChange = {
-                            url.value = it
-                        },
-                        leadingIcon = {
-                            Icon(
-                                painterResource(R.drawable.bring_your_own_ip),
-                                contentDescription = stringResource(R.string.label_url)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(onDone = {
-                            // Update the URL
-                            onSaveUrl(PRIMARY_URL, updatedUrlState)
-                            focusManager.clearFocus()
-                        }),
-                        label = { Text(stringResource(R.string.label_url)) },
-                        modifier = Modifier.focusRequester(focusRequester)
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-
-                    // Secondary URL
-                    val url2 by rememberSaveable { mutableStateOf(currentBaseUrlState) }
-                    val updatedUrlState2 by rememberUpdatedState(url2.value)
-
-                    OutlinedTextField(value = url2.value,
-                        singleLine = false,
-                        onValueChange = {
-                            url2.value = it
-                        },
-                        leadingIcon = {
-                            Icon(
-                                painterResource(R.drawable.bring_your_own_ip),
-                                contentDescription = stringResource(R.string.label_url2)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(onDone = {
-                            // Update the URL
-                            onSaveUrl(SECONDARY_URL, updatedUrlState2)
-                            focusManager.clearFocus()
-                        }),
-                        label = { Text(stringResource(R.string.label_url2)) },
-                        modifier = Modifier.focusRequester(focusRequester)
-                    )
+                    Button(modifier = Modifier.weight(0.45f),
+                        onClick = { showDialog.value = true }) {
+                        Text(stringResource(R.string.dialog_button_settings))
+                    }
+                    Spacer(modifier = Modifier.weight(0.1f))
+                    Button(modifier = Modifier.weight(0.45f), onClick = {
+                        onSetOnboardingCompleted(false)
+                    }) {
+                        Text(text = stringResource(R.string.show_intro_again))
+                    }
                 }
             }
 
-            HorizontalDivider()
-
-            val rowModifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = rowModifier
-            ) {
-                Text(
-                    text = stringResource(R.string.private_webserver),
-                    modifier = Modifier.weight(1f)
-                )
-                Switch(checked = isNotSecuredApiState, onCheckedChange = { isChecked ->
-                    onSetNotSecuredApi(isChecked)
-                })
+            item {
+                Spacer(modifier = Modifier.padding(8.dp))
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = rowModifier
-            ) {
-                Text(
-                    text = stringResource(R.string.delete_row_disabled),
-                    modifier = Modifier.weight(1f)
-                )
-
-                Switch(checked = isSwipeToDeleteDisabledState, onCheckedChange = { isChecked ->
-                    onSetSwipeToDeleteDisabled(isChecked)
-                })
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = rowModifier
-            ) {
-                Text(
-                    text = stringResource(R.string.duplicate_row_disabled),
-                    modifier = Modifier.weight(1f)
-                )
-
-                Switch(checked = isSwipeToDuplicateDisabledState, onCheckedChange = { isChecked ->
-                    onSetSwipeToDuplicateDisabled(isChecked)
-                })
-            }
-
-            // Activate the buttons, show intro again, and close the dialog
-            HorizontalDivider()
-            Spacer(modifier = Modifier.padding(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-
-                Button(modifier = Modifier.weight(0.45f), onClick = { showDialog.value = true }) {
-                    Text(stringResource(R.string.dialog_button_settings))
-                }
-                Spacer(modifier = Modifier.weight(0.1f))
-                Button(modifier = Modifier.weight(0.45f), onClick = {
-                    onSetOnboardingCompleted(false)
-                }) {
-                    Text(text = stringResource(R.string.show_intro_again))
-                }
-            }
-            Spacer(modifier = Modifier.padding(16.dp))
 
             // Show the dialog to activate the buttons
             if (showDialog.value) {
-                MenuButtonsActivationDialog(
-                    showDialog = showDialog,
-                    activeButtonsUiState = activeButtonsState,
-                    onUpdateActiveButtons = onUpdateActiveButtons
-                )
+                item {
+                    MenuButtonsActivationDialog(
+                        showDialog = showDialog,
+                        activeButtonsUiState = activeButtonsState,
+                        onUpdateActiveButtons = onUpdateActiveButtons
+                    )
+                }
             }
 
             // Test the connection
-            HorizontalDivider()
-            Spacer(modifier = Modifier.padding(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Button(modifier = Modifier.fillMaxWidth(), onClick = { onTestConnection() }) {
-                    Text(text = stringResource(R.string.test_retrofit_button))
+            item {
+                HorizontalDivider()
+            }
+
+            item {
+                Spacer(modifier = Modifier.padding(8.dp))
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Button(modifier = Modifier.fillMaxWidth(), onClick = { onTestConnection() }) {
+                        Text(text = stringResource(R.string.test_retrofit_button))
+                    }
                 }
             }
-            Spacer(modifier = Modifier.padding(16.dp))
-            HorizontalDivider()
+            item {
+                Spacer(modifier = Modifier.padding(16.dp))
+            }
+
+            item {
+                HorizontalDivider()
+            }
 
         }
     }
@@ -388,6 +498,7 @@ fun MenuButtonsActivationDialog(
                 MainNavOption.CustomersScreen to R.string.drawer_customers,
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
+                MainNavOption.WarehouseOperationsScreen to R.string.warehouse_operations,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
                 MainNavOption.OrdersScreen to R.string.drawer_orders
             )
@@ -463,10 +574,12 @@ fun SettingsScreenPreview() {
         SettingsComposable(navController = NavController(LocalContext.current),
             activeButtonsState = EnumMap(MainNavOption::class.java),
             currentBaseUrlState = remember { mutableStateOf("https://example.com/api") },
-            currentBaseUrlState2 = remember { mutableStateOf("https://example.com/api2") },
+            currentBaseUrlNameState = remember { mutableStateOf("Primary URL") },
+            currentBaseUrl2State = remember { mutableStateOf("https://example.com/api2") },
+            currentBaseUrl2NameState = remember { mutableStateOf("Secondary URL") },
             isNotSecuredApiState = false,
             isSwipeToDeleteDisabledState = true,
-            onSaveUrl = { _, _ -> },
+            onSaveUrl = { _, _, _ -> },
             onSetOnboardingCompleted = {},
             onUpdateActiveButtons = {},
             onTestConnection = {},

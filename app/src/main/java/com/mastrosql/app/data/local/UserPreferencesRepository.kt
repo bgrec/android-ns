@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -33,6 +34,9 @@ data class UserPreferences(
     val isLoggedIn: Boolean = false,
     val baseUrl: String = "",
     val baseUrl2: String = "",
+    val selectedUrl: Int = 0,
+    val baseUrlName: String = "Primary",
+    val baseUrl2Name: String = "Secondary",
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java),
     val username: String = "",
     val userType: String = "",
@@ -55,6 +59,9 @@ object UserPreferencesKeys {
     val IS_LOGGED_IN: Preferences.Key<Boolean> = booleanPreferencesKey("is_logged_in")
     val BASE_URL: Preferences.Key<String> = stringPreferencesKey("base_url")
     val BASE_URL2: Preferences.Key<String> = stringPreferencesKey("base_url2")
+    val SELECTED_URL: Preferences.Key<Int> = intPreferencesKey("selected_url")
+    val BASE_URL_NAME: Preferences.Key<String> = stringPreferencesKey("base_url_name")
+    val BASE_URL2_NAME: Preferences.Key<String> = stringPreferencesKey("base_url2_name")
     val ACTIVE_BUTTONS: Preferences.Key<String> = stringPreferencesKey("active_buttons")
     val USERNAME: Preferences.Key<String> = stringPreferencesKey("username")
     val USER_TYPE: Preferences.Key<String> = stringPreferencesKey("user_type")
@@ -139,6 +146,9 @@ class UserPreferencesRepository @Inject constructor(
         val isLoggedIn = preferences[UserPreferencesKeys.IS_LOGGED_IN] ?: false
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
         val baseUrl2 = preferences[UserPreferencesKeys.BASE_URL2] ?: ""
+        val selectedUrl = preferences[UserPreferencesKeys.SELECTED_URL] ?: 0
+        val baseUrlName = preferences[UserPreferencesKeys.BASE_URL_NAME] ?: "Primary"
+        val baseUrl2Name = preferences[UserPreferencesKeys.BASE_URL2_NAME] ?: "Secondary"
         val activeButtonsJson = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]
 
         //Active buttons EnumMap
@@ -188,6 +198,9 @@ class UserPreferencesRepository @Inject constructor(
             isLoggedIn,
             baseUrl,
             baseUrl2,
+            selectedUrl,
+            baseUrlName,
+            baseUrl2Name,
             activeButtons,
             username,
             userType,
@@ -211,6 +224,9 @@ class UserPreferencesRepository @Inject constructor(
             preferences[UserPreferencesKeys.IS_LOGGED_IN] = userPreferences.isLoggedIn
             preferences[UserPreferencesKeys.BASE_URL] = userPreferences.baseUrl
             preferences[UserPreferencesKeys.BASE_URL2] = userPreferences.baseUrl2
+            preferences[UserPreferencesKeys.SELECTED_URL] = userPreferences.selectedUrl
+            preferences[UserPreferencesKeys.BASE_URL_NAME] = userPreferences.baseUrlName
+            preferences[UserPreferencesKeys.BASE_URL2_NAME] = userPreferences.baseUrl2Name
             preferences[UserPreferencesKeys.ACTIVE_BUTTONS] =
                 userPreferences.activeButtons.toJsonString()
             preferences[UserPreferencesKeys.USERNAME] = userPreferences.username
@@ -264,26 +280,35 @@ class UserPreferencesRepository @Inject constructor(
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.BASE_URL2] = baseUrl2
         }
+        // No need to update the Retrofit service instance here
         //Create a new Retrofit instance with the new base URL
-        //appContainer.updateRetrofitService(baseUrl2) // No need to update the Retrofit service
+        //appContainer.updateRetrofitService(baseUrl2)
     }
 
     /**
-     * Switches the base URL used for network requests to the other base URL
+     * Saves the selected URL to DataStore.
      */
-    suspend fun switchBaseUrl() {
+    private suspend fun saveSelectedUrl(selectedUrl: Int) {
         dataStore.edit { preferences ->
-            val currentBaseUrl = preferences[UserPreferencesKeys.BASE_URL]
-            val newBaseUrl = if (currentBaseUrl == preferences[UserPreferencesKeys.BASE_URL2]) {
-                preferences[UserPreferencesKeys.BASE_URL]
-            } else {
-                preferences[UserPreferencesKeys.BASE_URL2]
-            }
+            preferences[UserPreferencesKeys.SELECTED_URL] = selectedUrl
+        }
+    }
 
-            newBaseUrl?.let {
-                preferences[UserPreferencesKeys.BASE_URL] = it
-                appContainer.updateRetrofitService(it)
-            }
+    /**
+     * Saves the base URL name to DataStore.
+     */
+    suspend fun saveBaseUrlName(baseUrlName: String) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.BASE_URL_NAME] = baseUrlName
+        }
+    }
+
+    /**
+     * Saves the base URL2 name to DataStore.
+     */
+    suspend fun saveBaseUrl2Name(baseUrl2Name: String) {
+        dataStore.edit { preferences ->
+            preferences[UserPreferencesKeys.BASE_URL2_NAME] = baseUrl2Name
         }
     }
 
@@ -376,6 +401,61 @@ class UserPreferencesRepository @Inject constructor(
      */
     fun getBaseUrl(): Flow<String> {
         return userPreferencesFlow.map { it.baseUrl }
+    }
+
+    /**
+     * Retrieves a Flow of String representing the base URL2 preference.
+     */
+    fun getBaseUrl2(): Flow<String> {
+        return userPreferencesFlow.map { it.baseUrl2 }
+    }
+
+    /**
+     * Retrieves a Flow of Int representing the selected URL preference.
+     */
+    fun getSelectedUrl(): Flow<Int> {
+        return userPreferencesFlow.map { it.selectedUrl }
+    }
+
+    /**
+     * Retrieves a Flow of String representing the base URL name preference.
+     */
+    fun getBaseUrlName(): Flow<String> {
+        return userPreferencesFlow.map { it.baseUrlName }
+    }
+
+    /**
+     * Retrieves a Flow of String representing the base URL2 name preference.
+     */
+    fun getBaseUrl2Name(): Flow<String> {
+        return userPreferencesFlow.map { it.baseUrl2Name }
+    }
+
+    /**
+     * Function to switch the base URL based on the selected URL.
+     */
+    suspend fun changeBaseUrl(selectedUrl: Int) {
+        // Retrieve the current base URLs
+        val baseUrl1 = getBaseUrl().first()
+        val baseUrl2 = getBaseUrl2().first()
+
+        // Determine the new base URL based on the selected URL
+        val newBaseUrl = when (selectedUrl) {
+            0 -> {
+                saveSelectedUrl(selectedUrl)
+                baseUrl1
+            }
+
+            1 -> {
+                saveSelectedUrl(selectedUrl)
+                baseUrl2
+            }
+
+            else -> throw IllegalArgumentException("Invalid selectedUrl: $selectedUrl")
+        }
+
+        // Update preferences and Retrofit service with the new base URL
+        appContainer.updateRetrofitService(newBaseUrl)
     }
 
     /**
@@ -598,4 +678,5 @@ class UserPreferencesRepository @Inject constructor(
             )
         }
     }
+
 }

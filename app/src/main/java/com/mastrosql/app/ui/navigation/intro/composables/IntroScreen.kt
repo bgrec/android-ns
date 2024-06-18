@@ -314,7 +314,7 @@ fun ConfigContent(
                 keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = {
-                viewModel.setBaseUrl(urlState)
+                viewModel.setPrimaryBaseUrl(urlState)
                 focusManager.clearFocus()
             }),
             label = { Text(stringResource(R.string.label_url)) },
@@ -322,7 +322,7 @@ fun ConfigContent(
                 .focusRequester(focusRequester)
                 .onFocusChanged {
                     if (!it.isFocused) {
-                        viewModel.setBaseUrl(urlState)
+                        viewModel.setPrimaryBaseUrl(urlState)
                     }
                 })
 

@@ -243,6 +243,9 @@
     <string name="send_scanned_code">Send Scanned Code</string>
     <string name="order_update_text">Modifiche ordine salvate con successo</string>
     <string name="label_url2">Inserire URL2 - seconda azienda</string>
+    <string name="warehouse_operations">Movimenti</string>
+    <string name="label_url_name">Nome URL1</string>
+    <string name="label_url2_name">Nome URL2</string>
 
 
 </resources>

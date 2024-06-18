@@ -39,6 +39,8 @@ import java.net.URL
  *
  */
 
+
+@Suppress("KDocMissingDocumentation")
 interface AppContainer {
     val loginRepository: LoginRepository
     val customersMasterDataRepository: CustomersMasterDataRepository
@@ -86,6 +88,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     } else {
         DEFAULT_BASE_URL
     }
+
     /**
      * Initializes the [DefaultAppContainer] instance by setting up the Retrofit service.
      *
@@ -165,10 +168,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
      */
     private suspend fun readBaseUrlFromDataStore(context: Context): String {
 
-    /**
-     * Retrieves the base URL from the DataStore associated with the provided [context].
-     * If the base URL is not found in the DataStore, falls back to [defaultBaseUrl].
-     */
+        /**
+         * Retrieves the base URL from the DataStore associated with the provided [context].
+         * If the base URL is not found in the DataStore, falls back to [defaultBaseUrl].
+         */
         return try {
             context.dataStore.data.first()[UserPreferencesKeys.BASE_URL] ?: defaultBaseUrl!!
         }
@@ -209,7 +212,9 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
         NetworkCustomersMasterDataRepository(
             mastroAndroidApiService,
-            AppDatabase.getInstance(context).customersMasterDataDao(),
+            AppDatabase
+                .getInstance(context)
+                .customersMasterDataDao(),
             context
         )
     }
@@ -219,27 +224,47 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val itemsRepository: ItemsRepository by lazy {
-        OfflineItemsRepository(AppDatabase.getInstance(context).itemDao())
+        OfflineItemsRepository(
+            AppDatabase
+                .getInstance(context)
+                .itemDao()
+        )
     }
 
     override val articlesRepository: ArticlesRepository by lazy {
         NetworkArticlesRepository(
-            mastroAndroidApiService, AppDatabase.getInstance(context).articlesDao(), context
+            mastroAndroidApiService,
+            AppDatabase
+                .getInstance(context)
+                .articlesDao(),
+            context
         )
     }
 
     override val ordersRepository: OrdersRepository by lazy {
         NetworkOrdersRepository(
-            mastroAndroidApiService, AppDatabase.getInstance(context).ordersDao(), context
+            mastroAndroidApiService,
+            AppDatabase
+                .getInstance(context)
+                .ordersDao(),
+            context
         )
     }
 
     override val orderDetailsRepository: OrderDetailsRepository by lazy {
         NetworkOrderDetailsRepository(
-            mastroAndroidApiService, AppDatabase.getInstance(context).orderDetailsDao(), context
+            mastroAndroidApiService,
+            AppDatabase
+                .getInstance(context)
+                .orderDetailsDao(),
+            context
         )
     }
 
+    /**
+     * Lazily initializes the [UserPreferencesRepository] instance
+     * using the [context] and [mastroAndroidApiService].
+     */
     override val userPreferencesRepository: UserPreferencesRepository by lazy {
         UserPreferencesRepository(
             appContainer = this,

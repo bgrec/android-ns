@@ -51,6 +51,9 @@ data class UserPreferencesUiState(
     val isSwipeToDuplicateDisabled: Boolean = false,
     val baseUrl: String = "",
     val baseUrl2: String = "",
+    val selectedUrl: Int = 0,
+    val baseUrlName: String = "Primary",
+    val baseUrl2Name: String = "Secondary",
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java)
     // collect it as collectAsStateWithLifecycle()
 )
@@ -138,16 +141,7 @@ open class UserPreferencesViewModel(
         // Observe changes in baseUrl and update UI state accordingly
         viewModelScope.launch {
             userPreferencesRepository
-                .getBaseUrl()
-                .collect { baseUrl ->
-                    updateUiState(uiState.value.copy(baseUrl = baseUrl))
-                }
-        }
-
-        // Observe changes in baseUrl2 and update UI state accordingly
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl()
+                .getBaseUrl2()
                 .collect { baseUrl2 ->
                     updateUiState(uiState.value.copy(baseUrl2 = baseUrl2))
                 }
@@ -159,6 +153,33 @@ open class UserPreferencesViewModel(
                 .getActiveButtons()
                 .collect { activeButtons ->
                     updateUiState(uiState.value.copy(activeButtons = activeButtons))
+                }
+        }
+
+        // Observe changes in selectedUrl and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getSelectedUrl()
+                .collect { selectedUrl ->
+                    updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+                }
+        }
+
+        // Observe changes in selectedUrl and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrlName()
+                .collect { baseUrlName ->
+                    updateUiState(uiState.value.copy(baseUrlName = baseUrlName))
+                }
+        }
+
+        // Observe changes in selectedUrl and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrl2Name()
+                .collect { baseUrl2Name ->
+                    updateUiState(uiState.value.copy(baseUrl2Name = baseUrl2Name))
                 }
         }
     }
@@ -226,11 +247,29 @@ open class UserPreferencesViewModel(
     }
 
     /**
+     * Save the base URL name.
+     */
+    fun setPrimaryBaseUrlName(name: String) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveBaseUrlName(name)
+        }
+    }
+
+    /**
+     * Save the base URL name.
+     */
+    fun setSecondaryBaseUrlName(name: String) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveBaseUrl2Name(name)
+        }
+    }
+
+    /**
      * Switch the base URL.
      */
-    fun switchBaseUrl() {
+    fun changeBaseUrl(selectedUrl: Int) {
         viewModelScope.launch {
-            userPreferencesRepository.switchBaseUrl()
+            userPreferencesRepository.changeBaseUrl(selectedUrl)
         }
     }
 

@@ -41,7 +41,16 @@ import java.net.SocketTimeoutException
 /**
  * The dialer code to reset the cooldown period during development.
  */
-const val CREDENTIAL_DIALER_CODE = "*#*#66382723#*#*"
+const val CREDENTIAL_DIALER_CODE: String = "*#*#66382723#*#*"
+
+/**
+ * The UI state for the Login screen.
+ */
+@Suppress("KDocMissingDocumentation")
+data class LoginUiState(
+    val isSecondaryBaseUrlProvided: Boolean = false,
+    val selectedUrl: Int = 0
+)
 
 /**
  * The ViewModel class for the Login screen.
@@ -62,6 +71,8 @@ class LoginViewModel(
     fun initCredentialManager(context: Context) {
         this.credentialManager = CredentialManager.create(context)
         getIsNotSecuredApi()
+
+
     }
 
     private fun getIsNotSecuredApi() {
