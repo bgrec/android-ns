@@ -55,16 +55,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.R
+import com.mastrosql.app.SECONDARY_URL
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
-
-private const val PRIMARY_URL = 0
-private const val SECONDARY_URL = 1
 
 /**
  * Settings screen for the app
@@ -194,9 +193,7 @@ fun SettingsComposable(
             if (currentBaseUrlState.value.isNotEmpty()) {
                 onSaveUrl(PRIMARY_URL, currentBaseUrlState.value, currentBaseUrlNameState.value)
             }
-            if (currentBaseUrl2State.value.isNotEmpty()) {
-                onSaveUrl(SECONDARY_URL, currentBaseUrl2State.value, currentBaseUrl2NameState.value)
-            }
+            onSaveUrl(SECONDARY_URL, currentBaseUrl2State.value, currentBaseUrl2NameState.value)
             focusManager.clearFocus()
         })
     }) { innerPadding ->
@@ -225,7 +222,7 @@ fun SettingsComposable(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -242,66 +239,50 @@ fun SettingsComposable(
 
                         Column(
                             modifier = Modifier
-//                            .weight(1f)
-//                            .padding(16.dp)
+                                .fillMaxWidth()
                         ) {
-
-                            Row(
+                            TextField(
                                 modifier = Modifier
+                                    .focusRequester(focusRequester)
                                     .fillMaxWidth(),
-//                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                TextField(
-                                    modifier = Modifier.focusRequester(focusRequester),
-                                    value = urlName.value,
-                                    onValueChange = {
-                                        urlName.value = it
-                                    },
-                                    label = { Text(stringResource(R.string.label_url_name)) },
-                                )
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-//                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                //Primary URL
-                                OutlinedTextField(
-                                    value = url.value,
-                                    singleLine = false,
-                                    onValueChange = {
-                                        url.value = it
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            painterResource(R.drawable.bring_your_own_ip),
-                                            contentDescription = stringResource(R.string.label_url)
-                                        )
-                                    },
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(onDone = {
-                                        // Update the URL
-                                        onSaveUrl(PRIMARY_URL, updatedUrlState, updatedUrlNameState)
-                                        focusManager.clearFocus()
-                                    }),
-                                    label = { Text(stringResource(R.string.label_url)) },
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
-                            }
+                                value = urlName.value,
+                                onValueChange = {
+                                    urlName.value = it
+                                },
+                                label = { Text(stringResource(R.string.label_url_name)) },
+                            )
                         }
-                        Spacer(modifier = Modifier.padding(8.dp))
 
+                        //Primary URL
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .focusRequester(focusRequester)
+                                .fillMaxWidth(),
+                            value = url.value,
+                            singleLine = false,
+                            onValueChange = {
+                                url.value = it
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painterResource(R.drawable.bring_your_own_ip),
+                                    contentDescription = stringResource(R.string.label_url)
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                // Update the URL
+                                onSaveUrl(PRIMARY_URL, updatedUrlState, updatedUrlNameState)
+                                focusManager.clearFocus()
+                            }),
+                            label = { Text(stringResource(R.string.label_url)) },
+
+                            )
+                        Spacer(modifier = Modifier.padding(8.dp))
                         Column(
                             modifier = Modifier
-//                            .weight(1f)
-//                            .padding(16.dp)
                         ) {
                             // Secondary URL
                             val url2 by rememberSaveable { mutableStateOf(currentBaseUrl2State) }
@@ -314,15 +295,20 @@ fun SettingsComposable(
                             val updatedUrl2NameState by rememberUpdatedState(url2Name.value)
 
                             TextField(
-                                modifier = Modifier.focusRequester(focusRequester),
+                                modifier = Modifier
+                                    .focusRequester(focusRequester)
+                                    .fillMaxWidth(),
                                 value = url2Name.value,
                                 onValueChange = {
                                     url2Name.value = it
                                 },
                                 label = { Text(stringResource(R.string.label_url2_name)) },
                             )
-
-                            OutlinedTextField(value = url2.value,
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .focusRequester(focusRequester)
+                                    .fillMaxWidth(),
+                                value = url2.value,
                                 singleLine = false,
                                 onValueChange = {
                                     url2.value = it
@@ -342,7 +328,6 @@ fun SettingsComposable(
                                     focusManager.clearFocus()
                                 }),
                                 label = { Text(stringResource(R.string.label_url2)) },
-                                modifier = Modifier.focusRequester(focusRequester)
                             )
                         }
                     }
@@ -505,7 +490,8 @@ fun MenuButtonsActivationDialog(
         )
     }
 
-    AlertDialog(onDismissRequest = { showDialog.value = false },
+    AlertDialog(
+        onDismissRequest = { showDialog.value = false },
         title = { Text(stringResource(R.string.dialog_button_settings)) },
         text = {
             LazyColumn(modifier = Modifier.wrapContentSize()) {

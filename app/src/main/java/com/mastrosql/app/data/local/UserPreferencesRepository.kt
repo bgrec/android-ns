@@ -11,6 +11,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.SECONDARY_URL
 import com.mastrosql.app.data.AppContainer
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.MainNavOption
@@ -34,7 +36,7 @@ data class UserPreferences(
     val isLoggedIn: Boolean = false,
     val baseUrl: String = "",
     val baseUrl2: String = "",
-    val selectedUrl: Int = 0,
+    val selectedUrl: Int = PRIMARY_URL,
     val baseUrlName: String = "Primary",
     val baseUrl2Name: String = "Secondary",
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java),
@@ -146,7 +148,7 @@ class UserPreferencesRepository @Inject constructor(
         val isLoggedIn = preferences[UserPreferencesKeys.IS_LOGGED_IN] ?: false
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
         val baseUrl2 = preferences[UserPreferencesKeys.BASE_URL2] ?: ""
-        val selectedUrl = preferences[UserPreferencesKeys.SELECTED_URL] ?: 0
+        val selectedUrl = preferences[UserPreferencesKeys.SELECTED_URL] ?: PRIMARY_URL
         val baseUrlName = preferences[UserPreferencesKeys.BASE_URL_NAME] ?: "Primary"
         val baseUrl2Name = preferences[UserPreferencesKeys.BASE_URL2_NAME] ?: "Secondary"
         val activeButtonsJson = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]
@@ -441,12 +443,12 @@ class UserPreferencesRepository @Inject constructor(
 
         // Determine the new base URL based on the selected URL
         val newBaseUrl = when (selectedUrl) {
-            0 -> {
+            PRIMARY_URL -> {
                 saveSelectedUrl(selectedUrl)
                 baseUrl1
             }
 
-            1 -> {
+            SECONDARY_URL -> {
                 saveSelectedUrl(selectedUrl)
                 baseUrl2
             }

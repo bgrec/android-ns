@@ -26,13 +26,18 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesUiState
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -49,7 +54,10 @@ const val CREDENTIAL_DIALER_CODE: String = "*#*#66382723#*#*"
 @Suppress("KDocMissingDocumentation")
 data class LoginUiState(
     val isSecondaryBaseUrlProvided: Boolean = false,
-    val selectedUrl: Int = 0
+    val isNotSecuredApi: Boolean = false,
+    val selectedUrl: Int = PRIMARY_URL,
+    val baseUrlName: String = "Primary",
+    val baseUrl2Name: String = "Secondary",
 )
 
 /**
@@ -60,9 +68,14 @@ class LoginViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    // Variable to hold the CredentialManager object.
+    /**
+     * The CredentialManager object.
+     */
     private lateinit var credentialManager: CredentialManager
 
+    /**
+     * Flag to check if the API is not secured.
+     */
     private var isNotSecuredApi = false
 
     /**
@@ -71,16 +84,54 @@ class LoginViewModel(
     fun initCredentialManager(context: Context) {
         this.credentialManager = CredentialManager.create(context)
         getIsNotSecuredApi()
+    }
 
+    /**
+     * Mutable state flow to hold the UI state.
+     */
+    private val _uiState = MutableStateFlow(LoginUiState())
 
+    /**
+     * UI state for the Login screen.
+     */
+    val uiState: StateFlow<LoginUiState> = _uiState
+
+    /**
+     * Update the UI state.
+     */
+    private fun updateUiState(newState: LoginUiState) {
+        _uiState.value = newState
     }
 
     private fun getIsNotSecuredApi() {
+        /**
+         * Collect the value of isNotSecuredApi from the data store.
+         */
         viewModelScope.launch {
             userPreferencesRepository
                 .getIsNotSecuredApi()
                 .collect {
                     isNotSecuredApi = it
+                    updateUiState(uiState.value.copy(isNotSecuredApi = isNotSecuredApi))
+                }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrl2()
+                .collect {
+                    if (it.isNotEmpty()) {
+                        updateUiState(uiState.value.copy(isSecondaryBaseUrlProvided = true))
+                        userPreferencesRepository.getSelectedUrl().collect { selectedUrl ->
+                            updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+                        }
+                        userPreferencesRepository.getBaseUrlName().collect { baseUrlName ->
+                            updateUiState(uiState.value.copy(baseUrlName = baseUrlName))
+                        }
+                        userPreferencesRepository.getBaseUrl2Name().collect { baseUrl2Name ->
+                            updateUiState(uiState.value.copy(baseUrl2Name = baseUrl2Name))
+                        }
+                    }
                 }
         }
     }
