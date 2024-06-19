@@ -28,7 +28,7 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun ArticlesScreen(
     drawerState: DrawerState,
@@ -41,27 +41,24 @@ fun ArticlesScreen(
 
     when (articlesUiState) {
         is ArticlesUiState.Loading -> LoadingScreen(
-            modifier = modifier.fillMaxSize(),
-            loading = true
+            modifier = modifier.fillMaxSize(), loading = true
         )
 
         is ArticlesUiState.Success -> ArticlesResultScreen(
-            articlesUiState.articlesList,
-            articlesUiState.documentType,
-            articlesUiState.documentId,
             modifier = modifier.fillMaxWidth(),
+            articlesList = articlesUiState.articlesList,
+            documentType = articlesUiState.documentType,
+            documentId = articlesUiState.documentId,
             drawerState = drawerState,
             navController = navController
         ) { articleId ->
-            viewModel.insertArticleIntoDocument(
-                context = context,
+            viewModel.insertArticleIntoDocument(context = context,
                 documentId = articlesUiState.documentId,
                 documentType = articlesUiState.documentType,
                 articleId = articleId,
                 onInsertionComplete = {
                     navController.navigateUp()
-                }
-            )
+                })
         }
 
         is ArticlesUiState.Error -> ErrorScreen(
@@ -74,13 +71,16 @@ fun ArticlesScreen(
 
 }
 
+/**
+ * Screen to display the list of articles
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun ArticlesResultScreen(
+    modifier: Modifier = Modifier,
     articlesList: List<Article>,
     documentType: String?,
     documentId: Int?,
-    modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
     onInsertArticleClick: (Int) -> Unit
@@ -95,13 +95,14 @@ fun ArticlesResultScreen(
 
     Scaffold(topBar = {
         AppBar(
-            drawerState = drawerState, title = R.string.drawer_articles,
+            drawerState = drawerState,
+            title = R.string.drawer_articles,
             showDrawerIconButton = documentId == null,
             backNavigationAction = backNavigationAction
         )
     }) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(it),
             // verticalArrangement = Arrangement.Center,
@@ -117,14 +118,16 @@ fun ArticlesResultScreen(
                 modifier = Modifier.padding(4.dp),
                 navController = navController,
                 onInsertArticleClick = onInsertArticleClick
-
             )
         }
-
     }
 }
 
 
+/**
+ * Preview for [ArticlesScreen]
+ */
+@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun ArticlesScreenPreview() {
@@ -135,75 +138,3 @@ fun ArticlesScreenPreview() {
     )
 }
 
-//@Preview
-//@Composable
-//fun SearchBarPreview() {
-//    //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
-//}
-
-/*
-*  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { MarsTopAppBar(scrollBehavior = scrollBehavior) }
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            val marsViewModel: MarsViewModel = viewModel()
-            HomeScreen(marsUiState = marsViewModel.marsUiState)
-        }
-    }
-}
-
-@Composable
-fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
-    CenterAlignedTopAppBar(
-        scrollBehavior = scrollBehavior,
-        title = {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-        },
-        modifier = modifier
-    )
-}
-*
-* */
-
-
-/**
- * Versione con SearchBar diversa
- *
- * @ExperimentalMaterial3Api
- * @Composable
- * fun ArticlesResultScreen(
- *     customerMasterDataList: List<CustomerMasterData>,
- *     modifier: Modifier = Modifier,
- *     drawerState: DrawerState,
- *     navController: NavController
- * ) {
- *     Scaffold(
- *         topBar = {
- *             //AppBar(drawerState = drawerState)
- *             SearchBar(
- *                 customerMasterDataList = customerMasterDataList,
- *                 navController = navController
- *             )
- *         },
- *         bottomBar = {
- *             // BottomBar(drawerState = drawerState, navController = navController)
- *         },
- *     ) {
- *         Surface(
- *             modifier = Modifier
- *                 .fillMaxSize()
- *                 .padding(it)
- *         ) {
- *         }
- *     }
- * }
- */

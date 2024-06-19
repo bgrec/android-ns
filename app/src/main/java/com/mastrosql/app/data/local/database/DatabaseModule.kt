@@ -29,14 +29,27 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+
+/**
+ * Dagger module that provides dependencies related to the application database.
+ * This module provides methods to create and provide instances of the [AppDatabase]
+ * and its associated DAOs.
+ */
 class DatabaseModule {
+
+    /**
+     * Provides an instance of [ItemDao] from the given [AppDatabase].
+     */
     @Provides
     fun provideMastroDbDao(appDatabase: AppDatabase): ItemDao {
         return appDatabase.itemDao()
     }
-
     @Provides
     @Singleton
+
+    /**
+     * Provides an instance of [AppDatabase] using the Room database builder.
+     */
     fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return Room.databaseBuilder(
             appContext,

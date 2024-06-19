@@ -24,37 +24,37 @@ class CustomersMasterDataWorker(
             applicationContext
         )*/
 
-            return try {
-                Log.d(TAG, "Worker started at ${System.currentTimeMillis()}")
-                // Fetch data from the server using the provided dataSyncOperations
-                val mastroAndroidApiService = appContainer.customerMasterDataWorkManagerRepository
-                val dataFromServer = mastroAndroidApiService.getCustomersMasterData()
-                //dataSyncOperations.fetchDataFromServer()
+        return try {
+            Log.d(TAG, "Worker started at ${System.currentTimeMillis()}")
+            // Fetch data from the server using the provided dataSyncOperations
+            val mastroAndroidApiService = appContainer.customerMasterDataWorkManagerRepository
+            val dataFromServer = mastroAndroidApiService.getCustomersMasterData()
+            //dataSyncOperations.fetchDataFromServer()
 
-                // Insert or update the data using the provided dataSyncOperations
-                //dataSyncOperations.insertOrUpdateData(dataFromServer)
+            // Insert or update the data using the provided dataSyncOperations
+            //dataSyncOperations.insertOrUpdateData(dataFromServer)
 
-                // makeStatusNotification(
-                // applicationContext.resources.getString(R.string.sync_data),
-                 //applicationContext
-                //)
+            // makeStatusNotification(
+            // applicationContext.resources.getString(R.string.sync_data),
+            //applicationContext
+            //)
 
-                Log.i(TAG, "Data synced successfully")
-                //val outputData = workDataOf("data" to dataFromServer)
+            Log.i(TAG, "Data synced successfully")
+            //val outputData = workDataOf("data" to dataFromServer)
 
-                Log.d(TAG, "Worker started at ${System.currentTimeMillis()}")
-                Result.success()
+            Log.d(TAG, "Worker started at ${System.currentTimeMillis()}")
+            Result.success()
 
-            } catch (e: HttpException) {
-                //Result.retry() // Retry the worker on HTTP exceptions
-                Result.failure()
-            } catch (e: Exception) {
-                Result.failure()
-            } catch (throwable: Throwable) {
-                Log.e(TAG, "Error syncing data")
-                throwable.printStackTrace()
-                Result.failure()
-            }
+        } catch (e: HttpException) {
+            //Result.retry() // Retry the worker on HTTP exceptions
+            Result.failure()
+        } catch (e: Exception) {
+            Result.failure()
+        } catch (throwable: Throwable) {
+            Log.e(TAG, "Error syncing data")
+            throwable.printStackTrace()
+            Result.failure()
         }
     }
+}
 

@@ -36,8 +36,7 @@ interface MastroAndroidApiService {
     suspend fun getAllCustomersMasterData(
         //@Header("Authorization") authorization: String = "Basic bWFzdHJvOm1hc3Rybw==",
         //@Header("Cookie") cookie: String = "session_11eeda4470830af4a032408d5c759f7c=2024-03-20 14:06:19-274",
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): CustomersMasterDataResponse
 
     /**
@@ -49,35 +48,45 @@ interface MastroAndroidApiService {
 
     @GET("clientsview")
     suspend fun getCustomersMasterDataPage(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): CustomersMasterDataResponse
 
+    /**
+     * Makes a test API call to retrieve client data with specified offset and limit.
+     */
     // only for testing connection to the server
     @GET("clientsview")
     suspend fun testApiCall(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): Response<JsonObject>
 
+    /**
+     * Retrieves all destinations data with specified offset and limit.
+     */
     @GET("clientsdestinationsview")
     suspend fun getAllDestinationsData(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): DestinationsDataResponse
 
+    /**
+     * Retrieves all articles with specified offset and limit.
+     */
     @GET("articlesview")
     suspend fun getAllArticles(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): ArticlesResponse
 
+    /**
+     * Retrieves all orders with specified offset and limit.
+     */
     @GET("ordersview")
     suspend fun getAllOrders(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): OrdersResponse
 
+    /**
+     * Retrieves orders based on the specified filter.
+     */
     @GET("ordersview")
     suspend fun getOrderByFilter(
         @Query("q") filter: String,
@@ -87,6 +96,9 @@ interface MastroAndroidApiService {
          */
     ): OrdersResponse
 
+    /**
+     * Retrieves order details based on the specified filter.
+     */
     @GET("rigOrdc")
     suspend fun getOrderDetails(
         @Query("q") filter: String,
@@ -96,38 +108,57 @@ interface MastroAndroidApiService {
          */
     ): OrderDetailsResponse
 
+    /**
+     * Retrieves all order details with specified offset and limit.
+     */
     @GET("rigOrdc")
     suspend fun getAllOrderDetails(
-        @Query("offset") offset: Int = 0,
-        @Query("limit") pageSize: Int = 1000000
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): OrderDetailsResponse
 
-
+    /**
+     * Sends scanned barcode data to the server.
+     */
     @PUT("OrderBarcodeReader")
     suspend fun sendScannedCode(
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    /**
+     * Deletes a detail item based on the specified filter.
+     */
     @DELETE("rigOrdc")
     suspend fun deleteDetailItem(
         @Query("q") filter: String,
     ): Response<JsonObject>
 
+    /**
+     * Inserts an article into a document on the server.
+     */
     @PUT("InsertArticleIntoDocument")
     suspend fun insertArticleIntoDocument(
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    /**
+     * Duplicates an order detail item on the server.
+     */
     @PUT("DuplicateOrderRow")
     suspend fun duplicateDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    /**
+     * Updates an order detail item on the server.
+     */
     @PUT("UpdateOrderRow")
     suspend fun updateDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    /**
+     * Inserts a new order into the server.
+     */
     @PUT("InsertNewOrder")
     suspend fun insertNewOrder(
         @Body body: JsonObject
@@ -142,11 +173,21 @@ interface MastroAndroidApiService {
      * ): Response<JsonObject>
      */
 
-    @PUT("ModifyOrderDeliveryState")
+    /**
+     * Updates the delivery state of an order on the server.
+     */
+    @PUT("UpdateOrderDeliveryState")
     suspend fun updateDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    /**
+     * Updates an existing order on the server.
+     */
+    @PUT("UpdateOrder")
+    suspend fun updateOrder(
+        @Body body: JsonObject
+    ): Response<OrderAddResponse>
 
     /**
      * ****************************************************************************************
@@ -160,18 +201,29 @@ interface MastroAndroidApiService {
      *  */
      */
 
+    /**
+     * Initiates a login request to authenticate the user.
+     */
     @GET("authentication/login")
     suspend fun login(
-        @Query("app") appName: String,
-        @Header("Authorization") authorization: String
+        @Query("app") appName: String, @Header("Authorization") authorization: String
     ): Response<JsonObject>
 
+    /**
+     * Initiates a logout request to terminate the user's session.
+     */
     @GET("authentication/logout")
     suspend fun logout(): Response<JsonObject>
 
+    /**
+     * Retrieves the current login status from the server.
+     */
     @GET("authentication/status")
     suspend fun getLoginStatus(): Response<JsonObject>
 
+    /**
+     * Retrieves the completion status of the authentication process from the server.
+     */
     @GET("authentication/completed")
     suspend fun getLoginCompleted(): Response<JsonObject>
 

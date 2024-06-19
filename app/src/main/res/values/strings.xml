@@ -218,7 +218,8 @@
     <string name="duplicate_row">Duplica riga</string>
     <string name="decrease_quantity_by_one">Diminuisci quantità</string>
     <string name="increase_quantity_by_one">Aumenta la quantità</string>
-    <string name="delete_permission_menu">Cancellazione dati non permessa</string>
+    <string name="delete_row_disabled">Cancellazione riga disattivata</string>
+    <string name="duplicate_row_disabled">Duplica riga disabilitata</string>
     <string name="destination_description">Destinazione</string>
     <string name="new_order">Nuovo Ordine</string>
     <string name="select_a_date">Seleziona una data</string>
@@ -238,6 +239,13 @@
     <string name="item_deleted">Riga eliminata con successo %1$d</string>
     <string name="update_order_details">Modifiche salvate con successo %1$d</string>
     <string name="row_duplicated">Riga duplicata con successo %1$d</string>
+    <string name="delivery_state_updated">Stato consegna aggiornato con successo!</string>
+    <string name="send_scanned_code">Send Scanned Code</string>
+    <string name="order_update_text">Modifiche ordine salvate con successo</string>
+    <string name="label_url2">Inserire URL2 - seconda azienda</string>
+    <string name="warehouse_operations">Movimenti</string>
+    <string name="label_url_name">Nome URL1</string>
+    <string name="label_url2_name">Nome URL2</string>
 
 
 </resources>

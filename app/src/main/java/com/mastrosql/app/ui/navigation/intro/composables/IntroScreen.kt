@@ -79,7 +79,8 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
 @Composable
 fun IntroScreen(
     navController: NavController,
@@ -313,7 +314,7 @@ fun ConfigContent(
                 keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = {
-                viewModel.setBaseUrl(urlState)
+                viewModel.setPrimaryBaseUrl(urlState)
                 focusManager.clearFocus()
             }),
             label = { Text(stringResource(R.string.label_url)) },
@@ -321,7 +322,7 @@ fun ConfigContent(
                 .focusRequester(focusRequester)
                 .onFocusChanged {
                     if (!it.isFocused) {
-                        viewModel.setBaseUrl(urlState)
+                        viewModel.setPrimaryBaseUrl(urlState)
                     }
                 })
 

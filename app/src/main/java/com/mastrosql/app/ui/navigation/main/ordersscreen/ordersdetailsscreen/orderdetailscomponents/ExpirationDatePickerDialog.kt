@@ -9,9 +9,11 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
 import com.mastrosql.app.utils.DateHelper
 import java.text.SimpleDateFormat
@@ -23,7 +25,7 @@ import java.util.Locale
 //val snackScope = rememberCoroutineScope()
 //SnackbarHost(hostState = snackState, Modifier)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun ExpirationDatePickerDialog(
     showDatePickerDialog: MutableState<Boolean>,
@@ -74,4 +76,20 @@ fun ExpirationDatePickerDialog(
     }) {
         DatePicker(state = datePickerState)
     }
+}
+
+@ExperimentalMaterial3Api
+@Preview(showBackground = true)
+@Composable
+fun ExpirationDatePickerDialogPreview() {
+    ExpirationDatePickerDialog(
+        showDatePickerDialog = remember {
+            mutableStateOf(true)
+        },
+        orderDetailsItemState = OrderDetailsItemState(
+            batch = remember { mutableStateOf(TextFieldValue("batch")) },
+            quantity = remember { mutableStateOf(TextFieldValue("1")) },
+            expirationDate = remember { mutableStateOf(TextFieldValue("gg/mm/aaaa")) }
+        )
+    )
 }

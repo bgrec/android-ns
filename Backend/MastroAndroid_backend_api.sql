@@ -108,52 +108,49 @@ BEGIN
     RETURN lastDigit;
 END;
 
-
 ####################################################################################################
+
 CREATE OR REPLACE VIEW `articlesview`
 AS
-SELECT arti.CORTO                                                                                                      AS CORTO,
-       TRIM(arti.CODI)                                                                                                 AS CODI,
-       TRIM(arti.CFOR)                                                                                                 AS CFOR,
-       TRIM(arti.DESCRI)                                                                                               AS DESCRI,
-       TRIM(arti.IVA)                                                                                                  AS IVA,
-       arti.COST                                                                                                       AS COST,
-       arti.VEND                                                                                                       AS VEND,
-       TRIM(arti.TIPO)                                                                                                 AS TIPO,
-       TRIM(arti.TIPO_SOTTO)                                                                                           AS TIPO_SOTTO,
-       TRIM(arti.REPA)                                                                                                 AS REPA,
-       TRIM(arti.REPA_SOTTO)                                                                                           AS REPA_SOTTO,
-       TRIM(arti.GRUPPO)                                                                                               AS GRUPPO,
-       TRIM(arti.MISU)                                                                                                 AS MISU,
-    /*CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'),  EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'))))*/''  AS EAN_8,
-    /*CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'), EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'))))*/'' AS EAN_13,
-    /*IFNULL(GROUP_CONCAT(TRIM(art_alt.COD_ALT), '|'), '')*/''                                                         AS EAN_ALT
+SELECT arti.CORTO                                                           AS CORTO,
+       TRIM(arti.CODI)                                                      AS CODI,
+       TRIM(arti.CFOR)                                                      AS CFOR,
+       TRIM(arti.DESCRI)                                                    AS DESCRI,
+       TRIM(arti.IVA)                                                       AS IVA,
+       arti.COST                                                            AS COST,
+       arti.VEND                                                            AS VEND,
+       TRIM(arti.TIPO)                                                      AS TIPO,
+       TRIM(arti.TIPO_SOTTO)                                                AS TIPO_SOTTO,
+       TRIM(arti.REPA)                                                      AS REPA,
+       TRIM(arti.REPA_SOTTO)                                                AS REPA_SOTTO,
+       TRIM(arti.GRUPPO)                                                    AS GRUPPO,
+       TRIM(arti.MISU)                                                      AS MISU,
+       CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'),
+              EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'))))  AS EAN_8,
+       CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'),
+              EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0')))) AS EAN_13,
+       IFNULL(GROUP_CONCAT(TRIM(art_alt.COD_ALT), '|'), '')                 AS EAN_ALT
 FROM arti
-/*LEFT JOIN (
-    SELECT
-        CORTO,
-        COD_ALT,
-        ROW_NUMBER() OVER (PARTITION BY CORTO ORDER BY N_PRI) AS rn
-    FROM
-        art_alt
-) AS art_alt ON arti.CORTO = art_alt.CORTO
-CROSS JOIN (
-    SELECT TRIM(VARIA) AS VARIA FROM costanti WHERE NUME = 20
-) AS costanti
-GROUP BY
-    arti.CORTO,
-    arti.CODI,
-    arti.CFOR,
-    arti.DESCRI,
-    arti.IVA,
-    arti.COST,
-    arti.VEND,
-    arti.TIPO,
-    arti.TIPO_SOTTO,
-    arti.REPA,
-    arti.REPA_SOTTO,
-    arti.GRUPPO,
-    arti.MISU*/;
+         LEFT JOIN (SELECT CORTO,
+                           COD_ALT,
+                           ROW_NUMBER() OVER (PARTITION BY CORTO ORDER BY N_PRI) AS rn
+                    FROM art_alt) AS art_alt ON arti.CORTO = art_alt.CORTO
+         CROSS JOIN (SELECT TRIM(VARIA) AS VARIA
+                     FROM costanti
+                     WHERE NUME = 20) AS costanti
+GROUP BY arti.CORTO,
+         arti.CODI,
+         arti.CFOR,
+         arti.DESCRI,
+         arti.IVA,
+         arti.COST,
+         arti.VEND,
+         arti.TIPO,
+         arti.TIPO_SOTTO,
+         arti.REPA,
+         arti.REPA_SOTTO,
+         arti.GRUPPO,
+         arti.MISU;
 
 
 ####################################################################################################
@@ -254,6 +251,7 @@ ALTER TABLE rig_ordc
 ####################################################################################################
 ### Insert a new row into the rig_ordc table, used by the OrderBarcodeReader procedure
 DROP PROCEDURE IF EXISTS InsertRowIntoRigOrdC;
+--
 CREATE PROCEDURE InsertRowIntoRigOrdC(
     IN orderId INT,
     IN articleId INT,
@@ -362,14 +360,14 @@ BEGIN
     INSERT INTO rig_ordc (NUME, N_TIPO, DOC_DATA, DOC_NUME, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
                           QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
                           LISTINO, MISU, DATA, STAM, COLL, SETTORE, REPA, QT_CONF, REPA_CAS, CONTRO,
-                          ORD_QT_ORD, LOTTO, DATA_SCA)
+                          ORD_QT_ORD, LOTTO, DATA_SCA, VARIE)
     VALUES (orderId, 6, docDate, docNumber, clientId, lastRow + 1, articleId, articleCode, articleSupplierCode,
             articleDescription, quantity, agentId, agentPerc1, agentPerc2, articlePrice, articleCost, articleVat,
             articleVatPercentage,
             articleDiscount, articleDiscount1, articleDiscount2, 0, articleListPrice, articleUnitOfMeasure,
             CURRENT_DATE(), 1, 1,
             articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleCounterParty,
-            orderedQuantity, batch, expiryDate);
+            orderedQuantity, batch, expiryDate, 'NEW');
 END;
 
 
@@ -378,40 +376,78 @@ DROP PROCEDURE IF EXISTS OrderBarcodeReader;
 CREATE PROCEDURE OrderBarcodeReader(IN orderId INT, IN scannedCode VARCHAR(255))
 BEGIN
     DECLARE articleId VARCHAR(6);
+    DECLARE batch VARCHAR(100) DEFAULT '';
     DECLARE rowExists INT;
+    DECLARE quantity DECIMAL(11, 5) DEFAULT 1;
 
-    IF LENGTH(scannedCode) < 8 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Codice non valido', MYSQL_ERRNO = 5400;
-
+    IF LENGTH(scannedCode) = 8 THEN
+        -- Extract the first four characters from the scanned code for the article ID
+        SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
+        SET quantity = 1;
+        SET @quantity = 1;
+    ELSEIF LENGTH(scannedCode) = 20 THEN
+        -- Extract the first four characters from the scanned code for the article ID
+        SET articleId = CAST(SUBSTR(scannedCode, 1, 5) AS SIGNED);
+        -- Extract the batch number from the scanned code
+        SET batch = TRIM(REPLACE(REPLACE(SUBSTR(scannedCode, 6, 15), 'x', ''), 'X', ''));
+        -- Get the quantity per package for the given article
+        CALL GetArticlePackageQuantity(articleId, @quantity);
+        IF @quantity > 0 THEN
+            SET quantity = @quantity;
+        END IF;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Barcode non valido', MYSQL_ERRNO = 5400;
     END IF;
-    -- Extract the first four characters from the scanned code
-    SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
 
     -- Check if a row with the given conditions exists
-    SELECT COUNT(*)
-    INTO rowExists
-    FROM rig_ordc
-    WHERE NUME = orderId
-      AND CORTO = articleId;
+    IF LENGTH(scannedCode) = 8 THEN
+        SELECT COUNT(*)
+        INTO rowExists
+        FROM rig_ordc
+        WHERE NUME = orderId
+          AND CORTO = articleId;
+    ELSEIF LENGTH(scannedCode) = 20 THEN
+        SELECT COUNT(*)
+        INTO rowExists
+        FROM rig_ordc
+        WHERE NUME = orderId
+          AND CORTO = articleId
+          AND LOTTO = batch;
+    END IF;
 
     -- If the row does not exist, insert a new row into the rig_ordc table
     IF rowExists = 0 THEN
-        -- Insert a new row into the rig_ordc table with the scanned code
-        CALL InsertRowIntoRigOrdC(orderId, articleId, 1, 1, '', NULL);
+        CALL InsertRowIntoRigOrdC(orderId, articleId, quantity, 1, batch, NULL);
     ELSE
         -- Update the row in the rig_ordc table with the scanned code
-        UPDATE rig_ordc
-        SET QUAN = QUAN + 1
-        WHERE NUME = orderId
-          AND CORTO = articleId
-        ORDER BY NUME_PRO
-        LIMIT 1;
+        IF LENGTH(scannedCode) = 8 THEN
+            UPDATE rig_ordc
+            SET QUAN = QUAN + quantity
+            WHERE NUME = orderId
+              AND CORTO = articleId;
+        ELSEIF LENGTH(scannedCode) = 20 THEN
+            UPDATE rig_ordc
+            SET QUAN = QUAN + quantity
+            WHERE NUME = orderId
+              AND CORTO = articleId
+              AND LOTTO = batch;
+        END IF;
     END IF;
 
 END;
 
 ####################################################################################################
+DROP PROCEDURE IF EXISTS GetArticlePackageQuantity;
+CREATE PROCEDURE GetArticlePackageQuantity(IN articleId INT, OUT packageQuantity DECIMAL(11, 5))
+BEGIN
+    SELECT QT_CONF INTO packageQuantity FROM arti WHERE CORTO = articleId;
 
+    IF packageQuantity IS NULL THEN
+        SET packageQuantity = 0;
+    END IF;
+END;
+
+####################################################################################################
 DROP PROCEDURE IF EXISTS InsertArticleIntoDocument;
 CREATE PROCEDURE InsertArticleIntoDocument(
     IN documentId INT,
@@ -449,7 +485,7 @@ BEGIN
                           ART_CFOR, DESCRI, QUAN, PROV_1, PROV_2, AGENTE, COLLI, PESO, VEND, COSTO, IVA,
                           IVA_PERC, SCON, SCON_1, SCON_2, LISTINO, MISU, DATA, STAM, SELE, LIBE, COLL, SETTORE, REPA,
                           QT_CONF, REPA_CAS, CONAI_L, CONAI, ESE_CONAI, CONTRO, ORD_QT_ORD, ORD_QT_CON, DESTINA, LOTTO,
-                          DATA_SCA, RAEE, DATA_LOTTO, PADRE_DIST, EXTRA)
+                          DATA_SCA, RAEE, DATA_LOTTO, PADRE_DIST, EXTRA, VARIE)
     SELECT NUME,
            N_TIPO,
            DOC_DATA,
@@ -491,15 +527,16 @@ BEGIN
            CONAI,
            ESE_CONAI,
            CONTRO,
-           IF (ORD_QT_ORD - ORD_QT_CON - QUAN > 0, ORD_QT_ORD - ORD_QT_CON - QUAN, 0) AS ORD_QT_ORD,
-           0                              AS ORD_QT_CON,
+           IF(ORD_QT_ORD - ORD_QT_CON - QUAN > 0, ORD_QT_ORD - ORD_QT_CON - QUAN, 0) AS ORD_QT_ORD,
+           0                                                                         AS ORD_QT_CON,
            DESTINA,
-           ''                             AS LOTTO,
-           NULL                           AS DATA_SCA,
+           ''                                                                        AS LOTTO,
+           NULL                                                                      AS DATA_SCA,
            RAEE,
-           NULL                           AS DATA_LOTTO,
+           NULL                                                                      AS DATA_LOTTO,
            PADRE_DIST,
-           EXTRA
+           EXTRA,
+           'NEW'                                                                     AS VARIE
     FROM rig_ordc
     WHERE NUME_PRO = orderDetailId
     LIMIT 1;
@@ -513,8 +550,8 @@ BEGIN
 END;
 
 ####################################################################################################
-DROP PROCEDURE IF EXISTS ModifyOrderDeliveryState;
-CREATE PROCEDURE ModifyOrderDeliveryState(
+DROP PROCEDURE IF EXISTS UpdateOrderDeliveryState;
+CREATE PROCEDURE UpdateOrderDeliveryState(
     IN orderId INT,
     IN deliveryState INT
 )
@@ -524,6 +561,32 @@ BEGIN
     WHERE NUME = orderId;
 
     SELECT * FROM ordersview WHERE NUME = orderId;
+
+END;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS UpdateOrder;
+CREATE PROCEDURE UpdateOrder(
+    IN orderId INT,
+    IN description VARCHAR(255),
+    IN deliveryDate VARCHAR(255)
+)
+BEGIN
+    DECLARE deliveryDateAsDate DATE;
+
+    IF deliveryDate IS NULL OR deliveryDate = '' OR deliveryDate = 'null' THEN
+        SET deliveryDateAsDate = NULL;
+    ELSE
+        SET deliveryDateAsDate = STR_TO_DATE(deliveryDate, '%d/%m/%Y');
+    END IF;
+
+    UPDATE lis_ordc
+    SET DESCRI     = description,
+        D_CONSEGNA = deliveryDateAsDate
+    WHERE NUME = orderId;
+
+    -- Return the last order details based on the last order number
+    SELECT * FROM ordersview WHERE NUME = orderId LIMIT 1;
 
 END;
 
@@ -584,13 +647,6 @@ SELECT destina.PROG_TUTTO   AS PROG_TUTTO,
        TRIM(destina.PROV)   AS PROV
 FROM destina
 WHERE destina.CODI IN (SELECT CODI FROM clientsview));
-
-####################################################################################################
-CREATE VIEW test as
-(
-select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c
-from clienti
-         left join destina on clienti.CODI = destina.CODI);
 
 ####################################################################################################
 DROP PROCEDURE IF EXISTS InsertNewOrder;
@@ -665,3 +721,13 @@ FLUSH PRIVILEGES;
 
 # Example of handling an error in a stored procedure
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS SupportedVersion;
+CREATE PROCEDURE SupportedVersion()
+BEGIN
+    DECLARE supported_version VARCHAR(255);
+
+    SET supported_version = '1.0.0';
+    SELECT supported_version AS version;
+END;

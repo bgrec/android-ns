@@ -11,10 +11,16 @@ class NetworkDbCustomersPagedMasterDataRepository(
     private var mastroAndroidApiService: MastroAndroidApiService
 ) : CustomersPagedMasterDataRepository {
 
+    /**
+     * Updates the instance of [MastroAndroidApiService] used for API communication.
+     */
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         this.mastroAndroidApiService = newMastroAndroidApiService
     }
 
+    /**
+     * Returns the current instance of [MastroAndroidApiService] used for API communication.
+     */
     override fun getApiService(): MastroAndroidApiService = mastroAndroidApiService
 
     /**

@@ -59,6 +59,9 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 
+/**
+ * Composable for the LoginScreen
+ */
 @Composable
 fun LoginScreen(
     navController: NavController,
@@ -72,7 +75,6 @@ fun LoginScreen(
     //InteractionSource for the TextField to get the credentials from the CredentialManager
     //when the user taps on the TextField
     val interactionSource = remember { MutableInteractionSource() }
-
 
     //Initialize the CredentialManager in the ViewModel with the context
     LaunchedEffect(viewModel) {
@@ -94,8 +96,7 @@ fun LoginScreen(
         }
     }
 
-    Login(
-        navController = navController,
+    Login(navController = navController,
         interactionSource = interactionSource,
         onLogin = { username, password ->
             viewModel.login(
@@ -107,6 +108,9 @@ fun LoginScreen(
         })
 }
 
+/**
+ * Composable Login
+ */
 @Composable
 fun Login(
     navController: NavController,
@@ -124,26 +128,24 @@ fun Login(
     //FocusRequester to get the focus on the TextField on opening the screen
     val focusRequester = remember { FocusRequester() }
 
-    Scaffold(
-        topBar = {
-            LoginAppBar(onClick = {
-                navController.navigate(MainNavOption.SettingsScreen.name) {
-                    // Configure the navigation action
-                    popUpTo(MainNavOption.LoginScreen.name)
-                }
-            })
-        },
-        modifier = Modifier
-            //shows a shadow when clicked
-            //            .clickable {
-            //                focusManager.clearFocus()
-            //            }
-            //same result as clickable without the shadow
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
+    Scaffold(topBar = {
+        LoginAppBar(onClick = {
+            navController.navigate(MainNavOption.SettingsScreen.name) {
+                // Configure the navigation action
+                popUpTo(MainNavOption.LoginScreen.name)
             }
+        })
+    }, modifier = Modifier
+        //shows a shadow when clicked
+        //            .clickable {
+        //                focusManager.clearFocus()
+        //            }
+        //same result as clickable without the shadow
+        .pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                focusManager.clearFocus()
+            })
+        }
 
     ) { innerPadding ->
 
@@ -178,13 +180,11 @@ fun Login(
                 singleLine = true,
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.AccountCircle,
-                        contentDescription = null
+                        imageVector = Icons.Outlined.AccountCircle, contentDescription = null
                     )
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(),
                 interactionSource = interactionSource
@@ -199,13 +199,11 @@ fun Login(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
                 label = { Text(stringResource(R.string.Password)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Lock,
-                        contentDescription = null
+                        imageVector = Icons.Outlined.Lock, contentDescription = null
                     )
                 },
                 trailingIcon = {
@@ -213,28 +211,21 @@ fun Login(
                         isPasswordVisible = !isPasswordVisible
                     }) {
                         Icon(
-                            imageVector = if (isPasswordVisible)
-                                Icons.Filled.Visibility
-                            else
-                                Icons.Filled.VisibilityOff,
+                            imageVector = if (isPasswordVisible) Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff,
                             contentDescription = "Password Visibility"
                         )
                     }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
+                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        onLogin(updatedUsername, updatedPassword)
-                    }
-                ),
-                visualTransformation = if (isPasswordVisible)
-                    VisualTransformation.None
-                else
-                    PasswordVisualTransformation(),
+                keyboardActions = KeyboardActions(onDone = {
+                    focusManager.clearFocus()
+                    onLogin(updatedUsername, updatedPassword)
+                }),
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None
+                else PasswordVisualTransformation(),
             )
 
             Spacer(modifier = Modifier.weight(0.3f))
@@ -251,13 +242,9 @@ fun Login(
             }
 
             //Button to login
-            AppButton(
-                modifier = buttonModifier,
-                text = R.string.login,
-                onClick = {
-                    onLogin(updatedUsername, updatedPassword)
-                }
-            )
+            AppButton(modifier = buttonModifier, text = R.string.login, onClick = {
+                onLogin(updatedUsername, updatedPassword)
+            })
 
             Spacer(modifier = Modifier.weight(0.2f))
         }
@@ -277,6 +264,9 @@ fun LogoImage() {
 }
 
 
+/**
+ * Preview composable for the LoginScreen
+ */
 @Preview(apiLevel = 33, showBackground = true)
 @Composable
 fun LoginScreenPreview() {
@@ -284,8 +274,7 @@ fun LoginScreenPreview() {
         MutableInteractionSource()
     }
     MastroAndroidTheme {
-        Login(
-            navController = NavController(LocalContext.current),
+        Login(navController = NavController(LocalContext.current),
             interactionSource = mutableInteractionSource,
             onLogin = { _, _ -> })
     }

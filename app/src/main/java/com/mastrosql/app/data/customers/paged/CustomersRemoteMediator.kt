@@ -27,25 +27,45 @@ private const val CACHE_TIMEOUT = 1L  //1 hour
 /** page is the offset of the database key (id) to be used as the anchor for this query
  */
 
-@OptIn(ExperimentalPagingApi::class)
+@ExperimentalPagingApi
+
+/**
+ * Mediator that handles the synchronization between remote API data and local database
+ * for paged customers master data.
+ */
 class CustomersRemoteMediator(
     private val query: String,
     private val appDatabase: AppDatabase,
     private val networkService: MastroAndroidApiService
 ) : RemoteMediator<Int, CustomerMasterData>() {
 
+/**
+ * Initializes the mediator to determine whether to skip or launch the initial refresh of data.
+ *
+ * This checks if the cached data is still valid within the specified timeout period.
+ */
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(CACHE_TIMEOUT, TimeUnit.HOURS)
 
+    /**
+     * Determines whether to skip initial refresh based on cache timeout.
+     */
         return if (System.currentTimeMillis() - (appDatabase.customersRemoteKeysDao()
                 .getCreationTime() ?: 0) < cacheTimeout && cacheTimeout != 0L
         ) {
             InitializeAction.SKIP_INITIAL_REFRESH
+
+            /**
+             * Determines whether to skip or launch the initial refresh based on cache timeout.
+             */
         } else {
             InitializeAction.LAUNCH_INITIAL_REFRESH
         }
     }
 
+/**
+ * Loads paged data from the network or local database based on the given [loadType] and [state].
+ */
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, CustomerMasterData>
@@ -72,6 +92,7 @@ class CustomersRemoteMediator(
                     ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
         }
+
 
         try {
             val apiResponse =
@@ -114,8 +135,16 @@ class CustomersRemoteMediator(
                     .insertAll(customers.onEachIndexed { _, customer -> customer.page = loadKey })
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+
+            /**
+             * Catches IOException and returns a MediatorResult.Error.
+             */
         } catch (error: IOException) {
             return MediatorResult.Error(error)
+
+            /**
+             * Catches HttpException and returns a MediatorResult.Error.
+             */
         } catch (error: HttpException) {
             return MediatorResult.Error(error)
         }

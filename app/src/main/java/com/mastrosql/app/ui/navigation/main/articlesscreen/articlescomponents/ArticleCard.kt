@@ -384,7 +384,7 @@ fun ArticleInfo(
 //
 //}
 
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
 fun ArticleInfoPreview() {
     MastroAndroidTheme {

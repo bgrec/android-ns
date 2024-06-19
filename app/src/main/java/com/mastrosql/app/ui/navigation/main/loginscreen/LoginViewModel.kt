@@ -38,20 +38,80 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 
-const val CREDENTIAL_DIALER_CODE = "*#*#66382723#*#*"
+/**
+ * The dialer code to reset the cooldown period during development.
+ */
+const val CREDENTIAL_DIALER_CODE: String = "*#*#66382723#*#*"
 
+/**
+ * The UI state for the Login screen.
+ */
+@Suppress("KDocMissingDocumentation")
+data class LoginUiState(
+    val isSecondaryBaseUrlProvided: Boolean = false,
+    val selectedUrl: Int = 0
+)
+
+/**
+ * The ViewModel class for the Login screen.
+ */
 class LoginViewModel(
     private val loginRepository: LoginRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
+    // Variable to hold the CredentialManager object.
     private lateinit var credentialManager: CredentialManager
 
+    private var isNotSecuredApi = false
+
+    /**
+     * Initialize the CredentialManager object.
+     */
     fun initCredentialManager(context: Context) {
         this.credentialManager = CredentialManager.create(context)
+        getIsNotSecuredApi()
+
+
     }
 
+    private fun getIsNotSecuredApi() {
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getIsNotSecuredApi()
+                .collect {
+                    isNotSecuredApi = it
+                }
+        }
+    }
+
+    /**
+     * Perform the login request and handle the response.
+     */
     fun login(
+        context: Context, username: String, password: String, isCredentialManagerLogin: Boolean
+    ) {
+        if (isNotSecuredApi) {
+            loginNotSecuredApi()
+        } else {
+            loginSecuredApi(context, username, password, isCredentialManagerLogin)
+        }
+    }
+
+    /**
+     * Perform the login without credentials.
+     */
+    private fun loginNotSecuredApi() {
+        viewModelScope.launch(Dispatchers.IO) {
+            //Save the logged in state in the data store
+            userPreferencesRepository.saveLoggedIn(true)
+        }
+    }
+
+    /**
+     * Perform the login request and handle the response.
+     */
+    private fun loginSecuredApi(
         context: Context, username: String, password: String, isCredentialManagerLogin: Boolean
     ) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -66,7 +126,9 @@ class LoginViewModel(
                  */
 
                 if (response.code() == 307) {
-                    val cookies = response.headers().values("Set-Cookie")
+                    val cookies = response
+                        .headers()
+                        .values("Set-Cookie")
                     val sessionCookie = extractSessionCookie(cookies)
 
                     // Set the session cookie in the SessionManager singleton if it is not empty
@@ -212,7 +274,9 @@ class LoginViewModel(
                 // Retry-able error. Consider retrying the call.
                 Log.e("LoginViewModel", "Retry-able error. Consider retrying the call", e)
             } catch (e: NoCredentialException) {
-                ToastUtils.showToast(activityContext, Toast.LENGTH_SHORT, "NoCredentialException")
+                ToastUtils.showToast(
+                    activityContext, Toast.LENGTH_SHORT, "NoCredentialException"
+                )
                 launchDialer(activityContext)
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error fetching the credentials", e)

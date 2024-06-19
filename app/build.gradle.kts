@@ -9,12 +9,21 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.app.distribution)
+    alias(libs.plugins.org.jetbrains.dokka)
 }
 
 /*
 tasks.register("clean",Delete::class){
     delete(rootProject.buildDir)
 }*/
+
+tasks.dokkaHtml {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/html"))
+}
+
+tasks.dokkaGfm {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/markdown"))
+}
 
 android {
     namespace = "com.mastrosql.app"
@@ -24,18 +33,35 @@ android {
         applicationId = "com.mastrosql.app"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.1"
+        versionCode = 2
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "com.mastrosql.app.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
         versionNameSuffix = "1"
+        signingConfig = signingConfigs.getByName("debug")
 
         // Enable room auto-migrations
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            val propertiesFile = file("../../../src/keystore/release-signing.properties")
+            if (!propertiesFile.exists()) {
+                //throw IllegalArgumentException("Keystore file not found")
+                println("Keystore file not found, verify the path and try again")
+            } else {
+                val props = loadProperties(propertiesFile)
+                keyAlias = props["keyAlias"] as String
+                keyPassword = props["keyPassword"] as String
+                storeFile = file(props["storeFile"] as String)
+                storePassword = props["storePassword"] as String
+            }
         }
     }
 
@@ -49,7 +75,7 @@ android {
             // Load properties from the file
             val propertiesFile = file("../app/config/release.properties")
             val props = loadProperties(propertiesFile)
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
 
             // Configure properties from the file
             props.forEach { (key, value) ->
@@ -92,6 +118,7 @@ android {
             // Load properties from the file
             val propertiesFile = file("../app/config/staging.properties")
             val props = loadProperties(propertiesFile)
+            signingConfig = signingConfigs.getByName("release")
 
             // Configure properties from the file
             props.forEach { (key, value) ->
@@ -140,9 +167,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildToolsVersion = "34.0.0"
+
+    lint {
+        checkOnly += "NewApi"
+        checkOnly += "HandlerLeak"
+    }
 }
 
-// Function to load properties from a file
+/**
+ * Function to load properties from a file
+ */
 fun loadProperties(propertiesFile: File): Properties {
     val props = Properties()
     try {
@@ -155,6 +189,19 @@ fun loadProperties(propertiesFile: File): Properties {
 
 
 dependencies {
+
+
+// Zebra
+    compileOnly(libs.symbol.emdk)
+
+    /*compileOnly 'com.symbol:emdk:9.1.1'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    releaseImplementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'*/
 
 // Compose
     val composeBom = platform(libs.androidx.compose.bom)
@@ -286,3 +333,5 @@ dependencies {
     // Coil
     //implementation("io.coil-kt:coil-compose:2.4.0")
 }
+
+apply(plugin = "org.jetbrains.dokka")

@@ -3,7 +3,14 @@ package com.mastrosql.app.data.datasource
 import com.mastrosql.app.data.itemTest.ItemTest
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 
+/**
+ * Data source class for loading items and clients.
+ */
 class DataSourceTest_cancel_it_Later {
+
+    /**
+     * Loads a list of test items [ItemTest].
+     */
     fun loadItems(): List<ItemTest> {
         return listOf(
             ItemTest(1, "ean1", "description1"),
@@ -49,15 +56,31 @@ class DataSourceTest_cancel_it_Later {
         )
     }
 
+    /**
+     * Filters a list of [ItemTest] objects based on the provided query string.
+     */
     private fun filterItems(list: List<ItemTest>, query: String): List<ItemTest> {
         // Filter the list
         return list.filter { it.description?.contains(query, ignoreCase = true) ?: false }
     }
 
+    /**
+     * Loads and filters a list of [ItemTest] objects based on the provided query string.
+     *
+     * This function retrieves a list of [ItemTest] objects, filters them based on the given query string,
+     * and returns the filtered list where the description of each item contains the query string,
+     * ignoring case.
+     */
     fun loadFilteredItemsByDescription(query: String): List<ItemTest> {
         return filterItems(loadItems(), query)
     }
 
+    /**
+     * Loads a list of [CustomerMasterData] objects.
+     *
+     * This function returns a static list of [CustomerMasterData] objects.
+     * Uncomment the lines to include specific instances of [CustomerMasterData] with their respective descriptions.
+     */
     private fun loadCustomers(): List<CustomerMasterData> {
         return listOf(
             /* CustomerMasterData(1, "description1"),
@@ -103,15 +126,37 @@ class DataSourceTest_cancel_it_Later {
         )
     }
 
+    /**
+     * Filters a list of [CustomerMasterData] based on a query string.
+     *
+     * This function filters the provided [list] of [CustomerMasterData] objects
+     * based on whether their business name contains the [query] string, ignoring case.
+     */
     private fun filterClients(
         list: List<CustomerMasterData>,
         query: String
-    ): List<CustomerMasterData> {
+    ):
+
+            /**
+             * Filters a list of [CustomerMasterData] based on a query string.
+             *
+             * This function filters the provided [list] of [CustomerMasterData] objects
+             * based on whether their business name contains the [query] string, ignoring case.
+             * If [query] is empty or null, all items are returned.
+             */
+            List<CustomerMasterData> {
         // Filter the list
         //return list.filter { it.description?.contains(query, ignoreCase = true) ?: false }
         return list.filter { it.businessName?.contains(query, ignoreCase = true) ?: true }
     }
 
+    /**
+     * Loads filtered list of [CustomerMasterData] based on a description query.
+     *
+     * This function retrieves a list of all customer master data entries,
+     * filters them based on whether their business name contains the provided [query] string,
+     * and returns the filtered list.
+     */
     fun loadFilteredClientsByDescription(query: String): List<CustomerMasterData> {
         return filterClients(loadCustomers(), query)
     }

@@ -58,6 +58,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +69,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
+import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsItem
 import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
@@ -76,21 +78,39 @@ import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
 
+/**
+ * OrderDetailsCard composable to display the order details card
+ */
 @Composable
 fun OrderDetailsCard(
-    orderDetailsItem: OrderDetailsItem,
     modifier: Modifier,
-    isDeleteRowActive: Boolean,
-    onRemove: (Int) -> Unit,
+    orderDetailsItem: OrderDetailsItem,
     showEditDialog: MutableState<Boolean>,
     snackbarHostState: SnackbarHostState,
     listState: LazyListState,
     modifiedItemId: MutableIntState?,
+    onRemove: (Int) -> Unit,
     onDuplicate: (Int) -> Unit,
+    swipeActionsPreferences: SwipeActionsPreferences
 ) {
 
+    // CoroutineScope to launch the snackbar
+    val coroutineScope = rememberCoroutineScope()
+
+    // MutableTransitionState to handle the visibility of the card
     val visibleState = remember { MutableTransitionState(true) }
 
+    // Message text for the snackbar when the item is deleted
+    val messageText = stringResource(R.string.deleted_item_snackbar_text)
+    // Dismiss text for the snackbar
+    val dismissText = stringResource(R.string.dismiss_button)
+
+    val isDeleteDisabled = rememberSaveable {
+        mutableStateOf(swipeActionsPreferences.isDeleteDisabled)
+    }
+    val isDuplicateDisabled = rememberSaveable {
+        mutableStateOf(swipeActionsPreferences.isDuplicateDisabled)
+    }
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -103,7 +123,8 @@ fun OrderDetailsCard(
                 modifier = modifier,
                 visibleState = visibleState,
                 orderDetailsItem = orderDetailsItem,
-                isDeleteRowActive = isDeleteRowActive,
+                isDeleteRowDisabled = swipeActionsPreferences.isDeleteDisabled,
+                isDuplicateRowDisabled = swipeActionsPreferences.isDuplicateDisabled,
                 showEditDialog = showEditDialog,
                 modifiedItemId = modifiedItemId,
                 onDuplicate = onDuplicate,
@@ -111,14 +132,9 @@ fun OrderDetailsCard(
         }
     }
 
-    val scope = rememberCoroutineScope()
-
-    val messageText = stringResource(R.string.deleted_item_snackbar_text)
-    val dismissText = stringResource(R.string.dismiss_button)
-
     if (!visibleState.targetState && visibleState.isIdle) {
         LaunchedEffect(visibleState.targetState) {
-            scope.launch {
+            coroutineScope.launch {
                 val result = snackbarHostState.showSnackbar(
                     message = messageText,
                     actionLabel = dismissText,
@@ -151,40 +167,35 @@ private fun SwipeToDismissItem(
     modifier: Modifier,
     visibleState: MutableTransitionState<Boolean>,
     orderDetailsItem: OrderDetailsItem,
-    isDeleteRowActive: Boolean,
+    isDeleteRowDisabled: Boolean,
+    isDuplicateRowDisabled: Boolean,
     showEditDialog: MutableState<Boolean>,
     modifiedItemId: MutableIntState?,
     onDuplicate: (Int) -> Unit,
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-
-            //Swipe actions
-            when (it) {
-                SwipeToDismissBoxValue.EndToStart -> {
-                    if (isDeleteRowActive) {
-                        visibleState.targetState = false
-                    }
-                    true
-                }
-
-                SwipeToDismissBoxValue.StartToEnd -> {
-                    onDuplicate(orderDetailsItem.id)
-                    false
-                }
-
-                else -> false
+    val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
+        //Swipe actions
+        when (it) {
+            SwipeToDismissBoxValue.EndToStart -> {
+                visibleState.targetState = false
+                true
             }
 
-        },
-        positionalThreshold = { distance -> distance * 0.65f })
+            SwipeToDismissBoxValue.StartToEnd -> {
+                onDuplicate(orderDetailsItem.id)
+                false
+            }
+
+            else -> false
+        }
+
+    }, positionalThreshold = { distance -> distance * 0.55f })
 
 
-    SwipeToDismissBox(
-        state = dismissState,
+    SwipeToDismissBox(state = dismissState,
         modifier = Modifier,
-        enableDismissFromEndToStart = true,
-        enableDismissFromStartToEnd = true,
+        enableDismissFromEndToStart = !isDeleteRowDisabled,
+        enableDismissFromStartToEnd = !isDuplicateRowDisabled,
         backgroundContent = {
             SwipeToDismissBackground(
                 dismissState = dismissState,
@@ -200,7 +211,7 @@ private fun SwipeToDismissItem(
         })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 private fun SwipeToDismissBackground(
     dismissState: SwipeToDismissBoxState
@@ -280,7 +291,8 @@ private fun OrderDetailsItemContent(
                     OrderDetailDescriptionAndId(
                         articleId = orderDetailsItem.articleId ?: 0,
                         sku = orderDetailsItem.sku,
-                        description = orderDetailsItem.description
+                        description = orderDetailsItem.description,
+                        various = orderDetailsItem.various
                     )
                 }
             }
@@ -344,7 +356,6 @@ private fun OrderDetailsItemContent(
  * @param onClick is the action that happens when the button is clicked
  * @param modifier modifiers to set to this composable
  */
-
 @Composable
 private fun OrderDetailExpandButton(
     expanded: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
@@ -363,10 +374,10 @@ private fun OrderDetailExpandButton(
 
 @Composable
 private fun ItemEditButton(
+    modifier: Modifier = Modifier,
     modifiedItemId: Int?,
     orderDetailsItemId: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val defaultTint = MaterialTheme.colorScheme.secondary
     //val itemEditButtonTint = remember { mutableStateOf(defaultTint) }
@@ -396,10 +407,20 @@ private fun ItemEditButton(
 }
 
 
+/**
+ * Composable that displays the article id, sku and description of the order detail.
+ */
 @Composable
-fun OrderDetailDescriptionAndId(
-    articleId: Int, sku: String?, description: String?, modifier: Modifier = Modifier
+private fun OrderDetailDescriptionAndId(
+    modifier: Modifier = Modifier,
+    articleId: Int,
+    sku: String?,
+    description: String?,
+    various: String?
 ) {
+    // Determine the color based on the value of `various`
+    val descriptionColor = if (various == "NEW") Color.Red else Color.Black
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
@@ -435,14 +456,19 @@ fun OrderDetailDescriptionAndId(
         ) {
 
             Text(
-                text = description?.take(50) ?: "", style = MaterialTheme.typography.titleMedium
+                text = description?.take(50) ?: "",
+                style = MaterialTheme.typography.bodyLarge,
+                color = descriptionColor
             )
         }
     }
 }
 
+/**
+ * Composable that displays the batch, expiration date, quantity, ordered quantity and shipped
+ */
 @Composable
-fun OrderDetailDescriptionAndId2(
+private fun OrderDetailDescriptionAndId2(
     modifier: Modifier = Modifier,
     batch: String?,
     expirationDate: String?,
@@ -453,8 +479,7 @@ fun OrderDetailDescriptionAndId2(
     ) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
             Column(
                 Modifier.weight(0.45f)
@@ -501,8 +526,11 @@ fun OrderDetailDescriptionAndId2(
     }
 }
 
+/**
+ * Composable that displays the complete description of the order detail.
+ */
 @Composable
-fun OrderDetailInfo(
+private fun OrderDetailInfo(
     completeDescription: String?, modifier: Modifier = Modifier
 ) {
     Column(
@@ -529,8 +557,11 @@ fun OrderDetailInfo(
 }
 
 
+/**
+ * Composable that displays a table with the quantity, ordered quantity and shipped quantity.
+ */
 @Composable
-fun QuantityTable(
+private fun QuantityTable(
     quantity: Double, orderedQuantity: Double, shippedQuantity: Double
 ) {
     Column(
@@ -567,9 +598,9 @@ fun QuantityTable(
                 )
 
                 QuantityText(
-                    stringResource(R.string.order_detail_orderedQuantity),
-                    false,
-                    Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.order_detail_orderedQuantity),
+                    isBold = false
                 )
 
                 VerticalDivider(
@@ -607,7 +638,12 @@ fun QuantityTable(
                         .width(1.dp)
                 )
 
-                QuantityText(quantity.toString(), true, Modifier.weight(1f))
+                QuantityText(
+                    text = quantity.toString(),
+                    true,
+                    Modifier.weight(1f),
+                    color = if (quantity > orderedQuantity) Color.Red else Color.Black
+                )
 
                 VerticalDivider(
                     color = Color.Black, modifier = Modifier
@@ -636,19 +672,41 @@ fun QuantityTable(
     }
 }
 
+/**
+ * Composable that displays a text with a specific style.
+ */
 @Composable
 fun QuantityText(
-    text: String, bold: Boolean = false, modifier: Modifier
+    text: String,
+    isBold: Boolean,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Black
 ) {
     Text(
         modifier = modifier,
         text = text,
-        fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+        color = color,
+        fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center
     )
 }
 
+//private fun QuantityText(
+//    text: String, bold: Boolean = false, modifier: Modifier
+//) {
+//    Text(
+//        modifier = modifier,
+//        text = text,
+//        fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+//        style = MaterialTheme.typography.bodyLarge,
+//        textAlign = TextAlign.Center
+//    )
+//}
+
+/**
+ * Preview for [OrderDetailInfo]
+ */
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailInfoPreview() {
@@ -659,15 +717,20 @@ fun OrderDetailInfoPreview() {
     }
 }
 
+/**
+ * Preview for [QuantityTable]
+ */
 @Preview(showBackground = true)
 @Composable
-
 fun QuantityTablePreview() {
     MastroAndroidTheme {
         QuantityTable(1.0, 1.0, 1.0)
     }
 }
 
+/**
+ * Preview for [QuantityText]
+ */
 @Preview(showBackground = true)
 @Composable
 fun QuantityTextPreview() {
@@ -676,14 +739,20 @@ fun QuantityTextPreview() {
     }
 }
 
+/**
+ * Preview for [OrderDetailDescriptionAndId]
+ */
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailDescriptionAndIdPreview() {
     MastroAndroidTheme {
-        OrderDetailDescriptionAndId(1, "sku", "description")
+        OrderDetailDescriptionAndId(Modifier, 123, "sku", "description", "various")
     }
 }
 
+/**
+ * Preview for [OrderDetailDescriptionAndId2]
+ */
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailDescriptionAndId2Preview() {
@@ -698,6 +767,9 @@ fun OrderDetailDescriptionAndId2Preview() {
     }
 }
 
+/**
+ * Preview for [OrderDetailExpandButton]
+ */
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailExpandButtonPreview() {
@@ -706,7 +778,10 @@ fun OrderDetailExpandButtonPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Preview for [OrderDetailsItemContent]
+ */
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun SwipeToDismissBackgroundPreview() {
@@ -717,13 +792,14 @@ fun SwipeToDismissBackgroundPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Preview for [SwipeToDismissItem]
+ */
 @Preview(showBackground = true)
 @Composable
 fun SwipeToDismissItemPreview() {
     MastroAndroidTheme {
-        SwipeToDismissItem(
-            modifier = Modifier,
+        SwipeToDismissItem(modifier = Modifier,
             visibleState = MutableTransitionState(true),
             orderDetailsItem = OrderDetailsItem(
                 id = 1,
@@ -755,19 +831,24 @@ fun SwipeToDismissItemPreview() {
                 shippedQuantity = 1.0,
                 batch = "batch",
                 expirationDate = "2023-01-01",
+                various = null,
                 links = listOf(),
                 metadata = com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.Metadata(
                     etag = "etag"
                 ),
                 page = 0
             ),
-            isDeleteRowActive = true,
+            isDeleteRowDisabled = true,
+            isDuplicateRowDisabled = true,
             showEditDialog = remember { mutableStateOf(false) },
             modifiedItemId = remember { mutableIntStateOf(0) },
             onDuplicate = {})
     }
 }
 
+/**
+ * Preview for [OrderDetailsCard]
+ */
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailsCardPreview() {
@@ -803,6 +884,7 @@ fun OrderDetailsCardPreview() {
                 shippedQuantity = 1.0,
                 batch = "batch",
                 expirationDate = "2023-01-01",
+                various = null,
                 links = listOf(),
                 metadata = com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.Metadata(
                     etag = "etag"
@@ -810,13 +892,13 @@ fun OrderDetailsCardPreview() {
                 page = 0
             ),
             modifier = Modifier,
-            isDeleteRowActive = true,
             onRemove = {},
             showEditDialog = remember { mutableStateOf(false) },
             snackbarHostState = SnackbarHostState(),
             listState = LazyListState(),
             modifiedItemId = remember { mutableIntStateOf(0) },
-            onDuplicate = {}
+            onDuplicate = {},
+            swipeActionsPreferences = SwipeActionsPreferences()
         )
     }
 }
