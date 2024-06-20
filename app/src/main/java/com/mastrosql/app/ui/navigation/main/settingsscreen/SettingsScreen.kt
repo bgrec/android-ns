@@ -198,16 +198,10 @@ fun SettingsComposable(
         })
     }) { innerPadding ->
 
-        val isLandscape =
-            LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .then(
-                    if (isLandscape) Modifier.verticalScroll(rememberScrollState()) else Modifier
-                ),
+                .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
@@ -238,8 +232,7 @@ fun SettingsComposable(
                         val updatedUrlNameState by rememberUpdatedState(urlName.value)
 
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             TextField(
                                 modifier = Modifier
@@ -333,17 +326,13 @@ fun SettingsComposable(
                     }
                 }
             }
-
             item {
                 HorizontalDivider()
             }
-
-
             item {
                 val rowModifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -382,15 +371,14 @@ fun SettingsComposable(
                         modifier = Modifier.weight(1f)
                     )
 
-                    Switch(checked = isSwipeToDuplicateDisabledState,
+                    Switch(
+                        checked = isSwipeToDuplicateDisabledState,
                         onCheckedChange = { isChecked ->
                             onSetSwipeToDuplicateDisabled(isChecked)
                         })
                 }
             }
-
             item {
-                // Activate the buttons, show intro again, and close the dialog
                 HorizontalDivider()
             }
             item {
@@ -398,6 +386,7 @@ fun SettingsComposable(
             }
 
             item {
+                // Activate the buttons, show intro again, and close the dialog
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -405,8 +394,8 @@ fun SettingsComposable(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-
-                    Button(modifier = Modifier.weight(0.45f),
+                    Button(
+                        modifier = Modifier.weight(0.45f),
                         onClick = { showDialog.value = true }) {
                         Text(stringResource(R.string.dialog_button_settings))
                     }
@@ -418,11 +407,9 @@ fun SettingsComposable(
                     }
                 }
             }
-
             item {
                 Spacer(modifier = Modifier.padding(8.dp))
             }
-
             // Show the dialog to activate the buttons
             if (showDialog.value) {
                 item {
@@ -433,16 +420,13 @@ fun SettingsComposable(
                     )
                 }
             }
-
             // Test the connection
             item {
                 HorizontalDivider()
             }
-
             item {
                 Spacer(modifier = Modifier.padding(8.dp))
             }
-
             item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -459,11 +443,6 @@ fun SettingsComposable(
             item {
                 Spacer(modifier = Modifier.padding(16.dp))
             }
-
-            item {
-                HorizontalDivider()
-            }
-
         }
     }
 }

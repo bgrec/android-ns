@@ -83,7 +83,6 @@ class LoginViewModel(
      */
     fun initCredentialManager(context: Context) {
         this.credentialManager = CredentialManager.create(context)
-        getIsNotSecuredApi()
     }
 
     /**
@@ -103,10 +102,10 @@ class LoginViewModel(
         _uiState.value = newState
     }
 
-    private fun getIsNotSecuredApi() {
-        /**
-         * Collect the value of isNotSecuredApi from the data store.
-         */
+    /**
+     * Initialize the ViewModel and collect the flow values from the data store.
+     */
+    init {
         viewModelScope.launch {
             userPreferencesRepository
                 .getIsNotSecuredApi()
@@ -122,16 +121,35 @@ class LoginViewModel(
                 .collect {
                     if (it.isNotEmpty()) {
                         updateUiState(uiState.value.copy(isSecondaryBaseUrlProvided = true))
-                        userPreferencesRepository.getSelectedUrl().collect { selectedUrl ->
-                            updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
-                        }
-                        userPreferencesRepository.getBaseUrlName().collect { baseUrlName ->
-                            updateUiState(uiState.value.copy(baseUrlName = baseUrlName))
-                        }
-                        userPreferencesRepository.getBaseUrl2Name().collect { baseUrl2Name ->
-                            updateUiState(uiState.value.copy(baseUrl2Name = baseUrl2Name))
-                        }
                     }
+                }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getSelectedUrl()
+                .collect {
+                    updateUiState(uiState.value.copy(selectedUrl = it))
+                }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository.changeBaseUrl(uiState.value.selectedUrl)
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrlName()
+                .collect {
+                    updateUiState(uiState.value.copy(baseUrlName = it))
+                }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrl2Name()
+                .collect {
+                    updateUiState(uiState.value.copy(baseUrl2Name = it))
                 }
         }
     }
@@ -405,6 +423,17 @@ class LoginViewModel(
             }
 
             else -> Log.e("Login", "Unexpected exception type ${e::class.java.name}")
+        }
+    }
+
+    /**
+     * Function to save the selected URL.
+     */
+    fun saveSelectedUrl(selectedUrl: Int) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveSelectedUrl(selectedUrl)
+            userPreferencesRepository.changeBaseUrl(selectedUrl)
+            updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
         }
     }
 

@@ -19,6 +19,7 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
+import com.mastrosql.app.ui.theme.ThemeViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Mastro Android app
@@ -101,9 +102,21 @@ object AppViewModelProvider {
             )
         }
 
+        /**
+         * Initializer for LoginViewModel
+         */
         initializer {
             LoginViewModel(
                 mastroAndroidApplication().appContainer.loginRepository,
+                mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
+        }
+
+        /**
+         * Initializer for ThemeViewModel
+         */
+        initializer {
+            ThemeViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }

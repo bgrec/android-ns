@@ -290,7 +290,7 @@ class UserPreferencesRepository @Inject constructor(
     /**
      * Saves the selected URL to DataStore.
      */
-    private suspend fun saveSelectedUrl(selectedUrl: Int) {
+    suspend fun saveSelectedUrl(selectedUrl: Int) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.SELECTED_URL] = selectedUrl
         }
