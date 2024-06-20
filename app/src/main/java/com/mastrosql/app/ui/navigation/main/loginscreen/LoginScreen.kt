@@ -1,20 +1,26 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -22,7 +28,9 @@ import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +58,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
@@ -67,10 +76,14 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    //Context
     val context = LocalContext.current
 
     //CoroutineScope to launch the CredentialManager
     val coroutineScope = rememberCoroutineScope()
+
+    // Collect the state from the view model and update the UI
+    val loginUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     //InteractionSource for the TextField to get the credentials from the CredentialManager
     //when the user taps on the TextField
@@ -96,7 +109,8 @@ fun LoginScreen(
         }
     }
 
-    Login(navController = navController,
+    Login(
+        navController = navController,
         interactionSource = interactionSource,
         onLogin = { username, password ->
             viewModel.login(
@@ -105,7 +119,16 @@ fun LoginScreen(
                 password = password,
                 isCredentialManagerLogin = false
             )
-        })
+        },
+        isSecondaryBaseUrlProvided = loginUiState.isSecondaryBaseUrlProvided,
+        isNotSecuredApi = loginUiState.isNotSecuredApi,
+        selectedUrl = loginUiState.selectedUrl,
+        baseUrlName = loginUiState.baseUrlName,
+        baseUrl2Name = loginUiState.baseUrl2Name,
+        onUrlSelected = { selectedUrl ->
+            viewModel.saveSelectedUrl(selectedUrl)
+        }
+    )
 }
 
 /**
@@ -115,7 +138,13 @@ fun LoginScreen(
 fun Login(
     navController: NavController,
     interactionSource: MutableInteractionSource,
-    onLogin: (String, String) -> Unit
+    onLogin: (String, String) -> Unit,
+    isSecondaryBaseUrlProvided: Boolean,
+    isNotSecuredApi: Boolean,
+    selectedUrl: Int,
+    baseUrlName: String,
+    baseUrl2Name: String,
+    onUrlSelected: (Int) -> Unit
 ) {
 
     //State for the TextField
@@ -148,105 +177,146 @@ fun Login(
         }
 
     ) { innerPadding ->
-
         val isLandscape =
             LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-        Column(
+        //State for the updated credentials
+        val updatedUsername by rememberUpdatedState(username)
+        val updatedPassword by rememberUpdatedState(password)
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (!isLandscape) {
-                Spacer(modifier = Modifier.weight(0.1f))
-                LogoImage()
-                Spacer(modifier = Modifier.weight(0.2f))
+                item {
+                    LogoImage()
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+            }
+            if (isSecondaryBaseUrlProvided) {
+                item {
+                    val radioOptions = listOf(baseUrlName, baseUrl2Name)
+                    val (selectedOption, onOptionSelected) = rememberSaveable {
+                        mutableStateOf(radioOptions[selectedUrl])
+                    }
+                    Column {
+                        radioOptions.forEachIndexed { index, text ->
+                            Row(Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = (text == selectedOption),
+                                    onClick = {
+                                        onOptionSelected(text)
+                                        onUrlSelected(index)
+                                    }
+                                )
+                                .padding(horizontal = 16.dp))
+                            {
+                                RadioButton(
+                                    selected = (text == selectedOption),
+                                    onClick = {
+                                        onOptionSelected(text)
+                                        onUrlSelected(index)
+                                    }
+                                )
+                                Text(
+                                    text = text,
+                                    style = MaterialTheme.typography.bodyLarge.merge(),
+                                    modifier = Modifier.padding(16.dp),
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.size(32.dp))
+                }
+            }
+            if (!isNotSecuredApi) {
+                item {
+                    //TextField with the CredentialManager
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        modifier = Modifier
+                            //.align(Alignment.CenterHorizontally)
+                            .focusRequester(focusRequester),
+                        label = { Text(stringResource(R.string.Username)) },
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.AccountCircle,
+                                contentDescription = null
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(),
+                        interactionSource = interactionSource
+                    )
+
+                    Spacer(modifier = Modifier.size(32.dp))
+
+                    // TextField for Password
+                    var isPasswordVisible by remember { mutableStateOf(false) }
+
+                    //TextField with the password
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        modifier = Modifier,
+                        //.align(Alignment.CenterHorizontally),
+                        label = { Text(stringResource(R.string.Password)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Lock, contentDescription = null
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                isPasswordVisible = !isPasswordVisible
+                            }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Filled.Visibility
+                                    else Icons.Filled.VisibilityOff,
+                                    contentDescription = "Password Visibility"
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            focusManager.clearFocus()
+                            onLogin(updatedUsername, updatedPassword)
+                        }),
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None
+                        else PasswordVisualTransformation(),
+                    )
+                }
             }
 
-            //State for the updated credentials
-            val updatedUsername by rememberUpdatedState(username)
-            val updatedPassword by rememberUpdatedState(password)
-
-            //TextField with the CredentialManager
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .focusRequester(focusRequester),
-                label = { Text(stringResource(R.string.Username)) },
-                singleLine = true,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.AccountCircle, contentDescription = null
-                    )
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(),
-                interactionSource = interactionSource
-            )
-
-            Spacer(modifier = Modifier.size(32.dp))
-
-            // TextField for Password
-            var isPasswordVisible by remember { mutableStateOf(false) }
-
-            //TextField with the password
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                label = { Text(stringResource(R.string.Password)) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Lock, contentDescription = null
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        isPasswordVisible = !isPasswordVisible
-                    }) {
-                        Icon(
-                            imageVector = if (isPasswordVisible) Icons.Filled.Visibility
-                            else Icons.Filled.VisibilityOff,
-                            contentDescription = "Password Visibility"
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-                    focusManager.clearFocus()
-                    onLogin(updatedUsername, updatedPassword)
-                }),
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None
-                else PasswordVisualTransformation(),
-            )
-
-            Spacer(modifier = Modifier.weight(0.3f))
-
+            item {
+                Spacer(modifier = Modifier.padding(32.dp))
+            }
             val buttonModifier = if (isLandscape) {
                 Modifier
-                    .align(Alignment.CenterHorizontally)
                     .width(400.dp)
-
             } else {
                 Modifier
-                    .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
             }
-
-            //Button to login
-            AppButton(modifier = buttonModifier, text = R.string.login, onClick = {
-                onLogin(updatedUsername, updatedPassword)
-            })
-
-            Spacer(modifier = Modifier.weight(0.2f))
+            item {
+                //Button to login
+                AppButton(modifier = buttonModifier, text = R.string.login, onClick = {
+                    onLogin(updatedUsername, updatedPassword)
+                })
+            }
+            item {
+                Spacer(modifier = Modifier.padding(8.dp))
+            }
         }
     }
 }
@@ -259,7 +329,7 @@ fun LogoImage() {
     Image(
         painter = painterResource(R.drawable.mastroweb),
         contentDescription = "Logo Nipeservice",
-        modifier = Modifier.size(150.dp)
+        modifier = Modifier.size(200.dp)
     )
 }
 
@@ -267,15 +337,23 @@ fun LogoImage() {
 /**
  * Preview composable for the LoginScreen
  */
-@Preview(apiLevel = 33, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     val mutableInteractionSource = remember {
         MutableInteractionSource()
     }
     MastroAndroidTheme {
-        Login(navController = NavController(LocalContext.current),
+        Login(
+            navController = NavController(LocalContext.current),
             interactionSource = mutableInteractionSource,
-            onLogin = { _, _ -> })
+            onLogin = { _, _ -> },
+            isSecondaryBaseUrlProvided = true,
+            isNotSecuredApi = false,
+            selectedUrl = 0,
+            baseUrlName = "Primary",
+            baseUrl2Name = "Secondary",
+            onUrlSelected = { }
+        )
     }
 }

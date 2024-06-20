@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.settingsscreen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,6 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.EnumMap
 
-
 /*
 * sealed class UserPreferencesUiState {
     object Loading : UserPreferencesUiState()
@@ -37,7 +37,6 @@ import java.util.EnumMap
 }
 *
 */
-
 
 /**
  * UI state for the user preferences screen.
@@ -65,7 +64,9 @@ open class UserPreferencesViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
-    // Mutable state flow for UI state
+    /**
+     * Mutable state flow to hold the UI state.
+     */
     private val _uiState = MutableStateFlow(UserPreferencesUiState())
 
     /**
@@ -73,7 +74,9 @@ open class UserPreferencesViewModel(
      */
     val uiState: StateFlow<UserPreferencesUiState> = _uiState
 
-    // Function to update UI state
+    /**
+     * Update the UI state.
+     */
     private fun updateUiState(newState: UserPreferencesUiState) {
         _uiState.value = newState
     }
@@ -82,35 +85,28 @@ open class UserPreferencesViewModel(
 
         // Observe changes in isOnboarded and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getIsOnboarded()
-                .collect { isOnboarded ->
+            userPreferencesRepository.getIsOnboarded().collect { isOnboarded ->
                     updateUiState(uiState.value.copy(isOnboarded = isOnboarded))
                 }
         }
 
         // Observe changes in isLoggedIn and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getIsLoggedIn()
-                .collect { isLoggedIn ->
+            userPreferencesRepository.getIsLoggedIn().collect { isLoggedIn ->
                     updateUiState(uiState.value.copy(isLoggedIn = isLoggedIn))
                 }
         }
 
         // Observe changes in isNotSecuredApi and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getIsNotSecuredApi()
-                .collect { isNotSecuredApi ->
+            userPreferencesRepository.getIsNotSecuredApi().collect { isNotSecuredApi ->
                     updateUiState(uiState.value.copy(isNotSecuredApi = isNotSecuredApi))
                 }
         }
 
         // Observe changes in isSwipeToDeleteDisabled and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getIsSwipeToDeleteDisabled()
+            userPreferencesRepository.getIsSwipeToDeleteDisabled()
                 .collect { isSwipeToDeleteDisabled ->
                     updateUiState(
                         uiState.value.copy(isSwipeToDeleteDisabled = isSwipeToDeleteDisabled)
@@ -120,8 +116,7 @@ open class UserPreferencesViewModel(
 
         // Observe changes in isSwipeToDuplicateDisabled and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getIsSwipeToDuplicateDisabled()
+            userPreferencesRepository.getIsSwipeToDuplicateDisabled()
                 .collect { isSwipeToDuplicateDisabled ->
                     updateUiState(
                         uiState.value.copy(isSwipeToDuplicateDisabled = isSwipeToDuplicateDisabled)
@@ -131,61 +126,50 @@ open class UserPreferencesViewModel(
 
         // Observe changes in baseUrl and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl()
-                .collect { baseUrl ->
+            userPreferencesRepository.getBaseUrl().collect { baseUrl ->
                     updateUiState(uiState.value.copy(baseUrl = baseUrl))
                 }
         }
 
         // Observe changes in baseUrl and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl2()
-                .collect { baseUrl2 ->
+            userPreferencesRepository.getBaseUrl2().collect { baseUrl2 ->
                     updateUiState(uiState.value.copy(baseUrl2 = baseUrl2))
                 }
         }
 
         // Observe changes in activeButtons and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getActiveButtons()
-                .collect { activeButtons ->
+            userPreferencesRepository.getActiveButtons().collect { activeButtons ->
                     updateUiState(uiState.value.copy(activeButtons = activeButtons))
                 }
         }
 
         // Observe changes in selectedUrl and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getSelectedUrl()
-                .collect { selectedUrl ->
+            userPreferencesRepository.getSelectedUrl().collect { selectedUrl ->
                     updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
                 }
         }
 
         // Observe changes in selectedUrl and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrlName()
-                .collect { baseUrlName ->
+            userPreferencesRepository.getBaseUrlName().collect { baseUrlName ->
                     updateUiState(uiState.value.copy(baseUrlName = baseUrlName))
                 }
         }
 
         // Observe changes in selectedUrl and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl2Name()
-                .collect { baseUrl2Name ->
+            userPreferencesRepository.getBaseUrl2Name().collect { baseUrl2Name ->
                     updateUiState(uiState.value.copy(baseUrl2Name = baseUrl2Name))
                 }
         }
     }
 
     /**
-     *
+     * [updateActiveButtons] update the active buttons and
+     * save the selection in DataStore through [userPreferencesRepository]
      */
     fun updateActiveButtons(activeButtons: EnumMap<MainNavOption, Boolean>) {
         viewModelScope.launch {
@@ -230,17 +214,21 @@ open class UserPreferencesViewModel(
      */
     fun setSecondaryBaseUrl(baseUrl2: String) {
         viewModelScope.launch {
-            if (try {
-                    URL(baseUrl2).toURI()
-                    true
-                } catch (e: Exception) {
-                    false
-                }
-            ) {
-                if (baseUrl2.endsWith("/")) {
-                    userPreferencesRepository.saveSecondaryBaseUrl(baseUrl2)
-                } else {
-                    userPreferencesRepository.saveSecondaryBaseUrl("$baseUrl2/")
+            if (baseUrl2.isEmpty() ) {
+                userPreferencesRepository.saveSecondaryBaseUrl(baseUrl2)
+            } else {
+                if (try {
+                        URL(baseUrl2).toURI()
+                        true
+                    } catch (e: Exception) {
+                        false
+                    }
+                ) {
+                    if (baseUrl2.endsWith("/")) {
+                        userPreferencesRepository.saveSecondaryBaseUrl(baseUrl2)
+                    } else {
+                        userPreferencesRepository.saveSecondaryBaseUrl("$baseUrl2/")
+                    }
                 }
             }
         }

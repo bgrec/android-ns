@@ -2,6 +2,7 @@ package com.mastrosql.app.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -11,11 +12,19 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.SECONDARY_URL
+import com.mastrosql.app.ui.AppViewModelProvider
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 
 
 private val lightColorScheme = lightColorScheme(
@@ -84,36 +93,75 @@ private val darkColorScheme = darkColorScheme(
 
 @Composable
 fun MastroAndroidTheme(
+    viewModel: ThemeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true, content: @Composable () -> Unit
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+
 ) {
+    val selectedUrl by viewModel.selectedUrl.collectAsStateWithLifecycle()
+
+    Log.d("MastroAndroidTheme", "selectedUrl: $selectedUrl")
+
+    val lightColorScheme = when (selectedUrl) {
+        PRIMARY_URL -> PrimaryLightColorScheme
+        SECONDARY_URL -> SecondaryLightColorScheme
+        else -> lightColorScheme
+    }
+
+    val darkColorScheme = when (selectedUrl) {
+        PRIMARY_URL -> PrimaryDarkColorScheme
+        SECONDARY_URL -> SecondaryDarkColorScheme
+        else -> darkColorScheme
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> darkColorScheme
         else -> lightColorScheme
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            /*setUpEdgeToEdge(view, darkTheme)*/
             val window = (view.context as Activity).window
-            if (darkTheme) {
-                window.statusBarColor = colorScheme.primary.toArgb()
-            } else {
-                window.statusBarColor = Color.Transparent.toArgb()
-            }
-            //window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor = if (darkTheme) colorScheme.primary.toArgb() else Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
+//    val colorScheme = when {
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
+//
+//        darkTheme -> darkColorScheme
+//        else -> lightColorScheme
+//    }
+//    val view = LocalView.current
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            /*setUpEdgeToEdge(view, darkTheme)*/
+//            val window = (view.context as Activity).window
+//            if (darkTheme) {
+//                window.statusBarColor = colorScheme.primary.toArgb()
+//            } else {
+//                window.statusBarColor = Color.Transparent.toArgb()
+//            }
+//            //window.statusBarColor = colorScheme.primary.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+//        }
+//    }
 
     MaterialTheme(
-        colorScheme = colorScheme, shapes = Shapes, typography = Typography, content = content
+        colorScheme = colorScheme,
+        shapes = Shapes,
+        typography = Typography,
+        content = content
     )
 }
 
