@@ -1,6 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model
 
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.WhOutboundState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundState
 
 object WhOutboundUtils {
 

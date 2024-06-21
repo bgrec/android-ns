@@ -35,16 +35,13 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.NewWhOutboundBottomSheet
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrdersList
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrdersSearchView
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrdersTopAppBar
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.WhOutboundState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.NewWhOutboundBottomSheet
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundList
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundSearchView
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundTopAppBar
 import kotlinx.coroutines.launch
 
-/**
- * Orders screen composable
- */
 @ExperimentalMaterial3Api
 @Composable
 fun WarehouseOutOperationsScreen(
@@ -65,8 +62,8 @@ fun WarehouseOutOperationsScreen(
             modifier = modifier.fillMaxSize(), loading = true
         )
 
-        is WhOutboundUiState.Success -> OrdersResultScreen(
-            navigateToOrderDetails = navigateToOrderDetails,
+        is WhOutboundUiState.Success -> WhOutboundResultScreen(
+            navigateToWhOutboundDetails = navigateToOrderDetails,
             //onNewOrder = onNewOrder,
             ordersUiState = ordersUiState,
             modifier = modifier,
@@ -84,14 +81,11 @@ fun WarehouseOutOperationsScreen(
     }
 }
 
-/**
- * Orders result screen composable, displays the list of orders.
- */
 @ExperimentalMaterial3Api
 @Composable
-fun OrdersResultScreen(
+fun WhOutboundResultScreen(
     modifier: Modifier = Modifier,
-    navigateToOrderDetails: (Int, String?) -> Unit,
+    navigateToWhOutboundDetails: (Int, String?) -> Unit,
     //onNewOrder: () -> Unit,
     ordersUiState: WhOutboundUiState.Success,
     drawerState: DrawerState,
@@ -101,21 +95,16 @@ fun OrdersResultScreen(
     // Context used to show the toast
     val context = LocalContext.current
 
-    OrdersResult(modifier = modifier, navigateToOrderDetails = navigateToOrderDetails,
-        ordersUiState = ordersUiState,
+    OrdersResult(modifier = modifier, navigateToWhOutboundDetails = navigateToWhOutboundDetails,
+        whOutboundUiState = ordersUiState,
         drawerState = drawerState,
         navController = navController,
-        onUpdateDeliveryState = { orderId, deliveryState ->
-            viewModel.updateDeliveryState(
-                context = context, orderId = orderId, deliveryState = deliveryState
-            )
-        },
-        onUpdateOrderData = { orderState ->
+        onUpdateWhOutboundData = { orderState ->
             viewModel.updateOrderData(
                 context = context, orderState = orderState
             )
         },
-        onAddNewOrder = { order ->
+        onAddNewWhOutbound = { order ->
             viewModel.addNewOrder(
                 context, order
             )
@@ -129,24 +118,19 @@ fun OrdersResultScreen(
 @Composable
 fun OrdersResult(
     modifier: Modifier = Modifier,
-    navigateToOrderDetails: (Int, String?) -> Unit,
-    //onNewOrder: () -> Unit,
-    ordersUiState: WhOutboundUiState.Success,
+    navigateToWhOutboundDetails: (Int, String?) -> Unit,
+    whOutboundUiState: WhOutboundUiState.Success,
     drawerState: DrawerState,
     navController: NavController,
-    onUpdateDeliveryState: (Int, Int) -> Unit,
-    onUpdateOrderData: (WhOutboundState) -> Unit,
-    onAddNewOrder: (WarehouseOutbound) -> Unit,
+    onUpdateWhOutboundData: (WhOutboundState) -> Unit,
+    onAddNewWhOutbound: (WarehouseOutbound) -> Unit,
 ) {
 
     // CoroutineScope to handle scrolling actions
     val coroutineScope = rememberCoroutineScope()
 
-    // State to control the delivery dialog visibility
-    val showEditDeliveryDialog = remember { mutableStateOf(false) }
-
-    // State to control the order data dialog visibility
-    val showEditOrderDataDialog = remember { mutableStateOf(false) }
+    // State to control the warehouse outbound edit data dialog visibility
+    val showEditWhOutboundDataDialog = remember { mutableStateOf(false) }
 
     // State to control the bottom sheet visibility
     val showBottomSheet = remember { mutableStateOf(false) }
@@ -163,9 +147,9 @@ fun OrdersResult(
 
     Scaffold(
         topBar = {
-            OrdersTopAppBar(drawerState = drawerState,
-                title = stringResource(R.string.clients_orders_bar_title),
-                onAddOrderClick = {
+            WhOutboundTopAppBar(drawerState = drawerState,
+                title = stringResource(R.string.warehouse_outbound_operations),
+                onAddWhOutboundClick = {
                     showBottomSheet.value = true
                 })
         },
@@ -182,7 +166,7 @@ fun OrdersResult(
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowUpward,
-                        contentDescription = stringResource(R.string.order_entry_title)
+                        contentDescription = stringResource(R.string.scroll_to_top),
                     )
                 }
             }
@@ -199,31 +183,21 @@ fun OrdersResult(
             val textState = remember { mutableStateOf(TextFieldValue("")) }
 
             // Search view for filtering the orders list
-            OrdersSearchView(state = textState)
+            WhOutboundSearchView(state = textState)
 
             // Orders list, lazy column with the orders
-            OrdersList(
+            WhOutboundList(
                 modifier = Modifier.padding(4.dp),
                 listState = listState,
-                ordersList = ordersUiState.whOutboundsList,
-                modifiedOrderId = ordersUiState.modifiedWhOutboundId,
+                whOutboundList = whOutboundUiState.whOutboundsList,
+                modifiedOrderId = whOutboundUiState.modifiedWhOutboundId,
                 searchTextState = textState,
-                navigateToOrderDetails = navigateToOrderDetails,
-                showEditDeliveryDialog = showEditDeliveryDialog,
-                showEditOrderDataDialog = showEditOrderDataDialog
+                navigateToWhOutboundDetails = navigateToWhOutboundDetails,
+                showEditWhOutboundDataDialog = showEditWhOutboundDataDialog
             )
         }
 
-        if (showEditDeliveryDialog.value) {
-//            // Edit delivery Alert dialog, used to update the delivery state of an order
-//            EditDeliveryStateDialog(showEditDeliveryDialog = showEditDeliveryDialog,
-//                ordersUiState = ordersUiState,
-//                onUpdateDeliveryState = { orderId, deliveryState ->
-//                    onUpdateDeliveryState(orderId, deliveryState)
-//                })
-        }
-
-        if (showEditOrderDataDialog.value) {
+        if (showEditWhOutboundDataDialog.value) {
 //            // Order data Alert dialog, used to show and edit the order data
 //            EditOrderDataDialog(modifier = modifier,
 //                showEditOrderDataDialog = showEditOrderDataDialog,
@@ -240,7 +214,7 @@ fun OrdersResult(
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
                 onConfirmButton = { whOutbound ->
-                    onAddNewOrder(whOutbound)
+                    onAddNewWhOutbound(whOutbound)
                     showBottomSheet.value = false
                 })
         }

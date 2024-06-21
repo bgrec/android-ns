@@ -26,6 +26,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.Ord
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 import com.mastrosql.app.ui.navigation.main.warehousescreen.inbound.WarehouseInOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.WarehouseOutOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundDestination
 
 /**
  * Main navigation graph for the app.
@@ -214,11 +216,12 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
 
 
         navigation(
-            startDestination = OrdersDestination.route, route = MainNavOption.OrdersScreen.name
+            startDestination = WhOutboundDestination.route,
+            route = MainNavOption.WarehouseOutOperationsScreen.name
             //route = OrdersResultDestination.route
         ) {
-            composable(route = OrdersDestination.route) {
-                OrdersScreen(/*onNewOrder = {/*orderId ->
+            composable(route = WhOutboundDestination.route) {
+                WarehouseOutOperationsScreen(/*onNewOrder = {/*orderId ->
                         //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
                         navController.currentBackStackEntry?.savedStateHandle?.set(
                             "shouldRefresh",

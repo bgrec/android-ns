@@ -38,6 +38,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.D
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsLinksTypeConverter
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsMetadataTypeConverter
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsRemoteKeys
+import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsRemoteKeysDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDao
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.ItemMetadataTypeConverter
@@ -53,6 +54,12 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsMetadataTypeConverter
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeys
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutboundDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutboundRemoteKeysDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundRemoteKeys
 
 /**
  * Database class with a singleton Instance object.
@@ -61,7 +68,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 /*if */
 @Database(
     //Change version number if you want to update the schema
-    version = 4,
+    version = 5,
     exportSchema = true, // false
     entities = [
         Item::class,
@@ -75,6 +82,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
         OrderDetailsRemoteKeys::class,
         DestinationData::class,
         DestinationsRemoteKeys::class,
+        WarehouseOutbound::class,
+        WhOutboundRemoteKeys::class
     ],
     /*autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -97,7 +106,9 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
     OrderDetailsMetadataTypeConverter::class,
     OrderDetailLinksTypeConverter::class,
     DestinationsMetadataTypeConverter::class,
-    DestinationsLinksTypeConverter::class
+    DestinationsLinksTypeConverter::class,
+    WhOutboundMetadataTypeConverter::class,
+    WhOutboundLinksTypeConverter::class
 )
 
 /**
@@ -158,6 +169,20 @@ abstract class AppDatabase : RoomDatabase() {
      */
     abstract fun destinationsDataDao(): DestinationsDataDao
 
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the DestinationsRemoteKeys entity in the database.
+     */
+    abstract fun destinationsRemoteKeysDao(): DestinationsRemoteKeysDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the WarehouseOutbound entity in the database.
+     */
+    abstract fun warehouseOutboundDao(): WarehouseOutboundDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the WarehouseOutboundRemoteKeys entity in the database.
+     */
+    abstract fun warehouseOutboundRemoteKeysDao(): WarehouseOutboundRemoteKeysDao
 
     /**
      * The singleton instance of the AppDatabase class, which provides access to the application's Room database.

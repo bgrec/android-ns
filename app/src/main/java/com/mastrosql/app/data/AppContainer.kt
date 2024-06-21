@@ -27,6 +27,8 @@ import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
+import com.mastrosql.app.data.warehouse.outbound.NetworkWareHouseOutRepository
+import com.mastrosql.app.data.warehouse.outbound.WarehouseOutRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.net.URL
@@ -51,6 +53,7 @@ interface AppContainer {
     val ordersRepository: OrdersRepository
     val orderDetailsRepository: OrderDetailsRepository
     val userPreferencesRepository: UserPreferencesRepository
+    val warehouseOutRepository: WarehouseOutRepository
     val mastroAndroidApiService: MastroAndroidApiService
 
     /**
@@ -154,6 +157,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         ordersRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         orderDetailsRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         userPreferencesRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        warehouseOutRepository.updateMastroAndroidApiService(mastroAndroidApiService)
     }
 
     /**
@@ -257,6 +261,16 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
             AppDatabase
                 .getInstance(context)
                 .orderDetailsDao(),
+            context
+        )
+    }
+
+    override val warehouseOutRepository: WarehouseOutRepository by lazy {
+        NetworkWareHouseOutRepository(
+            mastroAndroidApiService,
+            AppDatabase
+                .getInstance(context)
+                .warehouseOutboundDao(),
             context
         )
     }

@@ -4,6 +4,7 @@ import androidx.work.WorkInfo
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundResponse
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -68,6 +69,10 @@ class OfflineWarehouseOutRepository(
      * for network operations.
      */
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getWhOutbound(): WhOutboundResponse {
         TODO("Not yet implemented")
     }
 //

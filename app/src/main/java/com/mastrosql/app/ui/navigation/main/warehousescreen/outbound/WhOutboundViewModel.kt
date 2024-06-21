@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -9,14 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mastrosql.app.R
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
-import com.mastrosql.app.data.orders.OrdersRepository
+import com.mastrosql.app.data.warehouse.outbound.WarehouseOutRepository
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.WhOutboundState
-import com.mastrosql.app.utils.DateHelper
-import com.mastrosql.app.utils.ToastUtils
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -29,7 +25,7 @@ sealed interface WhOutboundUiState {
 
     @Suppress("KDocMissingDocumentation")
     data class Success(
-        val whOutboundsList: List<com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order>,
+        val whOutboundsList: List<WarehouseOutbound>,
         val modifiedWhOutboundId: MutableIntState
     ) : WhOutboundUiState
 
@@ -41,7 +37,7 @@ sealed interface WhOutboundUiState {
 }
 
 class WhOutboundViewModel(
-    private val ordersRepository: OrdersRepository,
+    private val whOutboundRepository: WarehouseOutRepository,
 ) : ViewModel() {
 
     /**
@@ -64,7 +60,7 @@ class WhOutboundViewModel(
         viewModelScope.launch {
             ordersUiState = WhOutboundUiState.Loading
             ordersUiState = try {
-                val ordersListResult = ordersRepository.getOrders().items
+                val ordersListResult = whOutboundRepository.getWhOutbound().items
                 WhOutboundUiState.Success(
                     ordersListResult, modifiedWhOutboundId = _modifiedOrderId
                 )
@@ -90,10 +86,10 @@ class WhOutboundViewModel(
         (ordersUiState as? WhOutboundUiState.Success)?.let { successState ->
             val ordersList = successState.whOutboundsList.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
-            if (index != -1) {
-                ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
-                ordersUiState = WhOutboundUiState.Success(ordersList, mutableIntStateOf(orderId))
-            }
+//            if (index != -1) {
+//                ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
+//                ordersUiState = WhOutboundUiState.Success(ordersList, mutableIntStateOf(orderId))
+//            }
         }
     }
 
@@ -103,19 +99,19 @@ class WhOutboundViewModel(
      *
      */
     private fun updateOrdersItemData(orderState: WhOutboundState) {
-        val orderId = orderState.orderId.value
-        val orderDescription = orderState.orderDescription.value.text
-        val orderDeliveryDate = DateHelper.formatDateToInput(orderState.deliveryDate.value.text)
+        val orderId = orderState.operationId.value
+//        val orderDescription = orderState.orderDescription.value.text
+//        val orderDeliveryDate = DateHelper.formatDateToInput(orderState.deliveryDate.value.text)
 
         (ordersUiState as? WhOutboundUiState.Success)?.let { (ordersList1, modifiedOrderId) ->
             val ordersList = ordersList1.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
-            if (index != -1) {
-                ordersList[index] = ordersList[index].copy(
-                    description = orderDescription, deliveryDate = orderDeliveryDate
-                )
-                ordersUiState = WhOutboundUiState.Success(ordersList, mutableIntStateOf(orderId))
-            }
+//            if (index != -1) {
+//                ordersList[index] = ordersList[index].copy(
+//                    description = orderDescription, deliveryDate = orderDeliveryDate
+//                )
+//                ordersUiState = WhOutboundUiState.Success(ordersList, mutableIntStateOf(orderId))
+//            }
         }
     }
 
@@ -128,21 +124,21 @@ class WhOutboundViewModel(
     fun updateDeliveryState(context: Context, orderId: Int, deliveryState: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = ordersRepository.updateDeliveryState(orderId, deliveryState)
-
-                handleResponse(context, response) {
-                    launch {
-                        ToastUtils.showToast(
-                            context,
-                            Toast.LENGTH_SHORT,
-                            context.getString(R.string.delivery_state_updated)
-                        )
-                    }
-
-                    //If the response is successful, update the delivery state of the order
-                    // without refreshing the list
-                    updateOrdersItemDeliveryState(orderId, deliveryState)
-                }
+//                val response = whOutboundRepository.updateDeliveryState(orderId, deliveryState)
+//
+//                handleResponse(context, response) {
+//                    launch {
+//                        ToastUtils.showToast(
+//                            context,
+//                            Toast.LENGTH_SHORT,
+//                            context.getString(R.string.delivery_state_updated)
+//                        )
+//                    }
+//
+//                    //If the response is successful, update the delivery state of the order
+//                    // without refreshing the list
+//                    updateOrdersItemDeliveryState(orderId, deliveryState)
+//                }
 
             } catch (e: Exception) {
                 // Handle exception

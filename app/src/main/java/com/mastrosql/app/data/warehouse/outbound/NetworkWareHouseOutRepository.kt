@@ -6,13 +6,14 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.mastrosql.app.TAG_OUTPUT
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
-import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutboundDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
 class NetworkWareHouseOutRepository(
     private var mastroAndroidApiService: MastroAndroidApiService,
-    private val ordersDao: OrdersDao,
+    private val wareHouseOutboundDao: WarehouseOutboundDao,
     context: Context
 ) : WarehouseOutRepository {
 
@@ -29,11 +30,12 @@ class NetworkWareHouseOutRepository(
             if (it.isNotEmpty()) it.first() else null
         }
 
-//    /**
+    //    /**
 //     * Fetches list of CustomersMasterData from mastroAndroidApi
 //     * */
 //
-//    override suspend fun getOrders(): OrdersResponse = mastroAndroidApiService.getAllOrders()
+    override suspend fun getWhOutbound(): WhOutboundResponse =
+        mastroAndroidApiService.getAllWhOutbound()
 //
 //    /**
 //     * Fetches order details by the specified [orderId].

@@ -3,6 +3,7 @@ package com.mastrosql.app.data.warehouse.outbound
 
 import androidx.work.WorkInfo
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundResponse
 import kotlinx.coroutines.flow.Flow
 
 interface WarehouseOutRepository {
@@ -15,10 +16,10 @@ interface WarehouseOutRepository {
      */
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 
-//    /**
+    //    /**
 //     * Retrieve all the Orders from the the given data source.
 //     */
-//    suspend fun getWarehouseOutbound(): OrdersResponse
+    suspend fun getWhOutbound(): WhOutboundResponse
 //    //suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse)
 //
 //    /**
