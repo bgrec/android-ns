@@ -10,7 +10,7 @@ import androidx.compose.ui.text.input.TextFieldValue
  * OrderState class to hold the state of the order details.
  */
 @Suppress("KDocMissingDocumentation")
-data class OrderState(
+data class WhOutboundState(
     var orderId: MutableIntState = mutableIntStateOf(0),
     var customerId: MutableIntState = mutableIntStateOf(0),
     var customerName: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue("")),

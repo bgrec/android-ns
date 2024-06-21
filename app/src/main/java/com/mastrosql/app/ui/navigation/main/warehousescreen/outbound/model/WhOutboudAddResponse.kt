@@ -4,11 +4,6 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 
-/**
- * Class that represents the response of an order addition request.
- *
- */
-
 @Serializable
 data class Column(
     @SerializedName("name")
@@ -22,7 +17,7 @@ data class ResponseItem(
     @SerializedName("type")
     val type: String,
     @SerializedName("items")
-    val items: List<Order>,
+    val items: List<WarehouseOutbound>,
     @SerializedName("_metadata")
     val metadata: MetadataOfResponseItem
 )
@@ -34,14 +29,12 @@ data class MetadataOfResponseItem(
 )
 
 @Serializable
-data class OrderAddResponse(
+data class WhOutboundAddResponse(
     @SerializedName("items")
     val items: List<ResponseItem>
 ) {
-    /**
-     * Retrieves the first order from the response, or returns null if no orders are present.
-     */
-    fun getAddedOrder(): Order? {
+
+    fun getAddedWhOutbound(): WarehouseOutbound? {
         return items.firstOrNull()?.items?.firstOrNull()
     }
 }

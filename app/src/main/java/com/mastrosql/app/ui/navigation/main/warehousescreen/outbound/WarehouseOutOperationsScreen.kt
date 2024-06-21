@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -19,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,22 +27,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Order
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.NewOrderBottomSheet
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrderState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.NewWhOutboundBottomSheet
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrdersTopAppBar
-import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.WhOutboundState
 import kotlinx.coroutines.launch
 
 /**
@@ -56,7 +51,7 @@ fun WarehouseOutOperationsScreen(
     navigateToOrderDetails: (Int, String?) -> Unit,
     drawerState: DrawerState,
     navController: NavController,
-    viewModel: OrdersViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: WhOutboundViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     // State
     val ordersUiState = viewModel.ordersUiState
@@ -66,11 +61,11 @@ fun WarehouseOutOperationsScreen(
         .fillMaxWidth()
 
     when (ordersUiState) {
-        is OrdersUiState.Loading -> LoadingScreen(
+        is WhOutboundUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(), loading = true
         )
 
-        is OrdersUiState.Success -> OrdersResultScreen(
+        is WhOutboundUiState.Success -> OrdersResultScreen(
             navigateToOrderDetails = navigateToOrderDetails,
             //onNewOrder = onNewOrder,
             ordersUiState = ordersUiState,
@@ -80,7 +75,7 @@ fun WarehouseOutOperationsScreen(
             viewModel = viewModel
         )
 
-        is OrdersUiState.Error -> ErrorScreen(
+        is WhOutboundUiState.Error -> ErrorScreen(
             ordersUiState.exception,
             viewModel::getOrders,
             modifier = modifier.fillMaxSize(),
@@ -98,10 +93,10 @@ fun OrdersResultScreen(
     modifier: Modifier = Modifier,
     navigateToOrderDetails: (Int, String?) -> Unit,
     //onNewOrder: () -> Unit,
-    ordersUiState: OrdersUiState.Success,
+    ordersUiState: WhOutboundUiState.Success,
     drawerState: DrawerState,
     navController: NavController,
-    viewModel: OrdersViewModel,
+    viewModel: WhOutboundViewModel,
 ) {
     // Context used to show the toast
     val context = LocalContext.current
@@ -136,12 +131,12 @@ fun OrdersResult(
     modifier: Modifier = Modifier,
     navigateToOrderDetails: (Int, String?) -> Unit,
     //onNewOrder: () -> Unit,
-    ordersUiState: OrdersUiState.Success,
+    ordersUiState: WhOutboundUiState.Success,
     drawerState: DrawerState,
     navController: NavController,
     onUpdateDeliveryState: (Int, Int) -> Unit,
-    onUpdateOrderData: (OrderState) -> Unit,
-    onAddNewOrder: (Order) -> Unit,
+    onUpdateOrderData: (WhOutboundState) -> Unit,
+    onAddNewOrder: (WarehouseOutbound) -> Unit,
 ) {
 
     // CoroutineScope to handle scrolling actions
@@ -210,8 +205,8 @@ fun OrdersResult(
             OrdersList(
                 modifier = Modifier.padding(4.dp),
                 listState = listState,
-                ordersList = ordersUiState.ordersList,
-                modifiedOrderId = ordersUiState.modifiedOrderId,
+                ordersList = ordersUiState.whOutboundsList,
+                modifiedOrderId = ordersUiState.modifiedWhOutboundId,
                 searchTextState = textState,
                 navigateToOrderDetails = navigateToOrderDetails,
                 showEditDeliveryDialog = showEditDeliveryDialog,
@@ -240,37 +235,16 @@ fun OrdersResult(
 
         if (showBottomSheet.value) {
             // Bottom sheet to add a new order
-            NewOrderBottomSheet(navController = navController,
+            NewWhOutboundBottomSheet(navController = navController,
                 showBottomSheet = showBottomSheet,
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
-                onConfirmButton = { order ->
-                    onAddNewOrder(order)
+                onConfirmButton = { whOutbound ->
+                    onAddNewOrder(whOutbound)
                     showBottomSheet.value = false
                 })
         }
     }
 }
 
-/**
- * Orders screen preview
- */
-@ExperimentalMaterial3Api
-@Preview(showBackground = true)
-@Composable
-fun OrdersResultPreview() {
-    MastroAndroidPreviewTheme {
-        val drawerState = remember { DrawerState(DrawerValue.Closed) }
-        OrdersResult(navigateToOrderDetails = { _, _ -> },
-            ordersUiState = OrdersUiState.Success(
-                ordersList = emptyList(), modifiedOrderId = mutableIntStateOf(-1)
-            ),
-            drawerState = drawerState,
-            navController = rememberNavController(),
-            onUpdateDeliveryState = { _, _ -> },
-            onUpdateOrderData = { _ -> },
-            onAddNewOrder = { _ -> }
 
-        )
-    }
-}

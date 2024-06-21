@@ -13,8 +13,8 @@ import com.mastrosql.app.R
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.orders.OrdersRepository
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Order
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.OrderState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.orderscomponents.WhOutboundState
 import com.mastrosql.app.utils.DateHelper
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -24,43 +24,30 @@ import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 
-/**
- * Interface [OrdersUiState] to represent the different states of the Orders screen.
- * The states are:
- * - [OrdersUiState.Success]: Represents the successful state of the
- *   Orders screen with the list of orders.
- * - [OrdersUiState.Error]: Represents the error state of the Orders screen with the exception.
- * - [OrdersUiState.Loading]: Represents the loading state of the Orders screen.
- */
-sealed interface OrdersUiState {
+sealed interface WhOutboundUiState {
 
-    /**
-     * Success state of the Orders screen with the list of orders.
-     */
+
     @Suppress("KDocMissingDocumentation")
     data class Success(
-        val ordersList: List<com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order>,
-        val modifiedOrderId: MutableIntState
-    ) : OrdersUiState
+        val whOutboundsList: List<com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order>,
+        val modifiedWhOutboundId: MutableIntState
+    ) : WhOutboundUiState
 
     @Suppress("KDocMissingDocumentation")
-    data class Error(val exception: Exception) : OrdersUiState
+    data class Error(val exception: Exception) : WhOutboundUiState
 
     @Suppress("KDocMissingDocumentation")
-    data object Loading : OrdersUiState
+    data object Loading : WhOutboundUiState
 }
 
-/**
- * Factory for [OrdersViewModel] that takes [OrdersRepository] as a dependency
- */
-class OrdersViewModel(
+class WhOutboundViewModel(
     private val ordersRepository: OrdersRepository,
 ) : ViewModel() {
 
     /**
      * Mutable state to hold the OrdersUiState
      */
-    var ordersUiState: OrdersUiState by mutableStateOf(OrdersUiState.Loading)
+    var ordersUiState: WhOutboundUiState by mutableStateOf(WhOutboundUiState.Loading)
         private set
 
     private val _modifiedOrderId = mutableIntStateOf(0)
@@ -75,17 +62,17 @@ class OrdersViewModel(
      */
     fun getOrders() {
         viewModelScope.launch {
-            ordersUiState = OrdersUiState.Loading
+            ordersUiState = WhOutboundUiState.Loading
             ordersUiState = try {
                 val ordersListResult = ordersRepository.getOrders().items
-                OrdersUiState.Success(
-                    ordersListResult, modifiedOrderId = _modifiedOrderId
+                WhOutboundUiState.Success(
+                    ordersListResult, modifiedWhOutboundId = _modifiedOrderId
                 )
             } catch (e: Exception) {
                 when (e) {
-                    is IOException -> OrdersUiState.Error(e)
-                    is HttpException -> OrdersUiState.Error(e)
-                    else -> OrdersUiState.Error(e)
+                    is IOException -> WhOutboundUiState.Error(e)
+                    is HttpException -> WhOutboundUiState.Error(e)
+                    else -> WhOutboundUiState.Error(e)
                 }
             }
         }
@@ -100,12 +87,12 @@ class OrdersViewModel(
      */
     @Suppress("Destructure")
     private fun updateOrdersItemDeliveryState(orderId: Int, deliveryState: Int) {
-        (ordersUiState as? OrdersUiState.Success)?.let { successState ->
-            val ordersList = successState.ordersList.toMutableList()
+        (ordersUiState as? WhOutboundUiState.Success)?.let { successState ->
+            val ordersList = successState.whOutboundsList.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
             if (index != -1) {
                 ordersList[index] = ordersList[index].copy(deliveryState = deliveryState)
-                ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(orderId))
+                ordersUiState = WhOutboundUiState.Success(ordersList, mutableIntStateOf(orderId))
             }
         }
     }
@@ -115,19 +102,19 @@ class OrdersViewModel(
      * @param orderState The order state to update
      *
      */
-    private fun updateOrdersItemData(orderState: OrderState) {
+    private fun updateOrdersItemData(orderState: WhOutboundState) {
         val orderId = orderState.orderId.value
         val orderDescription = orderState.orderDescription.value.text
         val orderDeliveryDate = DateHelper.formatDateToInput(orderState.deliveryDate.value.text)
 
-        (ordersUiState as? OrdersUiState.Success)?.let { (ordersList1, modifiedOrderId) ->
+        (ordersUiState as? WhOutboundUiState.Success)?.let { (ordersList1, modifiedOrderId) ->
             val ordersList = ordersList1.toMutableList()
             val index = ordersList.indexOfFirst { it.id == orderId }
             if (index != -1) {
                 ordersList[index] = ordersList[index].copy(
                     description = orderDescription, deliveryDate = orderDeliveryDate
                 )
-                ordersUiState = OrdersUiState.Success(ordersList, mutableIntStateOf(orderId))
+                ordersUiState = WhOutboundUiState.Success(ordersList, mutableIntStateOf(orderId))
             }
         }
     }
@@ -172,7 +159,7 @@ class OrdersViewModel(
      * @param context The context to show the toast message
      * @param order The order to add
      */
-    fun addNewOrder(context: Context, order: Order) {
+    fun addNewOrder(context: Context, order: WarehouseOutbound) {
 //        viewModelScope.launch(Dispatchers.IO) {
 //            try {
 //
@@ -239,7 +226,7 @@ class OrdersViewModel(
                 context, viewModelScope
             ) {
                 // Handle unauthorized
-                ordersUiState = OrdersUiState.Error(HttpException(response))
+                ordersUiState = WhOutboundUiState.Error(HttpException(response))
             }
 
             404 -> NetworkSuccessHandler.handleNotFound(
@@ -259,7 +246,7 @@ class OrdersViewModel(
     /**
      * Function to update the order data in the database
      */
-    fun updateOrderData(context: Context, orderState: OrderState) {
+    fun updateOrderData(context: Context, orderState: WhOutboundState) {
 //        viewModelScope.launch(Dispatchers.IO) {
 //            try {
 //                val response = ordersRepository.updateOrderData(orderState)

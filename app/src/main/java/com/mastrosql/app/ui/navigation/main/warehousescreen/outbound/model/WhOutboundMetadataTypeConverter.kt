@@ -5,18 +5,18 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
- * Type converter for links list
+ * Type converter for [Metadata] class.
  */
-class OrderLinksTypeConverter {
+class WhOutboundMetadataTypeConverter {
     private val json = Json { ignoreUnknownKeys = true }
 
     @TypeConverter
-    fun fromLinks(links: List<Link>): String {
-        return json.encodeToString(links)
+    fun fromMetadata(metadata: Metadata): String {
+        return json.encodeToString(metadata)
     }
 
     @TypeConverter
-    fun toLinks(linksJson: String): List<Link> {
-        return json.decodeFromString(linksJson)
+    fun toMetadata(metadataString: String): Metadata {
+        return json.decodeFromString(metadataString)
     }
 }

@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,8 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Metadata
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.utils.DateHelper
 
@@ -50,7 +47,7 @@ import com.mastrosql.app.utils.DateHelper
  * Order card composable that displays the order information.
  */
 @Composable
-fun OrderCard(
+fun WhOutboundCard(
     order: com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order,
     modifier: Modifier,
     navigateToOrderDetails: (Int, String?) -> Unit,
@@ -375,7 +372,6 @@ fun OrderInfo(
         }
     }
 }
-
 
 
 /**

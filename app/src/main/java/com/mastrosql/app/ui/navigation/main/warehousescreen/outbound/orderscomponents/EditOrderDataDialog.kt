@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.OrdersUiState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.WhOutboundUiState
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.utils.DateHelper
 
@@ -46,17 +46,17 @@ import com.mastrosql.app.utils.DateHelper
 fun EditOrderDataDialog(
     modifier: Modifier = Modifier,
     showEditOrderDataDialog: MutableState<Boolean>,
-    ordersUiState: OrdersUiState.Success,
-    onUpdateOrderData: (OrderState) -> Unit = {}
+    ordersUiState: WhOutboundUiState.Success,
+    onUpdateOrderData: (WhOutboundState) -> Unit = {}
 ) {
     //State to hold the modified order details item
-    val orderState by remember { mutableStateOf(OrderState()) }
+    val orderState by remember { mutableStateOf(WhOutboundState()) }
 
     // LaunchedEffect to set the initial value when the dialog is opened
     LaunchedEffect(showEditOrderDataDialog) {
         if (showEditOrderDataDialog.value) {
             val modifiedOrder =
-                ordersUiState.ordersList.find { it.id == ordersUiState.modifiedOrderId.intValue }
+                ordersUiState.whOutboundsList.find { it.id == ordersUiState.modifiedWhOutboundId.intValue }
             if (modifiedOrder != null) {
                 orderState.orderId.intValue = modifiedOrder.id
                 orderState.customerId.intValue = modifiedOrder.clientId ?: 0
@@ -198,7 +198,7 @@ fun EditOrderDataDialog(
 
                 if (showDatePickerDialog.value) {
                     DateEditDialog(
-                        showDatePickerDialog = showDatePickerDialog, orderState = orderState
+                        showDatePickerDialog = showDatePickerDialog, whOutboundState = orderState
                     )
                 }
             }
@@ -229,8 +229,8 @@ fun EditOrderDataDialog(
 fun PreviewEditOrderDataDialog() {
     MastroAndroidPreviewTheme {
         EditOrderDataDialog(
-            showEditOrderDataDialog = mutableStateOf(true), ordersUiState = OrdersUiState.Success(
-                ordersList = emptyList(), modifiedOrderId = mutableIntStateOf(1)
+            showEditOrderDataDialog = mutableStateOf(true), ordersUiState = WhOutboundUiState.Success(
+                whOutboundsList = emptyList(), modifiedWhOutboundId = mutableIntStateOf(1)
             )
         )
     }

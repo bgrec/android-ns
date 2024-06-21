@@ -27,7 +27,7 @@ import java.util.Locale
 @ExperimentalMaterial3Api
 @Composable
 fun DateEditDialog(
-    showDatePickerDialog: MutableState<Boolean>, orderState: OrderState
+    showDatePickerDialog: MutableState<Boolean>, whOutboundState: WhOutboundState
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {
@@ -48,7 +48,7 @@ fun DateEditDialog(
                 val formattedDate = selectedDate?.let { dateFormat.format(it) }
 
                 // Update the delivery state
-                orderState.deliveryDate.value = formattedDate?.let {
+                whOutboundState.deliveryDate.value = formattedDate?.let {
                     TextFieldValue(
                         DateHelper.formatDateToDisplay(it)
                     )
@@ -78,8 +78,8 @@ fun DateEditDialog(
 @Preview(showBackground = true)
 @Composable
 fun DateEditDialogPreview() {
-    DateEditDialog(showDatePickerDialog = remember { mutableStateOf(true) }, orderState = remember {
-        OrderState(
+    DateEditDialog(showDatePickerDialog = remember { mutableStateOf(true) }, whOutboundState = remember {
+        WhOutboundState(
             mutableIntStateOf(0),
             mutableIntStateOf(0),
             mutableStateOf(TextFieldValue("")),

@@ -12,16 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Metadata
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Order
-import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
  * A list of [Order]s
@@ -60,7 +53,7 @@ fun OrdersList(
             it.id
         }) { order ->
 
-            OrderCard(
+            WhOutboundCard(
                 order = order,
                 modifier = Modifier
                     .padding(4.dp)

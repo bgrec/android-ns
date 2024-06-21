@@ -16,18 +16,18 @@ import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreenForBottomSheet
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Order
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
 
 /**
  * A bottom sheet to create a new order
  */
 @ExperimentalMaterial3Api
 @Composable
-fun NewOrderBottomSheet(
+fun NewWhOutboundBottomSheet(
     modifier: Modifier,
     navController: NavController,
     showBottomSheet: MutableState<Boolean>,
-    onConfirmButton: (Order) -> Unit = {},
+    onConfirmButton: (WarehouseOutbound) -> Unit = {},
     onDismissButton: (Boolean) -> Unit = {},
 ) {
     // Selected customer and destination
@@ -62,7 +62,7 @@ fun NewOrderBottomSheet(
                 }, navController = navController
             )
         } else {
-            EditOrderData(
+            EditWhOutboundData(
                 modifier = modifier,
                 customer = selectedCustomerMasterData,
                 destination = selectedDestination,
@@ -74,14 +74,14 @@ fun NewOrderBottomSheet(
 }
 
 /**
- * Preview the [NewOrderBottomSheet]
+ * Preview the [NewWhOutboundBottomSheet]
  */
 @ExperimentalMaterial3Api
 @Preview
 @Composable
 fun NewOrderBottomSheetPreview() {
     val showBottomSheet = remember { mutableStateOf(true) }
-    NewOrderBottomSheet(
+    NewWhOutboundBottomSheet(
         modifier = Modifier,
         navController = NavController(LocalContext.current),
         showBottomSheet = showBottomSheet

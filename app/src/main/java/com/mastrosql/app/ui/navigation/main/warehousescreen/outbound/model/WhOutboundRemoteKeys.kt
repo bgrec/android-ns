@@ -4,11 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "orders_remote_keys")
-data class OrdersRemoteKeys(
+@Entity(tableName = "wh_outbound_remote_keys")
+data class WhOutboundRemoteKeys(
     @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "order_id")
-    val orderId: Int,
+    @ColumnInfo(name = "outbound_id")
+    val outboundId: Int,
     val prevKey: Int?,
     val currentPage: Int,
     val nextKey: Int?,

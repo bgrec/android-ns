@@ -30,35 +30,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Order
-import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
 import com.mastrosql.app.utils.DateHelper
 
-/**
- * OrderDataEdit composable to display the order details for editing.
- */
 @ExperimentalMaterial3Api
 @Composable
-fun EditOrderData(
+fun EditWhOutboundData(
     modifier: Modifier = Modifier,
     customer: CustomerMasterData? = null,
     destination: DestinationData? = null,
     onDismissButton: (Boolean) -> Unit = {},
-    onConfirmButton: (Order) -> Unit = {},
+    onConfirmButton: (WarehouseOutbound) -> Unit = {},
 ) {
 
     //State to hold the modified order details item
-    val orderState by remember { mutableStateOf(OrderState()) }
+    val whOutboundState by remember { mutableStateOf(WhOutboundState()) }
 
     // Create a FocusRequester
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(orderState) {
+    LaunchedEffect(whOutboundState) {
         focusRequester.requestFocus()
     }
 
@@ -67,10 +61,10 @@ fun EditOrderData(
 //        focusRequester.requestFocus()
 //    }
 
-    orderState.customerId.intValue = customer?.id ?: 0
-    orderState.customerName.value = TextFieldValue(customer?.businessName ?: "")
-    orderState.destinationId.intValue = destination?.id ?: 0
-    orderState.destinationName.value = TextFieldValue(destination?.destinationName ?: "")
+    whOutboundState.customerId.intValue = customer?.id ?: 0
+    whOutboundState.customerName.value = TextFieldValue(customer?.businessName ?: "")
+    whOutboundState.destinationId.intValue = destination?.id ?: 0
+    whOutboundState.destinationName.value = TextFieldValue(destination?.destinationName ?: "")
 
     val textFieldModifier = Modifier
         .fillMaxWidth()
@@ -97,7 +91,7 @@ fun EditOrderData(
         ) {
             TextField(
                 modifier = textFieldModifier,
-                value = orderState.customerName.value,
+                value = whOutboundState.customerName.value,
                 label = { Text(stringResource(id = R.string.businessName)) },
                 onValueChange = { },
                 readOnly = true,
@@ -112,7 +106,7 @@ fun EditOrderData(
             ) {
                 TextField(
                     modifier = textFieldModifier,
-                    value = orderState.destinationName.value,
+                    value = whOutboundState.destinationName.value,
                     label = { Text(stringResource(id = R.string.destination_description)) },
                     onValueChange = { },
                     readOnly = true,
@@ -127,10 +121,10 @@ fun EditOrderData(
         ) {
             TextField(
                 modifier = textFieldModifier.focusRequester(focusRequester),
-                value = orderState.orderDescription.value,
+                value = whOutboundState.orderDescription.value,
                 label = { Text(stringResource(id = R.string.order_description)) },
-                onValueChange = { orderState.orderDescription.value = it },
-                isError = orderState.orderDescription.value.text.isEmpty(),
+                onValueChange = { whOutboundState.orderDescription.value = it },
+                isError = whOutboundState.orderDescription.value.text.isEmpty(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                 )
@@ -138,13 +132,13 @@ fun EditOrderData(
         }
         Spacer(modifier = Modifier.padding(4.dp))
 
-        val isDateValid = remember(orderState.deliveryDate.value.text) {
+        val isDateValid = remember(whOutboundState.deliveryDate.value.text) {
             DateHelper
-                .formatDateToInput(orderState.deliveryDate.value.text)
+                .formatDateToInput(whOutboundState.deliveryDate.value.text)
                 .isNotEmpty()
         }
-        val isDateBeforeToday = remember(orderState.deliveryDate.value.text) {
-            DateHelper.isDateBeforeToday(orderState.deliveryDate.value.text)
+        val isDateBeforeToday = remember(whOutboundState.deliveryDate.value.text) {
+            DateHelper.isDateBeforeToday(whOutboundState.deliveryDate.value.text)
         }
 
         // Delivery Date
@@ -155,13 +149,13 @@ fun EditOrderData(
                 showDatePickerDialog.value = true
             }),
                 singleLine = true,
-                value = orderState.deliveryDate.value,
+                value = whOutboundState.deliveryDate.value,
                 label = { Text(stringResource(R.string.order_deliveryDate)) },
                 onValueChange = {
-                    orderState.deliveryDate.value = it
+                    whOutboundState.deliveryDate.value = it
                 },
                 readOnly = false,
-                isError = orderState.deliveryDate.value.text.isNotEmpty() && (!isDateValid || isDateBeforeToday),
+                isError = whOutboundState.deliveryDate.value.text.isNotEmpty() && (!isDateValid || isDateBeforeToday),
                 //visualTransformation = DateTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done
@@ -181,7 +175,7 @@ fun EditOrderData(
 
         if (showDatePickerDialog.value) {
             DateEditDialog(
-                showDatePickerDialog = showDatePickerDialog, orderState = orderState
+                showDatePickerDialog = showDatePickerDialog, whOutboundState = whOutboundState
             )
         }
 
@@ -210,41 +204,4 @@ fun EditOrderData(
     }
 }
 
-/**
- * OrderState
- */
-@ExperimentalMaterial3Api
-@Preview(showBackground = true)
-@Composable
-fun OrderDataEditPreview() {
-    MastroAndroidPreviewTheme {
-        EditOrderData(customer = CustomerMasterData(
-            id = 1,
-            businessName = "Customer 1",
-            street = "Street 1",
-            postalCode = "12345",
-            city = "City 1",
-            province = "Province 1",
-            nation = "Nation 1",
-            businessName2 = "Customer 1",
-            taxId = "taxId 1",
-            vat = "vat 1",
-            links = emptyList(),
-            metadata = Metadata(etag = ""),
-            page = 0
-        ), destination = DestinationData(
-            id = 1,
-            customerId = 1,
-            destinationName = "Destination 1",
-            street = "Street 1",
-            postalCode = "12345",
-            city = "City 1",
-            province = "Province 1",
-            links = emptyList(),
-            metadata = com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.Metadata(
-                etag = ""
-            ),
-            page = 0
-        ), onDismissButton = {}, onConfirmButton = {})
-    }
-}
+
