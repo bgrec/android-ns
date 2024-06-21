@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 
+/**
+ * ViewModel to handle the navigation of the app
+ */
 class AppNavigationViewModel : ViewModel() {
     private val _gesturesEnabled = mutableStateOf(false)
     val gesturesEnabled: State<Boolean> = _gesturesEnabled
@@ -28,6 +31,8 @@ class AppNavigationViewModel : ViewModel() {
             MainNavOption.CustomersPagedScreen -> true
             MainNavOption.ArticlesScreen -> true
             MainNavOption.ItemsScreen -> true
+            MainNavOption.WarehouseOutOperationsScreen -> true
+            MainNavOption.WarehouseInOperationsScreen -> true
             MainNavOption.OrdersScreen -> true
             MainNavOption.SettingsScreen -> false
             MainNavOption.CartScreen -> true
@@ -39,6 +44,9 @@ class AppNavigationViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Set the current screen
+     */
     fun setCurrentScreen(screen: MainNavOption) {
         _currentScreen.value = screen
 

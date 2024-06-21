@@ -40,7 +40,7 @@ import androidx.navigation.NavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
 fun ArticleCard(
@@ -355,7 +355,7 @@ fun ArticleInfo(
 //@Preview
 //@Composable
 //fun ArticleCardPreview() {
-//    MastroAndroidTheme {
+//    MastroAndroidPreviewTheme {
 //        ArticleCard(
 //            article = Article(
 //                id = 1,
@@ -384,10 +384,10 @@ fun ArticleInfo(
 //
 //}
 
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
 fun ArticleInfoPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ArticleInfo(
             department = "department",
             family = "sku",

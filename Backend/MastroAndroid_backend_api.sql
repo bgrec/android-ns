@@ -108,52 +108,49 @@ BEGIN
     RETURN lastDigit;
 END;
 
-
 ####################################################################################################
+
 CREATE OR REPLACE VIEW `articlesview`
 AS
-SELECT arti.CORTO                                                                                                      AS CORTO,
-       TRIM(arti.CODI)                                                                                                 AS CODI,
-       TRIM(arti.CFOR)                                                                                                 AS CFOR,
-       TRIM(arti.DESCRI)                                                                                               AS DESCRI,
-       TRIM(arti.IVA)                                                                                                  AS IVA,
-       arti.COST                                                                                                       AS COST,
-       arti.VEND                                                                                                       AS VEND,
-       TRIM(arti.TIPO)                                                                                                 AS TIPO,
-       TRIM(arti.TIPO_SOTTO)                                                                                           AS TIPO_SOTTO,
-       TRIM(arti.REPA)                                                                                                 AS REPA,
-       TRIM(arti.REPA_SOTTO)                                                                                           AS REPA_SOTTO,
-       TRIM(arti.GRUPPO)                                                                                               AS GRUPPO,
-       TRIM(arti.MISU)                                                                                                 AS MISU,
-    /*CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'),  EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'))))*/''  AS EAN_8,
-    /*CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'), EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'))))*/'' AS EAN_13,
-    /*IFNULL(GROUP_CONCAT(TRIM(art_alt.COD_ALT), '|'), '')*/''                                                         AS EAN_ALT
+SELECT arti.CORTO                                                           AS CORTO,
+       TRIM(arti.CODI)                                                      AS CODI,
+       TRIM(arti.CFOR)                                                      AS CFOR,
+       TRIM(arti.DESCRI)                                                    AS DESCRI,
+       TRIM(arti.IVA)                                                       AS IVA,
+       arti.COST                                                            AS COST,
+       arti.VEND                                                            AS VEND,
+       TRIM(arti.TIPO)                                                      AS TIPO,
+       TRIM(arti.TIPO_SOTTO)                                                AS TIPO_SOTTO,
+       TRIM(arti.REPA)                                                      AS REPA,
+       TRIM(arti.REPA_SOTTO)                                                AS REPA_SOTTO,
+       TRIM(arti.GRUPPO)                                                    AS GRUPPO,
+       TRIM(arti.MISU)                                                      AS MISU,
+       CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'),
+              EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 5, '0'))))  AS EAN_8,
+       CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0'),
+              EanLastDigit(CONCAT(TRIM(VARIA), LPAD(arti.CORTO, 10, '0')))) AS EAN_13,
+       IFNULL(GROUP_CONCAT(TRIM(art_alt.COD_ALT), '|'), '')                 AS EAN_ALT
 FROM arti
-/*LEFT JOIN (
-    SELECT
-        CORTO,
-        COD_ALT,
-        ROW_NUMBER() OVER (PARTITION BY CORTO ORDER BY N_PRI) AS rn
-    FROM
-        art_alt
-) AS art_alt ON arti.CORTO = art_alt.CORTO
-CROSS JOIN (
-    SELECT TRIM(VARIA) AS VARIA FROM costanti WHERE NUME = 20
-) AS costanti
-GROUP BY
-    arti.CORTO,
-    arti.CODI,
-    arti.CFOR,
-    arti.DESCRI,
-    arti.IVA,
-    arti.COST,
-    arti.VEND,
-    arti.TIPO,
-    arti.TIPO_SOTTO,
-    arti.REPA,
-    arti.REPA_SOTTO,
-    arti.GRUPPO,
-    arti.MISU*/;
+         LEFT JOIN (SELECT CORTO,
+                           COD_ALT,
+                           ROW_NUMBER() OVER (PARTITION BY CORTO ORDER BY N_PRI) AS rn
+                    FROM art_alt) AS art_alt ON arti.CORTO = art_alt.CORTO
+         CROSS JOIN (SELECT TRIM(VARIA) AS VARIA
+                     FROM costanti
+                     WHERE NUME = 20) AS costanti
+GROUP BY arti.CORTO,
+         arti.CODI,
+         arti.CFOR,
+         arti.DESCRI,
+         arti.IVA,
+         arti.COST,
+         arti.VEND,
+         arti.TIPO,
+         arti.TIPO_SOTTO,
+         arti.REPA,
+         arti.REPA_SOTTO,
+         arti.GRUPPO,
+         arti.MISU;
 
 
 ####################################################################################################
@@ -539,7 +536,7 @@ BEGIN
            NULL                                                                      AS DATA_LOTTO,
            PADRE_DIST,
            EXTRA,
-           'NEW'                                                                   AS VARIE
+           'NEW'                                                                     AS VARIE
     FROM rig_ordc
     WHERE NUME_PRO = orderDetailId
     LIMIT 1;
@@ -584,7 +581,7 @@ BEGIN
     END IF;
 
     UPDATE lis_ordc
-    SET DESCRI = description,
+    SET DESCRI     = description,
         D_CONSEGNA = deliveryDateAsDate
     WHERE NUME = orderId;
 
@@ -650,13 +647,6 @@ SELECT destina.PROG_TUTTO   AS PROG_TUTTO,
        TRIM(destina.PROV)   AS PROV
 FROM destina
 WHERE destina.CODI IN (SELECT CODI FROM clientsview));
-
-####################################################################################################
-CREATE VIEW test as
-(
-select clienti.*, destina.DESCRI AS destina_d, destina.citta as destina_c
-from clienti
-         left join destina on clienti.CODI = destina.CODI);
 
 ####################################################################################################
 DROP PROCEDURE IF EXISTS InsertNewOrder;
@@ -731,3 +721,13 @@ FLUSH PRIVILEGES;
 
 # Example of handling an error in a stored procedure
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS SupportedVersion;
+CREATE PROCEDURE SupportedVersion()
+BEGIN
+    DECLARE supported_version VARCHAR(255);
+
+    SET supported_version = '1.0.0';
+    SELECT supported_version AS version;
+END;

@@ -16,6 +16,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.SECONDARY_URL
+import com.mastrosql.app.ui.AppViewModelProvider
 
 
 private val lightColorScheme = lightColorScheme(
@@ -82,12 +86,37 @@ private val darkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+/**
+ * The [MastroAndroidTheme] composable function is used to set the theme for the entire app.
+ * It sets the color scheme, shapes, and typography for the app.
+ */
+
 @Composable
 fun MastroAndroidTheme(
+    viewModel: ThemeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true, content: @Composable () -> Unit
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+
 ) {
+    //val selectedUrl by viewModel.selectedUrl.collectAsStateWithLifecycle()
+//
+//    Log.d("MastroAndroidTheme", "selectedUrl: $selectedUrl")
+
+    val selectedUrl = PRIMARY_URL
+    val lightColorScheme = when (selectedUrl) {
+        PRIMARY_URL -> PrimaryLightColorScheme
+        SECONDARY_URL -> SecondaryLightColorScheme
+        else -> lightColorScheme
+    }
+
+    val darkColorScheme = when (selectedUrl) {
+        PRIMARY_URL -> PrimaryDarkColorScheme
+        SECONDARY_URL -> SecondaryDarkColorScheme
+        else -> darkColorScheme
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -97,23 +126,62 @@ fun MastroAndroidTheme(
         darkTheme -> darkColorScheme
         else -> lightColorScheme
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            /*setUpEdgeToEdge(view, darkTheme)*/
             val window = (view.context as Activity).window
-            if (darkTheme) {
-                window.statusBarColor = colorScheme.primary.toArgb()
-            } else {
-                window.statusBarColor = Color.Transparent.toArgb()
-            }
-            //window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor =
+                if (darkTheme) colorScheme.primary.toArgb() else Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
+//    val colorScheme = when {
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
+//
+//        darkTheme -> darkColorScheme
+//        else -> lightColorScheme
+//    }
+//    val view = LocalView.current
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            /*setUpEdgeToEdge(view, darkTheme)*/
+//            val window = (view.context as Activity).window
+//            if (darkTheme) {
+//                window.statusBarColor = colorScheme.primary.toArgb()
+//            } else {
+//                window.statusBarColor = Color.Transparent.toArgb()
+//            }
+//            //window.statusBarColor = colorScheme.primary.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+//        }
+//    }
 
     MaterialTheme(
-        colorScheme = colorScheme, shapes = Shapes, typography = Typography, content = content
+        colorScheme = colorScheme,
+        shapes = Shapes,
+        typography = Typography,
+        content = content
+    )
+}
+
+/**
+ * The [MastroAndroidPreviewTheme] composable function is used to set the theme for the preview
+ * composable functions. It sets the color scheme, shapes, and typography for the preview.
+ */
+@Composable
+fun MastroAndroidPreviewTheme(
+    darkTheme: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = if (darkTheme) PrimaryDarkColorScheme else PrimaryLightColorScheme,
+        shapes = Shapes,
+        typography = Typography,
+        content = content
     )
 }
 

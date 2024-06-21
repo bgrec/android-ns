@@ -8,10 +8,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mastrosql.app.MastroAndroidApplication
 import com.mastrosql.app.data.local.database.AppDatabase
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersMasterDataViewModel
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersPagedMasterDataViewModel
+import com.mastrosql.app.ui.navigation.main.homescreen.HomeViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEditViewModel
 import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemEntryViewModel
@@ -19,6 +19,8 @@ import com.mastrosql.app.ui.navigation.main.itemsScreen.ItemsViewModel
 import com.mastrosql.app.ui.navigation.main.loginscreen.LoginViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
+import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.theme.ThemeViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Mastro Android app
@@ -101,9 +103,30 @@ object AppViewModelProvider {
             )
         }
 
+        /**
+         * Initializer for LoginViewModel
+         */
         initializer {
             LoginViewModel(
                 mastroAndroidApplication().appContainer.loginRepository,
+                mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
+        }
+
+        /**
+         * Initializer for ThemeViewModel
+         */
+        initializer {
+            ThemeViewModel(
+                mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
+        }
+
+        /**
+         * Initializer for HomeViewModel
+         */
+        initializer {
+            HomeViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }

@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
  * App bar to display title and conditionally display the back navigation.
@@ -82,7 +82,7 @@ fun OrderDetailsTopAppBar(
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailsTopAppBarPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailsTopAppBar(
             title = "Order Details",
             canNavigateBack = true,

@@ -1,5 +1,11 @@
 package com.mastrosql.app.data.itemTest
 
+/**
+ * Data class representing an item with basic attributes.
+ *
+ * This class encapsulates the properties of an item, typically used for testing or modeling
+ * data objects.
+ */
 data class ItemTest(
     val id: Int,
     val ean: String? = null,

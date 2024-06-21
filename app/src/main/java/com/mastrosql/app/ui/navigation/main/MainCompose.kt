@@ -34,6 +34,7 @@ import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 /**
@@ -76,18 +77,7 @@ fun MainCompose(
     // Update currentScreen when navigating
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when (destination.route) {
-            MainNavOption.LoginScreen.name,
-            MainNavOption.HomeScreen.name,
-            MainNavOption.OldHomeScreen.name,
-            MainNavOption.CustomersScreen.name,
-            MainNavOption.CustomersPagedScreen.name,
-            MainNavOption.ArticlesScreen.name,
-            MainNavOption.ItemsScreen.name,
-            MainNavOption.OrdersScreen.name,
-            MainNavOption.SettingsScreen.name,
-            MainNavOption.CartScreen.name,
-            MainNavOption.AboutScreen.name,
-            MainNavOption.Logout.name -> {
+            MainNavOption.LoginScreen.name, MainNavOption.HomeScreen.name, MainNavOption.OldHomeScreen.name, MainNavOption.CustomersScreen.name, MainNavOption.CustomersPagedScreen.name, MainNavOption.ArticlesScreen.name, MainNavOption.ItemsScreen.name, MainNavOption.WarehouseOutOperationsScreen.name, MainNavOption.OrdersScreen.name, MainNavOption.SettingsScreen.name, MainNavOption.CartScreen.name, MainNavOption.AboutScreen.name, MainNavOption.Logout.name -> {
                 appNavigationViewModel.setCurrentScreen(MainNavOption.valueOf(destination.route!!))
             }
 
@@ -104,8 +94,7 @@ fun MainCompose(
     }
 
     // Draw the navigation drawer
-    NavigationDrawerComposable(
-        drawerState = drawerState,
+    NavigationDrawerComposable(drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         navHostController = navController,
         isOnboarded = userPreferencesUiState.isOnboarded,
@@ -136,8 +125,7 @@ fun NavigationDrawerComposable(
     onNewCurrentPickChange: (MainNavOption) -> Unit,
     onLogout: (NavHostController) -> Unit
 ) {
-    ModalNavigationDrawer(
-        modifier = Modifier.navigationBarsPadding(),
+    ModalNavigationDrawer(modifier = Modifier.navigationBarsPadding(),
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         drawerContent = {
@@ -200,6 +188,18 @@ fun NavigationDrawerComposable(
                         }
                     }
 
+                    MainNavOption.WarehouseOutOperationsScreen -> {
+                        navHostController.navigate(onUserPickedOption.name) {
+                            popUpTo(MainNavOption.HomeScreen.name)
+                        }
+                    }
+
+                    MainNavOption.WarehouseInOperationsScreen -> {
+                        navHostController.navigate(onUserPickedOption.name) {
+                            popUpTo(MainNavOption.HomeScreen.name)
+                        }
+                    }
+
                     MainNavOption.OrdersScreen -> {
                         navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
@@ -234,12 +234,9 @@ fun NavigationDrawerComposable(
 //                    }
                 }
             }
-        })
-    {
+        }) {
         NavHost(
-            navHostController,
-            startDestination =
-            if (isOnboarded) {
+            navHostController, startDestination = if (isOnboarded) {
                 NavRoutes.MainRoute.name
             } else NavRoutes.IntroRoute.name
         ) {
@@ -339,6 +336,27 @@ object DrawerParams {
             )
         }
 
+        if (activeButtonsUiState?.get(MainNavOption.WarehouseOutOperationsScreen) == true) {
+            buttons.add(
+                AppDrawerItemInfo(
+                    MainNavOption.WarehouseOutOperationsScreen,
+                    R.string.warehouse_operations,
+                    Icons.Default.Folder,
+                    R.string.drawer_home_description
+                )
+            )
+        }
+        if (activeButtonsUiState?.get(MainNavOption.WarehouseInOperationsScreen) == true) {
+            buttons.add(
+                AppDrawerItemInfo(
+                    MainNavOption.WarehouseInOperationsScreen,
+                    R.string.warehouse_operations,
+                    Icons.Default.Folder,
+                    R.string.drawer_home_description
+                )
+            )
+        }
+
         if (activeButtonsUiState?.get(MainNavOption.OrdersScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
@@ -388,15 +406,13 @@ fun MainComposePreview() {
     val activeButtons = null
     val navController = rememberNavController()
 
-    MastroAndroidTheme {
-        NavigationDrawerComposable(
-            drawerState = drawerState,
+    MastroAndroidPreviewTheme {
+        NavigationDrawerComposable(drawerState = drawerState,
             gesturesEnabled = gesturesEnabled,
             activeButtons = activeButtons,
             currentScreen = MainNavOption.HomeScreen,
             navHostController = navController,
             onNewCurrentPickChange = {},
-            onLogout = {}
-        )
+            onLogout = {})
     }
 }

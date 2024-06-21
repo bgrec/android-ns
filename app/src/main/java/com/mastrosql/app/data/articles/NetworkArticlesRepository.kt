@@ -18,12 +18,18 @@ import retrofit2.Response
  * Network and database Implementation of Repository that fetch articles data list from mastroAndroidApi.
  */
 
+/**
+ * Repository for managing articles from network and local database.
+ */
 class NetworkArticlesRepository(
     private var mastroAndroidApiService: MastroAndroidApiService,
     private val articlesDao: ArticlesDao,
     context: Context
 ) : ArticlesRepository {
 
+    /**
+     * Updates the Mastro Android API service instance.
+     */
     override fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService) {
         this.mastroAndroidApiService = newMastroAndroidApiService
     }
@@ -31,6 +37,9 @@ class NetworkArticlesRepository(
     // set context as application context from parameter passed
     private val workManager = WorkManager.getInstance(context)
 
+    /**
+     * A flow emitting the first WorkInfo tagged with TAG_OUTPUT, if available.
+     */
     override val outputWorkInfo: Flow<WorkInfo> =
         workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
             if (it.isNotEmpty()) it.first() else null
@@ -43,26 +52,44 @@ class NetworkArticlesRepository(
     override suspend fun getArticles(): ArticlesResponse =
         mastroAndroidApiService.getAllArticles()
 
+    /**
+     * Returns a stream of all articles.
+     */
     override fun getAllArticlesStream(): Flow<List<Article>> {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Returns a stream of an article by its ID.
+     */
     override fun getArticlesStream(id: Int): Flow<Article?> {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Inserts an article into the repository.
+     */
     override suspend fun insertArticle(article: Article) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Deletes an article from the repository.
+     */
     override suspend fun deleteArticle(article: Article) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Updates an article in the repository.
+     */
     override suspend fun updateArticle(article: Article) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Inserts an article into a document.
+     */
     //override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) { }
     override suspend fun insertArticleIntoDocument(
         documentId: Int,

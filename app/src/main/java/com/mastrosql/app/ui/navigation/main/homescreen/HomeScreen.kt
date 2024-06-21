@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -20,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -40,7 +42,8 @@ import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.homescreen.ButtonItemsList.buttonItems
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
+import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import java.util.EnumMap
 
 /**
@@ -51,24 +54,53 @@ import java.util.EnumMap
 fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     navController: NavController,
-    viewModel: UserPreferencesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-
     // Get AppNavigationViewModel from LocalAppNavigationViewModelProvider
     val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
 
     // Collect the state from the view model and update the UI
     val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Get the selected URL name from UserPreferencesViewModel
+    val selectedUrlName = userPreferencesUiState.selectedUrlName
+
     // Get active buttons from UserPreferencesViewModel
     val activeButtonsUiState by rememberUpdatedState(userPreferencesUiState.activeButtons)
 
     // Get the current orientation
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    //Update the base URL when the selected URL changes
+    LaunchedEffect(key1 = userPreferencesUiState.selectedUrl) {
+        viewModel.changeBaseUrl(selectedUrl = userPreferencesUiState.selectedUrl)
+    }
+
+    Home(drawerState = drawerState,
+        navController = navController,
+        isLandscape = isLandscape,
+        selectedUrlName = selectedUrlName,
+        activeButtonsUiState = activeButtonsUiState,
+        appNavigationViewModel = appNavigationViewModel,
+        onLogout = { viewModel.logout(navController) })
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun Home(
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    navController: NavController,
+    isLandscape: Boolean,
+    selectedUrlName: String,
+    activeButtonsUiState: EnumMap<MainNavOption, Boolean>,
+    appNavigationViewModel: AppNavigationViewModel? = null,
+    onLogout: (NavController) -> Unit
+) {
     Scaffold(topBar = {
         AppBar(
             drawerState = drawerState,
             title = R.string.drawer_home_menu,
+            subtitle = selectedUrlName,
             showDrawerIconButton = false
         )
     }) { innerPadding ->
@@ -81,25 +113,28 @@ fun HomeScreen(
                 MultiColumnButtons(activeButtonsUiState = activeButtonsUiState,
                     navController = navController,
                     appNavigationViewModel = appNavigationViewModel,
-                    logout = { viewModel.logout(navController) })
+                    logout = { onLogout(navController) })
             } else {
                 OneColumnButtons(activeButtonsUiState = activeButtonsUiState,
                     navController = navController,
                     appNavigationViewModel = appNavigationViewModel,
-                    logout = { viewModel.logout(navController) })
+                    logout = { onLogout(navController) })
             }
         }
     }
 }
 
+/**
+ * List of buttons to be displayed on the home screen.
+ */
 @Composable
 fun OneColumnButtons(
     activeButtonsUiState: EnumMap<MainNavOption, Boolean>,
     navController: NavController,
-    appNavigationViewModel: AppNavigationViewModel,
+    appNavigationViewModel: AppNavigationViewModel? = null,
     logout: () -> Unit = {}
 ) {
-    Column(
+    LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center
@@ -107,23 +142,36 @@ fun OneColumnButtons(
         val buttonsModifier = Modifier
             .width(300.dp)
             .height(50.dp)
-            .align(Alignment.CenterHorizontally)
+        //.align(Alignment.CenterHorizontally)
 
-        LogoImage()
-        Spacer(modifier = Modifier.height(32.dp))
+        item {
+            LogoImage()
+        }
+        item {
+            Spacer(Modifier.height(16.dp))
+        }
 
         buttonItems.forEach { item ->
             if (item.destination in activeButtonsUiState && activeButtonsUiState[item.destination] == true) {
-                Spacer(Modifier.height(16.dp))
-                AppButton(modifier = buttonsModifier,
-                    text = item.labelResId,
-                    onClick = { item.action(navController, appNavigationViewModel) })
+
+                item { Spacer(Modifier.height(16.dp)) }
+                item {
+                    AppButton(modifier = buttonsModifier,
+                        text = item.labelResId,
+                        onClick = {
+                            if (appNavigationViewModel != null) {
+                                item.action(navController, appNavigationViewModel)
+                            }
+                        })
+                }
             }
         }
 
         // Logout button always visible
-        Spacer(modifier = Modifier.height(64.dp))
-        LogoutButton(modifier = buttonsModifier, logout = logout)
+        item {
+            Spacer(modifier = Modifier.height(64.dp))
+            LogoutButton(modifier = buttonsModifier, logout = logout)
+        }
     }
 }
 
@@ -131,7 +179,7 @@ fun OneColumnButtons(
 fun MultiColumnButtons(
     activeButtonsUiState: EnumMap<MainNavOption, Boolean>,
     navController: NavController,
-    appNavigationViewModel: AppNavigationViewModel,
+    appNavigationViewModel: AppNavigationViewModel? = null,
     logout: () -> Unit = {}
 ) {
     val buttonsModifier = Modifier.padding(8.dp)
@@ -153,7 +201,11 @@ fun MultiColumnButtons(
                     Spacer(Modifier.width(16.dp))
                     AppButton(modifier = buttonsModifier.weight(1f),
                         text = button.labelResId,
-                        onClick = { button.action(navController, appNavigationViewModel) })
+                        onClick = {
+                            if (appNavigationViewModel != null) {
+                                button.action(navController, appNavigationViewModel)
+                            }
+                        })
                 }
             }
         }
@@ -171,10 +223,11 @@ fun MultiColumnButtons(
         //Logout button always visible
         item {
             Spacer(Modifier.height(16.dp))
-            LogoutButton(modifier = buttonsModifier, logout = logout)
         }
+        item { LogoutButton(modifier = buttonsModifier, logout = logout) }
     }
 }
+
 
 @Composable
 fun LogoutButton(
@@ -185,17 +238,21 @@ fun LogoutButton(
     })
 }
 
-/**
- * Preview the HomeScreen composable.
- */
 @ExperimentalMaterial3Api
-@Composable
 @Preview(showBackground = true)
-fun HomeScreenPreview() {
-    HomeScreen(
-        navController = NavController(LocalContext.current),
-        viewModel = viewModel(factory = AppViewModelProvider.Factory)
-    )
+@Composable
+fun HomePreview() {
+    MastroAndroidPreviewTheme {
+        Home(
+            drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+            navController = NavController(LocalContext.current),
+            isLandscape = false,
+            selectedUrlName = "Primary URL",
+            activeButtonsUiState = EnumMap(MainNavOption::class.java),
+            appNavigationViewModel = null,
+            onLogout = { /* No action needed */ }
+        )
+    }
 }
 
 /**

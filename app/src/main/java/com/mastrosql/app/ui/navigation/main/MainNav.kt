@@ -25,6 +25,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Orders
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseInOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseOutOperationsScreen
 
 /**
  * Main navigation graph for the app.
@@ -34,8 +36,7 @@ import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
 fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavController) {
 
     navigation(
-        startDestination = MainNavOption.LoginScreen.name,
-        route = NavRoutes.MainRoute.name
+        startDestination = MainNavOption.LoginScreen.name, route = NavRoutes.MainRoute.name
     ) {
         composable(MainNavOption.LoginScreen.name) {
             LoginScreen(navController)
@@ -55,18 +56,22 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         composable(MainNavOption.ArticlesScreen.name) {
             ArticlesScreen(drawerState = drawerState, navController = navController)
         }
+        composable(MainNavOption.WarehouseOutOperationsScreen.name) {
+            WarehouseOutOperationsScreen(drawerState = drawerState, navController = navController)
+        }
+        composable(MainNavOption.WarehouseInOperationsScreen.name) {
+            WarehouseInOperationsScreen(drawerState = drawerState, navController = navController)
+        }
 
         /*
         *  Orders Screen navigation graph with nested navigation
          */
         navigation(
-            startDestination = OrdersDestination.route,
-            route = MainNavOption.OrdersScreen.name
+            startDestination = OrdersDestination.route, route = MainNavOption.OrdersScreen.name
             //route = OrdersResultDestination.route
         ) {
             composable(route = OrdersDestination.route) {
-                OrdersScreen(
-                    /*onNewOrder = {/*orderId ->
+                OrdersScreen(/*onNewOrder = {/*orderId ->
                         //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
                         navController.currentBackStackEntry?.savedStateHandle?.set(
                             "shouldRefresh",
@@ -84,15 +89,12 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                             //TODO verify if launchSigleTop is  needed
                             launchSingleTop = true
                         }
-                    },
-                    navController = navController,
-                    drawerState = drawerState
+                    }, navController = navController, drawerState = drawerState
                 )
             }
 
             composable(
-                route = OrderDetailsDestination.routeWithArgs,
-                arguments = listOf(
+                route = OrderDetailsDestination.routeWithArgs, arguments = listOf(
                     navArgument(OrderDetailsDestination.ORDER_ID_ARG) {
                         type = NavType.IntType
                     },
@@ -103,15 +105,13 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                     navigateToNewItem = { orderId ->
                         //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
                         navController.currentBackStackEntry?.savedStateHandle?.set(
-                            "shouldRefresh",
-                            true
+                            "shouldRefresh", true
                         )
                         //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
-                        navController
-                            .navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
-                                //TODO verify if launchSigleTop is  needed
-                                launchSingleTop = true
-                            }
+                        navController.navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
+                            //TODO verify if launchSigleTop is  needed
+                            launchSingleTop = true
+                        }
                     },
                     navigateBack = {
                         navController.navigateUp()
@@ -134,8 +134,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                 val orderId = backStackEntry.arguments?.getInt("documentId") ?: 0
                 // You can pass documentType and orderId to ArticlesScreen
                 ArticlesScreen(
-                    drawerState = drawerState,
-                    navController = navController
+                    drawerState = drawerState, navController = navController
                 )
             }
 
@@ -227,16 +226,8 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
 }
 
 enum class MainNavOption {
-    LoginScreen,
-    HomeScreen,
-    OldHomeScreen,
-    CustomersScreen,
-    CustomersPagedScreen,
-    ItemsScreen,
-    SettingsScreen,
-    CartScreen,
-    ArticlesScreen,
-    OrdersScreen,
-    AboutScreen,
-    Logout
+    LoginScreen, HomeScreen, OldHomeScreen, CustomersScreen,
+    CustomersPagedScreen, ItemsScreen, SettingsScreen, CartScreen, ArticlesScreen,
+    WarehouseOutOperationsScreen, WarehouseInOperationsScreen, OrdersScreen,
+    AboutScreen, Logout
 }

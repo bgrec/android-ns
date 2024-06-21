@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.previews.AllPreviews
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
 fun BackButton(onClick: OnClickFunction) {
@@ -35,7 +35,7 @@ fun BackButton(onClick: OnClickFunction) {
 @AllPreviews
 @Composable
 fun BackButtonPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         BackButton {}
     }
 }

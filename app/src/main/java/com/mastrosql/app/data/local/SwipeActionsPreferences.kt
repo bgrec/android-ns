@@ -23,10 +23,18 @@ class SwipeActionsPreferences(
             updateSwipeActionsEnabled()
         }
 
+    /**
+     * Initializes swipe actions configuration upon object creation.
+     */
     init {
         updateSwipeActionsEnabled()
     }
 
+    /**
+     * Updates the state of swipe actions based on the current flags [isDuplicateDisabled] and [isDeleteDisabled].
+     * Sets [isSwipeActionsDisabled] to `true` if either [isDuplicateDisabled] or [isDeleteDisabled] is `true`;
+     * otherwise, sets it to `false`.
+     */
     private fun updateSwipeActionsEnabled() {
         isSwipeActionsDisabled = isDuplicateDisabled || isDeleteDisabled
     }

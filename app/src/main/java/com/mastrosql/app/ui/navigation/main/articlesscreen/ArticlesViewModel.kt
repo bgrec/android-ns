@@ -35,6 +35,7 @@ sealed interface ArticlesUiState {
  * Factory for [ArticlesViewModel] that takes [ArticlesRepository] as a dependency
  */
 
+@Suppress("EmptyMethod", "EmptyMethod")
 class ArticlesViewModel(
     savedStateHandle: SavedStateHandle,
     private val articlesRepository: ArticlesRepository,

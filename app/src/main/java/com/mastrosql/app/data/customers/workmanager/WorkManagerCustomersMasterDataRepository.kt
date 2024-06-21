@@ -23,13 +23,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import java.util.concurrent.TimeUnit
 
-
+/**
+ * Repository using WorkManager for managing customers master data operations asynchronously.
+ */
 class WorkManagerCustomersMasterDataRepository(
     private var mastroAndroidApiService: MastroAndroidApiService,
     context: Context
 
 ) : CustomersMasterDataRepository {
 
+    /**
+     * Updates the MastroAndroidApiService instance used for API operations.
+     */
     override fun updateMastroAndroidApiService (newMastroAndroidApiService: MastroAndroidApiService){
         this.mastroAndroidApiService = newMastroAndroidApiService
     }
@@ -37,27 +42,47 @@ class WorkManagerCustomersMasterDataRepository(
     private val workManager = WorkManager.getInstance(context)
     val applicationContext = context
 
+    /**
+     * Flow of WorkInfo representing the output of work managed by WorkManager.
+     */
     override val outputWorkInfo: Flow<WorkInfo> =
         workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
             if (it.isNotEmpty()) it.first() else null
         }
 
+    /**
+     * Inserts or updates customers master data received from the server.
+     */
     override suspend fun insertOrUpdateCustomersMasterData(dataFromServer: CustomersMasterDataResponse) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Inserts or updates customers master data received from the server.
+     */
     override suspend fun fetchDataFromServer(): List<CustomerMasterData> {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Inserts or updates the provided list of customer master data.
+     */
     override suspend fun insertOrUpdateData(data: List<CustomerMasterData>) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Deletes all customer master data from the database.
+     */
     override suspend fun deleteData() {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Fetches customers master data from the server using WorkManager to schedule periodic sync.
+     * This method enqueues periodic and one-time work requests to synchronize data and ensure
+     * up-to-date customer information in the local database.
+     */
     override suspend fun getCustomersMasterData(): CustomersMasterDataResponse {
 
         /* var continuation = workManager
@@ -176,11 +201,19 @@ WorkManager.getInstance(applicationContext).cancelAllWork()
         return mastroAndroidApiService.getAllCustomersMasterData()
     }
 
+    /**
+     * Retrieves destinations data from the server.
+     * This function is not yet implemented.
+     */
     override suspend fun getDestinationsData(): DestinationsDataResponse {
         TODO("Not yet implemented")
     }
 
-
+    /**
+     * Initiates synchronization of data using WorkManager.
+     * This function enqueues a series of WorkRequests to perform data synchronization tasks,
+     * including cleaning up temporary images and syncing data.
+     */
     fun syncData() {
         // Add WorkRequest to Cleanup temporary images
         //beginWork not unique

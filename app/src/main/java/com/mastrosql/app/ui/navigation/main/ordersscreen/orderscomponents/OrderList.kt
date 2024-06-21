@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
  * A list of [Order]s
@@ -95,7 +95,7 @@ private fun filterOrders(ordersList: List<Order>, searchedText: String): List<Or
 @Preview(showBackground = true)
 @Composable
 fun OrdersListPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrdersList(modifier = Modifier.padding(8.dp),
             listState = remember { LazyListState() },
             ordersList = listOf(

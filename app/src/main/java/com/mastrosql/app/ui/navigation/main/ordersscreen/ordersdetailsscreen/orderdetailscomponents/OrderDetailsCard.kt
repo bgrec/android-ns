@@ -74,6 +74,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.mod
 import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
@@ -710,7 +711,7 @@ fun QuantityText(
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailInfoPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailInfo(
             completeDescription = "completeDescription", modifier = Modifier
         )
@@ -723,7 +724,7 @@ fun OrderDetailInfoPreview() {
 @Preview(showBackground = true)
 @Composable
 fun QuantityTablePreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         QuantityTable(1.0, 1.0, 1.0)
     }
 }
@@ -734,7 +735,7 @@ fun QuantityTablePreview() {
 @Preview(showBackground = true)
 @Composable
 fun QuantityTextPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         QuantityText("1.0", true, Modifier)
     }
 }
@@ -745,7 +746,7 @@ fun QuantityTextPreview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailDescriptionAndIdPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailDescriptionAndId(Modifier, 123, "sku", "description", "various")
     }
 }
@@ -756,7 +757,7 @@ fun OrderDetailDescriptionAndIdPreview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailDescriptionAndId2Preview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailDescriptionAndId2(
             batch = "batch",
             expirationDate = "2023-01-01",
@@ -773,7 +774,7 @@ fun OrderDetailDescriptionAndId2Preview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailExpandButtonPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailExpandButton(false, {})
     }
 }
@@ -785,7 +786,7 @@ fun OrderDetailExpandButtonPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SwipeToDismissBackgroundPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         SwipeToDismissBackground(
             dismissState = rememberSwipeToDismissBoxState()
         )
@@ -798,7 +799,7 @@ fun SwipeToDismissBackgroundPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SwipeToDismissItemPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         SwipeToDismissItem(modifier = Modifier,
             visibleState = MutableTransitionState(true),
             orderDetailsItem = OrderDetailsItem(
@@ -852,7 +853,7 @@ fun SwipeToDismissItemPreview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailsCardPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailsCard(
             orderDetailsItem = OrderDetailsItem(
                 id = 1,

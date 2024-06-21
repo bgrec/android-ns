@@ -10,9 +10,18 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMaste
 
 interface CustomersPagedMasterDataRepository {
 
+    /**
+     * Retrieves the Mastro Android API service.
+     */
     fun getApiService(): MastroAndroidApiService
 
+    /**
+     * Retrieves paged customers master data from a remote data source.
+     */
     suspend fun getPagedCustomersMasterData(offset: Int, limit: Int): CustomersMasterDataResponse
 
+    /**
+     * Updates the Mastro Android API service.
+     */
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 }

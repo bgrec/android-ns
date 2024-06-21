@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -18,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -27,19 +29,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
+import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditDeliveryStateDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.EditOrderDataDialog
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.NewOrderBottomSheet
+import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrderState
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import kotlinx.coroutines.launch
 
 /**
@@ -90,16 +97,54 @@ fun OrdersScreen(
 @ExperimentalMaterial3Api
 @Composable
 fun OrdersResultScreen(
+    modifier: Modifier = Modifier,
     navigateToOrderDetails: (Int, String?) -> Unit,
     //onNewOrder: () -> Unit,
     ordersUiState: OrdersUiState.Success,
-    modifier: Modifier = Modifier,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: OrdersViewModel,
 ) {
     // Context used to show the toast
     val context = LocalContext.current
+
+    OrdersResult(modifier = modifier, navigateToOrderDetails = navigateToOrderDetails,
+        ordersUiState = ordersUiState,
+        drawerState = drawerState,
+        navController = navController,
+        onUpdateDeliveryState = { orderId, deliveryState ->
+            viewModel.updateDeliveryState(
+                context = context, orderId = orderId, deliveryState = deliveryState
+            )
+        },
+        onUpdateOrderData = { orderState ->
+            viewModel.updateOrderData(
+                context = context, orderState = orderState
+            )
+        },
+        onAddNewOrder = { order ->
+            viewModel.addNewOrder(
+                context, order
+            )
+        })
+}
+
+/**
+ * Orders result screen composable, displays the list of orders.
+ */
+@ExperimentalMaterial3Api
+@Composable
+fun OrdersResult(
+    modifier: Modifier = Modifier,
+    navigateToOrderDetails: (Int, String?) -> Unit,
+    //onNewOrder: () -> Unit,
+    ordersUiState: OrdersUiState.Success,
+    drawerState: DrawerState,
+    navController: NavController,
+    onUpdateDeliveryState: (Int, Int) -> Unit,
+    onUpdateOrderData: (OrderState) -> Unit,
+    onAddNewOrder: (Order) -> Unit,
+) {
 
     // CoroutineScope to handle scrolling actions
     val coroutineScope = rememberCoroutineScope()
@@ -181,9 +226,7 @@ fun OrdersResultScreen(
             EditDeliveryStateDialog(showEditDeliveryDialog = showEditDeliveryDialog,
                 ordersUiState = ordersUiState,
                 onUpdateDeliveryState = { orderId, deliveryState ->
-                    viewModel.updateDeliveryState(
-                        context = context, orderId = orderId, deliveryState = deliveryState
-                    )
+                    onUpdateDeliveryState(orderId, deliveryState)
                 })
         }
 
@@ -193,9 +236,7 @@ fun OrdersResultScreen(
                 showEditOrderDataDialog = showEditOrderDataDialog,
                 ordersUiState = ordersUiState,
                 onUpdateOrderData = { orderState ->
-                    viewModel.updateOrderData(
-                        context = context, orderState = orderState
-                    )
+                    onUpdateOrderData(orderState)
                 })
         }
 
@@ -206,11 +247,32 @@ fun OrdersResultScreen(
                 modifier = modifier,
                 onDismissButton = { showBottomSheet.value = it },
                 onConfirmButton = { order ->
-                    viewModel.addNewOrder(
-                        context, order
-                    )
+                    onAddNewOrder(order)
                     showBottomSheet.value = false
                 })
         }
+    }
+}
+
+/**
+ * Orders screen preview
+ */
+@ExperimentalMaterial3Api
+@Preview(showBackground = true)
+@Composable
+fun OrdersResultPreview() {
+    MastroAndroidPreviewTheme {
+        val drawerState = remember { DrawerState(DrawerValue.Closed) }
+        OrdersResult(navigateToOrderDetails = { _, _ -> },
+            ordersUiState = OrdersUiState.Success(
+                ordersList = emptyList(), modifiedOrderId = mutableIntStateOf(-1)
+            ),
+            drawerState = drawerState,
+            navController = rememberNavController(),
+            onUpdateDeliveryState = { _, _ -> },
+            onUpdateOrderData = { _ -> },
+            onAddNewOrder = { _ -> }
+
+        )
     }
 }

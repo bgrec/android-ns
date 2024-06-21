@@ -21,3 +21,10 @@ const val TAG_OUTPUT = "OUTPUT"
 const val KEY_BLUR_LEVEL = "KEY_BLUR_LEVEL"
 
 const val DELAY_TIME_MILLIS: Long = 3000
+
+// Constants for s
+const val PRIMARY_URL = 0
+const val SECONDARY_URL = 1
+
+const val PRIMARY_URL_NAME = "PRIMARY"
+const val SECONDARY_URL_NAME = "SECONDARY"

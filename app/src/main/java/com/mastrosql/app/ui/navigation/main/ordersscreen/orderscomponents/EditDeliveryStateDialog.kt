@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersUiState
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.DeliveryStates.deliveryStates
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
  * Composable function to show the dialog to edit the delivery state of an order
@@ -57,12 +57,13 @@ fun EditDeliveryStateDialog(
         text = {
             Column(modifier = Modifier.wrapContentSize()) {
                 deliveryStates.forEach { deliveryState ->
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = {
-                            selectedDeliveryState.intValue =
-                                deliveryState.state //deve fare stessa cosa del onClick RadioButton
-                        }),
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = {
+                                selectedDeliveryState.intValue =
+                                    deliveryState.state //deve fare stessa cosa del onClick RadioButton
+                            }),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -103,7 +104,7 @@ fun EditDeliveryStateDialog(
 @Composable
 @Preview(showBackground = true)
 fun EditDeliveryStateDialogPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         EditDeliveryStateDialog(showEditDeliveryDialog = mutableStateOf(true),
             ordersUiState = OrdersUiState.Success(
                 ordersList = emptyList(), modifiedOrderId = mutableIntStateOf(0)

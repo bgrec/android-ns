@@ -41,6 +41,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 @Composable
@@ -407,10 +408,10 @@ fun CustomerAddress(
 }
 
 
-@Preview(apiLevel = 33, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun CustomerCardPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         CustomerCard(
             customerMasterData = CustomerMasterData(
                 1,
@@ -433,10 +434,10 @@ fun CustomerCardPreview() {
 
 }
 
-@Preview(apiLevel = 33, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun CustomerAddressPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         CustomerAddress(
             businessName2 = "businessName2",
             taxId = "taxId",

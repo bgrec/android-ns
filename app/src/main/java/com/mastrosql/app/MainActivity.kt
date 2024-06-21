@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            // The theme should change ...TODO
             MastroAndroidTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(

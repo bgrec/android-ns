@@ -26,6 +26,9 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.PRIMARY_URL_NAME
+import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.datasource.network.SessionManager
@@ -33,6 +36,8 @@ import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -41,7 +46,20 @@ import java.net.SocketTimeoutException
 /**
  * The dialer code to reset the cooldown period during development.
  */
-const val CREDENTIAL_DIALER_CODE = "*#*#66382723#*#*"
+const val CREDENTIAL_DIALER_CODE: String = "*#*#66382723#*#*"
+
+/**
+ * The UI state for the Login screen.
+ */
+@Suppress("KDocMissingDocumentation")
+data class LoginUiState(
+    val isSecondaryBaseUrlProvided: Boolean = false,
+    val isNotSecuredApi: Boolean = false,
+    val selectedUrl: Int = PRIMARY_URL,
+    val selectedUrlName: String = PRIMARY_URL_NAME,
+    val baseUrlName: String = PRIMARY_URL_NAME,
+    val baseUrl2Name: String = SECONDARY_URL_NAME
+)
 
 /**
  * The ViewModel class for the Login screen.
@@ -51,9 +69,14 @@ class LoginViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    // Variable to hold the CredentialManager object.
+    /**
+     * The CredentialManager object.
+     */
     private lateinit var credentialManager: CredentialManager
 
+    /**
+     * Flag to check if the API is not secured.
+     */
     private var isNotSecuredApi = false
 
     /**
@@ -61,16 +84,88 @@ class LoginViewModel(
      */
     fun initCredentialManager(context: Context) {
         this.credentialManager = CredentialManager.create(context)
-        getIsNotSecuredApi()
     }
 
-    private fun getIsNotSecuredApi() {
+    /**
+     * Mutable state flow to hold the UI state.
+     */
+    private val _uiState = MutableStateFlow(LoginUiState())
+
+    /**
+     * UI state for the Login screen.
+     */
+    val uiState: StateFlow<LoginUiState> = _uiState
+
+    /**
+     * Update the UI state.
+     */
+    private fun updateUiState(newState: LoginUiState) {
+        _uiState.value = newState
+    }
+
+    /**
+     * Initialize the ViewModel and collect the flow values from the data store.
+     */
+    init {
         viewModelScope.launch {
             userPreferencesRepository
                 .getIsNotSecuredApi()
                 .collect {
                     isNotSecuredApi = it
+                    updateUiState(uiState.value.copy(isNotSecuredApi = isNotSecuredApi))
                 }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrl2()
+                .collect {
+                    if (it.isNotEmpty()) {
+                        updateUiState(uiState.value.copy(isSecondaryBaseUrlProvided = true))
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getSelectedUrl()
+                .collect {
+                    updateUiState(uiState.value.copy(selectedUrl = it))
+                }
+            userPreferencesRepository.changeBaseUrl(uiState.value.selectedUrl)
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrlName()
+                .collect {
+                    updateUiState(uiState.value.copy(baseUrlName = it))
+                }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository
+                .getBaseUrl2Name()
+                .collect {
+                    updateUiState(uiState.value.copy(baseUrl2Name = it))
+                }
+        }
+
+        // Observe changes in selectedUrl and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getSelectedUrl().collect { selectedUrl ->
+                updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+                updateUiState(
+                    uiState.value.copy(
+                        selectedUrlName =
+                        if (selectedUrl == PRIMARY_URL) {
+                            uiState.value.baseUrlName
+                        } else {
+                            uiState.value.baseUrl2Name
+                        }
+                    )
+                )
+            }
         }
     }
 
@@ -343,6 +438,18 @@ class LoginViewModel(
             }
 
             else -> Log.e("Login", "Unexpected exception type ${e::class.java.name}")
+        }
+    }
+
+    /**
+     * Function to save the selected URL.
+     */
+    fun saveSelectedUrl(selectedUrl: Int) {
+        viewModelScope.launch {
+//            userPreferencesRepository.saveSelectedUrl(selectedUrl)
+            updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+            Log.d("LoginViewModel", "Selected URL: $selectedUrl")
+            userPreferencesRepository.changeBaseUrl(selectedUrl)
         }
     }
 

@@ -41,6 +41,7 @@ import androidx.paging.compose.itemKey
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 
@@ -238,7 +239,7 @@ fun CustomersPagedList(
 @Preview
 @Composable
 fun PagedCustomersListPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         /* CustomersPagedList(
              customersPagedMasterDataList = listOf(
                  CustomerMasterData(

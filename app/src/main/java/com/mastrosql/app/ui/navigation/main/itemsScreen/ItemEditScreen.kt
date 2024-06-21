@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import kotlinx.coroutines.launch
 
 object ItemEditDestination : NavigationDestination {
@@ -63,7 +63,7 @@ fun ItemEditScreen(
 @Preview(showBackground = true)
 @Composable
 fun ItemEditScreenPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ItemEditScreen(navigateBack = { /*Do nothing*/ }, onNavigateUp = { /*Do nothing*/ })
     }
 }

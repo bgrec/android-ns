@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
 fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
@@ -121,7 +121,7 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
 @Composable
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailsSearchView(textState)
     }
 }

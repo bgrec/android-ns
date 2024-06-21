@@ -9,12 +9,21 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.app.distribution)
+    alias(libs.plugins.org.jetbrains.dokka)
 }
 
 /*
 tasks.register("clean",Delete::class){
     delete(rootProject.buildDir)
 }*/
+
+tasks.dokkaHtml {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/html"))
+}
+
+tasks.dokkaGfm {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/markdown"))
+}
 
 android {
     namespace = "com.mastrosql.app"
@@ -32,6 +41,7 @@ android {
             useSupportLibrary = true
         }
         versionNameSuffix = "1"
+        signingConfig = signingConfigs.getByName("debug")
 
         // Enable room auto-migrations
         ksp {
@@ -180,6 +190,19 @@ fun loadProperties(propertiesFile: File): Properties {
 
 dependencies {
 
+
+// Zebra
+    compileOnly(libs.symbol.emdk)
+
+    /*compileOnly 'com.symbol:emdk:9.1.1'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    releaseImplementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'*/
+
 // Compose
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
@@ -310,3 +333,5 @@ dependencies {
     // Coil
     //implementation("io.coil-kt:coil-compose:2.4.0")
 }
+
+apply(plugin = "org.jetbrains.dokka")
