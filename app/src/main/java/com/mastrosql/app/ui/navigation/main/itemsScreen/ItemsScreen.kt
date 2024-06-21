@@ -38,6 +38,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Metadata
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 object ItemsDestination : NavigationDestination {
@@ -168,7 +169,7 @@ private fun InventoryItem(
 @Preview(showBackground = true)
 @Composable
 fun ItemsBodyPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ItemsBody(listOf(
             Item(
                 1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",
@@ -195,7 +196,7 @@ fun ItemsBodyPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ItemsBodyEmptyListPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ItemsBody(listOf(), onItemClick = {})
     }
 }
@@ -203,7 +204,7 @@ fun ItemsBodyEmptyListPreview() {
 @Preview(showBackground = true)
 @Composable
 fun InventoryItemPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         InventoryItem(
             Item(
                 1, "Game", "sku", "des", 100.0, "vat", "unit", "dep",

@@ -2,7 +2,6 @@ package com.mastrosql.app.ui.theme
 
 import android.app.Activity
 import android.os.Build
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,19 +11,15 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.SECONDARY_URL
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 
 
 private val lightColorScheme = lightColorScheme(
@@ -91,6 +86,11 @@ private val darkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+/**
+ * The [MastroAndroidTheme] composable function is used to set the theme for the entire app.
+ * It sets the color scheme, shapes, and typography for the app.
+ */
+
 @Composable
 fun MastroAndroidTheme(
     viewModel: ThemeViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -100,10 +100,11 @@ fun MastroAndroidTheme(
     content: @Composable () -> Unit
 
 ) {
-    val selectedUrl by viewModel.selectedUrl.collectAsStateWithLifecycle()
+    //val selectedUrl by viewModel.selectedUrl.collectAsStateWithLifecycle()
+//
+//    Log.d("MastroAndroidTheme", "selectedUrl: $selectedUrl")
 
-    Log.d("MastroAndroidTheme", "selectedUrl: $selectedUrl")
-
+    val selectedUrl = PRIMARY_URL
     val lightColorScheme = when (selectedUrl) {
         PRIMARY_URL -> PrimaryLightColorScheme
         SECONDARY_URL -> SecondaryLightColorScheme
@@ -121,6 +122,7 @@ fun MastroAndroidTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> darkColorScheme
         else -> lightColorScheme
     }
@@ -129,7 +131,8 @@ fun MastroAndroidTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = if (darkTheme) colorScheme.primary.toArgb() else Color.Transparent.toArgb()
+            window.statusBarColor =
+                if (darkTheme) colorScheme.primary.toArgb() else Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
@@ -159,6 +162,23 @@ fun MastroAndroidTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        shapes = Shapes,
+        typography = Typography,
+        content = content
+    )
+}
+
+/**
+ * The [MastroAndroidPreviewTheme] composable function is used to set the theme for the preview
+ * composable functions. It sets the color scheme, shapes, and typography for the preview.
+ */
+@Composable
+fun MastroAndroidPreviewTheme(
+    darkTheme: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = if (darkTheme) PrimaryDarkColorScheme else PrimaryLightColorScheme,
         shapes = Shapes,
         typography = Typography,
         content = content

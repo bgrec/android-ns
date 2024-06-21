@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Metadata
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
 fun ArticlesList(
@@ -70,7 +70,7 @@ fun ArticlesList(
 @Preview
 @Composable
 fun ItemsListPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ArticlesList(
             articlesList = listOf(
                 Article(

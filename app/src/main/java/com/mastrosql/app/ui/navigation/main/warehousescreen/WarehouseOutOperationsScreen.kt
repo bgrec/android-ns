@@ -18,7 +18,7 @@ import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 
 @ExperimentalMaterial3Api
 @Composable
-fun WarehouseOperationsScreen(
+fun WarehouseOutOperationsScreen(
     drawerState: DrawerState,
     navController: NavController,
     viewModel: ArticlesViewModel = viewModel(factory = AppViewModelProvider.Factory)

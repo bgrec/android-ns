@@ -125,7 +125,7 @@ private fun filterOrderDetailList(
 @Preview
 @Composable
 fun ItemsListPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailList(
             orderDetailList = listOf(
                 OrderDetailsItem(

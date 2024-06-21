@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
@@ -382,7 +383,7 @@ fun OrderInfo(
 @Preview(showBackground = true)
 @Composable
 fun OrderCardPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderCard(order = Order(
             id = 1,
             clientId = 1,
@@ -435,7 +436,7 @@ fun OrderCardPreview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderInfoPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderInfo(
             destinationName = "destinationName",
             deliveryDate = "deliveryDate",
@@ -452,7 +453,7 @@ fun OrderInfoPreview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderDescriptionAndIdPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDescriptionAndId(
             orderId = 1,
             insertDate = "insertDate",
@@ -470,7 +471,7 @@ fun OrderDescriptionAndIdPreview() {
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailsEditButtonPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrderDetailsEditButton(
             orderId = 1,
             orderDescription = "description",

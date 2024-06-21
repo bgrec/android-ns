@@ -181,7 +181,7 @@ fun SimpleScaffoldWithTopBar() {
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         MastroDbScreen(listOf("Compose", "Room", "Kotlin"), onSave = {})
     }
 }
@@ -189,7 +189,7 @@ private fun DefaultPreview() {
 @Preview(showBackground = true, widthDp = 480)
 @Composable
 private fun PortraitPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         MastroDbScreen(listOf("Compose", "Room", "Kotlin"), onSave = {})
     }
 }

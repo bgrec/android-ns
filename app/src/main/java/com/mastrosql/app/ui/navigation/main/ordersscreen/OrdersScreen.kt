@@ -46,7 +46,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrderS
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersSearchView
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersTopAppBar
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import kotlinx.coroutines.launch
 
 /**
@@ -261,7 +261,7 @@ fun OrdersResult(
 @Preview(showBackground = true)
 @Composable
 fun OrdersResultPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         val drawerState = remember { DrawerState(DrawerValue.Closed) }
         OrdersResult(navigateToOrderDetails = { _, _ -> },
             ordersUiState = OrdersUiState.Success(

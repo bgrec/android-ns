@@ -120,7 +120,7 @@ fun SearchBar(drawerState: DrawerState, navController: NavController, viewModel:
 /**
  *
  */
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
 fun SearchBarPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))
@@ -130,7 +130,7 @@ fun SearchBarPreview() {
  * Preview for [OldHomeScreen]
  */
 @ExperimentalMaterial3Api
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
 fun HomeScreenOldPreview() {
     //SearchBar(drawerState = DrawerState(DrawerValue.Closed))

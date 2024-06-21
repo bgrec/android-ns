@@ -25,7 +25,8 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Orders
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
-import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseInOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseOutOperationsScreen
 
 /**
  * Main navigation graph for the app.
@@ -55,8 +56,11 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         composable(MainNavOption.ArticlesScreen.name) {
             ArticlesScreen(drawerState = drawerState, navController = navController)
         }
-        composable(MainNavOption.WarehouseOperationsScreen.name) {
-            WarehouseOperationsScreen(drawerState = drawerState, navController = navController)
+        composable(MainNavOption.WarehouseOutOperationsScreen.name) {
+            WarehouseOutOperationsScreen(drawerState = drawerState, navController = navController)
+        }
+        composable(MainNavOption.WarehouseInOperationsScreen.name) {
+            WarehouseInOperationsScreen(drawerState = drawerState, navController = navController)
         }
 
         /*
@@ -105,9 +109,9 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                         )
                         //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
                         navController.navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
-                                //TODO verify if launchSigleTop is  needed
-                                launchSingleTop = true
-                            }
+                            //TODO verify if launchSigleTop is  needed
+                            launchSingleTop = true
+                        }
                     },
                     navigateBack = {
                         navController.navigateUp()
@@ -222,7 +226,8 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
 }
 
 enum class MainNavOption {
-    LoginScreen, HomeScreen, OldHomeScreen, CustomersScreen, CustomersPagedScreen, ItemsScreen,
-    SettingsScreen, CartScreen, ArticlesScreen, WarehouseOperationsScreen, OrdersScreen,
+    LoginScreen, HomeScreen, OldHomeScreen, CustomersScreen,
+    CustomersPagedScreen, ItemsScreen, SettingsScreen, CartScreen, ArticlesScreen,
+    WarehouseOutOperationsScreen, WarehouseInOperationsScreen, OrdersScreen,
     AboutScreen, Logout
 }

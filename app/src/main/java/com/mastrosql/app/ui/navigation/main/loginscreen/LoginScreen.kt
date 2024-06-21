@@ -1,12 +1,10 @@
 package com.mastrosql.app.ui.navigation.main.loginscreen
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -61,11 +57,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.mastrosql.app.PRIMARY_URL_NAME
 import com.mastrosql.app.R
+import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
 import com.mastrosql.app.ui.navigation.main.MainNavOption
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import kotlinx.coroutines.launch
 
 /**
@@ -123,6 +121,7 @@ fun LoginScreen(
         isSecondaryBaseUrlProvided = loginUiState.isSecondaryBaseUrlProvided,
         isNotSecuredApi = loginUiState.isNotSecuredApi,
         selectedUrl = loginUiState.selectedUrl,
+        selectedUrlName = loginUiState.selectedUrlName,
         baseUrlName = loginUiState.baseUrlName,
         baseUrl2Name = loginUiState.baseUrl2Name,
         onUrlSelected = { selectedUrl ->
@@ -142,6 +141,7 @@ fun Login(
     isSecondaryBaseUrlProvided: Boolean,
     isNotSecuredApi: Boolean,
     selectedUrl: Int,
+    selectedUrlName: String,
     baseUrlName: String,
     baseUrl2Name: String,
     onUrlSelected: (Int) -> Unit
@@ -158,12 +158,16 @@ fun Login(
     val focusRequester = remember { FocusRequester() }
 
     Scaffold(topBar = {
-        LoginAppBar(onClick = {
-            navController.navigate(MainNavOption.SettingsScreen.name) {
-                // Configure the navigation action
-                popUpTo(MainNavOption.LoginScreen.name)
-            }
-        })
+        LoginAppBar(
+            onClick = {
+                navController.navigate(MainNavOption.SettingsScreen.name) {
+                    // Configure the navigation action
+                    popUpTo(MainNavOption.LoginScreen.name)
+                }
+            },
+            title = R.string.app_name,
+            subtitle = selectedUrlName
+        )
     }, modifier = Modifier
         //shows a shadow when clicked
         //            .clickable {
@@ -296,6 +300,16 @@ fun Login(
                         else PasswordVisualTransformation(),
                     )
                 }
+            } else {
+                item {
+                    Spacer(modifier = Modifier.size(64.dp))
+                }
+                item {
+                    Spacer(modifier = Modifier.size(64.dp))
+                }
+                item {
+                    Spacer(modifier = Modifier.size(64.dp))
+                }
             }
 
             item {
@@ -329,7 +343,7 @@ fun LogoImage() {
     Image(
         painter = painterResource(R.drawable.mastroweb),
         contentDescription = "Logo Nipeservice",
-        modifier = Modifier.size(200.dp)
+        modifier = Modifier.size(150.dp)
     )
 }
 
@@ -343,7 +357,7 @@ fun LoginScreenPreview() {
     val mutableInteractionSource = remember {
         MutableInteractionSource()
     }
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         Login(
             navController = NavController(LocalContext.current),
             interactionSource = mutableInteractionSource,
@@ -351,8 +365,9 @@ fun LoginScreenPreview() {
             isSecondaryBaseUrlProvided = true,
             isNotSecuredApi = false,
             selectedUrl = 0,
-            baseUrlName = "Primary",
-            baseUrl2Name = "Secondary",
+            selectedUrlName = PRIMARY_URL_NAME,
+            baseUrlName = PRIMARY_URL_NAME,
+            baseUrl2Name = SECONDARY_URL_NAME,
             onUrlSelected = { }
         )
     }

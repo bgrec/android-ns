@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
@@ -166,7 +166,7 @@ fun ItemInputForm(
 @Preview(showBackground = true)
 @Composable
 private fun ItemEntryScreenPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ItemEntryBody(itemUiState = ItemUiState(
             ItemDetails(
                 description = "Item name", price = "10.00", cost = "5"

@@ -12,7 +12,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.PRIMARY_URL_NAME
 import com.mastrosql.app.SECONDARY_URL
+import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.data.AppContainer
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.MainNavOption
@@ -37,8 +39,8 @@ data class UserPreferences(
     val baseUrl: String = "",
     val baseUrl2: String = "",
     val selectedUrl: Int = PRIMARY_URL,
-    val baseUrlName: String = "Primary",
-    val baseUrl2Name: String = "Secondary",
+    val baseUrlName: String = PRIMARY_URL_NAME,
+    val baseUrl2Name: String = SECONDARY_URL_NAME,
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java),
     val username: String = "",
     val userType: String = "",
@@ -149,8 +151,8 @@ class UserPreferencesRepository @Inject constructor(
         val baseUrl = preferences[UserPreferencesKeys.BASE_URL] ?: ""
         val baseUrl2 = preferences[UserPreferencesKeys.BASE_URL2] ?: ""
         val selectedUrl = preferences[UserPreferencesKeys.SELECTED_URL] ?: PRIMARY_URL
-        val baseUrlName = preferences[UserPreferencesKeys.BASE_URL_NAME] ?: "Primary"
-        val baseUrl2Name = preferences[UserPreferencesKeys.BASE_URL2_NAME] ?: "Secondary"
+        val baseUrlName = preferences[UserPreferencesKeys.BASE_URL_NAME] ?: PRIMARY_URL_NAME
+        val baseUrl2Name = preferences[UserPreferencesKeys.BASE_URL2_NAME] ?: SECONDARY_URL_NAME
         val activeButtonsJson = preferences[UserPreferencesKeys.ACTIVE_BUTTONS]
 
         //Active buttons EnumMap
@@ -290,7 +292,7 @@ class UserPreferencesRepository @Inject constructor(
     /**
      * Saves the selected URL to DataStore.
      */
-    suspend fun saveSelectedUrl(selectedUrl: Int) {
+    private suspend fun saveSelectedUrl(selectedUrl: Int) {
         dataStore.edit { preferences ->
             preferences[UserPreferencesKeys.SELECTED_URL] = selectedUrl
         }
@@ -456,6 +458,7 @@ class UserPreferencesRepository @Inject constructor(
             else -> throw IllegalArgumentException("Invalid selectedUrl: $selectedUrl")
         }
 
+        Log.d("UserPreferencesRepository", "changeBaseUrl: $newBaseUrl")
         // Update preferences and Retrofit service with the new base URL
         appContainer.updateRetrofitService(newBaseUrl)
     }

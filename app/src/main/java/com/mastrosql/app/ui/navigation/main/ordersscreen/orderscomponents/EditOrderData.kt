@@ -38,6 +38,7 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderUtils
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
@@ -218,7 +219,7 @@ fun EditOrderData(
 @Preview(showBackground = true)
 @Composable
 fun OrderDataEditPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         EditOrderData(customer = CustomerMasterData(
             id = 1,
             businessName = "Customer 1",

@@ -34,6 +34,7 @@ import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 /**
@@ -76,7 +77,7 @@ fun MainCompose(
     // Update currentScreen when navigating
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when (destination.route) {
-            MainNavOption.LoginScreen.name, MainNavOption.HomeScreen.name, MainNavOption.OldHomeScreen.name, MainNavOption.CustomersScreen.name, MainNavOption.CustomersPagedScreen.name, MainNavOption.ArticlesScreen.name, MainNavOption.ItemsScreen.name, MainNavOption.WarehouseOperationsScreen.name, MainNavOption.OrdersScreen.name, MainNavOption.SettingsScreen.name, MainNavOption.CartScreen.name, MainNavOption.AboutScreen.name, MainNavOption.Logout.name -> {
+            MainNavOption.LoginScreen.name, MainNavOption.HomeScreen.name, MainNavOption.OldHomeScreen.name, MainNavOption.CustomersScreen.name, MainNavOption.CustomersPagedScreen.name, MainNavOption.ArticlesScreen.name, MainNavOption.ItemsScreen.name, MainNavOption.WarehouseOutOperationsScreen.name, MainNavOption.OrdersScreen.name, MainNavOption.SettingsScreen.name, MainNavOption.CartScreen.name, MainNavOption.AboutScreen.name, MainNavOption.Logout.name -> {
                 appNavigationViewModel.setCurrentScreen(MainNavOption.valueOf(destination.route!!))
             }
 
@@ -187,7 +188,13 @@ fun NavigationDrawerComposable(
                         }
                     }
 
-                    MainNavOption.WarehouseOperationsScreen -> {
+                    MainNavOption.WarehouseOutOperationsScreen -> {
+                        navHostController.navigate(onUserPickedOption.name) {
+                            popUpTo(MainNavOption.HomeScreen.name)
+                        }
+                    }
+
+                    MainNavOption.WarehouseInOperationsScreen -> {
                         navHostController.navigate(onUserPickedOption.name) {
                             popUpTo(MainNavOption.HomeScreen.name)
                         }
@@ -329,10 +336,20 @@ object DrawerParams {
             )
         }
 
-        if (activeButtonsUiState?.get(MainNavOption.WarehouseOperationsScreen) == true) {
+        if (activeButtonsUiState?.get(MainNavOption.WarehouseOutOperationsScreen) == true) {
             buttons.add(
                 AppDrawerItemInfo(
-                    MainNavOption.WarehouseOperationsScreen,
+                    MainNavOption.WarehouseOutOperationsScreen,
+                    R.string.warehouse_operations,
+                    Icons.Default.Folder,
+                    R.string.drawer_home_description
+                )
+            )
+        }
+        if (activeButtonsUiState?.get(MainNavOption.WarehouseInOperationsScreen) == true) {
+            buttons.add(
+                AppDrawerItemInfo(
+                    MainNavOption.WarehouseInOperationsScreen,
                     R.string.warehouse_operations,
                     Icons.Default.Folder,
                     R.string.drawer_home_description
@@ -389,7 +406,7 @@ fun MainComposePreview() {
     val activeButtons = null
     val navController = rememberNavController()
 
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         NavigationDrawerComposable(drawerState = drawerState,
             gesturesEnabled = gesturesEnabled,
             activeButtons = activeButtons,

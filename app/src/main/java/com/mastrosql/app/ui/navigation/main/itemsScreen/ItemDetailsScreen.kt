@@ -39,7 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.itemsScreen.model.Item
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import kotlinx.coroutines.launch
 
 object ItemDetailsDestination : NavigationDestination {
@@ -229,7 +229,7 @@ private fun DeleteConfirmationDialog(
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ItemDetailsBody(ItemDetailsUiState(
             outOfStock = true, itemDetails = ItemDetails(1, "Pen", "$100", "10")
         ), onSellItem = {}, onDelete = {})

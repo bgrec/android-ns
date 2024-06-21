@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.Metadata
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
 fun CustomersList(
@@ -92,7 +92,7 @@ private fun filterCustomersList(
 @Preview
 @Composable
 fun CustomersListPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         CustomersList(
             customerMasterDataList = listOf(
                 CustomerMasterData(

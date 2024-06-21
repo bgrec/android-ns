@@ -90,9 +90,9 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     /**
-     * Initializes the [DefaultAppContainer] instance by setting up the Retrofit service.
+     * Initializes the [AppContainer] instance by setting up the Retrofit service.
      *
-     * When an instance of [DefaultAppContainer] is created, this block ensures that the Retrofit service,
+     * When an instance of [AppContainer] is created, this block ensures that the Retrofit service,
      * [mastroAndroidApiService], is initialized using the stored or default base URL retrieved from the DataStore.
      */
     init {
