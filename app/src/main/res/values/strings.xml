@@ -247,6 +247,8 @@
     <string name="label_url_name">Nome URL1</string>
     <string name="label_url2_name">Nome URL2</string>
     <string name="drawer_warehouse_operations">Movimenti</string>
+    <string name="warehouse_outbound_operations">Movimenti di scarico</string>
+    <string name="scroll_to_top">Torna all\'inizio</string>
 
 
 </resources>
