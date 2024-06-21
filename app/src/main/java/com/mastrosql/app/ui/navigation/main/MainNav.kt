@@ -25,8 +25,9 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.Orders
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsScreen
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.SettingsScreen
-import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseInOperationsScreen
-import com.mastrosql.app.ui.navigation.main.warehousescreen.WarehouseOutOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.inbound.WarehouseInOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.WarehouseOutOperationsScreen
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundDestination
 
 /**
  * Main navigation graph for the app.
@@ -56,9 +57,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
         composable(MainNavOption.ArticlesScreen.name) {
             ArticlesScreen(drawerState = drawerState, navController = navController)
         }
-        composable(MainNavOption.WarehouseOutOperationsScreen.name) {
-            WarehouseOutOperationsScreen(drawerState = drawerState, navController = navController)
-        }
+
         composable(MainNavOption.WarehouseInOperationsScreen.name) {
             WarehouseInOperationsScreen(drawerState = drawerState, navController = navController)
         }
@@ -208,6 +207,86 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
             )
         }*/
     }*/
+        }
+
+        /* composable(MainNavOption.WarehouseOutOperationsScreen.name) {
+            WarehouseOutOperationsScreen(drawerState = drawerState, navController = navController)
+
+        }*/
+
+
+        navigation(
+            startDestination = WhOutboundDestination.route,
+            route = MainNavOption.WarehouseOutOperationsScreen.name
+            //route = OrdersResultDestination.route
+        ) {
+            composable(route = WhOutboundDestination.route) {
+                WarehouseOutOperationsScreen(/*onNewOrder = {/*orderId ->
+                        //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "shouldRefresh",
+                            true
+                        )
+                        //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
+                        navController
+                            .navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
+                                //TODO verify if launchSigleTop is  needed
+                                launchSingleTop = true
+                            }
+                    */},*/// { navController.navigate(OrderEntryDestination.route) },
+                    navigateToOrderDetails = { orderId, orderDescription ->
+                        navController.navigate("${OrderDetailsDestination.route}/${orderId}?orderDescription=${orderDescription}") {
+                            //TODO verify if launchSigleTop is  needed
+                            launchSingleTop = true
+                        }
+                    }, navController = navController, drawerState = drawerState
+                )
+            }
+
+            composable(
+                route = OrderDetailsDestination.routeWithArgs, arguments = listOf(
+                    navArgument(OrderDetailsDestination.ORDER_ID_ARG) {
+                        type = NavType.IntType
+                    },
+                )
+            ) {
+                OrderDetailsScreen(
+                    //navigateToEditItem = {},//{ navController.navigate("${ItemEditDestination.route}/$id") },
+                    navigateToNewItem = { orderId ->
+                        //Set the shouldRefresh flag to true to be read from OrderDetailsScreen when it comes back from the ArticlesScreen
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "shouldRefresh", true
+                        )
+                        //Navigate to the ArticlesScreen with the orderId as a parameter and the documentType as a parameter
+                        navController.navigate("${MainNavOption.ArticlesScreen.name}/?documentType=order?id=${orderId}") {
+                            //TODO verify if launchSigleTop is  needed
+                            launchSingleTop = true
+                        }
+                    },
+                    navigateBack = {
+                        navController.navigateUp()
+                    },
+                    navController = navController,
+                    //drawerState = drawerState
+                )
+
+            }
+
+            // Composable for navigating to the ArticleScreen with parameters
+            composable(
+                route = "${MainNavOption.ArticlesScreen.name}/?documentType={documentType}?id={documentId}",
+                arguments = listOf(
+                    navArgument("documentType") { type = NavType.StringType },
+                    navArgument("documentId") { type = NavType.IntType },
+                )
+            ) { backStackEntry ->
+                val documentType = backStackEntry.arguments?.getString("documentType")
+                val orderId = backStackEntry.arguments?.getInt("documentId") ?: 0
+                // You can pass documentType and orderId to ArticlesScreen
+                ArticlesScreen(
+                    drawerState = drawerState, navController = navController
+                )
+            }
         }
 
         composable(MainNavOption.ItemsScreen.name) {

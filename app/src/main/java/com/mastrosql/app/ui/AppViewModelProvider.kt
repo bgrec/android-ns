@@ -20,6 +20,7 @@ import com.mastrosql.app.ui.navigation.main.loginscreen.LoginViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.WhOutboundViewModel
 import com.mastrosql.app.ui.theme.ThemeViewModel
 
 /**
@@ -128,6 +129,15 @@ object AppViewModelProvider {
         initializer {
             HomeViewModel(
                 mastroAndroidApplication().appContainer.userPreferencesRepository
+            )
+        }
+
+        /**
+         * Initializer for WhOutboundViewModel
+         */
+        initializer {
+            WhOutboundViewModel(
+                mastroAndroidApplication().appContainer.warehouseOutRepository
             )
         }
     }

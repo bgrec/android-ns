@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen
+package com.mastrosql.app.ui.navigation.main.warehousescreen.inbound
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +18,7 @@ import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 
 @ExperimentalMaterial3Api
 @Composable
-fun WarehouseOutOperationsScreen(
+fun WarehouseInOperationsScreen(
     drawerState: DrawerState,
     navController: NavController,
     viewModel: ArticlesViewModel = viewModel(factory = AppViewModelProvider.Factory)
