@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.settingsscreen
 
-import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -14,10 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -61,6 +57,7 @@ import com.mastrosql.app.SECONDARY_URL
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
@@ -462,7 +459,8 @@ fun MenuButtonsActivationDialog(
                 MainNavOption.CustomersScreen to R.string.drawer_customers,
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
-                MainNavOption.WarehouseOperationsScreen to R.string.warehouse_operations,
+                MainNavOption.WarehouseOutOperationsScreen to R.string.warehouse_operations,
+                MainNavOption.WarehouseInOperationsScreen to R.string.warehouse_operations,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
                 MainNavOption.OrdersScreen to R.string.drawer_orders
             )
@@ -521,7 +519,7 @@ fun MenuButtonsActivationDialog(
 @Composable
 fun ButtonsActivationDialogPreview(
 ) {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         MenuButtonsActivationDialog(showDialog = remember { mutableStateOf(true) },
             activeButtonsUiState = EnumMap(MainNavOption::class.java),
             onUpdateActiveButtons = {})
@@ -535,7 +533,7 @@ fun ButtonsActivationDialogPreview(
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         SettingsComposable(navController = NavController(LocalContext.current),
             activeButtonsState = EnumMap(MainNavOption::class.java),
             currentBaseUrlState = remember { mutableStateOf("https://example.com/api") },

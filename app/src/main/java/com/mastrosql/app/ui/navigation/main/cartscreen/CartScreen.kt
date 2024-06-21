@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 
 data class Articolo(val nome: String)
@@ -114,7 +114,7 @@ fun CartScreen(
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         CartScreen(
             drawerState = rememberDrawerState(DrawerValue.Closed),
             navController = NavController(LocalContext.current)

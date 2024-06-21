@@ -26,14 +26,14 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.PRIMARY_URL_NAME
+import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesUiState
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,8 +56,9 @@ data class LoginUiState(
     val isSecondaryBaseUrlProvided: Boolean = false,
     val isNotSecuredApi: Boolean = false,
     val selectedUrl: Int = PRIMARY_URL,
-    val baseUrlName: String = "Primary",
-    val baseUrl2Name: String = "Secondary",
+    val selectedUrlName: String = PRIMARY_URL_NAME,
+    val baseUrlName: String = PRIMARY_URL_NAME,
+    val baseUrl2Name: String = SECONDARY_URL_NAME
 )
 
 /**
@@ -131,9 +132,6 @@ class LoginViewModel(
                 .collect {
                     updateUiState(uiState.value.copy(selectedUrl = it))
                 }
-        }
-
-        viewModelScope.launch {
             userPreferencesRepository.changeBaseUrl(uiState.value.selectedUrl)
         }
 
@@ -151,6 +149,23 @@ class LoginViewModel(
                 .collect {
                     updateUiState(uiState.value.copy(baseUrl2Name = it))
                 }
+        }
+
+        // Observe changes in selectedUrl and update UI state accordingly
+        viewModelScope.launch {
+            userPreferencesRepository.getSelectedUrl().collect { selectedUrl ->
+                updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+                updateUiState(
+                    uiState.value.copy(
+                        selectedUrlName =
+                        if (selectedUrl == PRIMARY_URL) {
+                            uiState.value.baseUrlName
+                        } else {
+                            uiState.value.baseUrl2Name
+                        }
+                    )
+                )
+            }
         }
     }
 
@@ -431,9 +446,10 @@ class LoginViewModel(
      */
     fun saveSelectedUrl(selectedUrl: Int) {
         viewModelScope.launch {
-            userPreferencesRepository.saveSelectedUrl(selectedUrl)
-            userPreferencesRepository.changeBaseUrl(selectedUrl)
+//            userPreferencesRepository.saveSelectedUrl(selectedUrl)
             updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+            Log.d("LoginViewModel", "Selected URL: $selectedUrl")
+            userPreferencesRepository.changeBaseUrl(selectedUrl)
         }
     }
 

@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersUiState
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
@@ -227,7 +228,7 @@ fun EditOrderDataDialog(
 @Preview(showBackground = true)
 @Composable
 fun PreviewEditOrderDataDialog() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         EditOrderDataDialog(
             showEditOrderDataDialog = mutableStateOf(true), ordersUiState = OrdersUiState.Success(
                 ordersList = emptyList(), modifiedOrderId = mutableIntStateOf(1)

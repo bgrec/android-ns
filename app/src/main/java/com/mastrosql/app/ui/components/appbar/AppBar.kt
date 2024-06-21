@@ -1,6 +1,9 @@
 package com.mastrosql.app.ui.components.appbar
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,6 +30,7 @@ fun AppBar(
     drawerState: DrawerState? = null,
     navigationIcon: (@Composable () -> Unit)? = null,
     @StringRes title: Int? = null,
+    subtitle: String? = null,
     appBarActions: List<AppBarAction>? = null,
     showDrawerIconButton: Boolean = true,
     backNavigationAction: (() -> Unit)? = null
@@ -35,11 +39,18 @@ fun AppBar(
     CenterAlignedTopAppBar(
         // or TopAppBar
         title = {
-            Text(
-                text = title?.let { stringResource(id = it) }
-                    ?: stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row (Modifier.padding(start = 16.dp)) {
+                Text(
+                    text = title?.let { stringResource(id = it) }
+                        ?: stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                if (subtitle != null) {
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(text = subtitle, style = MaterialTheme.typography.titleMedium)
+                }
+            }
+
         },
         actions = {
             appBarActions?.let {

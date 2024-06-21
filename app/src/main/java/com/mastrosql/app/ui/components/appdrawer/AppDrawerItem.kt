@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.ui.navigation.main.DrawerParams
 import com.mastrosql.app.ui.navigation.main.MainNavOption
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
 fun <T> AppDrawerItem(item: AppDrawerItemInfo<T>, onClick: (options: T) -> Unit) =
@@ -63,10 +63,10 @@ class MainStateProvider : PreviewParameterProvider<AppDrawerItemInfo<MainNavOpti
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(showBackground = true)
 @Composable
 fun AppDrawerItemPreview(@PreviewParameter(MainStateProvider::class) state: AppDrawerItemInfo<MainNavOption>) {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         AppDrawerItem(item = state, onClick = {})
     }
 }

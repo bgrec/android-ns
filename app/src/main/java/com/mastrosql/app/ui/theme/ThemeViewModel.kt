@@ -4,11 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.data.local.UserPreferencesRepository
-import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.descriptors.PrimitiveKind
 
 class ThemeViewModel(
     private val userPreferencesRepository: UserPreferencesRepository

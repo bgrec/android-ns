@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.components.appbar.DrawerIcon
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
  * App bar to display title and conditionally display the back navigation.
@@ -63,7 +63,7 @@ fun OrdersTopAppBar(
 @Preview(showBackground = true)
 @Composable
 fun OrdersTopAppBarPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         OrdersTopAppBar(
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
             title = "Orders",

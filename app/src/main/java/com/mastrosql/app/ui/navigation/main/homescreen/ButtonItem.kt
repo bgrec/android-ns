@@ -54,6 +54,28 @@ object ButtonItemsList {
             }
         ),
         ButtonItem(
+            labelResId = R.string.drawer_warehouse_operations,
+            destination = MainNavOption.WarehouseOutOperationsScreen,
+            action = { navController, appNavigationViewModel ->
+                navController.navigate(MainNavOption.WarehouseOutOperationsScreen.name) {
+                    popUpTo(MainNavOption.HomeScreen.name)
+                    appNavigationViewModel.setCurrentScreen(MainNavOption.WarehouseOutOperationsScreen)
+                }
+            }
+
+        ),
+        ButtonItem(
+            labelResId = R.string.drawer_warehouse_operations,
+            destination = MainNavOption.WarehouseInOperationsScreen,
+            action = { navController, appNavigationViewModel ->
+                navController.navigate(MainNavOption.WarehouseInOperationsScreen.name) {
+                    popUpTo(MainNavOption.HomeScreen.name)
+                    appNavigationViewModel.setCurrentScreen(MainNavOption.WarehouseInOperationsScreen)
+                }
+            }
+
+        ),
+        ButtonItem(
             labelResId = R.string.drawer_orders,
             destination = MainNavOption.OrdersScreen,
             action = { navController, appNavigationViewModel ->

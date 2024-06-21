@@ -75,6 +75,7 @@ import com.mastrosql.app.ui.navigation.intro.IntroNavOption
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
@@ -696,7 +697,7 @@ fun DrawerContent(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun IntroScreenPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         ArchivesContent()
     }
 

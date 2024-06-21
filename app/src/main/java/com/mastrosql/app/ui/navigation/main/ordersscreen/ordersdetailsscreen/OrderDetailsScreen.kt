@@ -2,6 +2,7 @@ package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
 import android.content.IntentFilter
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -225,7 +226,11 @@ fun OrderDetails(
     // and unregister it when the composable is disposed
     DisposableEffect(Unit) {
         val filter = IntentFilter(ACTION_DATA_CODE_RECEIVED)
-        context.registerReceiver(scanReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(scanReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(scanReceiver, filter)
+        }
 
         // Unregister the receiver when the composable is disposed
         onDispose {

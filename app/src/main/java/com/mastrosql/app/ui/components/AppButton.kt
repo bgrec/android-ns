@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.previews.AllPreviews
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 typealias OnClickFunction = () -> Unit
 
@@ -47,7 +47,7 @@ fun AppButton(
 @AllPreviews
 @Composable
 fun AppButtonPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         AppButton(text = R.string.next) {}
     }
 }

@@ -31,7 +31,8 @@ class AppNavigationViewModel : ViewModel() {
             MainNavOption.CustomersPagedScreen -> true
             MainNavOption.ArticlesScreen -> true
             MainNavOption.ItemsScreen -> true
-            MainNavOption.WarehouseOperationsScreen -> true
+            MainNavOption.WarehouseOutOperationsScreen -> true
+            MainNavOption.WarehouseInOperationsScreen -> true
             MainNavOption.OrdersScreen -> true
             MainNavOption.SettingsScreen -> false
             MainNavOption.CartScreen -> true

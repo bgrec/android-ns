@@ -30,7 +30,7 @@ import com.mastrosql.app.BuildConfig
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.previews.AllScreenPreview
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -147,7 +147,7 @@ private fun getBuildDate(context: Context): String {
 fun AboutScreenPreview() {
     val navController = rememberNavController()
     val context = LocalContext.current
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         AboutScreen(navController, context)
     }
 }

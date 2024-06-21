@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mastrosql.app.R
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
+import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +28,7 @@ fun TopBarCustomers() {
 @Preview(showBackground = true)
 @Composable
 fun TopBarPreview() {
-    MastroAndroidTheme {
+    MastroAndroidPreviewTheme {
         TopBarCustomers()
     }
 }
