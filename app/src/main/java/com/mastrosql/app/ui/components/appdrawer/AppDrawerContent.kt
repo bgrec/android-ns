@@ -57,3 +57,52 @@ fun <T : Enum<T>> AppDrawerContent(
         }
     }
 }
+/*
+// Definisci il tuo enum
+enum class SomeEnum {
+    VALUE1, VALUE2, VALUE3
+}
+
+// Definisci la tua data class
+data class AppDrawerMenuItem(val option: SomeEnum)
+
+@Composable
+fun AppDrawerContent(
+    drawerState: DrawerState,
+    menuItems: List<AppDrawerMenuItem>,
+    currentPick: SomeEnum,
+    onCurrentPickChange: (SomeEnum) -> Unit,
+    onClick: (SomeEnum) -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalDrawerSheet {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Column(
+                    modifier = Modifier.padding(horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(menuItems) { item ->
+                        AppDrawerItem(item = item) { navOption ->
+
+                            if (currentPick == navOption.option) {
+                                coroutineScope.launch {
+                                    drawerState.close()
+                                }
+                                return@AppDrawerItem
+                            }
+
+                            onCurrentPickChange(navOption.option)
+
+                            coroutineScope.launch {
+                                drawerState.close()
+                            }
+                            onClick(navOption.option)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+*/
