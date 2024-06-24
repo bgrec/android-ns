@@ -44,7 +44,6 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Metadata
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
 /**
@@ -233,7 +232,7 @@ fun OrderDescriptionAndId(
             Spacer(modifier = Modifier.weight(0.5f))
 
             Text(
-                text = stringResource(R.string.order_insertDate),
+                text = stringResource(R.string.document_insertDate),
                 style = MaterialTheme.typography.bodySmall,
             )
 
@@ -359,7 +358,7 @@ fun OrderInfo(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.order_notes),
+                    text = stringResource(R.string.document_notes),
                     style = MaterialTheme.typography.bodySmall
                 )
             }

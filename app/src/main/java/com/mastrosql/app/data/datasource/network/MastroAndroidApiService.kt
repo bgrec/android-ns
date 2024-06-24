@@ -8,6 +8,8 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.D
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundAddResponse
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -188,6 +190,16 @@ interface MastroAndroidApiService {
     suspend fun updateOrder(
         @Body body: JsonObject
     ): Response<OrderAddResponse>
+
+    @GET("whoutboundview")
+    suspend fun getAllWhOutbound(
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
+    ): WhOutboundResponse
+
+    @PUT("InsertNewWhOutbound")
+    suspend fun insertNewWhOutbound(
+        @Body body: JsonObject
+    ): Response<WhOutboundAddResponse>
 
     /**
      * ****************************************************************************************

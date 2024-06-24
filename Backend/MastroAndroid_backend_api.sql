@@ -697,6 +697,57 @@ BEGIN
     SELECT * FROM ordersview WHERE NUME = lastOrderId LIMIT 1;
 END;
 
+####################################################################################################
+CREATE OR REPLACE VIEW whoutboundview
+AS
+SELECT *
+FROM clientsview
+WHERE CODI IN (SELECT CODI FROM palma_righe);
+####################################################################################################
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS InsertNewWhOutbound;
+CREATE PROCEDURE InsertNewWhOutbound(
+    IN clientId INT
+)
+BEGIN
+    DECLARE lastWhOutboundId INT;
+    DECLARE insertedOutboundCustomerId INT;
+    DECLARE alreadyExists BOOLEAN;
+
+    -- Check if the client ID already exists in the palma_righe table
+    SELECT COUNT(*) > 0
+    INTO alreadyExists
+    FROM palma_righe
+    WHERE CODI = clientId;
+
+    IF alreadyExists THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Il cliente è già presente nella lista', MYSQL_ERRNO = 5400;
+    ELSE
+        -- Get the last palma_righe list ID
+        SELECT IFNULL(MAX(NUME), 0) + 1 INTO lastWhOutboundId FROM palma_righe;
+
+        -- Insert the new client ID into the palma_righe table
+        INSERT INTO palma_righe (NUME, CODI, CORTO, QUAN)
+        VALUES (lastWhOutboundId, clientId, 0, 0);
+
+        -- Get the inserted client ID to verify the insertion
+        SELECT CODI
+        INTO insertedOutboundCustomerId
+        FROM palma_righe
+        WHERE CODI = clientId
+          AND NUME = lastWhOutboundId
+        ORDER BY NUME DESC
+        LIMIT 1;
+
+        IF insertedOutboundCustomerId IS NULL THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Errore durante l''inserimento del cliente', MYSQL_ERRNO = 5400;
+        ELSE
+            -- Return the last order details based on the last order number
+            SELECT * FROM clientsview WHERE CODI = insertedOutboundCustomerId LIMIT 1;
+        END IF;
+    END IF;
+END;
 
 ####################################################################################################
 
