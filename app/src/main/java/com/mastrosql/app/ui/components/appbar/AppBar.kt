@@ -39,12 +39,10 @@ fun AppBar(
     CenterAlignedTopAppBar(
         // or TopAppBar
         title = {
-            Row (Modifier.padding(start = 16.dp)) {
-                Text(
-                    text = title?.let { stringResource(id = it) }
-                        ?: stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.titleMedium
-                )
+            Row(Modifier.padding(start = 16.dp)) {
+                Text(text = title?.let { stringResource(id = it) }
+                    ?: stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.titleMedium)
                 if (subtitle != null) {
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(text = subtitle, style = MaterialTheme.typography.titleMedium)
@@ -110,3 +108,45 @@ fun AppBarAction(appBarAction: AppBarAction) {
         )
     }
 }
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Preview(showBackground = true)
+//@Composable
+//fun AppBarPreview() {
+//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+//    AppBar(
+//        drawerState = drawerState,
+//        title = R.string.app_name,
+//        appBarActions = listOf(
+//            AppBarAction(
+//                icon = android.R.drawable.ic_menu_search,
+//                description = android.R.string.search_go,
+//                onClick = {}
+//            )
+//        ),
+//        backNavigationAction = { /* Azione di navigazione indietro fittizia */ }
+//    )
+//}
+//@Preview(showBackground = true)
+//@Composable
+//fun AppBarActionPreview() {
+//    AppBarAction(
+//        appBarAction = AppBarAction(
+//            icon = android.R.drawable.ic_menu_search, // Usa una risorsa icona valida
+//            description = android.R.string.search_go, // Usa una risorsa stringa valida
+//            onClick = {} // Lascia l'azione vuota per la preview
+//        )
+//    )
+//}
+//@Preview(showBackground = true)
+//@Composable
+//fun BackNavigationIconPreview() {
+//    BackNavigationIcon(
+//        backNavigationAction = { /* Azione di navigazione indietro fittizia */ }
+//    )
+//}
+//@Preview(showBackground = true)
+//@Composable
+//fun DrawerIconPreview() {
+//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+//    DrawerIcon(drawerState = drawerState)
+//}
