@@ -58,7 +58,6 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
@@ -459,8 +458,8 @@ fun MenuButtonsActivationDialog(
                 MainNavOption.CustomersScreen to R.string.drawer_customers,
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
-                MainNavOption.WarehouseOutOperationsScreen to R.string.warehouse_operations,
-                MainNavOption.WarehouseInOperationsScreen to R.string.warehouse_operations,
+                MainNavOption.WarehouseOutOperationsScreen to R.string.warehouse_out_operations,
+                MainNavOption.WarehouseInOperationsScreen to R.string.warehouse_out_operations,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
                 MainNavOption.OrdersScreen to R.string.drawer_orders
             )

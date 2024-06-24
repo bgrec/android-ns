@@ -13,11 +13,10 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.navigation.NavController
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreenForBottomSheet
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
-import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
 
 /**
- * A bottom sheet to create a new order
+ * A bottom sheet to create a new warehouse outbound.
  */
 @ExperimentalMaterial3Api
 @Composable
@@ -30,7 +29,6 @@ fun NewWhOutboundBottomSheet(
 ) {
     // Selected customer and destination
     lateinit var selectedCustomerMasterData: CustomerMasterData
-    var selectedDestination: DestinationData? = null
 
     // State to control the customers list visibility
     val showCustomersList = remember { mutableStateOf(true) }
@@ -45,25 +43,19 @@ fun NewWhOutboundBottomSheet(
         }, sheetState = sheetState, modifier = Modifier.nestedScroll(
             connection = rememberNestedScrollInteropConnection()
         )
-
     ) {
         if (showCustomersList.value) {
             // Select the customer from the list
             CustomersScreenForBottomSheet(
-                onCustomerSelected = { customerMasterData, destinationData, selectionCompleted ->
-
+                onCustomerSelected = { customerMasterData, _, selectionCompleted ->
                     selectedCustomerMasterData = customerMasterData
-                    selectedDestination = destinationData
-
                     showCustomersList.value = !selectionCompleted
-
                 }, navController = navController
             )
         } else {
             EditWhOutboundData(
                 modifier = modifier,
                 customer = selectedCustomerMasterData,
-                destination = selectedDestination,
                 onConfirmButton = onConfirmButton,
                 onDismissButton = onDismissButton,
             )

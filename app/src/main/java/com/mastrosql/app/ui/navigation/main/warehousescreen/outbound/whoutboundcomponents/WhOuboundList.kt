@@ -22,57 +22,49 @@ fun WhOutboundList(
     modifier: Modifier,
     listState: LazyListState,
     whOutboundList: List<WarehouseOutbound>,
-    modifiedOrderId: MutableIntState?,
+    modifiedWhOutboundId: MutableIntState?,
     searchTextState: MutableState<TextFieldValue>,
     navigateToWhOutboundDetails: (Int, String?) -> Unit,
     showEditWhOutboundDataDialog: MutableState<Boolean>
 ) {
     LaunchedEffect(whOutboundList) {
-        modifiedOrderId?.intValue.let { modifiedOrderId ->
-            if (modifiedOrderId != null && modifiedOrderId > 0) {
-                val index = whOutboundList.indexOfFirst { it.id == modifiedOrderId }
-                //Log.d("OrdersList", "Scrolling to index $index")
+        modifiedWhOutboundId?.intValue.let { modifiedWhOutboundId ->
+            if (modifiedWhOutboundId != null && modifiedWhOutboundId > 0) {
+                val index = whOutboundList.indexOfFirst { it.id == modifiedWhOutboundId }
                 listState.animateScrollToItem(index)
             }
         }
     }
-
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         //pass the listState to the LazyColumn to be able to scroll to the modified item
         state = listState,
         //.focusable()
     ) {
-
         val filteredList = filterWhOutbounds(whOutboundList, searchTextState.value.text)
-
         items(filteredList, key = {
             it.id
         }) { whOutbound ->
-
             WhOutboundCard(
                 whOutbound = whOutbound,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
-                //.focusable(),
-                //navController = navController,
-                navigateToOrderDetails = navigateToWhOutboundDetails,
-                modifiedOrderId = modifiedOrderId,
-                showEditOrderDataDialog = showEditWhOutboundDataDialog
+                navigateToWhOutboundDetails = navigateToWhOutboundDetails,
+                modifiedWhOutboundId = modifiedWhOutboundId,
+                showEditWhOutboundDataDialog = showEditWhOutboundDataDialog
             )
         }
-
-        item { Spacer(modifier = Modifier.padding(70.dp)) }
+        item { Spacer(modifier = Modifier.padding(32.dp)) }
     }
 }
 
 private fun filterWhOutbounds(
-    ordersList: List<WarehouseOutbound>,
+    whOutboundList: List<WarehouseOutbound>,
     searchedText: String
 ): List<WarehouseOutbound> {
-    return if (searchedText.isEmpty()) ordersList
-    else ordersList.filter {
+    return if (searchedText.isEmpty()) whOutboundList
+    else whOutboundList.filter {
         it.businessName?.contains(
             searchedText, ignoreCase = true
         ) ?: true || it.city?.contains(searchedText, ignoreCase = true) ?: true

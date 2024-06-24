@@ -35,7 +35,6 @@ import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 
 /**
  * Main composable for the app
@@ -340,7 +339,7 @@ object DrawerParams {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.WarehouseOutOperationsScreen,
-                    R.string.warehouse_operations,
+                    R.string.warehouse_out_operations,
                     Icons.Default.Folder,
                     R.string.drawer_home_description
                 )
@@ -350,7 +349,7 @@ object DrawerParams {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.WarehouseInOperationsScreen,
-                    R.string.warehouse_operations,
+                    R.string.warehouse_out_operations,
                     Icons.Default.Folder,
                     R.string.drawer_home_description
                 )

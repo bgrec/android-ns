@@ -234,7 +234,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
                                 launchSingleTop = true
                             }
                     */},*/// { navController.navigate(OrderEntryDestination.route) },
-                    navigateToOrderDetails = { orderId, orderDescription ->
+                    navigateToWhOutboundDetails = { orderId, orderDescription ->
                         navController.navigate("${OrderDetailsDestination.route}/${orderId}?orderDescription=${orderDescription}") {
                             //TODO verify if launchSigleTop is  needed
                             launchSingleTop = true

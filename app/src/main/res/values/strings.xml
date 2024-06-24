@@ -181,9 +181,9 @@
 
     <string name="order_details_add_button">Aggiungi articolo</string>
 
-    <string name="order_insertDate">"Data "</string>
+    <string name="document_insertDate">"Data "</string>
     <string name="order_deliveryDate">"Data di consegna "</string>
-    <string name="order_notes">Note </string>
+    <string name="document_notes">Note </string>
     <string name="order_deliveryType">"Stato Consegna "</string>
     <string name="order_deliveryState_value0">In preparazione</string>
     <string name="order_deliveryState_value1">Pronto</string>
@@ -243,12 +243,18 @@
     <string name="send_scanned_code">Send Scanned Code</string>
     <string name="order_update_text">Modifiche ordine salvate con successo</string>
     <string name="label_url2">Inserire URL2 - seconda azienda</string>
-    <string name="warehouse_operations">Movimenti</string>
+    <string name="warehouse_out_operations">Mov. scarico</string>
     <string name="label_url_name">Nome URL1</string>
     <string name="label_url2_name">Nome URL2</string>
-    <string name="drawer_warehouse_operations">Movimenti</string>
-    <string name="warehouse_outbound_operations">Movimenti di scarico</string>
+    <string name="drawer_warehouse_out_operations">Mov. scarico</string>
+    <string name="warehouse_outbound_operations">Mov. scarico</string>
     <string name="scroll_to_top">Torna all\'inizio</string>
+    <string name="new_warehouse_outbound">Nuovo scarico</string>
+    <string name="warehouse_outbound_edit">Scarico. n° %1$d</string>
+    <string name="warehouse_operation_id">Num.</string>
+    <string name="add_wh_outbound">Aggiungi mov. scarico</string>
+    <string name="error_no_wh_operation_added">Nessun movimento inserito</string>
+    <string name="new_wh_operation_added">Nuovo movimento cliente %1$d\n</string>
 
 
 </resources>
