@@ -84,10 +84,6 @@ fun DateEditDialogPreview() {
                 mutableIntStateOf(0),
                 mutableIntStateOf(0),
                 mutableStateOf(TextFieldValue("")),
-//                mutableIntStateOf(0),
-//                mutableStateOf(TextFieldValue("")),
-//                mutableStateOf(TextFieldValue("")),
-//                mutableStateOf(TextFieldValue(""))
             )
         })
 }

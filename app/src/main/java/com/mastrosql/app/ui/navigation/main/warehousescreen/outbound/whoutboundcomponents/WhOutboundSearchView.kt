@@ -36,7 +36,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
- * SearchView for the OrdersScreen
+ * SearchView for the WhOutboundScreen
  */
 @Composable
 fun WhOutboundSearchView(state: MutableState<TextFieldValue>) {
@@ -52,7 +52,7 @@ fun WhOutboundSearchView(state: MutableState<TextFieldValue>) {
         //enabled = isEditing,
         placeholder = {
             Text(
-                text = stringResource(R.string.orders_description),
+                text = stringResource(R.string.businessName),
                 modifier = Modifier.padding(2.dp)
             )
         },
@@ -71,7 +71,7 @@ fun WhOutboundSearchView(state: MutableState<TextFieldValue>) {
         leadingIcon = {
             Icon(
                 Icons.Default.Search,
-                contentDescription = stringResource(R.string.order_description),
+                contentDescription = stringResource(R.string.warehouse_outbound_operations),
                 modifier = Modifier
                     .padding(15.dp)
                     .size(24.dp)
@@ -121,7 +121,7 @@ fun WhOutboundSearchView(state: MutableState<TextFieldValue>) {
 }
 
 /**
- * SearchView for the OrdersScreen
+ * SearchView for the WarehouseOutboundScreen
  */
 @Preview(showBackground = true)
 @Composable

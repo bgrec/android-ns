@@ -54,7 +54,7 @@ object ButtonItemsList {
             }
         ),
         ButtonItem(
-            labelResId = R.string.drawer_warehouse_operations,
+            labelResId = R.string.drawer_warehouse_out_operations,
             destination = MainNavOption.WarehouseOutOperationsScreen,
             action = { navController, appNavigationViewModel ->
                 navController.navigate(MainNavOption.WarehouseOutOperationsScreen.name) {
@@ -65,7 +65,7 @@ object ButtonItemsList {
 
         ),
         ButtonItem(
-            labelResId = R.string.drawer_warehouse_operations,
+            labelResId = R.string.drawer_warehouse_out_operations,
             destination = MainNavOption.WarehouseInOperationsScreen,
             action = { navController, appNavigationViewModel ->
                 navController.navigate(MainNavOption.WarehouseInOperationsScreen.name) {

@@ -35,37 +35,36 @@ import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.EditWhOutboundDataDialog
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.NewWhOutboundBottomSheet
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundList
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundSearchView
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundState
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundTopAppBar
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 fun WarehouseOutOperationsScreen(
-    navigateToOrderDetails: (Int, String?) -> Unit,
+    navigateToWhOutboundDetails: (Int, String?) -> Unit,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: WhOutboundViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     // State
-    val ordersUiState = viewModel.ordersUiState
+    val whOutboundUiState = viewModel.whOutboundUiState
 
     val modifier = Modifier
         .fillMaxSize()
         .fillMaxWidth()
 
-    when (ordersUiState) {
+    when (whOutboundUiState) {
         is WhOutboundUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxSize(), loading = true
         )
 
         is WhOutboundUiState.Success -> WhOutboundResultScreen(
-            navigateToWhOutboundDetails = navigateToOrderDetails,
-            //onNewOrder = onNewOrder,
-            ordersUiState = ordersUiState,
+            navigateToWhOutboundDetails = navigateToWhOutboundDetails,
+            whOutboundUiState = whOutboundUiState,
             modifier = modifier,
             drawerState = drawerState,
             navController = navController,
@@ -73,8 +72,8 @@ fun WarehouseOutOperationsScreen(
         )
 
         is WhOutboundUiState.Error -> ErrorScreen(
-            ordersUiState.exception,
-            viewModel::getOrders,
+            whOutboundUiState.exception,
+            viewModel::getWhOutbound,
             modifier = modifier.fillMaxSize(),
             navController = navController
         )
@@ -86,8 +85,7 @@ fun WarehouseOutOperationsScreen(
 fun WhOutboundResultScreen(
     modifier: Modifier = Modifier,
     navigateToWhOutboundDetails: (Int, String?) -> Unit,
-    //onNewOrder: () -> Unit,
-    ordersUiState: WhOutboundUiState.Success,
+    whOutboundUiState: WhOutboundUiState.Success,
     drawerState: DrawerState,
     navController: NavController,
     viewModel: WhOutboundViewModel,
@@ -95,34 +93,26 @@ fun WhOutboundResultScreen(
     // Context used to show the toast
     val context = LocalContext.current
 
-    OrdersResult(modifier = modifier, navigateToWhOutboundDetails = navigateToWhOutboundDetails,
-        whOutboundUiState = ordersUiState,
+    WhOutboundsResult(modifier = modifier,
+        navigateToWhOutboundDetails = navigateToWhOutboundDetails,
+        whOutboundUiState = whOutboundUiState,
         drawerState = drawerState,
         navController = navController,
-        onUpdateWhOutboundData = { orderState ->
-            viewModel.updateOrderData(
-                context = context, orderState = orderState
-            )
-        },
-        onAddNewWhOutbound = { order ->
-            viewModel.addNewOrder(
-                context, order
+        onAddNewWhOutbound = { warehouseOutbound ->
+            viewModel.addNewWhOutbound(
+                context, warehouseOutbound
             )
         })
 }
 
-/**
- * Orders result screen composable, displays the list of orders.
- */
 @ExperimentalMaterial3Api
 @Composable
-fun OrdersResult(
+fun WhOutboundsResult(
     modifier: Modifier = Modifier,
     navigateToWhOutboundDetails: (Int, String?) -> Unit,
     whOutboundUiState: WhOutboundUiState.Success,
     drawerState: DrawerState,
     navController: NavController,
-    onUpdateWhOutboundData: (WhOutboundState) -> Unit,
     onAddNewWhOutbound: (WarehouseOutbound) -> Unit,
 ) {
 
@@ -182,15 +172,15 @@ fun OrdersResult(
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
 
-            // Search view for filtering the orders list
+            // Search view for filtering the warehouse outbounds list
             WhOutboundSearchView(state = textState)
 
-            // Orders list, lazy column with the orders
+            // Warehouse Outbound list, lazy column with the warehouse outbounds
             WhOutboundList(
                 modifier = Modifier.padding(4.dp),
                 listState = listState,
                 whOutboundList = whOutboundUiState.whOutboundsList,
-                modifiedOrderId = whOutboundUiState.modifiedWhOutboundId,
+                modifiedWhOutboundId = whOutboundUiState.modifiedWhOutboundId,
                 searchTextState = textState,
                 navigateToWhOutboundDetails = navigateToWhOutboundDetails,
                 showEditWhOutboundDataDialog = showEditWhOutboundDataDialog
@@ -198,17 +188,15 @@ fun OrdersResult(
         }
 
         if (showEditWhOutboundDataDialog.value) {
-//            // Order data Alert dialog, used to show and edit the order data
-//            EditOrderDataDialog(modifier = modifier,
-//                showEditOrderDataDialog = showEditOrderDataDialog,
-//                ordersUiState = ordersUiState,
-//                onUpdateOrderData = { orderState ->
-//                    onUpdateOrderData(orderState)
-//                })
+            // Warehouse Outbound data Alert dialog, used to show and edit the warehouse outbound  data
+            EditWhOutboundDataDialog(modifier = modifier,
+                showEditWhOutboundDataDialog = showEditWhOutboundDataDialog,
+                whOutboundUiState = whOutboundUiState,
+                onUpdateWhOutboundData = { })
         }
 
         if (showBottomSheet.value) {
-            // Bottom sheet to add a new order
+            // Bottom sheet to add a new warehouse outbound
             NewWhOutboundBottomSheet(navController = navController,
                 showBottomSheet = showBottomSheet,
                 modifier = modifier,

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
@@ -37,23 +38,18 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
-import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 import com.mastrosql.app.utils.DateHelper
 
-/**
- * Order card composable that displays the order information.
- */
 @Composable
 fun WhOutboundCard(
     whOutbound: WarehouseOutbound,
     modifier: Modifier,
-    navigateToOrderDetails: (Int, String?) -> Unit,
-    modifiedOrderId: MutableIntState?,
-    showEditOrderDataDialog: MutableState<Boolean>
+    navigateToWhOutboundDetails: (Int, String?) -> Unit,
+    modifiedWhOutboundId: MutableIntState?,
+    showEditWhOutboundDataDialog: MutableState<Boolean>
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -78,7 +74,7 @@ fun WhOutboundCard(
                     modifier = Modifier.widthIn(60.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OrderExpandButton(
+                    WhOutboundExpandButton(
                         expanded = expanded,
                         onClick = { expanded = !expanded },
                     )
@@ -87,22 +83,20 @@ fun WhOutboundCard(
                 Column(
                     modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
-                    OrderDescriptionAndId(orderId = whOutbound.id,
-                        description = whOutbound.businessName,
-                        insertDate = DateHelper.formatDateToDisplay(whOutbound.businessName),
+                    WhOutboundDescriptionAndId(operationId = whOutbound.id,
+                        description = "",
+                        insertDate = DateHelper.formatDateToDisplay(whOutbound.lastUpdated.toString()),
+                        //TODO add the correct insert date
                         businessName = whOutbound.businessName,
-                        deliveryState = 0,//whOutbound.businessName,
                         onRowClick = {
-                            modifiedOrderId?.intValue = whOutbound.id
+                            modifiedWhOutboundId?.intValue = whOutbound.id
                         })
                     if (expanded) {
-                        OrderInfo(destinationName = whOutbound.businessName,
-                            deliveryDate = DateHelper.formatDateToDisplay(whOutbound.businessName),
-                            carrierName = whOutbound.businessName,
-                            notes = whOutbound.businessName,
-                            onOrderInfoClick = {
-                                modifiedOrderId?.intValue = whOutbound.id
-                                showEditOrderDataDialog.value = true
+                        WhOutboundInfo(notes = "",//whOutbound.businessName2,
+                            // TODO: Add notes
+                            onWhOutboundInfoClick = {
+                                modifiedWhOutboundId?.intValue = whOutbound.id
+                                showEditWhOutboundDataDialog.value = true
                             })
                     }
                 }
@@ -113,19 +107,18 @@ fun WhOutboundCard(
 
                 ) {
 
-                    OrderDetailsEditButton(
-                        orderId = whOutbound.id,
-                        orderDescription = whOutbound.businessName,
-                        onEditClick = { orderId, orderDescription ->
-                            //Setting the modifiedOrderId to the id of the order that was clicked
+                    WhOutDetailsEditButton(
+                        operationId = whOutbound.id,
+                        whOutboundDescription = whOutbound.businessName,
+                        onEditClick = { operationId, operationDescription ->
+                            //Setting the modifiedWhOutboundId to the id of the warehouse outbound
+                            //operation that was clicked
                             //this will change the color of the edit button
-                            modifiedOrderId?.intValue = orderId
-
-                            //Navigate to the order details screen
-                            navigateToOrderDetails(orderId, orderDescription)
-
+                            modifiedWhOutboundId?.intValue = operationId
+                            //Navigate to the warehouse outbound details screen
+                            navigateToWhOutboundDetails(operationId, operationDescription)
                         },
-                        modifiedOrderId = modifiedOrderId?.intValue
+                        modifiedWhOutboundId = modifiedWhOutboundId?.intValue
                     )
                 }
             }
@@ -134,7 +127,7 @@ fun WhOutboundCard(
 }
 
 @Composable
-private fun OrderExpandButton(
+private fun WhOutboundExpandButton(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onClick: () -> Unit,
@@ -152,75 +145,62 @@ private fun OrderExpandButton(
 }
 
 @Composable
-private fun OrderDetailsEditButton(
+private fun WhOutDetailsEditButton(
     modifier: Modifier = Modifier,
-    orderId: Int,
-    modifiedOrderId: Int?,
-    orderDescription: String?,
+    operationId: Int,
+    modifiedWhOutboundId: Int?,
+    whOutboundDescription: String?,
     onEditClick: (Int, String?) -> Unit
 ) {
     val defaultTint = MaterialTheme.colorScheme.secondary
-    val orderEditButtonTint = remember { mutableStateOf(defaultTint) }
+    val whOutboundEditButtonTint = remember { mutableStateOf(defaultTint) }
 
-    LaunchedEffect(modifiedOrderId, orderId) {
-        // Animate the color change when modifiedOrderId equals orderId
-        if (modifiedOrderId == orderId) {
-            orderEditButtonTint.value = Color.Red
+    LaunchedEffect(modifiedWhOutboundId, operationId) {
+        // Animate the color change when modifiedWhOutboundId equals operationId
+        if (modifiedWhOutboundId == operationId) {
+            whOutboundEditButtonTint.value = Color.Red
         } else {
-            orderEditButtonTint.value = defaultTint
+            whOutboundEditButtonTint.value = defaultTint
         }
     }
 
     IconButton(onClick = {
         // Change the button color to red when clicked
-        orderEditButtonTint.value = Color.Red
-        onEditClick(orderId, orderDescription)
+        whOutboundEditButtonTint.value = Color.Red
+        onEditClick(operationId, whOutboundDescription)
 
     }) {
         Icon(
             Icons.Default.Edit,
             //tint = MaterialTheme.colorScheme.secondary,
-            tint = orderEditButtonTint.value,
+            tint = whOutboundEditButtonTint.value,
             contentDescription = stringResource(R.string.insert_article),
             modifier = modifier.fillMaxSize()
         )
     }
 }
 
-/**
- * Composable that displays a order business name and address.
- *
- * @param description is the resource ID for the string of the order description
- * @param orderId is the Int that represents the order id
- * @param modifier modifiers to set to this composable
- */
-
 @Composable
-fun OrderDescriptionAndId(
-    orderId: Int,
+fun WhOutboundDescriptionAndId(
+    modifier: Modifier = Modifier,
+    operationId: Int,
     insertDate: String?,
-    deliveryState: Int?,
     businessName: String?,
     description: String?,
-    modifier: Modifier = Modifier,
     onRowClick: () -> Unit = {}
 ) {
-    //val deliveryStateObj = DeliveryStates.deliveryStates.find { it.state == deliveryState }
-
     Column(
         modifier = Modifier
     ) {
-
         Row(
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = stringResource(R.string.order_id),
+                text = stringResource(R.string.warehouse_operation_id),
                 style = MaterialTheme.typography.bodySmall,
             )
-
             Text(
-                text = orderId.toString(),
+                text = operationId.toString(),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -228,7 +208,7 @@ fun OrderDescriptionAndId(
             Spacer(modifier = Modifier.weight(0.5f))
 
             Text(
-                text = stringResource(R.string.order_insertDate),
+                text = stringResource(R.string.document_insertDate),
                 style = MaterialTheme.typography.bodySmall,
             )
 
@@ -237,25 +217,6 @@ fun OrderDescriptionAndId(
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
             )
-        }
-
-        Row(
-            modifier = Modifier.clickable(
-                onClick = onRowClick
-            ), horizontalArrangement = Arrangement.Start
-        ) {
-//            Text(
-//                text = stringResource(R.string.order_deliveryType),
-//                style = MaterialTheme.typography.bodySmall,
-//            )
-//            deliveryStateObj?.let { state ->
-//                Text(
-//                    text = stringResource(state.nameState),
-//                    color = state.color,
-//                    fontWeight = FontWeight.Bold,
-//                    style = MaterialTheme.typography.bodySmall,
-//                )
-//            }
         }
 
         Text(
@@ -272,19 +233,11 @@ fun OrderDescriptionAndId(
     }
 }
 
-/**
- * Composable that displays a order info
- * @param   destinationName Int that represents the order id
- * @param  deliveryDate the String that represents the order sku
- */
 @Composable
-fun OrderInfo(
+fun WhOutboundInfo(
     modifier: Modifier = Modifier,
-    destinationName: String?,
-    deliveryDate: String?,
-    carrierName: String? = "",
     notes: String? = null,
-    onOrderInfoClick: () -> Unit = {}
+    onWhOutboundInfoClick: () -> Unit = {}
 
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -292,73 +245,20 @@ fun OrderInfo(
         modifier = modifier
             .padding(top = 4.dp)
             .clickable(onClick = {
-                onOrderInfoClick()
+                onWhOutboundInfoClick()
                 focusRequester.requestFocus()
             })
             .focusRequester(focusRequester)
     ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.order_destinationName),
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Text(
-                text = destinationName ?: "",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.order_deliveryDate),
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Text(
-                text = deliveryDate ?: "",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.order_carrierName),
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        if (carrierName != "") {
-            Row(
-                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = carrierName ?: "",
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-
         if (notes != null) {
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.order_notes),
+                    text = stringResource(R.string.document_notes),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
@@ -368,58 +268,10 @@ fun OrderInfo(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
 
-/**
- * Preview for [OrderInfo]
- */
-@Preview(showBackground = true)
-@Composable
-fun OrderInfoPreview() {
-    MastroAndroidPreviewTheme {
-        OrderInfo(
-            destinationName = "destinationName",
-            deliveryDate = "deliveryDate",
-            carrierName = "carrierName",
-            notes = "notes",
-            modifier = Modifier
-        )
-    }
-}
-
-/**
- * Preview for [OrderDescriptionAndId]
- */
-@Preview(showBackground = true)
-@Composable
-fun OrderDescriptionAndIdPreview() {
-    MastroAndroidPreviewTheme {
-        OrderDescriptionAndId(
-            orderId = 1,
-            insertDate = "insertDate",
-            deliveryState = 1,
-            businessName = "businessName",
-            description = "description",
-            modifier = Modifier
-        )
-    }
-}
-
-/**
- * Preview for [OrderDetailsEditButton]
- */
-@Preview(showBackground = true)
-@Composable
-fun OrderDetailsEditButtonPreview() {
-    MastroAndroidPreviewTheme {
-        OrderDetailsEditButton(
-            orderId = 1,
-            orderDescription = "description",
-            onEditClick = { _, _ -> },
-            modifiedOrderId = 1
-        )
-    }
-}
