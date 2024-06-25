@@ -28,6 +28,7 @@ import retrofit2.http.Query
 
 interface MastroAndroidApiService {
 
+    //Customers API calls
     /**
      * Returns a [CustomersMasterDataResponse] object which is a list of [CustomerMasterData]
      * Authentication is required for this API call.
@@ -71,6 +72,9 @@ interface MastroAndroidApiService {
         @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): DestinationsDataResponse
 
+    //End of Customers API calls
+
+    //Articles API calls
     /**
      * Retrieves all articles with specified offset and limit.
      */
@@ -79,6 +83,18 @@ interface MastroAndroidApiService {
         @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): ArticlesResponse
 
+    /**
+     * Inserts an article into a document on the server.
+     */
+    @PUT("InsertArticleIntoDocument")
+    suspend fun insertArticleIntoDocument(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    //End of Articles API calls
+
+
+    //Orders API calls
     /**
      * Retrieves all orders with specified offset and limit.
      */
@@ -136,14 +152,6 @@ interface MastroAndroidApiService {
     ): Response<JsonObject>
 
     /**
-     * Inserts an article into a document on the server.
-     */
-    @PUT("InsertArticleIntoDocument")
-    suspend fun insertArticleIntoDocument(
-        @Body body: JsonObject
-    ): Response<JsonObject>
-
-    /**
      * Duplicates an order detail item on the server.
      */
     @PUT("DuplicateOrderRow")
@@ -192,6 +200,10 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<OrderAddResponse>
 
+    //End of Orders API calls
+
+    //Warehouse Outbound API calls
+
     @GET("whoutboundview")
     suspend fun getAllWhOutbound(
         @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
@@ -237,6 +249,16 @@ interface MastroAndroidApiService {
     suspend fun sendWhOutScannedCode(
         @Body body: JsonObject
     ): Response<JsonObject>
+
+    /**
+     * Updates an whout detail item on the server.
+     */
+    @PUT("UpdateWhOutRow")
+    suspend fun updateWhOutDetailItem(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+    
+    //End of Warehouse Outbound API calls
 
     /**
      * ****************************************************************************************

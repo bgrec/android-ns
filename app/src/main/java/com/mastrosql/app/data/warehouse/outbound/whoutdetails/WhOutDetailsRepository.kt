@@ -32,9 +32,7 @@ interface WhOutDetailsRepository {
     suspend fun sendScannedCode(whOutId: Int, scannedCode: String): Response<JsonObject>
 
     suspend fun deleteDetailItem(whOutDetailId: Int): Response<JsonObject>
-
-    suspend fun duplicateDetailItem(whOutDetailId: Int): Response<JsonObject>
-
+    
     suspend fun updateDetailItem(
         whOutDetailId: Int, quantity: Double, batch: String, expirationDate: String
     ): Response<JsonObject>

@@ -59,11 +59,7 @@ class OfflineWhOutDetailsRepository(
     override suspend fun deleteDetailItem(whOutDetailId: Int): Response<JsonObject> {
         TODO("Not yet implemented")
     }
-
-    override suspend fun duplicateDetailItem(whOutDetailId: Int): Response<JsonObject> {
-        TODO("Not yet implemented")
-    }
-
+    
     override suspend fun updateDetailItem(
         whOutDetailId: Int,
         quantity: Double,

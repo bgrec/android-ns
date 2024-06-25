@@ -85,13 +85,6 @@ class NetworkWhOutDetailsRepository(
         return mastroAndroidApiService.deleteWhOutDetailItem(filter)
     }
 
-    override suspend fun duplicateDetailItem(whOutDetailId: Int): Response<JsonObject> {
-        val body = JsonObject().apply {
-            addProperty("whOutDetailId", whOutDetailId)
-        }
-        return mastroAndroidApiService.duplicateOrderDetailItem(body)
-    }
-
     override suspend fun updateDetailItem(
         whOutDetailId: Int, quantity: Double, batch: String, expirationDate: String
     ): Response<JsonObject> {
