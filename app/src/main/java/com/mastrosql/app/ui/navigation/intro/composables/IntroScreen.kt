@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.intro.IntroNavOption
@@ -701,4 +702,56 @@ fun IntroScreenPreview() {
         ArchivesContent()
     }
 
+}
+@Preview(showBackground = true)
+@Composable
+fun WelcomeContentPreview() {
+    MastroAndroidTheme {
+        WelcomeContent()
+    }
+}
+/*@Preview(showBackground = true)
+@Composable
+fun ConfigContentPreview() {
+    MastroAndroidTheme {
+        val focusManager = LocalFocusManager.current // o qualsiasi altro valore desiderato
+        // Creiamo un'istanza di UserPreferencesViewModel con un valore di default per userPreferencesRepository
+        val viewModel = UserPreferencesViewModel(userPreferencesRepository = DefaultUserPreferencesRepository())
+        ConfigContent(viewModel = viewModel, focusManager = focusManager)
+    }
+}*/
+@Preview(showBackground = true)
+@Composable
+fun LoginContentPreview() {
+    MastroAndroidTheme {
+        LoginContent()
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun HomeContentPreview() {
+    MastroAndroidTheme {
+        HomeContent()
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun ArchivesContentPreview() {
+    MastroAndroidTheme {
+        ArchivesContent()
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun OrdersContentPreview() {
+    MastroAndroidTheme {
+        OrdersContent()
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun DrawerContentPreview() {
+    MastroAndroidTheme {
+        DrawerContent(navController = rememberNavController())
+    }
 }

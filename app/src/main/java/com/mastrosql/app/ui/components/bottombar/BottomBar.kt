@@ -22,13 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 
 
 @Composable
 fun BottomBar(
-    //drawerState: DrawerState? = null,
-    navController: NavController,
+    navController: NavController
 ) {
     BottomAppBar {
         Row(
@@ -56,7 +56,7 @@ fun BottomBar(
 fun BottomBarAction(bottomBarAction: BottomBarAction) {
     IconButton(onClick = bottomBarAction.onClick) {
         Icon(
-            painter = painterResource(id = bottomBarAction.icon),
+            imageVector = bottomBarAction.icon, // Utilizza direttamente l'ImageVector
             modifier = Modifier.size(24.dp),
             tint = MaterialTheme.colorScheme.onBackground,
             contentDescription = stringResource(id = bottomBarAction.description)
@@ -64,12 +64,21 @@ fun BottomBarAction(bottomBarAction: BottomBarAction) {
     }
 }
 
-@Preview
+
+@Preview(showBackground = true)
 @Composable
 fun BottomBarPreview() {
     val scope = rememberCoroutineScope()
-    BottomBar(
-        //drawerState = null,
-        navController = NavController(LocalContext.current),
+    BottomBar(navController = NavController(LocalContext.current))
+}
+@Preview(showBackground = true)
+@Composable
+fun BottomBarActionPreview() {
+    BottomBarAction(
+        bottomBarAction = BottomBarAction(
+            icon = Icons.Default.Add, // Utilizza un'icona predefinita fornita da Compose
+            description = R.string.add_button_preview, // Utilizza la risorsa stringa correttamente definita
+            onClick = {}
+        )
     )
 }
