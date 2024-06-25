@@ -53,7 +53,7 @@ fun EditDeliveryStateDialog(
 
     AlertDialog(modifier = Modifier.wrapContentSize(),
         onDismissRequest = { showEditDeliveryDialog.value = false },
-        title = { Text(stringResource(R.string.order_dialog_delivery_title)) },
+        title = { Text(stringResource(R.string.document_dialog_delivery_title)) },
         text = {
             Column(modifier = Modifier.wrapContentSize()) {
                 deliveryStates.forEach { deliveryState ->

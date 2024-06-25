@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersUiState
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
 /**
@@ -174,7 +173,7 @@ fun EditOrderDataDialog(
                     }),
                         singleLine = true,
                         value = orderState.deliveryDate.value,
-                        label = { Text(stringResource(R.string.order_deliveryDate)) },
+                        label = { Text(stringResource(R.string.row_deliveryDate)) },
                         onValueChange = {
                             orderState.deliveryDate.value = it
                         },

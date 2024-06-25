@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -46,16 +46,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.data.local.SwipeActionsPreferences
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.OrderDetailsUiState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.WhOutDetailsUiState
 import com.mastrosql.app.utils.DateHelper
 
 @ExperimentalMaterial3Api
 @Composable
-fun EditOrderDetailsItem2(
+fun EditWhOutDetailsItem2(
     showEditDialog: MutableState<Boolean>,
-    orderDetailsUiState: OrderDetailsUiState.Success,
-    orderDetailsItemState: OrderDetailsItemState,
-    onEditOrderDetailsItem: (Int, Double, String, String) -> Unit,
+    whOutDetailsUiState: WhOutDetailsUiState.Success,
+    whOutDetailsItemState: WhOutDetailsItemState,
+    onEditWhOutDetailsItem: (Int, Double, String, String) -> Unit,
 
     ) {
 
@@ -72,38 +72,38 @@ fun EditOrderDetailsItem2(
     LaunchedEffect(showEditDialog) {
         if (showEditDialog.value) {
             // Ensure modifiedIndex is not null and within range
-            val index = orderDetailsUiState.modifiedIndex?.intValue ?: -1
-            if (index >= 0 && index < orderDetailsUiState.orderDetailsList.size) {
+            val index = whOutDetailsUiState.modifiedIndex?.intValue ?: -1
+            if (index >= 0 && index < whOutDetailsUiState.whOutDetailsList.size) {
 
-                orderDetailsUiState.modifiedOrderDetailsItem =
-                    orderDetailsUiState.orderDetailsList[index]
+                whOutDetailsUiState.modifiedWhOutDetailsItem =
+                    whOutDetailsUiState.whOutDetailsList[index]
 
 
-                val initialBatch = orderDetailsUiState.modifiedOrderDetailsItem!!.batch ?: ""
-                orderDetailsItemState.batch.value = TextFieldValue(initialBatch)
+                val initialBatch = whOutDetailsUiState.modifiedWhOutDetailsItem!!.batch ?: ""
+                whOutDetailsItemState.batch.value = TextFieldValue(initialBatch)
 
-                val initialQuantity = orderDetailsUiState.modifiedOrderDetailsItem!!.quantity ?: 0.0
-                orderDetailsItemState.quantity.value = TextFieldValue(initialQuantity.toString())
+                val initialQuantity = whOutDetailsUiState.modifiedWhOutDetailsItem!!.quantity ?: 0.0
+                whOutDetailsItemState.quantity.value = TextFieldValue(initialQuantity.toString())
 
                 val initialExpirationDate = DateHelper.formatDateToDisplay(
-                    orderDetailsUiState.modifiedOrderDetailsItem!!.expirationDate ?: ""
+                    whOutDetailsUiState.modifiedWhOutDetailsItem!!.expirationDate ?: ""
                 )
-                orderDetailsItemState.expirationDate.value = TextFieldValue(initialExpirationDate)
+                whOutDetailsItemState.expirationDate.value = TextFieldValue(initialExpirationDate)
 
-                if (orderDetailsUiState.modifiedOrderDetailsItem != null) {
+                if (whOutDetailsUiState.modifiedWhOutDetailsItem != null) {
                     dialogDescriptionState.value = context.getString(
-                        R.string.order_details_dialog_edit_title_row,
-                        orderDetailsUiState.modifiedOrderDetailsItem?.orderRow ?: 0,
-                        orderDetailsUiState.modifiedOrderDetailsItem?.articleId ?: 0,
-                        orderDetailsUiState.modifiedOrderDetailsItem?.sku ?: ""
+                        R.string.row_details_dialog_edit_title_row,
+                        whOutDetailsUiState.modifiedWhOutDetailsItem?.whOutRow ?: 0,
+                        whOutDetailsUiState.modifiedWhOutDetailsItem?.articleId ?: 0,
+                        whOutDetailsUiState.modifiedWhOutDetailsItem?.sku ?: ""
                     )
                 }
 
                 //Log.d("dialogDescriptionState", dialogDescriptionState.value)
             } else {
                 dialogDescriptionState.value =
-                    context.getString(R.string.order_details_dialog_edit_title)
-                Log.e("OrderDetailsScreen", "Invalid index: $index")
+                    context.getString(R.string.whout_details_dialog_edit_title)
+                Log.e("WhOutDetailsScreen", "Invalid index: $index")
             }
 
             //Use the focusRequester to focus on the text field when the dialog is opened
@@ -127,10 +127,10 @@ fun EditOrderDetailsItem2(
             Column(modifier = Modifier.wrapContentSize()) {
                 Row {
                     OutlinedTextField(
-                        value = orderDetailsItemState.batch.value,
-                        label = { Text(stringResource(R.string.order_details_dialog_edit_batch)) },
-                        onValueChange = { orderDetailsItemState.batch.value = it },
-                        isError = orderDetailsItemState.batch.value.text.isEmpty(),
+                        value = whOutDetailsItemState.batch.value,
+                        label = { Text(stringResource(R.string.row_details_dialog_edit_batch)) },
+                        onValueChange = { whOutDetailsItemState.batch.value = it },
+                        isError = whOutDetailsItemState.batch.value.text.isEmpty(),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                         )
@@ -141,19 +141,19 @@ fun EditOrderDetailsItem2(
 
                 Row {
                     OutlinedTextField(singleLine = true,
-                        value = orderDetailsItemState.expirationDate.value,
-                        label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
+                        value = whOutDetailsItemState.expirationDate.value,
+                        label = { Text(stringResource(R.string.row_details_dialog_edit_expirationDate)) },
                         onValueChange = {
-                            orderDetailsItemState.expirationDate.value = it
+                            whOutDetailsItemState.expirationDate.value = it
                         },
                         modifier = Modifier.clickable(onClick = {
                             showDatePickerDialog.value = true
                         }),//not working
                         readOnly = false,
-                        isError = orderDetailsItemState.expirationDate.value.text.isNotEmpty() && DateHelper.formatDateToInput(
-                            orderDetailsItemState.expirationDate.value.text
+                        isError = whOutDetailsItemState.expirationDate.value.text.isNotEmpty() && DateHelper.formatDateToInput(
+                            whOutDetailsItemState.expirationDate.value.text
                         ).isEmpty() && DateHelper.isDateBeforeToday(
-                            orderDetailsItemState.expirationDate.value.text
+                            whOutDetailsItemState.expirationDate.value.text
                         ),
                         //visualTransformation = DateTransformation(),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -174,7 +174,7 @@ fun EditOrderDetailsItem2(
                 if (showDatePickerDialog.value) {
                     ExpirationDatePickerDialog(
                         showDatePickerDialog = showDatePickerDialog,
-                        orderDetailsItemState = orderDetailsItemState
+                        whOutDetailsItemState = whOutDetailsItemState
                     )
                 }
 
@@ -186,14 +186,14 @@ fun EditOrderDetailsItem2(
                     IconButton(
                         modifier = Modifier.weight(0.2f),
                         onClick = {
-                            if (getOrderQuantity(orderDetailsItemState) >= 1) {
-                                orderDetailsItemState.quantity.value =
-                                    orderDetailsItemState.quantity.value.copy(
-                                        text = (orderDetailsItemState.quantity.value.text.toDouble() - 1.00).toString()
+                            if (getWhOutQuantity(whOutDetailsItemState) >= 1) {
+                                whOutDetailsItemState.quantity.value =
+                                    whOutDetailsItemState.quantity.value.copy(
+                                        text = (whOutDetailsItemState.quantity.value.text.toDouble() - 1.00).toString()
                                     )
                             } else {
-                                orderDetailsItemState.quantity.value =
-                                    orderDetailsItemState.quantity.value.copy(
+                                whOutDetailsItemState.quantity.value =
+                                    whOutDetailsItemState.quantity.value.copy(
                                         text = "0"
                                     )
                             }
@@ -203,7 +203,7 @@ fun EditOrderDetailsItem2(
                             Icons.Default.RemoveCircle,
                             contentDescription = stringResource(R.string.decrease_quantity_by_one),
                             modifier = Modifier.fillMaxSize(),
-                            tint = if (getOrderQuantity(orderDetailsItemState) <= 0)
+                            tint = if (getWhOutQuantity(whOutDetailsItemState) <= 0)
                                 Color.Gray else MaterialTheme.colorScheme.primary
                         )
 
@@ -213,10 +213,10 @@ fun EditOrderDetailsItem2(
                     val isFirstTimeFocused = remember { mutableStateOf(true) }
 
                     OutlinedTextField(
-                        value = orderDetailsItemState.quantity.value,
-                        label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
+                        value = whOutDetailsItemState.quantity.value,
+                        label = { Text(stringResource(R.string.row_details_dialog_edit_Quantity)) },
                         onValueChange = { input ->
-                            orderDetailsItemState.quantity.value = input
+                            whOutDetailsItemState.quantity.value = input
                         },
 
                         modifier = Modifier
@@ -230,9 +230,9 @@ fun EditOrderDetailsItem2(
                             .onFocusEvent { focusState ->
                                 if (focusState.isFocused && isFirstTimeFocused.value) {
 
-                                    val inputText = orderDetailsItemState.quantity.value.text
-                                    orderDetailsItemState.quantity.value =
-                                        orderDetailsItemState.quantity.value.copy(
+                                    val inputText = whOutDetailsItemState.quantity.value.text
+                                    whOutDetailsItemState.quantity.value =
+                                        whOutDetailsItemState.quantity.value.copy(
                                             selection = TextRange(
                                                 0, inputText.length
                                             )
@@ -246,9 +246,9 @@ fun EditOrderDetailsItem2(
                             // When using focusRequester, the text is selected when the dialog is opened
                             .onFocusChanged { focusState ->
                                 if (focusState.isFocused) {
-                                    val inputText = orderDetailsItemState.quantity.value.text
-                                    orderDetailsItemState.quantity.value =
-                                        orderDetailsItemState.quantity.value.copy(
+                                    val inputText = whOutDetailsItemState.quantity.value.text
+                                    whOutDetailsItemState.quantity.value =
+                                        whOutDetailsItemState.quantity.value.copy(
                                             selection = TextRange(
                                                 0, inputText.length
                                             )
@@ -270,18 +270,18 @@ fun EditOrderDetailsItem2(
                                 }
                             },
 
-                        isError = orderDetailsItemState.quantity.value.text.isEmpty()
-                                || orderDetailsItemState.quantity.value.text.toDoubleOrNull() == null
-                                || orderDetailsItemState.quantity.value.text.toDouble() <= 0,
+                        isError = whOutDetailsItemState.quantity.value.text.isEmpty()
+                                || whOutDetailsItemState.quantity.value.text.toDoubleOrNull() == null
+                                || whOutDetailsItemState.quantity.value.text.toDouble() <= 0,
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
-                            onEditOrderDetailsItem(
-                                orderDetailsUiState.modifiedOrderDetailsItem?.id ?: 0,
-                                getOrderQuantity(orderDetailsItemState),
-                                orderDetailsItemState.batch.value.text,
-                                orderDetailsItemState.expirationDate.value.text
+                            onEditWhOutDetailsItem(
+                                whOutDetailsUiState.modifiedWhOutDetailsItem?.id ?: 0,
+                                getWhOutQuantity(whOutDetailsItemState),
+                                whOutDetailsItemState.batch.value.text,
+                                whOutDetailsItemState.expirationDate.value.text
                             )
                             focusManager.clearFocus()
                             showEditDialog.value = false
@@ -289,10 +289,10 @@ fun EditOrderDetailsItem2(
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
                     IconButton(modifier = Modifier.weight(0.2f), onClick = {
-                        if (getOrderQuantity(orderDetailsItemState) >= 0)
-                            orderDetailsItemState.quantity.value =
-                                orderDetailsItemState.quantity.value.copy(
-                                    text = (orderDetailsItemState.quantity.value.text.toDouble() + 1).toString()
+                        if (getWhOutQuantity(whOutDetailsItemState) >= 0)
+                            whOutDetailsItemState.quantity.value =
+                                whOutDetailsItemState.quantity.value.copy(
+                                    text = (whOutDetailsItemState.quantity.value.text.toDouble() + 1).toString()
                                 )
                     }) {
                         Icon(
@@ -315,11 +315,11 @@ fun EditOrderDetailsItem2(
         confirmButton = {
             TextButton(onClick = {
                 showEditDialog.value = false
-                onEditOrderDetailsItem(
-                    orderDetailsUiState.modifiedOrderDetailsItem?.id ?: 0,
-                    getOrderQuantity(orderDetailsItemState),
-                    orderDetailsItemState.batch.value.text,
-                    orderDetailsItemState.expirationDate.value.text
+                onEditWhOutDetailsItem(
+                    whOutDetailsUiState.modifiedWhOutDetailsItem?.id ?: 0,
+                    getWhOutQuantity(whOutDetailsItemState),
+                    whOutDetailsItemState.batch.value.text,
+                    whOutDetailsItemState.expirationDate.value.text
                 )
             }) {
                 Text(stringResource(R.string.confirm_button))
@@ -327,35 +327,35 @@ fun EditOrderDetailsItem2(
         })
 }
 
-private fun getOrderQuantity(orderDetailsItemState: OrderDetailsItemState): Double {
-    return if (orderDetailsItemState.quantity.value.text.toDoubleOrNull() == null || orderDetailsItemState.quantity.value.text.toDouble() <= 0)
+private fun getWhOutQuantity(whOutDetailsItemState: WhOutDetailsItemState): Double {
+    return if (whOutDetailsItemState.quantity.value.text.toDoubleOrNull() == null || whOutDetailsItemState.quantity.value.text.toDouble() <= 0)
         0.0
     else
-        orderDetailsItemState.quantity.value.text.toDouble()
+        whOutDetailsItemState.quantity.value.text.toDouble()
 }
 
 @ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
-fun EditOrderDetailsItemPreview(
+fun EditWhOutDetailsItemPreview(
 ) {
     val showEditDialog = remember { mutableStateOf(true) }
-    val orderDetailsUiState = OrderDetailsUiState.Success(
-        orderDetailsList = emptyList(),
+    val whOutDetailsUiState = WhOutDetailsUiState.Success(
+        whOutDetailsList = emptyList(),
         modifiedIndex = remember { mutableIntStateOf(1) },
-        modifiedOrderDetailsItem = null,
+        modifiedWhOutDetailsItem = null,
         swipeActionsPreferences = SwipeActionsPreferences()
     )
-    val orderDetailsItemState = OrderDetailsItemState(
+    val whOutDetailsItemState = WhOutDetailsItemState(
         batch = remember { mutableStateOf(TextFieldValue("batch")) },
         quantity = remember { mutableStateOf(TextFieldValue("123")) },
         expirationDate = remember { mutableStateOf(TextFieldValue("01/01/2024")) }
     )
 
-    EditOrderDetailsItem2(
+    EditWhOutDetailsItem2(
         showEditDialog = showEditDialog,
-        orderDetailsUiState = orderDetailsUiState,
-        orderDetailsItemState = orderDetailsItemState,
-        onEditOrderDetailsItem = { _, _, _, _ -> }
+        whOutDetailsUiState = whOutDetailsUiState,
+        whOutDetailsItemState = whOutDetailsItemState,
+        onEditWhOutDetailsItem = { _, _, _, _ -> }
     )
 }

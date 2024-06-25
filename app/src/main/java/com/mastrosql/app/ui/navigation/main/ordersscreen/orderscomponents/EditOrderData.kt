@@ -39,7 +39,6 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.D
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.Order
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderUtils
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 
 /**
@@ -158,7 +157,7 @@ fun EditOrderData(
             }),
                 singleLine = true,
                 value = orderState.deliveryDate.value,
-                label = { Text(stringResource(R.string.order_deliveryDate)) },
+                label = { Text(stringResource(R.string.row_deliveryDate)) },
                 onValueChange = {
                     orderState.deliveryDate.value = it
                 },

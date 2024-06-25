@@ -350,7 +350,7 @@ class OrderDetailsViewModel(
                         ToastUtils.showToast(
                             context,
                             Toast.LENGTH_SHORT,
-                            context.getString(R.string.update_order_details, response.code())
+                            context.getString(R.string.updated_row_success_text, response.code())
                         )
                         updateDetailsItem(orderDetailsItemId, quantity, batch, expirationDate)
                     }
@@ -368,7 +368,6 @@ class OrderDetailsViewModel(
  * @param idExtractor The lambda function to extract the id from the item
  * @param comparator The lambda function to compare the items
  * @return The index of the modified item or null if there is no modification
- * @see findModifiedItemOld
  * @see findModifiedItem
  */
 

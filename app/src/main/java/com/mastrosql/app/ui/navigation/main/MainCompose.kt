@@ -34,6 +34,7 @@ import com.mastrosql.app.ui.navigation.LocalAppNavigationViewModelProvider
 import com.mastrosql.app.ui.navigation.intro.introGraph
 import com.mastrosql.app.ui.navigation.main.ordersscreen.orderscomponents.OrdersDestination
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundcomponents.WhOutboundDestination
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
@@ -83,7 +84,7 @@ fun MainCompose(
             else -> {
                 // If the destination is not a main screen we need to handle gestures differently
                 // for each screen
-                if (destination.route == OrdersDestination.route) {
+                if (destination.route == OrdersDestination.route || destination.route == WhOutboundDestination.route) {
                     appNavigationViewModel.setGesturesEnabled(true)
                 } else {
                     appNavigationViewModel.setGesturesEnabled(false)

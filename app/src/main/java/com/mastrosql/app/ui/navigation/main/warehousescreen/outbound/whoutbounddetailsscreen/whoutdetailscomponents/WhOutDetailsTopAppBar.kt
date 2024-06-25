@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -22,10 +22,10 @@ import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
  * App bar to display title and conditionally display the back navigation.
  */
 
-// TODO: Add the OrderDetailsTopAppBar composable here from file
+// TODO: Add the WhOutDetailsTopAppBar composable here from file
 @ExperimentalMaterial3Api
 @Composable
-fun OrderDetailsTopAppBar(
+fun WhOutDetailsTopAppBar(
     modifier: Modifier = Modifier,
     title: String,
     canNavigateBack: Boolean,
@@ -68,7 +68,7 @@ fun OrderDetailsTopAppBar(
                 Icon(
                     imageVector = Icons.Default.AddCircle,
                     modifier = Modifier.fillMaxSize(),
-                    contentDescription = stringResource(R.string.order_details_add_button)
+                    contentDescription = stringResource(R.string.row_details_add_button)
                 )
             }
         }
@@ -76,15 +76,15 @@ fun OrderDetailsTopAppBar(
 }
 
 /**
- * Preview for [OrderDetailsTopAppBar]
+ * Preview for [WhOutDetailsTopAppBar]
  */
 @ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
-fun OrderDetailsTopAppBarPreview() {
+fun WhOutDetailsTopAppBarPreview() {
     MastroAndroidPreviewTheme {
-        OrderDetailsTopAppBar(
-            title = "Order Details",
+        WhOutDetailsTopAppBar(
+            title = "WhOut Details",
             canNavigateBack = true,
             onAddItemClick = {}
         )

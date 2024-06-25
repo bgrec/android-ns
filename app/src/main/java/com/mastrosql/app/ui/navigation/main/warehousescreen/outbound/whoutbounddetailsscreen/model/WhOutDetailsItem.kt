@@ -15,15 +15,14 @@ import java.util.Locale
  * For JSON Kotlin Serialization use @SerialName( value = "DESCRI")
  */
 
-@Suppress("KDocMissingDocumentation")
-@Entity(tableName = "order_details")
+@Entity(tableName = "warehouse_outbound_details")
 @Serializable
-data class OrderDetailsItem(
+data class WhOutDetailsItem(
 
     @PrimaryKey(autoGenerate = false)
     @SerializedName("numePro") val id: Int,
-    @SerializedName("NUME") val orderId: Int,
-    @SerializedName("RIGA") val orderRow: Int?,
+    @SerializedName("NUME") val whOutId: Int,
+    @SerializedName("RIGA") val whOutRow: Int?,
     @SerializedName("ELABORATA") val confirmed: Boolean?,
     @SerializedName("CORTO") val articleId: Int?,
     @SerializedName("artCodi") val sku: String?,
@@ -49,11 +48,11 @@ data class OrderDetailsItem(
     @SerializedName("ordQtOrd") val orderedQuantity: Double?,
     @SerializedName("ordQtCon") val shippedQuantity: Double?,
     @SerializedName("LOTTO") val batch: String?,
-    @SerializedName("dataSca") val expirationDate: String?, //use formatDate(expirationDate)
+    @SerializedName("dataSca") val expirationDate: String?,
     @SerializedName("VARIE") val various: String?,
 
-    @TypeConverters(OrderDetailsMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata?,
-    @TypeConverters(OrderDetailLinksTypeConverter::class) @SerializedName("links") val links: List<Link>,
+    @TypeConverters(WhOutDetailsMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata?,
+    @TypeConverters(WhOutDetailLinksTypeConverter::class) @SerializedName("links") val links: List<Link>,
 
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
@@ -76,13 +75,13 @@ data class Link(
 )
 
 @Serializable
-data class OrderDetailsResponseList(
-    @SerializedName("items") val items: List<OrderDetailsItem>
+data class WhOutDetailsResponseList(
+    @SerializedName("items") val items: List<WhOutDetailsItem>
 )
 
 @Serializable
-data class OrderDetailsResponse(
-    val items: List<OrderDetailsItem>,
+data class WhOutDetailsResponse(
+    val items: List<WhOutDetailsItem>,
     val limit: Int,
     val offset: Int,
     val hasMore: Boolean,
