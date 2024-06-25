@@ -1,46 +1,25 @@
 ####################################################################################################
-CREATE OR REPLACE VIEW `ordersview`
-AS
-SELECT lis_ordc.NUME                                                AS NUME,
-       lis_ordc.CODI                                                AS CODI,
-       IFNULL(TRIM(clienti.DESCRI), '')                             AS RAGIONESOCIALE,
-       IFNULL(IFNULL(TRIM(destina.VIA), TRIM(clienti.VIA)), '')     AS VIA,
-       IFNULL(IFNULL(TRIM(destina.CAP), TRIM(clienti.CAP)), '')     AS CAP,
-       IFNULL(IFNULL(TRIM(destina.CITTA), TRIM(clienti.CITTA)), '') AS CITTA,
-       IFNULL(IFNULL(TRIM(destina.PROV), TRIM(clienti.PROV)), '')   AS PROV,
-       IFNULL(TRIM(clienti.NAZIONE), '')                            AS NAZIONE,
-       IFNULL(TRIM(lis_ordc.DESCRI), '')                            AS DESCRI,
-       IFNULL(TRIM(destina.DESCRI), '')                             AS DESTINAZIONEDESCRI,
-       lis_ordc.N_LAV                                               AS NUMEROLAV,
-       lis_ordc.DATAI                                               AS DATAI,
-       lis_ordc.AGENTE                                              AS AGENTE,
-       lis_ordc.DESTINA                                             AS DESTINA,
-       TRIM(lis_ordc.TRASPO)                                        AS TRASPO,
-       lis_ordc.COLLI                                               AS COLLI,
-       IFNULL(TRIM(lis_ordc.VETTORE), TRIM(vettori.DESCRI))         AS VETTORE,
-       lis_ordc.VETT_NUME                                           AS VETTORENUME,
-       lis_ordc.PESO                                                AS PESO,
-       TRIM(lis_ordc.NUME_ORDI)                                     AS NUMEROORDI,
-       lis_ordc.DATA_ORDI                                           AS DATAORDI,
-       TRIM(lis_ordc.NOTE)                                          AS NOTE,
-       lis_ordc.D_CONSEGNA                                          AS DATACONSEGNA,
-       lis_ordc.TASSATIVA                                           AS TASSATIVA,
-       lis_ordc.CONSEGNA                                            AS CONSEGNA,
-       lis_ordc.STATO_CONS                                          AS STATOCONSEGNA,
-       lis_ordc.URGENTE                                             AS URGENTE,
-       lis_ordc.PARZIALE                                            AS PARZIALE,
-       lis_ordc.NUMERO                                              AS NUMERO
+-- MastroSQL Android Mysql Backend
+-- This script is used to create the database schema for the MastroSQL Android Mysql Backend
+-- Version: 1.0.1
 
-FROM lis_ordc
+-- !! Important !!
 
-         LEFT JOIN clienti ON lis_ordc.CODI = clienti.CODI
-         LEFT JOIN destina ON lis_ordc.DESTINA = destina.PROG_TUTTO
-         LEFT JOIN vettori ON lis_ordc.VETT_NUME = vettori.NUME
-WHERE lis_ordc.DATAI >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-  AND NOT lis_ordc.CONSOLI
+-- Add lis_ord, rig_ordc, palma_righe with CRUD operations to the webserver manually
+-- Then run the following script to create the necessary procedures and views
 
-ORDER BY lis_ordc.DATAI DESC;
+####################################################################################################
+DROP PROCEDURE IF EXISTS SupportedVersion;
+CREATE PROCEDURE SupportedVersion()
+BEGIN
+    DECLARE supported_version VARCHAR(255);
 
+    SET supported_version = '1.0.1';
+    SELECT supported_version AS version;
+END;
+
+####################################################################################################
+-- Start of clients related procedures and views
 ####################################################################################################
 CREATE OR REPLACE VIEW `clientsview`
 AS
@@ -59,6 +38,27 @@ WHERE !clienti.BLOC
   AND clienti.DESCRI <> ''
 ORDER BY clienti.DESCRI;
 
+####################################################################################################
+CREATE OR REPLACE VIEW clientsdestinationsview
+AS
+(
+SELECT destina.PROG_TUTTO   AS PROG_TUTTO,
+       destina.CODI         AS CODI,
+       TRIM(destina.DESCRI) AS DESCRI,
+       TRIM(destina.VIA)    AS VIA,
+       TRIM(destina.CAP)    AS CAP,
+       TRIM(destina.CITTA)  AS CITTA,
+       TRIM(destina.PROV)   AS PROV
+FROM destina
+WHERE destina.CODI IN (SELECT CODI FROM clientsview));
+
+####################################################################################################
+-- End of clients related procedures and views
+####################################################################################################
+
+
+####################################################################################################
+-- Start of articles related procedures
 ####################################################################################################
 #Function to calculate the last digit of an EAN13 code (12 digits + 1 check digit)
 # and EAN8 code (7 digits + 1 check digit)
@@ -109,7 +109,6 @@ BEGIN
 END;
 
 ####################################################################################################
-
 CREATE OR REPLACE VIEW `articlesview`
 AS
 SELECT arti.CORTO                                                           AS CORTO,
@@ -151,7 +150,6 @@ GROUP BY arti.CORTO,
          arti.REPA_SOTTO,
          arti.GRUPPO,
          arti.MISU;
-
 
 ####################################################################################################
 CREATE OR REPLACE VIEW `itemsview`
@@ -242,6 +240,56 @@ BEGIN
     RETURN lastDigit;
 END;
 */
+
+####################################################################################################
+-- End of articles related procedures
+####################################################################################################
+
+####################################################################################################
+-- Start of orders related procedures
+####################################################################################################
+
+CREATE OR REPLACE VIEW `ordersview`
+AS
+SELECT lis_ordc.NUME                                                AS NUME,
+       lis_ordc.CODI                                                AS CODI,
+       IFNULL(TRIM(clienti.DESCRI), '')                             AS RAGIONESOCIALE,
+       IFNULL(IFNULL(TRIM(destina.VIA), TRIM(clienti.VIA)), '')     AS VIA,
+       IFNULL(IFNULL(TRIM(destina.CAP), TRIM(clienti.CAP)), '')     AS CAP,
+       IFNULL(IFNULL(TRIM(destina.CITTA), TRIM(clienti.CITTA)), '') AS CITTA,
+       IFNULL(IFNULL(TRIM(destina.PROV), TRIM(clienti.PROV)), '')   AS PROV,
+       IFNULL(TRIM(clienti.NAZIONE), '')                            AS NAZIONE,
+       IFNULL(TRIM(lis_ordc.DESCRI), '')                            AS DESCRI,
+       IFNULL(TRIM(destina.DESCRI), '')                             AS DESTINAZIONEDESCRI,
+       lis_ordc.N_LAV                                               AS NUMEROLAV,
+       lis_ordc.DATAI                                               AS DATAI,
+       lis_ordc.AGENTE                                              AS AGENTE,
+       lis_ordc.DESTINA                                             AS DESTINA,
+       TRIM(lis_ordc.TRASPO)                                        AS TRASPO,
+       lis_ordc.COLLI                                               AS COLLI,
+       IFNULL(TRIM(lis_ordc.VETTORE), TRIM(vettori.DESCRI))         AS VETTORE,
+       lis_ordc.VETT_NUME                                           AS VETTORENUME,
+       lis_ordc.PESO                                                AS PESO,
+       TRIM(lis_ordc.NUME_ORDI)                                     AS NUMEROORDI,
+       lis_ordc.DATA_ORDI                                           AS DATAORDI,
+       TRIM(lis_ordc.NOTE)                                          AS NOTE,
+       lis_ordc.D_CONSEGNA                                          AS DATACONSEGNA,
+       lis_ordc.TASSATIVA                                           AS TASSATIVA,
+       lis_ordc.CONSEGNA                                            AS CONSEGNA,
+       lis_ordc.STATO_CONS                                          AS STATOCONSEGNA,
+       lis_ordc.URGENTE                                             AS URGENTE,
+       lis_ordc.PARZIALE                                            AS PARZIALE,
+       lis_ordc.NUMERO                                              AS NUMERO
+
+FROM lis_ordc
+
+         LEFT JOIN clienti ON lis_ordc.CODI = clienti.CODI
+         LEFT JOIN destina ON lis_ordc.DESTINA = destina.PROG_TUTTO
+         LEFT JOIN vettori ON lis_ordc.VETT_NUME = vettori.NUME
+WHERE lis_ordc.DATAI >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+  AND NOT lis_ordc.CONSOLI
+
+ORDER BY lis_ordc.DATAI DESC;
 
 ####################################################################################################
 -- Modify the rig_ordc table, the column REPA should be the same as the column REPA in the arti table
@@ -634,19 +682,6 @@ BEGIN
     ORDER BY RIGA;
 END;
 
-####################################################################################################
-CREATE OR REPLACE VIEW clientsdestinationsview
-AS
-(
-SELECT destina.PROG_TUTTO   AS PROG_TUTTO,
-       destina.CODI         AS CODI,
-       TRIM(destina.DESCRI) AS DESCRI,
-       TRIM(destina.VIA)    AS VIA,
-       TRIM(destina.CAP)    AS CAP,
-       TRIM(destina.CITTA)  AS CITTA,
-       TRIM(destina.PROV)   AS PROV
-FROM destina
-WHERE destina.CODI IN (SELECT CODI FROM clientsview));
 
 ####################################################################################################
 DROP PROCEDURE IF EXISTS InsertNewOrder;
@@ -698,12 +733,20 @@ BEGIN
 END;
 
 ####################################################################################################
+-- End of order related procedures
+####################################################################################################
+
+
+####################################################################################################
+-- Start of warehouse outbound related procedures
+####################################################################################################
 CREATE OR REPLACE VIEW whoutboundview
 AS
-SELECT *
-FROM clientsview
-WHERE CODI IN (SELECT CODI FROM palma_righe);
-####################################################################################################
+SELECT tmp.NUME, clientsview.*
+FROM (SELECT NUME, CODI
+      FROM palma_righe
+      GROUP BY NUME, CODI) AS tmp
+         JOIN clientsview ON tmp.CODI = clientsview.CODI;
 
 ####################################################################################################
 DROP PROCEDURE IF EXISTS InsertNewWhOutbound;
@@ -743,15 +786,204 @@ BEGIN
         IF insertedOutboundCustomerId IS NULL THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Errore durante l''inserimento del cliente', MYSQL_ERRNO = 5400;
         ELSE
-            -- Return the last order details based on the last order number
-            SELECT * FROM clientsview WHERE CODI = insertedOutboundCustomerId LIMIT 1;
+            -- Return the last palma_righe row, whout details based on the last whout number
+            SELECT lastWhOutboundId AS NUME, clientsview.*
+            FROM clientsview
+            WHERE CODI = insertedOutboundCustomerId
+            LIMIT 1;
         END IF;
     END IF;
 END;
+####################################################################################################
+ALTER TABLE palma_righe
+    MODIFY COLUMN REPA VARCHAR(10) DEFAULT NULL;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS WhOutBarcodeReader;
+CREATE PROCEDURE WhOutBarcodeReader(IN whOutId INT, IN scannedCode VARCHAR(255))
+BEGIN
+    DECLARE articleId VARCHAR(6);
+    DECLARE batch VARCHAR(100) DEFAULT '';
+    DECLARE rowExists INT;
+    DECLARE quantity DECIMAL(11, 5) DEFAULT 1;
+
+    IF LENGTH(scannedCode) = 8 THEN
+        -- Extract the first four characters from the scanned code for the article ID
+        SET articleId = CAST(SUBSTR(scannedCode, 2, 6) AS SIGNED);
+        SET quantity = 1;
+        SET @quantity = 1;
+    ELSEIF LENGTH(scannedCode) = 20 THEN
+        -- Extract the first four characters from the scanned code for the article ID
+        SET articleId = CAST(SUBSTR(scannedCode, 1, 5) AS SIGNED);
+        -- Extract the batch number from the scanned code
+        SET batch = TRIM(REPLACE(REPLACE(SUBSTR(scannedCode, 6, 15), 'x', ''), 'X', ''));
+        -- Get the quantity per package for the given article
+        CALL GetArticlePackageQuantity(articleId, @quantity);
+        IF @quantity > 0 THEN
+            SET quantity = @quantity;
+        END IF;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Barcode non valido', MYSQL_ERRNO = 5400;
+    END IF;
+
+    -- Check if a row with the given conditions exists
+    IF LENGTH(scannedCode) = 8 THEN
+        SELECT COUNT(*)
+        INTO rowExists
+        FROM palma_righe
+        WHERE NUME = whOutId
+          AND CORTO = articleId;
+    ELSEIF LENGTH(scannedCode) = 20 THEN
+        SELECT COUNT(*)
+        INTO rowExists
+        FROM palma_righe
+        WHERE NUME = whOutId
+          AND CORTO = articleId
+          AND LOTTO = batch;
+    END IF;
+
+    -- If the row does not exist, insert a new row into the palma_righe table
+    IF rowExists = 0 THEN
+        CALL InsertRowIntoPalmaRighe(whOutId, articleId, quantity, batch, NULL);
+    ELSE
+        -- Update the row in the palma_righe table with the scanned code
+        IF LENGTH(scannedCode) = 8 THEN
+            UPDATE palma_righe
+            SET QUAN = QUAN + quantity
+            WHERE NUME = whOutId
+              AND CORTO = articleId;
+        ELSEIF LENGTH(scannedCode) = 20 THEN
+            UPDATE palma_righe
+            SET QUAN = QUAN + quantity
+            WHERE NUME = whOutId
+              AND CORTO = articleId
+              AND LOTTO = batch;
+        END IF;
+    END IF;
+END;
+####################################################################################################
+
+### Insert a new row into the palma_righe table, used by the WhOutBarcodeReader procedure
+DROP PROCEDURE IF EXISTS InsertRowIntoPalmaRighe;
+--
+CREATE PROCEDURE InsertRowIntoPalmaRighe(
+    IN whOutId INT,
+    IN articleId INT,
+    IN quantity DECIMAL(11, 5),
+    IN batch VARCHAR(255),
+    IN expiryDate DATE
+)
+BEGIN
+    DECLARE lastRow INT;
+    DECLARE docDate DATE;
+    DECLARE docNumber INT;
+    DECLARE clientId INT;
+    DECLARE agentId INT;
+    DECLARE agentPerc1 DECIMAL(11, 5);
+    DECLARE agentPerc2 DECIMAL(11, 5);
+
+    DECLARE articleCode VARCHAR(100);
+    DECLARE articleSupplierCode VARCHAR(100);
+    DECLARE articleDescription VARCHAR(255);
+    DECLARE articlePrice DECIMAL(11, 5);
+    DECLARE articleDiscount1 DECIMAL(11, 5);
+    DECLARE articleDiscount2 DECIMAL(11, 5);
+    DECLARE articleCost DECIMAL(11, 5);
+    DECLARE articleVat VARCHAR(100);
+    DECLARE articleVatPercentage DECIMAL(11, 5);
+    DECLARE articleDiscount DECIMAL(11, 5);
+    DECLARE articleUnitOfMeasure VARCHAR(255);
+    DECLARE articleCounterParty VARCHAR(255);
+    DECLARE articleSector VARCHAR(255);
+    DECLARE articleDepartment VARCHAR(255);
+    DECLARE articleQuantityPerPackage DECIMAL(11, 5);
+    DECLARE articlePosVat INT;
+    DECLARE articleListPrice DECIMAL(11, 5);
+
+    -- Find the last row number for the given whout ID
+    SELECT IFNULL(MAX(RIGA), 0) INTO lastRow FROM palma_righe WHERE NUME = whOutId;
+
+    -- Retrieve DOC_DATA, DOC_NUME, and CODI based on the whOutId ID
+    SELECT palma_righe.DOC_DATA,
+           palma_righe.CODI
+    INTO docDate, clientId
+    FROM palma_righe
+    WHERE palma_righe.NUME = whOutId
+    LIMIT 1;
+
+    -- Retrieve article data based on the article ID
+    SELECT arti.CODI,
+           arti.CFOR,
+           TRIM(arti.DESCRI),
+           CASE
+               WHEN arti.CORTO IN (SELECT CORTO FROM clienti_pre WHERE CODI = clientId)
+                   THEN (SELECT PREZZO FROM clienti_pre WHERE CODI = clientId AND CORTO = arti.CORTO)
+               WHEN arti.CORTO IN (SELECT art_lis.CORTO
+                                   FROM art_lis
+                                   WHERE
+                                       art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId LIMIT 1))
+                   THEN (SELECT art_lis.VEND
+                         FROM art_lis
+                         WHERE art_lis.CORTO = arti.CORTO
+                           AND art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId))
+               ELSE arti.VEND
+               END AS 'VEND',
+           CASE
+               WHEN arti.CORTO IN (SELECT CORTO FROM clienti_pre WHERE CODI = clientId)
+                   THEN (SELECT SCON_1 FROM clienti_pre WHERE CODI = clientId AND CORTO = arti.CORTO)
+               WHEN arti.CORTO IN (SELECT art_lis.CORTO
+                                   FROM art_lis
+                                   WHERE art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId))
+                   THEN (SELECT clienti.SCONTO FROM clienti WHERE clienti.CODI = clientId)
+               ELSE arti.SCON_1
+               END AS 'SCON_1',
+           CASE
+               WHEN arti.CORTO IN (SELECT CORTO FROM clienti_pre WHERE CODI = clientId)
+                   THEN (SELECT SCON_2 FROM clienti_pre WHERE CODI = clientId AND CORTO = arti.CORTO)
+               WHEN arti.CORTO IN (SELECT art_lis.CORTO
+                                   FROM art_lis
+                                   WHERE art_lis.NUME = (SELECT clienti.LIST FROM clienti WHERE CODI = clientId))
+                   THEN (SELECT clienti.SCONTO2 FROM clienti WHERE clienti.CODI = clientId)
+               ELSE arti.SCON_2
+               END AS 'SCON_2',
+
+           arti.COST,
+           arti.IVA,
+           iva.PERCE,
+           arti.SCON,
+           arti.MISU,
+           arti.CONTRO,
+           arti.SETTORE,
+           arti.REPA,
+           arti.QT_CONF,
+           arti.CASSA,
+           arti.LISTINO
+    INTO articleCode, articleSupplierCode, articleDescription, articlePrice, articleDiscount1, articleDiscount2,
+        articleCost, articleVat, articleVatPercentage, articleDiscount, articleUnitOfMeasure, articleCounterParty,
+        articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleListPrice
+    FROM arti
+             LEFT JOIN iva ON iva.CODICE = arti.IVA
+    WHERE arti.CORTO = articleId;
+
+    INSERT INTO palma_righe (NUME, N_TIPO, DOC_DATA, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
+                             QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
+                             LISTINO, MISU, DATA, STAM, COLL, SETTORE, REPA, QT_CONF, REPA_CAS, CONTRO, LOTTO, DATA_SCA,
+                             VARIE)
+    VALUES (whOutId, 0, docDate, clientId, lastRow + 1, articleId, articleCode, articleSupplierCode,
+            articleDescription, quantity, agentId, agentPerc1, agentPerc2, articlePrice, articleCost, articleVat,
+            articleVatPercentage,
+            articleDiscount, articleDiscount1, articleDiscount2, 0, articleListPrice, articleUnitOfMeasure,
+            CURRENT_DATE(), 1, 1,
+            articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleCounterParty,
+            batch, expiryDate, 'NEW');
+END;
+
+
 
 ####################################################################################################
 
 -- Create a new user
+/*
 CREATE USER 'bogdan'@'%' IDENTIFIED BY '85000aab';
 GRANT ALL PRIVILEGES ON *.* TO 'bogdan'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
@@ -768,17 +1000,10 @@ FLUSH PRIVILEGES;
 CREATE USER 'thomas'@'%' IDENTIFIED BY 'thomas';
 GRANT ALL PRIVILEGES ON *.* TO 'thomas'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+*/
 
 
 # Example of handling an error in a stored procedure
 #SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Login failed', MYSQL_ERRNO = 5400;
 
-####################################################################################################
-DROP PROCEDURE IF EXISTS SupportedVersion;
-CREATE PROCEDURE SupportedVersion()
-BEGIN
-    DECLARE supported_version VARCHAR(255);
 
-    SET supported_version = '1.0.0';
-    SELECT supported_version AS version;
-END;
