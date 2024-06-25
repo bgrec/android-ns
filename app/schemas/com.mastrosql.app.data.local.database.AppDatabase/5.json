@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "17e42201a3e686fff88cfa0688bd2fa0",
+    "identityHash": "cca2cbe2d3910b14226470dec4809012",
     "entities": [
       {
         "tableName": "items",
@@ -1283,12 +1283,274 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "warehouse_outbound_details",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `whOutId` INTEGER NOT NULL, `whOutRow` INTEGER, `confirmed` INTEGER, `articleId` INTEGER, `sku` TEXT, `vendorSku` TEXT, `description` TEXT, `completeDescription` TEXT, `quantity` REAL, `tmpQuantity` REAL, `returnedQuantity` REAL, `weight` REAL, `cost` TEXT, `price` TEXT, `vat` TEXT, `vatValue` REAL, `discount` REAL, `discount1` REAL, `discount2` REAL, `discount3` REAL, `catalogPrice` REAL, `measureUnit` TEXT, `rowType` INTEGER, `packSize` TEXT, `orderedQuantity` REAL, `shippedQuantity` REAL, `batch` TEXT, `expirationDate` TEXT, `various` TEXT, `metadata` TEXT, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whOutId",
+            "columnName": "whOutId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whOutRow",
+            "columnName": "whOutRow",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "confirmed",
+            "columnName": "confirmed",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "articleId",
+            "columnName": "articleId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sku",
+            "columnName": "sku",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vendorSku",
+            "columnName": "vendorSku",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "completeDescription",
+            "columnName": "completeDescription",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tmpQuantity",
+            "columnName": "tmpQuantity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "returnedQuantity",
+            "columnName": "returnedQuantity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vat",
+            "columnName": "vat",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vatValue",
+            "columnName": "vatValue",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "discount",
+            "columnName": "discount",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "discount1",
+            "columnName": "discount1",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "discount2",
+            "columnName": "discount2",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "discount3",
+            "columnName": "discount3",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "catalogPrice",
+            "columnName": "catalogPrice",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "measureUnit",
+            "columnName": "measureUnit",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "rowType",
+            "columnName": "rowType",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "packSize",
+            "columnName": "packSize",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "orderedQuantity",
+            "columnName": "orderedQuantity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "shippedQuantity",
+            "columnName": "shippedQuantity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "batch",
+            "columnName": "batch",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "expirationDate",
+            "columnName": "expirationDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "various",
+            "columnName": "various",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metadata",
+            "columnName": "metadata",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "links",
+            "columnName": "links",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "page",
+            "columnName": "page",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "last_updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "wh_outbound_details_remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wh_outbound_details_id` INTEGER NOT NULL, `prevKey` INTEGER, `currentPage` INTEGER NOT NULL, `nextKey` INTEGER, `created_at` INTEGER NOT NULL, PRIMARY KEY(`wh_outbound_details_id`))",
+        "fields": [
+          {
+            "fieldPath": "whOutDetailId",
+            "columnName": "wh_outbound_details_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prevKey",
+            "columnName": "prevKey",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currentPage",
+            "columnName": "currentPage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextKey",
+            "columnName": "nextKey",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wh_outbound_details_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '17e42201a3e686fff88cfa0688bd2fa0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cca2cbe2d3910b14226470dec4809012')"
     ]
   }
 }

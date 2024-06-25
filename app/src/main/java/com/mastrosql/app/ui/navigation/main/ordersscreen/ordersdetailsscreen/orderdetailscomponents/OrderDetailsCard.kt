@@ -75,7 +75,6 @@ import com.mastrosql.app.ui.theme.ColorLightBlue
 import com.mastrosql.app.ui.theme.ColorOrange
 import com.mastrosql.app.ui.theme.ColorRedFleryRose
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import com.mastrosql.app.utils.DateHelper
 import kotlinx.coroutines.launch
 
@@ -401,7 +400,7 @@ private fun ItemEditButton(
         Icon(
             Icons.Default.Edit,
             tint = itemEditButtonTint.value,
-            contentDescription = stringResource(R.string.edit_button_order_item),
+            contentDescription = stringResource(R.string.edit_button_list_item),
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -428,7 +427,7 @@ private fun OrderDetailDescriptionAndId(
         ) {
 
             Text(
-                text = stringResource(R.string.order_detail_articleId),
+                text = stringResource(R.string.row_detail_articleId),
                 style = MaterialTheme.typography.bodySmall,
             )
 
@@ -441,7 +440,7 @@ private fun OrderDetailDescriptionAndId(
             Spacer(modifier = Modifier.weight(0.5f))
 
             Text(
-                text = stringResource(R.string.order_detail_sku),
+                text = stringResource(R.string.row_detail_sku),
                 style = MaterialTheme.typography.bodySmall,
             )
 
@@ -487,7 +486,7 @@ private fun OrderDetailDescriptionAndId2(
             ) {
                 Row {
                     Text(
-                        text = stringResource(R.string.order_detail_batch),
+                        text = stringResource(R.string.row_detail_batch),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     if (batch != null) {
@@ -508,7 +507,7 @@ private fun OrderDetailDescriptionAndId2(
             ) {
                 Column {
                     Text(
-                        text = stringResource(R.string.order_detail_expirationDate),
+                        text = stringResource(R.string.row_detail_expirationDate),
                         style = MaterialTheme.typography.bodyMedium,
                     )
 
@@ -544,7 +543,7 @@ private fun OrderDetailInfo(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    text = stringResource(R.string.order_detail_completeDescription),
+                    text = stringResource(R.string.row_detail_completeDescription),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Text(
@@ -589,7 +588,7 @@ private fun QuantityTable(
                         .width(1.dp)
                 )
                 QuantityText(
-                    stringResource(R.string.order_detail_quantity), false, Modifier.weight(1f)
+                    stringResource(R.string.row_detail_quantity), false, Modifier.weight(1f)
                 )
 
                 VerticalDivider(
@@ -600,7 +599,7 @@ private fun QuantityTable(
 
                 QuantityText(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.order_detail_orderedQuantity),
+                    text = stringResource(R.string.row_detail_orderedQuantity),
                     isBold = false
                 )
 
@@ -611,7 +610,7 @@ private fun QuantityTable(
                 )
 
                 QuantityText(
-                    stringResource(R.string.order_detail_shippedQuantity),
+                    stringResource(R.string.row_detail_shippedQuantity),
                     false,
                     Modifier.weight(1f)
                 )

@@ -21,6 +21,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.OrdersViewModel
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.OrderDetailsViewModel
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.WhOutboundViewModel
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.WhOutDetailsViewModel
 import com.mastrosql.app.ui.theme.ThemeViewModel
 
 /**
@@ -138,6 +139,14 @@ object AppViewModelProvider {
         initializer {
             WhOutboundViewModel(
                 mastroAndroidApplication().appContainer.warehouseOutRepository
+            )
+        }
+
+        initializer {
+            WhOutDetailsViewModel(
+                this.createSavedStateHandle(),
+                mastroAndroidApplication().appContainer.whOutDetailsRepository,
+                mastroAndroidApplication().appContainer.userPreferencesRepository
             )
         }
     }

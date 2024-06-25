@@ -92,7 +92,7 @@ fun EditOrderDetailsItem(
 
                 if (orderDetailsUiState.modifiedOrderDetailsItem != null) {
                     dialogDescriptionState.value = context.getString(
-                        R.string.order_details_dialog_edit_title_row,
+                        R.string.row_details_dialog_edit_title_row,
                         orderDetailsUiState.modifiedOrderDetailsItem?.orderRow ?: 0,
                         orderDetailsUiState.modifiedOrderDetailsItem?.articleId ?: 0,
                         orderDetailsUiState.modifiedOrderDetailsItem?.sku ?: ""
@@ -128,7 +128,7 @@ fun EditOrderDetailsItem(
                 Row {
                     OutlinedTextField(
                         value = orderDetailsItemState.batch.value,
-                        label = { Text(stringResource(R.string.order_details_dialog_edit_batch)) },
+                        label = { Text(stringResource(R.string.row_details_dialog_edit_batch)) },
                         onValueChange = { orderDetailsItemState.batch.value = it },
                         isError = orderDetailsItemState.batch.value.text.isEmpty(),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -142,7 +142,7 @@ fun EditOrderDetailsItem(
                 Row {
                     OutlinedTextField(singleLine = true,
                         value = orderDetailsItemState.expirationDate.value,
-                        label = { Text(stringResource(R.string.order_details_dialog_edit_expirationDate)) },
+                        label = { Text(stringResource(R.string.row_details_dialog_edit_expirationDate)) },
                         onValueChange = {
                             orderDetailsItemState.expirationDate.value = it
                         },
@@ -214,7 +214,7 @@ fun EditOrderDetailsItem(
 
                     OutlinedTextField(
                         value = orderDetailsItemState.quantity.value,
-                        label = { Text(stringResource(R.string.order_details_dialog_edit_Quantity)) },
+                        label = { Text(stringResource(R.string.row_details_dialog_edit_Quantity)) },
                         onValueChange = { input ->
                             orderDetailsItemState.quantity.value = input
                         },

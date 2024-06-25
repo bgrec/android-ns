@@ -68,7 +68,7 @@ fun OrderDetailsTopAppBar(
                 Icon(
                     imageVector = Icons.Default.AddCircle,
                     modifier = Modifier.fillMaxSize(),
-                    contentDescription = stringResource(R.string.order_details_add_button)
+                    contentDescription = stringResource(R.string.row_details_add_button)
                 )
             }
         }

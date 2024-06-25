@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.data.local.SwipeActionsPreferences
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.OrderDetailsUiState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.WhOutDetailsUiState
 
 /**
  * Composable function to show a bottom sheet to scan codes.
@@ -46,7 +46,7 @@ import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutboundd
 @Composable
 fun ScanCodeBottomSheet(
     showBottomSheet: MutableState<Boolean>,
-    orderDetailsUiState: OrderDetailsUiState.Success,
+    whOutDetailsUiState: WhOutDetailsUiState.Success,
     scannerState: ScannerState,
     onSendScannedCode: (Int, String) -> Unit,
 ) {
@@ -80,7 +80,7 @@ fun ScanCodeBottomSheet(
     ) {
         KeyboardBarcodeReader(
             scannerState = scannerState,
-            orderDetailsUiState = orderDetailsUiState,
+            whOutDetailsUiState = whOutDetailsUiState,
             onSendScannedCode = onSendScannedCode,
             focusRequester = focusRequester,
             keyboardController = keyboardController
@@ -94,7 +94,7 @@ fun ScanCodeBottomSheet(
 @Composable
 fun KeyboardBarcodeReader(
     scannerState: ScannerState,
-    orderDetailsUiState: OrderDetailsUiState.Success,
+    whOutDetailsUiState: WhOutDetailsUiState.Success,
     onSendScannedCode: (Int, String) -> Unit,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?
@@ -144,24 +144,24 @@ fun KeyboardBarcodeReader(
                     // Check if the last character is a newline character
                     if (it.endsWith("\n")) {
                         // Call ViewModel method to send scanned code to server
-                        if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
+                        if (whOutDetailsUiState.whOutId != null && whOutDetailsUiState.whOutId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
                             onSendScannedCode(
-                                orderDetailsUiState.orderId, scannerState.scannedCode.value
+                                whOutDetailsUiState.whOutId, scannerState.scannedCode.value
                             )
                         }
                         // Clear the scanned code after sending
                         scannerState.scannedCode.value = ""
                     }
                 },
-                label = { Text(stringResource(R.string.order_details_qr_scan_text)) },
+                label = { Text(stringResource(R.string.row_details_qr_scan_text)) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Send
                 ),
                 keyboardActions = KeyboardActions(onSend = {
                     // Call ViewModel method to send scanned code to server
-                    if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
+                    if (whOutDetailsUiState.whOutId != null && whOutDetailsUiState.whOutId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
                         onSendScannedCode(
-                            orderDetailsUiState.orderId, scannerState.scannedCode.value
+                            whOutDetailsUiState.whOutId, scannerState.scannedCode.value
                         )
                     }
                     // Clear the scanned code after sending
@@ -195,9 +195,9 @@ fun KeyboardBarcodeReader(
                 scannerState.isTextFieldPressed.value = false
 
                 // Call ViewModel method to send scanned code to server
-                if (orderDetailsUiState.orderId != null && orderDetailsUiState.orderId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
+                if (whOutDetailsUiState.whOutId != null && whOutDetailsUiState.whOutId > 0 && scannerState.scannedCode.value.isNotEmpty()) {
                     onSendScannedCode(
-                        orderDetailsUiState.orderId, scannerState.scannedCode.value
+                        whOutDetailsUiState.whOutId, scannerState.scannedCode.value
                     )
                 }
 
@@ -222,8 +222,8 @@ fun KeyboardBarcodeReader(
 fun KeyboardBarcodeReaderPreview() {
     KeyboardBarcodeReader(
         scannerState = ScannerState(),
-        orderDetailsUiState = OrderDetailsUiState.Success(
-            orderDetailsList = emptyList(), swipeActionsPreferences = SwipeActionsPreferences()
+        whOutDetailsUiState = WhOutDetailsUiState.Success(
+            whOutDetailsList = emptyList(), swipeActionsPreferences = SwipeActionsPreferences()
         ),
         onSendScannedCode = { _, _ -> },
         focusRequester = FocusRequester(),

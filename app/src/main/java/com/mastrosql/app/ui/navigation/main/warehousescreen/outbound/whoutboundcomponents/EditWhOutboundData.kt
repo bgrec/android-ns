@@ -38,11 +38,11 @@ fun EditWhOutboundData(
     //State to hold the modified warehouse outbound state data
     val whOutboundState by remember { mutableStateOf(WhOutboundState()) }
 
-    // Create a FocusRequester
-    val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(whOutboundState) {
-        focusRequester.requestFocus()
-    }
+//    // Create a FocusRequester
+//    val focusRequester = remember { FocusRequester() }
+//    LaunchedEffect(whOutboundState) {
+//        focusRequester.requestFocus()
+//    }
 
     //    val focusRequester = remember { FocusRequester() }
     //    LaunchedEffect(Unit) { // Trigger only once on composition

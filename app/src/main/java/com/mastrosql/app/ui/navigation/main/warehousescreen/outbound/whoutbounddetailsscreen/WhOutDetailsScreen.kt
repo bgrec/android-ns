@@ -49,71 +49,71 @@ import com.mastrosql.app.data.local.SwipeActionsPreferences
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.ACTION_DATA_CODE_RECEIVED
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.ScanReceiver
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.EditOrderDetailsItem2
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.OrderDetailList
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.OrderDetailsDestination
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.OrderDetailsItemState
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.OrderDetailsSearchView
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.OrderDetailsTopAppBar
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.ScanCodeBottomSheet
-import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents.ScannerState
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.ACTION_DATA_CODE_RECEIVED
+import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.ScanReceiver
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.EditWhOutDetailsItem2
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.ScanCodeBottomSheet
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.ScannerState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.WhOutDetailList
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.WhOutDetailsDestination
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.WhOutDetailsItemState
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.WhOutDetailsSearchView
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents.WhOutDetailsTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
- * OrderDetailsScreen composable
+ * WhOutDetailsScreen composable
  */
 @ExperimentalMaterial3Api
 @Composable
-fun OrderDetailsScreen(
+fun WhOutDetailsScreen(
     navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     navController: NavController,
-    viewModel: OrderDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: WhOutDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     // Collect the UI state from the ViewModel
-    val orderDetailsUiState by viewModel.orderDetailsUiState.collectAsStateWithLifecycle()
-    //val updatedOrderDetailsUiState by rememberUpdatedState(orderDetailsUiState)
+    val whOutDetailsUiState by viewModel.whOutDetailsUiState.collectAsStateWithLifecycle()
+    //val updatedWhOutDetailsUiState by rememberUpdatedState(whOutDetailsUiState)
 
     val modifier = Modifier.fillMaxSize()
 
-    when (orderDetailsUiState) {
-        is OrderDetailsUiState.Loading -> LoadingScreen(
+    when (whOutDetailsUiState) {
+        is WhOutDetailsUiState.Loading -> LoadingScreen(
             modifier = modifier, loading = true
         )
 
-        is OrderDetailsUiState.Success -> OrderDetailResultScreen(
+        is WhOutDetailsUiState.Success -> WhOutDetailResultScreen(
             modifier = modifier,
             navigateToNewItem = navigateToNewItem,
             navigateBack = navigateBack,
-            orderDetailsUiState = orderDetailsUiState as OrderDetailsUiState.Success,
+            whOutDetailsUiState = whOutDetailsUiState as WhOutDetailsUiState.Success,
             navController = navController,
             viewModel = viewModel
         )
 
-        is OrderDetailsUiState.Error -> ErrorScreen(
+        is WhOutDetailsUiState.Error -> ErrorScreen(
             modifier = modifier,
-            exception = (orderDetailsUiState as OrderDetailsUiState.Error).exception,
-            retryAction = viewModel::getOrderDetails,
+            exception = (whOutDetailsUiState as WhOutDetailsUiState.Error).exception,
+            retryAction = viewModel::getWhOutDetails,
             navController = navController
         )
     }
 }
 
 /**
- * OrderDetailResultScreen composable
+ * WhOutDetailResultScreen composable
  */
 @ExperimentalMaterial3Api
 @Composable
-fun OrderDetailResultScreen(
+fun WhOutDetailResultScreen(
     modifier: Modifier = Modifier,
     navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
-    orderDetailsUiState: OrderDetailsUiState.Success,
+    whOutDetailsUiState: WhOutDetailsUiState.Success,
     navController: NavController,
-    viewModel: OrderDetailsViewModel
+    viewModel: WhOutDetailsViewModel
 ) {
     // Get the context
     val context = LocalContext.current
@@ -132,12 +132,12 @@ fun OrderDetailResultScreen(
     //Removes the value of the LiveData when we return from the NewItemScreen = ArticlesScreen
     backStackEntry?.savedStateHandle?.remove<Boolean>("shouldRefresh")
 
-    // Trigger getOrderDetails when the user returns from the ArticleScreen, to refresh the list
+    // Trigger getWhOutDetails when the user returns from the ArticleScreen, to refresh the list
     LaunchedEffect(returnedFromNewItem) {
         if (returnedFromNewItem) {
             coroutineScope.launch {
-                // Refresh the order details
-                viewModel.getOrderDetails()
+                // Refresh the whOut details
+                viewModel.getWhOutDetails()
 
                 // Reset the value to false after the refresh
                 returnedFromNewItem = false
@@ -145,47 +145,47 @@ fun OrderDetailResultScreen(
         }
     }
 
-    // Call the OrderDetails composable
-    OrderDetails(
+    // Call the WhOutDetails composable
+    WhOutDetails(
         modifier = modifier,
         context = context,
         navigateToNewItem = navigateToNewItem,
         navigateBack = navigateBack,
-        orderDetailsUiState = orderDetailsUiState,
+        whOutDetailsUiState = whOutDetailsUiState,
         coroutineScope = coroutineScope,
-        onRefresh = { viewModel.getOrderDetails() },
-        onDelete = { orderDetailsItemId ->
-            viewModel.deleteDetailItem(context, orderDetailsItemId)
+        onRefresh = { viewModel.getWhOutDetails() },
+        onDelete = { whOutDetailsItemId ->
+            viewModel.deleteDetailItem(context, whOutDetailsItemId)
         },
-        onDuplicate = { orderDetailsItemId ->
-            viewModel.duplicateDetailItem(context, orderDetailsItemId)
+        onDuplicate = { whOutDetailsItemId ->
+            viewModel.duplicateDetailItem(context, whOutDetailsItemId)
         },
-        onUpdate = { orderDetailsItemId, quantity, batch, expirationDate ->
+        onUpdate = { whOutDetailsItemId, quantity, batch, expirationDate ->
             viewModel.updateDetailsItemData(
                 context = context,
-                orderDetailsItemId = orderDetailsItemId,
+                whOutDetailsItemId = whOutDetailsItemId,
                 quantity = quantity,
                 batch = batch,
                 expirationDate = expirationDate
             )
         },
-        onSendScannedCode = { orderId, scannedCode ->
-            viewModel.sendScannedCode(context, orderId, scannedCode)
+        onSendScannedCode = { whOutId, scannedCode ->
+            viewModel.sendScannedCode(context, whOutId, scannedCode)
         },
     )
 }
 
 /**
- * OrderDetails composable
+ * WhOutDetails composable
  */
 @ExperimentalMaterial3Api
 @Composable
-fun OrderDetails(
+fun WhOutDetails(
     modifier: Modifier = Modifier,
     context: Context,
     navigateToNewItem: (Int) -> Unit,
     navigateBack: () -> Unit,
-    orderDetailsUiState: OrderDetailsUiState.Success,
+    whOutDetailsUiState: WhOutDetailsUiState.Success,
     coroutineScope: CoroutineScope,
     onRefresh: () -> Unit,
     onDelete: (Int) -> Unit,
@@ -217,8 +217,8 @@ fun OrderDetails(
             scannedCode = barcode
 
             // Handle the scanned code
-            //Log.d("OrderDetailsScreen", "Scanned code: $barcode")
-            onSendScannedCode(orderDetailsUiState.orderId ?: 0, barcode)
+            //Log.d("WhOutDetailsScreen", "Scanned code: $barcode")
+            onSendScannedCode(whOutDetailsUiState.whOutId ?: 0, barcode)
         }
     }
 
@@ -249,8 +249,8 @@ fun OrderDetails(
         }
     }
 
-    //State to hold the modified order details item
-    val orderDetailsItemState by remember { mutableStateOf(OrderDetailsItemState()) }
+    //State to hold the modified whOut details item
+    val whOutDetailsItemState by remember { mutableStateOf(WhOutDetailsItemState()) }
 
     // State to hold the scanner state
     val scannerState by remember { mutableStateOf(ScannerState()) }
@@ -264,16 +264,16 @@ fun OrderDetails(
             }
             .nestedScroll(state.nestedScrollConnection),
         topBar = {
-            OrderDetailsTopAppBar(
+            WhOutDetailsTopAppBar(
                 title = stringResource(
-                    OrderDetailsDestination.titleRes,
-                    orderDetailsUiState.orderId ?: 0,
-                    orderDetailsUiState.orderDescription ?: ""
+                    WhOutDetailsDestination.titleRes,
+                    whOutDetailsUiState.whOutId ?: 0,
+                    whOutDetailsUiState.whOutDescription ?: ""
                 ),
                 canNavigateBack = true,
                 navigateUp = navigateBack,
                 onAddItemClick = {
-                    navigateToNewItem(orderDetailsUiState.orderId ?: 0)
+                    navigateToNewItem(whOutDetailsUiState.whOutId ?: 0)
                 },
             )
         },
@@ -309,42 +309,42 @@ fun OrderDetails(
                 // Screen content
                 val textState = remember { mutableStateOf(TextFieldValue("")) }
 
-                OrderDetailsSearchView(state = textState)
+                WhOutDetailsSearchView(state = textState)
 
-                val swipeActionsPreferences = orderDetailsUiState.swipeActionsPreferences
+                val swipeActionsPreferences = whOutDetailsUiState.swipeActionsPreferences
 
-                OrderDetailList(
-                    orderDetailList = orderDetailsUiState.orderDetailsList,
-                    modifiedIndex = orderDetailsUiState.modifiedIndex,
+                WhOutDetailList(
+                    whOutDetailList = whOutDetailsUiState.whOutDetailsList,
+                    modifiedIndex = whOutDetailsUiState.modifiedIndex,
                     searchTextState = textState,
                     modifier = Modifier
                         .padding(0.dp, 8.dp)
                         .weight(if (showBottomSheet.value) 0.5f else 1f),
                     showEditDialog = showEditDialog,
                     snackbarHostState = snackbarHostState,
-                    onRemove = { orderDetailsItemId ->
-                        onDelete(orderDetailsItemId)
+                    onRemove = { whOutDetailsItemId ->
+                        onDelete(whOutDetailsItemId)
                     },
-                    onDuplicate = { orderDetailsItemId ->
-                        onDuplicate(orderDetailsItemId)
+                    onDuplicate = { whOutDetailsItemId ->
+                        onDuplicate(whOutDetailsItemId)
                     },
                     swipeActionsPreferences = swipeActionsPreferences
                 )
 
                 if (showEditDialog.value) {
-                    EditOrderDetailsItem2(showEditDialog = showEditDialog,
-                        orderDetailsUiState = orderDetailsUiState,
-                        orderDetailsItemState = orderDetailsItemState,
-                        onEditOrderDetailsItem = { orderDetailsItemId, quantity, batch, expirationDate ->
-                            onUpdate(orderDetailsItemId, quantity, batch, expirationDate)
+                    EditWhOutDetailsItem2(showEditDialog = showEditDialog,
+                        whOutDetailsUiState = whOutDetailsUiState,
+                        whOutDetailsItemState = whOutDetailsItemState,
+                        onEditWhOutDetailsItem = { whOutDetailsItemId, quantity, batch, expirationDate ->
+                            onUpdate(whOutDetailsItemId, quantity, batch, expirationDate)
                         })
                 }
                 if (showBottomSheet.value) {
                     ScanCodeBottomSheet(showBottomSheet = showBottomSheet,
-                        orderDetailsUiState = orderDetailsUiState,
+                        whOutDetailsUiState = whOutDetailsUiState,
                         scannerState = scannerState,
-                        onSendScannedCode = { orderId, scannedCode ->
-                            onSendScannedCode(orderId, scannedCode)
+                        onSendScannedCode = { whOutId, scannedCode ->
+                            onSendScannedCode(whOutId, scannedCode)
                         })
                 }
             }
@@ -367,20 +367,20 @@ fun OrderDetails(
 }
 
 /**
- * Preview the OrderDetailsScreen
+ * Preview the WhOutDetailsScreen
  */
 @ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
-fun OrdersScreenPreview() {
-    OrderDetails(modifier = Modifier.fillMaxSize(),
+fun WhOutsScreenPreview() {
+    WhOutDetails(modifier = Modifier.fillMaxSize(),
         context = LocalContext.current,
         navigateToNewItem = {},
         navigateBack = {},
-        orderDetailsUiState = OrderDetailsUiState.Success(
-            orderId = 1,
-            orderDescription = "Order Description",
-            orderDetailsList = emptyList(),
+        whOutDetailsUiState = WhOutDetailsUiState.Success(
+            whOutId = 1,
+            whOutDescription = "WhOut Description",
+            whOutDetailsList = emptyList(),
             swipeActionsPreferences = SwipeActionsPreferences()
         ),
         coroutineScope = rememberCoroutineScope(),

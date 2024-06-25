@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +36,7 @@ import com.mastrosql.app.R
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 @Composable
-fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
+fun WhOutDetailsSearchView(state: MutableState<TextFieldValue>) {
 
     var isEditing by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -69,7 +69,7 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
         leadingIcon = {
             Icon(
                 Icons.Default.Search,
-                contentDescription = stringResource(R.string.order_description),
+                contentDescription = stringResource(R.string.whout_description),
                 modifier = Modifier
                     .padding(15.dp)
                     .size(24.dp)
@@ -122,6 +122,6 @@ fun OrderDetailsSearchView(state: MutableState<TextFieldValue>) {
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     MastroAndroidPreviewTheme {
-        OrderDetailsSearchView(textState)
+        WhOutDetailsSearchView(textState)
     }
 }

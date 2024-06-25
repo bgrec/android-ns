@@ -249,7 +249,7 @@ fun OrderDescriptionAndId(
             ), horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = stringResource(R.string.order_deliveryType),
+                text = stringResource(R.string.row_deliveryType),
                 style = MaterialTheme.typography.bodySmall,
             )
             deliveryStateObj?.let { state ->
@@ -306,7 +306,7 @@ fun OrderInfo(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.order_destinationName),
+                text = stringResource(R.string.document_destinationName),
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -321,7 +321,7 @@ fun OrderInfo(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.order_deliveryDate),
+                text = stringResource(R.string.row_deliveryDate),
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -336,7 +336,7 @@ fun OrderInfo(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.order_carrierName),
+                text = stringResource(R.string.document_carrierName),
                 style = MaterialTheme.typography.bodySmall
             )
         }

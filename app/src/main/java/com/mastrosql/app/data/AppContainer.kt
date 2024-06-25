@@ -27,8 +27,10 @@ import com.mastrosql.app.data.orders.NetworkOrdersRepository
 import com.mastrosql.app.data.orders.OrdersRepository
 import com.mastrosql.app.data.orders.orderdetails.NetworkOrderDetailsRepository
 import com.mastrosql.app.data.orders.orderdetails.OrderDetailsRepository
-import com.mastrosql.app.data.warehouse.outbound.NetworkWareHouseOutRepository
+import com.mastrosql.app.data.warehouse.outbound.NetworkWarehouseOutRepository
 import com.mastrosql.app.data.warehouse.outbound.WarehouseOutRepository
+import com.mastrosql.app.data.warehouse.outbound.whoutdetails.NetworkWhOutDetailsRepository
+import com.mastrosql.app.data.warehouse.outbound.whoutdetails.WhOutDetailsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.net.URL
@@ -54,6 +56,7 @@ interface AppContainer {
     val orderDetailsRepository: OrderDetailsRepository
     val userPreferencesRepository: UserPreferencesRepository
     val warehouseOutRepository: WarehouseOutRepository
+    val whOutDetailsRepository: WhOutDetailsRepository
     val mastroAndroidApiService: MastroAndroidApiService
 
     /**
@@ -158,6 +161,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         orderDetailsRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         userPreferencesRepository.updateMastroAndroidApiService(mastroAndroidApiService)
         warehouseOutRepository.updateMastroAndroidApiService(mastroAndroidApiService)
+        whOutDetailsRepository.updateMastroAndroidApiService(mastroAndroidApiService)
     }
 
     /**
@@ -216,9 +220,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val customersMasterDataRepository: CustomersMasterDataRepository by lazy {
         NetworkCustomersMasterDataRepository(
             mastroAndroidApiService,
-            AppDatabase
-                .getInstance(context)
-                .customersMasterDataDao(),
+            AppDatabase.getInstance(context).customersMasterDataDao(),
             context
         )
     }
@@ -229,49 +231,39 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val itemsRepository: ItemsRepository by lazy {
         OfflineItemsRepository(
-            AppDatabase
-                .getInstance(context)
-                .itemDao()
+            AppDatabase.getInstance(context).itemDao()
         )
     }
 
     override val articlesRepository: ArticlesRepository by lazy {
         NetworkArticlesRepository(
-            mastroAndroidApiService,
-            AppDatabase
-                .getInstance(context)
-                .articlesDao(),
-            context
+            mastroAndroidApiService, AppDatabase.getInstance(context).articlesDao(), context
         )
     }
 
     override val ordersRepository: OrdersRepository by lazy {
         NetworkOrdersRepository(
-            mastroAndroidApiService,
-            AppDatabase
-                .getInstance(context)
-                .ordersDao(),
-            context
+            mastroAndroidApiService, AppDatabase.getInstance(context).ordersDao(), context
         )
     }
 
     override val orderDetailsRepository: OrderDetailsRepository by lazy {
         NetworkOrderDetailsRepository(
-            mastroAndroidApiService,
-            AppDatabase
-                .getInstance(context)
-                .orderDetailsDao(),
-            context
+            mastroAndroidApiService, AppDatabase.getInstance(context).orderDetailsDao(), context
         )
     }
 
     override val warehouseOutRepository: WarehouseOutRepository by lazy {
-        NetworkWareHouseOutRepository(
+        NetworkWarehouseOutRepository(
             mastroAndroidApiService,
-            AppDatabase
-                .getInstance(context)
-                .warehouseOutboundDao(),
+            AppDatabase.getInstance(context).warehouseOutboundDao(),
             context
+        )
+    }
+
+    override val whOutDetailsRepository: WhOutDetailsRepository by lazy {
+        NetworkWhOutDetailsRepository(
+            mastroAndroidApiService, AppDatabase.getInstance(context).whOutDetailsDao(), context
         )
     }
 

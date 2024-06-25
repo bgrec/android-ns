@@ -60,6 +60,11 @@ import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.Wareh
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundLinksTypeConverter
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundMetadataTypeConverter
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundRemoteKeys
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.WhOutDetailLinksTypeConverter
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.WhOutDetailsDao
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.WhOutDetailsItem
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.WhOutDetailsMetadataTypeConverter
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.WhOutDetailsRemoteKeys
 
 /**
  * Database class with a singleton Instance object.
@@ -83,7 +88,9 @@ import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOut
         DestinationData::class,
         DestinationsRemoteKeys::class,
         WarehouseOutbound::class,
-        WhOutboundRemoteKeys::class
+        WhOutboundRemoteKeys::class,
+        WhOutDetailsItem::class,
+        WhOutDetailsRemoteKeys::class
     ],
     /*autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -108,7 +115,9 @@ import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOut
     DestinationsMetadataTypeConverter::class,
     DestinationsLinksTypeConverter::class,
     WhOutboundMetadataTypeConverter::class,
-    WhOutboundLinksTypeConverter::class
+    WhOutboundLinksTypeConverter::class,
+    WhOutDetailsMetadataTypeConverter::class,
+    WhOutDetailLinksTypeConverter::class
 )
 
 /**
@@ -183,6 +192,11 @@ abstract class AppDatabase : RoomDatabase() {
      * Provides access to the DAO (Data Access Object) for interacting with the WarehouseOutboundRemoteKeys entity in the database.
      */
     abstract fun warehouseOutboundRemoteKeysDao(): WarehouseOutboundRemoteKeysDao
+
+    /**
+     * Provides access to the DAO (Data Access Object) for interacting with the WhOutDetails entity in the database.
+     */
+    abstract fun whOutDetailsDao(): WhOutDetailsDao
 
     /**
      * The singleton instance of the AppDatabase class, which provides access to the application's Room database.
