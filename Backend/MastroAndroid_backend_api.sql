@@ -505,6 +505,10 @@ CREATE PROCEDURE InsertArticleIntoDocument(
 BEGIN
     IF TRIM(documentType) = 'order' THEN
         CALL InsertRowIntoRigOrdC(documentId, articleId, 1, 1, '', NULL);
+    ELSEIF TRIM(documentType) = 'whout' THEN
+        CALL InsertRowIntoPalmaRighe(documentId, articleId, 1, '', NULL);
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Tipo di documento non valido', MYSQL_ERRNO = 5400;
     END IF;
 
 END;
