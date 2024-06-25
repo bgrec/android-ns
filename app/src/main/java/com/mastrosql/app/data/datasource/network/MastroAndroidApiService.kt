@@ -123,7 +123,7 @@ interface MastroAndroidApiService {
      * Sends scanned barcode data to the server.
      */
     @PUT("OrderBarcodeReader")
-    suspend fun sendScannedCode(
+    suspend fun sendOrderScannedCode(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -131,7 +131,7 @@ interface MastroAndroidApiService {
      * Deletes a detail item based on the specified filter.
      */
     @DELETE("rigOrdc")
-    suspend fun deleteDetailItem(
+    suspend fun deleteOrderDetailItem(
         @Query("q") filter: String,
     ): Response<JsonObject>
 
@@ -147,7 +147,7 @@ interface MastroAndroidApiService {
      * Duplicates an order detail item on the server.
      */
     @PUT("DuplicateOrderRow")
-    suspend fun duplicateDetailItem(
+    suspend fun duplicateOrderDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -155,7 +155,7 @@ interface MastroAndroidApiService {
      * Updates an order detail item on the server.
      */
     @PUT("UpdateOrderRow")
-    suspend fun updateDetailItem(
+    suspend fun updateOrderDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -180,7 +180,7 @@ interface MastroAndroidApiService {
      * Updates the delivery state of an order on the server.
      */
     @PUT("UpdateOrderDeliveryState")
-    suspend fun updateDeliveryState(
+    suspend fun updateOrderDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -223,6 +223,22 @@ interface MastroAndroidApiService {
     ): WhOutDetailsResponse
 
     /**
+     * Deletes a detail whout item based on the specified filter.
+     */
+    @DELETE("palmaRighe")
+    suspend fun deleteWhOutDetailItem(
+        @Query("q") filter: String,
+    ): Response<JsonObject>
+
+    /**
+     * Sends scanned barcode data to the server.
+     */
+    @PUT("WhOutBarcodeReader")
+    suspend fun sendWhOutScannedCode(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    /**
      * ****************************************************************************************
      * Authentication API calls
      * ****************************************************************************************
@@ -259,5 +275,4 @@ interface MastroAndroidApiService {
      */
     @GET("authentication/completed")
     suspend fun getLoginCompleted(): Response<JsonObject>
-
 }

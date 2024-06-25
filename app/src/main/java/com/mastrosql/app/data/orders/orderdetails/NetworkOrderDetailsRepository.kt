@@ -130,7 +130,7 @@ class NetworkOrderDetailsRepository(
             addProperty("orderId", orderId)
             addProperty("scannedCode", scannedCode)
         }
-        return mastroAndroidApiService.sendScannedCode(body)
+        return mastroAndroidApiService.sendOrderScannedCode(body)
     }
 
     /**
@@ -143,7 +143,7 @@ class NetworkOrderDetailsRepository(
     override suspend fun deleteDetailItem(orderDetailId: Int): Response<JsonObject> {
         val filter = "{\"numePro\": $orderDetailId}"
 
-        return mastroAndroidApiService.deleteDetailItem(filter)
+        return mastroAndroidApiService.deleteOrderDetailItem(filter)
     }
 
     /**
@@ -157,7 +157,7 @@ class NetworkOrderDetailsRepository(
         val body = JsonObject().apply {
             addProperty("orderDetailId", orderDetailId)
         }
-        return mastroAndroidApiService.duplicateDetailItem(body)
+        return mastroAndroidApiService.duplicateOrderDetailItem(body)
     }
 
     /**
@@ -172,9 +172,9 @@ class NetworkOrderDetailsRepository(
         orderDetailId: Int, quantity: Double, batch: String, expirationDate: String
     ): Response<JsonObject> {
 
-    /**
-     * Formats the expiration date for use in an API request.
-     */
+        /**
+         * Formats the expiration date for use in an API request.
+         */
         val expirationDateFormated = if (expirationDate == "") {
             "null"
         }
@@ -192,7 +192,7 @@ class NetworkOrderDetailsRepository(
             addProperty("batch", batch)
             addProperty("expirationDate", expirationDateFormated)
         }
-        return mastroAndroidApiService.updateDetailItem(body)
+        return mastroAndroidApiService.updateOrderDetailItem(body)
     }
 
 }

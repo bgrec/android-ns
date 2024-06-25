@@ -353,7 +353,7 @@ fun <T, K : Comparable<K>> List<T>.findModifiedItem(
 ): Int? {
     // If sizes are different, there is a modification
     if (this.size < other.size) {
-        // Find the index of the order with the greatest id in the other list
+        // Find the index of the whout with the greatest id in the other list
         return other.indexOf(other.maxByOrNull { idExtractor(it) })
     } else if (this.size > other.size) {
         return null

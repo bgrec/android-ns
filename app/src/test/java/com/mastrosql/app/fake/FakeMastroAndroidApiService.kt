@@ -69,11 +69,11 @@ class FakeMastroAndroidApiService : MastroAndroidApiService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun sendScannedCode(body: JsonObject): Response<JsonObject> {
+    override suspend fun sendOrderScannedCode(body: JsonObject): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteDetailItem(filter: String): Response<JsonObject> {
+    override suspend fun deleteOrderDetailItem(filter: String): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 
@@ -81,11 +81,11 @@ class FakeMastroAndroidApiService : MastroAndroidApiService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun duplicateDetailItem(body: JsonObject): Response<JsonObject> {
+    override suspend fun duplicateOrderDetailItem(body: JsonObject): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateDetailItem(body: JsonObject): Response<JsonObject> {
+    override suspend fun updateOrderDetailItem(body: JsonObject): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 
@@ -93,7 +93,7 @@ class FakeMastroAndroidApiService : MastroAndroidApiService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateDeliveryState(body: JsonObject): Response<JsonObject> {
+    override suspend fun updateOrderDeliveryState(body: JsonObject): Response<JsonObject> {
         TODO("Not yet implemented")
     }
 

@@ -37,8 +37,8 @@ class NetworkWhOutDetailsRepository(
 
     override val outputWorkInfo: Flow<WorkInfo> =
         workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
-                if (it.isNotEmpty()) it.first() else null
-            }
+            if (it.isNotEmpty()) it.first() else null
+        }
 
     override suspend fun getWhOutDetails(whOutId: Int?): WhOutDetailsResponse {
         //val filter = "{\"NUME\": $whOutId}"
@@ -76,20 +76,20 @@ class NetworkWhOutDetailsRepository(
             addProperty("whOutId", whOutId)
             addProperty("scannedCode", scannedCode)
         }
-        return mastroAndroidApiService.sendScannedCode(body)
+        return mastroAndroidApiService.sendWhOutScannedCode(body)
     }
 
     override suspend fun deleteDetailItem(whOutDetailId: Int): Response<JsonObject> {
         val filter = "{\"numePro\": $whOutDetailId}"
 
-        return mastroAndroidApiService.deleteDetailItem(filter)
+        return mastroAndroidApiService.deleteWhOutDetailItem(filter)
     }
 
     override suspend fun duplicateDetailItem(whOutDetailId: Int): Response<JsonObject> {
         val body = JsonObject().apply {
             addProperty("whOutDetailId", whOutDetailId)
         }
-        return mastroAndroidApiService.duplicateDetailItem(body)
+        return mastroAndroidApiService.duplicateOrderDetailItem(body)
     }
 
     override suspend fun updateDetailItem(
@@ -106,6 +106,6 @@ class NetworkWhOutDetailsRepository(
             addProperty("batch", batch)
             addProperty("expirationDate", expirationDateFormated)
         }
-        return mastroAndroidApiService.updateDetailItem(body)
+        return mastroAndroidApiService.updateOrderDetailItem(body)
     }
 }
