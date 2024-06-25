@@ -10,6 +10,7 @@ import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundAddResponse
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WhOutboundResponse
+import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.model.WhOutDetailsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -27,6 +28,7 @@ import retrofit2.http.Query
 
 interface MastroAndroidApiService {
 
+    //Customers API calls
     /**
      * Returns a [CustomersMasterDataResponse] object which is a list of [CustomerMasterData]
      * Authentication is required for this API call.
@@ -70,6 +72,9 @@ interface MastroAndroidApiService {
         @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): DestinationsDataResponse
 
+    //End of Customers API calls
+
+    //Articles API calls
     /**
      * Retrieves all articles with specified offset and limit.
      */
@@ -78,6 +83,18 @@ interface MastroAndroidApiService {
         @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
     ): ArticlesResponse
 
+    /**
+     * Inserts an article into a document on the server.
+     */
+    @PUT("InsertArticleIntoDocument")
+    suspend fun insertArticleIntoDocument(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    //End of Articles API calls
+
+
+    //Orders API calls
     /**
      * Retrieves all orders with specified offset and limit.
      */
@@ -122,7 +139,7 @@ interface MastroAndroidApiService {
      * Sends scanned barcode data to the server.
      */
     @PUT("OrderBarcodeReader")
-    suspend fun sendScannedCode(
+    suspend fun sendOrderScannedCode(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -130,23 +147,15 @@ interface MastroAndroidApiService {
      * Deletes a detail item based on the specified filter.
      */
     @DELETE("rigOrdc")
-    suspend fun deleteDetailItem(
+    suspend fun deleteOrderDetailItem(
         @Query("q") filter: String,
-    ): Response<JsonObject>
-
-    /**
-     * Inserts an article into a document on the server.
-     */
-    @PUT("InsertArticleIntoDocument")
-    suspend fun insertArticleIntoDocument(
-        @Body body: JsonObject
     ): Response<JsonObject>
 
     /**
      * Duplicates an order detail item on the server.
      */
     @PUT("DuplicateOrderRow")
-    suspend fun duplicateDetailItem(
+    suspend fun duplicateOrderDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -154,7 +163,7 @@ interface MastroAndroidApiService {
      * Updates an order detail item on the server.
      */
     @PUT("UpdateOrderRow")
-    suspend fun updateDetailItem(
+    suspend fun updateOrderDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -179,7 +188,7 @@ interface MastroAndroidApiService {
      * Updates the delivery state of an order on the server.
      */
     @PUT("UpdateOrderDeliveryState")
-    suspend fun updateDeliveryState(
+    suspend fun updateOrderDeliveryState(
         @Body body: JsonObject
     ): Response<JsonObject>
 
@@ -191,6 +200,10 @@ interface MastroAndroidApiService {
         @Body body: JsonObject
     ): Response<OrderAddResponse>
 
+    //End of Orders API calls
+
+    //Warehouse Outbound API calls
+
     @GET("whoutboundview")
     suspend fun getAllWhOutbound(
         @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
@@ -200,6 +213,52 @@ interface MastroAndroidApiService {
     suspend fun insertNewWhOutbound(
         @Body body: JsonObject
     ): Response<WhOutboundAddResponse>
+
+    /**
+     * Retrieves whout details based on the specified filter.
+     */
+    @GET("palmaRighe")
+    suspend fun getWhOutDetails(
+        @Query("q") filter: String,
+        /**
+         * Example of filter parameter:
+         * "{\"NUME\": 4}" rigOrdc/?q={"NUME": 4}
+         */
+    ): WhOutDetailsResponse
+
+    /**
+     * Retrieves all whouut details with specified offset and limit.
+     */
+    @GET("palmaRighe")
+    suspend fun getAllWhOutDetails(
+        @Query("offset") offset: Int = 0, @Query("limit") pageSize: Int = 1000000
+    ): WhOutDetailsResponse
+
+    /**
+     * Deletes a detail whout item based on the specified filter.
+     */
+    @DELETE("palmaRighe")
+    suspend fun deleteWhOutDetailItem(
+        @Query("q") filter: String,
+    ): Response<JsonObject>
+
+    /**
+     * Sends scanned barcode data to the server.
+     */
+    @PUT("WhOutBarcodeReader")
+    suspend fun sendWhOutScannedCode(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    /**
+     * Updates an whout detail item on the server.
+     */
+    @PUT("UpdateWhOutRow")
+    suspend fun updateWhOutDetailItem(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+    
+    //End of Warehouse Outbound API calls
 
     /**
      * ****************************************************************************************
@@ -238,5 +297,4 @@ interface MastroAndroidApiService {
      */
     @GET("authentication/completed")
     suspend fun getLoginCompleted(): Response<JsonObject>
-
 }

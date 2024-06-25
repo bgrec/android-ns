@@ -126,7 +126,7 @@ class NetworkOrdersRepository(
             addProperty("orderId", orderId)
             addProperty("deliveryState", deliveryState)
         }
-        return mastroAndroidApiService.updateDeliveryState(body)
+        return mastroAndroidApiService.updateOrderDeliveryState(body)
     }
 
     /**

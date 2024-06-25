@@ -23,12 +23,12 @@ interface WarehouseOutRepository {
     fun updateMastroAndroidApiService(newMastroAndroidApiService: MastroAndroidApiService)
 
     /**
-     * Retrieves a list of all warehouse outbound orders.
+     * Retrieves a list of all warehouse outbounds.
      */
     suspend fun getWhOutbound(): WhOutboundResponse
 
     /**
-     * Retrieves a flow of all warehouse outbound orders.
+     * Retrieves a flow of all warehouse outbounds.
      */
     fun getAllWhOutboundStream(): Flow<List<WarehouseOutbound>>
 
@@ -38,17 +38,17 @@ interface WarehouseOutRepository {
     fun getWhOutboundStream(id: Int): Flow<WarehouseOutbound?>
 
     /**
-     * Inserts a new warehouse outbound order.
+     * Inserts a new warehouse outbound.
      */
     suspend fun insertWhOutbound(whOutbound: WarehouseOutbound)
 
     /**
-     * Deletes a warehouse outbound order.
+     * Deletes a warehouse outbound.
      */
     suspend fun deleteWhOutbound(whOutbound: WarehouseOutbound)
 
     /**
-     * Updates a warehouse outbound order.
+     * Updates a warehouse outbound.
      */
     suspend fun updateWhOutbound(whOutbound: WarehouseOutbound)
 

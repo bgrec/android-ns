@@ -1,4 +1,4 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents
 
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -29,7 +29,7 @@ import java.util.Locale
 @Composable
 fun ExpirationDatePickerDialog(
     showDatePickerDialog: MutableState<Boolean>,
-    orderDetailsItemState: OrderDetailsItemState
+    whOutDetailsItemState: WhOutDetailsItemState
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {
@@ -55,7 +55,7 @@ fun ExpirationDatePickerDialog(
                 val formattedDate = selectedDate?.let { dateFormat.format(it) }
 
                 // Update the expirationDate state
-                orderDetailsItemState.expirationDate.value = formattedDate?.let {
+                whOutDetailsItemState.expirationDate.value = formattedDate?.let {
                     TextFieldValue(
                         DateHelper.formatDateToDisplay(it)
                     )
@@ -86,7 +86,7 @@ fun ExpirationDatePickerDialogPreview() {
         showDatePickerDialog = remember {
             mutableStateOf(true)
         },
-        orderDetailsItemState = OrderDetailsItemState(
+        whOutDetailsItemState = WhOutDetailsItemState(
             batch = remember { mutableStateOf(TextFieldValue("batch")) },
             quantity = remember { mutableStateOf(TextFieldValue("1")) },
             expirationDate = remember { mutableStateOf(TextFieldValue("gg/mm/aaaa")) }

@@ -1,13 +1,13 @@
-package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.orderdetailscomponents
+package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.whoutbounddetailsscreen.whoutdetailscomponents
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 
 /**
- * Data class to hold the state of the order details item that is being edited
+ * Data class to hold the state of the warehouse outbound details item that is being edited
  */
-data class OrderDetailsItemState(
+data class WhOutDetailsItemState(
     /**
      * The state of the batch text field
      */

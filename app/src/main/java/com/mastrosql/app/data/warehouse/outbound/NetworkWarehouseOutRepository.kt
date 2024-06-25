@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import retrofit2.Response
 
-class NetworkWareHouseOutRepository(
+class NetworkWarehouseOutRepository(
     private var mastroAndroidApiService: MastroAndroidApiService,
     private val wareHouseOutboundDao: WarehouseOutboundDao,
     context: Context

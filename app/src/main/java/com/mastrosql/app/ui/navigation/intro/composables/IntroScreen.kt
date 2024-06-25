@@ -76,7 +76,6 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
 import com.mastrosql.app.ui.navigation.main.settingsscreen.UserPreferencesViewModel
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import kotlinx.coroutines.launch
 import java.util.EnumMap
 
@@ -616,14 +615,14 @@ fun OrdersContent() {
         modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            stringResource(R.string.orders_content_title),
+            stringResource(R.string.documents_content_title),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
         )
 
         Text(
-            stringResource(R.string.orders_content_text),
+            stringResource(R.string.documents_content_text),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )

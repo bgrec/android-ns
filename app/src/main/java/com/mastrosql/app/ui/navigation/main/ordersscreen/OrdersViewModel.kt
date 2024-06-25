@@ -268,7 +268,7 @@ class OrdersViewModel(
                         ToastUtils.showToast(
                             context,
                             Toast.LENGTH_SHORT,
-                            context.getString(R.string.order_update_text)
+                            context.getString(R.string.updated_doc_success_text)
                         )
                     }
 

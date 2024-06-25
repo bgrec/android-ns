@@ -130,6 +130,7 @@
     <string name="show_intro_again">"Mostra intro"</string>
 
     <string name="order_details_edit">Ord. n° %1$d %2$s</string>
+    <string name="whout_details_edit">Scarico n° %1$d %2$s</string>
 
     <string name="Username">Username</string>
     <string name="Password">Password</string>
@@ -161,8 +162,8 @@
     <string name="archives_content_expand">"Per visualizzare i dettagli premere "</string>
     <string name="archives_content_reduce">Per chiudere i dettagli premere </string>
     <string name="archives_content_edit">"Per modificare premere "</string>
-    <string name="orders_content_title">Documenti</string>
-    <string name="orders_content_text">Descrizione documenti</string>
+    <string name="documents_content_title">Documenti</string>
+    <string name="documents_content_text">Descrizione documenti</string>
     <string name="drawer_content_title">Menù a tendina</string>
 
     <string name="drawer_content_text">"Premere l'icona ≡ in alto a sinistra per visualizzare il menù con tutte le sezioni scelte e il logout."</string>
@@ -170,35 +171,35 @@
     <string name="drawer_home_menu">Home</string>
 
     <string name="order_entry_title">Modifica ordine</string>
-    <string name="order_details_entry_title">Inserimento riga</string>
-    <string name="order_details_qr_scan_text">Codice letto</string>
-    <string name="edit_button_order_item">Modifica riga</string>
+    <string name="row_details_entry_title">Inserimento riga</string>
+    <string name="row_details_qr_scan_text">Codice letto</string>
+    <string name="edit_button_list_item">Modifica riga</string>
 
     <string name="news_button">visualizza le novità</string>
     <string name="dummy_button">…</string>
     <string name="news_title">Novità</string>
     <string name="null_text">Null</string>
 
-    <string name="order_details_add_button">Aggiungi articolo</string>
+    <string name="row_details_add_button">Aggiungi articolo</string>
 
     <string name="document_insertDate">"Data "</string>
-    <string name="order_deliveryDate">"Data di consegna "</string>
+    <string name="row_deliveryDate">"Data di consegna "</string>
     <string name="document_notes">Note </string>
-    <string name="order_deliveryType">"Stato Consegna "</string>
+    <string name="row_deliveryType">"Stato Consegna "</string>
     <string name="order_deliveryState_value0">In preparazione</string>
     <string name="order_deliveryState_value1">Pronto</string>
     <string name="order_deliveryState_value2">Caricato</string>
     <string name="order_deliveryState_value3">Da confermare</string>
-    <string name="order_destinationName">"Destinazione "</string>
-    <string name="order_carrierName">"Vettore "</string>
-    <string name="order_detail_batch">"Lotto "</string>
-    <string name="order_detail_articleId">"Prog. "</string>
-    <string name="order_detail_sku">"Cod. "</string>
-    <string name="order_detail_quantity">"Quant."</string>
-    <string name="order_detail_orderedQuantity">"Ord."</string>
-    <string name="order_detail_shippedQuantity">"Cons."</string>
-    <string name="order_detail_expirationDate">"Scadenza "</string>
-    <string name="order_detail_completeDescription">"Note "</string>
+    <string name="document_destinationName">"Destinazione "</string>
+    <string name="document_carrierName">"Vettore "</string>
+    <string name="row_detail_batch">"Lotto "</string>
+    <string name="row_detail_articleId">"Prog. "</string>
+    <string name="row_detail_sku">"Cod. "</string>
+    <string name="row_detail_quantity">"Quant."</string>
+    <string name="row_detail_orderedQuantity">"Ord."</string>
+    <string name="row_detail_shippedQuantity">"Cons."</string>
+    <string name="row_detail_expirationDate">"Scadenza "</string>
+    <string name="row_detail_completeDescription">"Note "</string>
 
     <string name="test_retrofit_button">"Test connessione "</string>
     <string name="open_scanner">Apri il scanner</string>
@@ -207,13 +208,13 @@
     <string name="order_details_dialog_edit_title">Modifica riga ordine</string>
     <string name="confirm_button">Conferma</string>
     <string name="dismiss_button">Annulla</string>
-    <string name="order_details_dialog_edit_batch">Lotto</string>
-    <string name="order_details_dialog_edit_Quantity">Quantità</string>
-    <string name="order_details_dialog_edit_expirationDate">Data scadenza</string>
-    <string name="deleted_item_snackbar_text">"Riga dell'ordine rimossa"</string>
+    <string name="row_details_dialog_edit_batch">Lotto</string>
+    <string name="row_details_dialog_edit_Quantity">Quantità</string>
+    <string name="row_details_dialog_edit_expirationDate">Data scadenza</string>
+    <string name="deleted_item_snackbar_text">"Riga rimossa"</string>
     <string name="add_new_order">Aggiungi ordine</string>
-    <string name="order_dialog_delivery_title">Modifica stato di consegna</string>
-    <string name="order_details_dialog_edit_title_row">Riga n°%1$d, corto: %2$d, cod.: %3$s</string>
+    <string name="document_dialog_delivery_title">Modifica stato di consegna</string>
+    <string name="row_details_dialog_edit_title_row">Riga n°%1$d, corto: %2$d, cod.: %3$s</string>
     <string name="private_webserver">Server privato, non protetto</string>
     <string name="duplicate_row">Duplica riga</string>
     <string name="decrease_quantity_by_one">Diminuisci quantità</string>
@@ -237,11 +238,11 @@
     <string name="new_order_added">Ordine %1$d aggiunto con successo</string>
     <string name="new_item_added">Articolo inserito con successo</string>
     <string name="item_deleted">Riga eliminata con successo %1$d</string>
-    <string name="update_order_details">Modifiche salvate con successo %1$d</string>
+    <string name="updated_row_success_text">Modifiche salvate con successo %1$d</string>
     <string name="row_duplicated">Riga duplicata con successo %1$d</string>
     <string name="delivery_state_updated">Stato consegna aggiornato con successo!</string>
     <string name="send_scanned_code">Send Scanned Code</string>
-    <string name="order_update_text">Modifiche ordine salvate con successo</string>
+    <string name="updated_doc_success_text">Modifiche salvate con successo</string>
     <string name="label_url2">Inserire URL2 - seconda azienda</string>
     <string name="warehouse_out_operations">Mov. scarico</string>
     <string name="label_url_name">Nome URL1</string>
@@ -254,7 +255,9 @@
     <string name="warehouse_operation_id">Num.</string>
     <string name="add_wh_outbound">Aggiungi mov. scarico</string>
     <string name="error_no_wh_operation_added">Nessun movimento inserito</string>
-    <string name="new_wh_operation_added">Nuovo movimento cliente %1$d\n</string>
+    <string name="new_wh_operation_added">Nuovo movimento cliente %1$d</string>
+    <string name="whout_details_dialog_edit_title">Modifica righe</string>
+    <string name="whout_description">Movimenti</string>
 
 
 </resources>
