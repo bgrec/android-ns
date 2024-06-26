@@ -6,10 +6,12 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -341,7 +343,7 @@ object DrawerParams {
                 AppDrawerItemInfo(
                     MainNavOption.WarehouseOutOperationsScreen,
                     R.string.warehouse_out_operations,
-                    Icons.Default.Folder,
+                    Icons.Filled.Remove,
                     R.string.drawer_home_description
                 )
             )
@@ -351,7 +353,7 @@ object DrawerParams {
                 AppDrawerItemInfo(
                     MainNavOption.WarehouseInOperationsScreen,
                     R.string.warehouse_out_operations,
-                    Icons.Default.Folder,
+                    Icons.Filled.Add,
                     R.string.drawer_home_description
                 )
             )
