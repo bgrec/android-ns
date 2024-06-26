@@ -36,8 +36,10 @@ class NetworkCustomersMasterDataRepository(
      * Retrieves a [Flow] of [WorkInfo] objects from WorkManager by the specified tag.
      * Filters out empty results and emits the first non-null [WorkInfo] if available.
      */
-    override val outputWorkInfo: Flow<WorkInfo> =
-        workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
+    override val outputWorkInfo: Flow<WorkInfo> = workManager
+        .getWorkInfosByTagLiveData(TAG_OUTPUT)
+        .asFlow()
+        .mapNotNull {
             if (it.isNotEmpty()) it.first() else null
         }
 

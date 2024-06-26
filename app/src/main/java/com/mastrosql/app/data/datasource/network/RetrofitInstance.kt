@@ -33,9 +33,11 @@ object RetrofitInstance {
      * Initializes SSL socket factory using a TLS SSL context configured with trust all certificates.
      */
     init {
-        val sslContext = SSLContext.getInstance("TLS").apply {
-            init(null, trustAllCertificates, java.security.SecureRandom())
-        }
+        val sslContext = SSLContext
+            .getInstance("TLS")
+            .apply {
+                init(null, trustAllCertificates, java.security.SecureRandom())
+            }
         sslSocketFactory = sslContext.socketFactory
     }
 
@@ -101,21 +103,25 @@ object RetrofitInstance {
     }
 
     private val httpClientBuilder: OkHttpClient.Builder
-
-    /**
-     * Provides a configured OkHttpClient.Builder instance for HTTP client configuration.
-     */
+        /**
+         * Provides a configured OkHttpClient.Builder instance for HTTP client configuration.
+         */
         get() {
             val builder = OkHttpClient.Builder()
 
-        /**
-         * Adds a logging interceptor to the OkHttpClient.Builder if the application is in debug mode.
-         * This interceptor logs the HTTP requests and responses made by Retrofit for debugging purposes.
-         */
-        if (BuildConfig.BUILD_TYPE == "debug") {
+            /**
+             * Adds a logging interceptor to the OkHttpClient.Builder if the application is in debug mode.
+             * This interceptor logs the HTTP requests and responses made by Retrofit for debugging purposes.
+             */
+            if (BuildConfig.BUILD_TYPE == "debug") {
 
                 //Show the log in debug mode of the retrofit request
-                builder.addInterceptor(loggingInterceptor)
+                /**
+                 * Adds a logging interceptor to the OkHttpClient.Builder for debugging purposes.
+                 *
+                 * This interceptor logs the HTTP requests and responses made by Retrofit for debugging purposes.
+                 */
+                //builder.addInterceptor(loggingInterceptor)
             }
 
             /**
@@ -150,28 +156,28 @@ object RetrofitInstance {
             // Disable automatic redirects because the login endpoint makes a redirect to the status page
             // but we want to capture the Set-Cookie header from the response, the session cookie
 
-        /**
-         * Disables automatic HTTP redirects in the OkHttpClient.Builder.
-         *
-         * By default, OkHttp automatically follows HTTP redirects (3xx responses) for requests.
-         * Calling this method with `false` disables this behavior, so redirects must be handled manually.
-         */
+            /**
+             * Disables automatic HTTP redirects in the OkHttpClient.Builder.
+             *
+             * By default, OkHttp automatically follows HTTP redirects (3xx responses) for requests.
+             * Calling this method with `false` disables this behavior, so redirects must be handled manually.
+             */
             builder.followRedirects(false)
 
-        /**
-         * Disables automatic HTTPS redirects in the OkHttpClient.Builder.
-         *
-         * By default, OkHttp automatically follows HTTPS redirects (3xx responses) for requests.
-         * Calling this method with `false` disables this behavior, so HTTPS redirects must be handled manually.
-         */
+            /**
+             * Disables automatic HTTPS redirects in the OkHttpClient.Builder.
+             *
+             * By default, OkHttp automatically follows HTTPS redirects (3xx responses) for requests.
+             * Calling this method with `false` disables this behavior, so HTTPS redirects must be handled manually.
+             */
             builder.followSslRedirects(false)
 
-        /**
-         * Adds an interceptor to the OkHttpClient.Builder that adds a session cookie to outgoing requests.
-         *
-         * The interceptor is responsible for appending a session cookie retrieved from `SessionManager.getSessionCookie()`
-         * to the headers of outgoing HTTP requests.
-         */
+            /**
+             * Adds an interceptor to the OkHttpClient.Builder that adds a session cookie to outgoing requests.
+             *
+             * The interceptor is responsible for appending a session cookie retrieved from `SessionManager.getSessionCookie()`
+             * to the headers of outgoing HTTP requests.
+             */
             // Add interceptor for adding cookies to request headers with the session cookie
             builder.addInterceptor(AddCookieInterceptor())
 
@@ -179,17 +185,19 @@ object RetrofitInstance {
             return builder
         }
 
-/**
- * Configures the OkHttpClient.Builder to trust all SSL certificates.
- *
- * This method sets up the OkHttpClient.Builder to trust all SSL certificates,
- * effectively disabling SSL certificate validation. It uses a custom SSL context
- * initialized with a trust manager that trusts all certificates.
- */
-private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
-        val trustAllSslContext = SSLContext.getInstance("TLS").apply {
-            init(null, trustAllCertificates, java.security.SecureRandom())
-        }
+    /**
+     * Configures the OkHttpClient.Builder to trust all SSL certificates.
+     *
+     * This method sets up the OkHttpClient.Builder to trust all SSL certificates,
+     * effectively disabling SSL certificate validation. It uses a custom SSL context
+     * initialized with a trust manager that trusts all certificates.
+     */
+    private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
+        val trustAllSslContext = SSLContext
+            .getInstance("TLS")
+            .apply {
+                init(null, trustAllCertificates, java.security.SecureRandom())
+            }
         val trustAllSslSocketFactory = trustAllSslContext.socketFactory
         sslSocketFactory(trustAllSslSocketFactory, trustAllCertificates[0] as X509TrustManager)
         hostnameVerifier { _, _ -> true }
@@ -218,9 +226,11 @@ private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
 // Check if the LOGIN_PATH is present in the path segments
         if (pathSegments.contains(LOGIN_PATH)) {
             // Remove the second path segment
-            val modifiedPathSegments = pathSegments.toMutableList().apply {
-                removeAt(1)
-            }
+            val modifiedPathSegments = pathSegments
+                .toMutableList()
+                .apply {
+                    removeAt(1)
+                }
 
             // Construct the new base URL without the second path segment
             val newBaseUrl = buildString {
@@ -235,7 +245,9 @@ private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
             //Log.d("newBaseUrl", newBaseUrl)
 
             // Build the modified URL
-            val modifiedUrl = newBaseUrl.toHttpUrlOrNull()?.newBuilder()
+            val modifiedUrl = newBaseUrl
+                .toHttpUrlOrNull()
+                ?.newBuilder()
                 ?.encodedQuery(null)
                 ?.encodedFragment(null)
                 ?.build()
@@ -245,7 +257,8 @@ private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
              */
             if (modifiedUrl != null) {
                 // Create a new request with the modified URL
-                return request.newBuilder()
+                return request
+                    .newBuilder()
                     .url(modifiedUrl)
                     .build()
             }
@@ -305,14 +318,14 @@ private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
              * indicating that no specific certificate issuers are trusted.
              */
             override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        }
-    )
+        })
 
     private fun createRetrofitInstance(
         baseUrl: String?
     ): MastroAndroidApiService {
 
-        return Retrofit.Builder()
+        return Retrofit
+            .Builder()
             .baseUrl(baseUrl!!)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClientBuilder.build())
@@ -320,4 +333,3 @@ private fun OkHttpClient.Builder.trustAllCertificates(): OkHttpClient.Builder {
             .create(MastroAndroidApiService::class.java)
     }
 }
-

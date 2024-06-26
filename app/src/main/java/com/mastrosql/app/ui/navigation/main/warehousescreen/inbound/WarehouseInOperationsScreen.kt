@@ -16,6 +16,9 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.ArticlesViewModel
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
 
+/**
+ *
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun WarehouseInOperationsScreen(

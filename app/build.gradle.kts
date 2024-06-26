@@ -299,7 +299,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.squareup.leakcanary.android)
+    //debugImplementation(libs.squareup.leakcanary.android)
 
 //WorkManager testing
     androidTestImplementation(libs.androidx.work.testing)

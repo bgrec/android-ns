@@ -344,7 +344,7 @@ object DrawerParams {
                     MainNavOption.WarehouseOutOperationsScreen,
                     R.string.warehouse_out_operations,
                     Icons.Filled.Remove,
-                    R.string.drawer_home_description
+                    R.string.drawer_warehouse_out_operations
                 )
             )
         }
@@ -352,9 +352,9 @@ object DrawerParams {
             buttons.add(
                 AppDrawerItemInfo(
                     MainNavOption.WarehouseInOperationsScreen,
-                    R.string.warehouse_out_operations,
+                    R.string.warehouse_in_operations,
                     Icons.Filled.Add,
-                    R.string.drawer_home_description
+                    R.string.drawer_warehouse_in_operations
                 )
             )
         }

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.mastrosql.app.PRIMARY_URL_NAME
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.AppButton
@@ -63,7 +64,10 @@ fun HomeScreen(
     val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Get the selected URL name from UserPreferencesViewModel
-    val selectedUrlName = userPreferencesUiState.selectedUrlName
+    var selectedUrlName = userPreferencesUiState.selectedUrlName
+    if (selectedUrlName == PRIMARY_URL_NAME) {
+        selectedUrlName = ""
+    }
 
     // Get active buttons from UserPreferencesViewModel
     val activeButtonsUiState by rememberUpdatedState(userPreferencesUiState.activeButtons)
@@ -247,7 +251,7 @@ fun HomePreview() {
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
             navController = NavController(LocalContext.current),
             isLandscape = false,
-            selectedUrlName = "Primary URL",
+            selectedUrlName = PRIMARY_URL_NAME,
             activeButtonsUiState = EnumMap(MainNavOption::class.java),
             appNavigationViewModel = null,
             onLogout = { /* No action needed */ }

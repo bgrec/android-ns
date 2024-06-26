@@ -457,8 +457,6 @@ class UserPreferencesRepository @Inject constructor(
 
             else -> throw IllegalArgumentException("Invalid selectedUrl: $selectedUrl")
         }
-
-        Log.d("UserPreferencesRepository", "changeBaseUrl: $newBaseUrl")
         // Update preferences and Retrofit service with the new base URL
         appContainer.updateRetrofitService(newBaseUrl)
     }

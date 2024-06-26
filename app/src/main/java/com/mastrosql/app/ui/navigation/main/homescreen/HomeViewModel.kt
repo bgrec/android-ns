@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.homescreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -59,21 +58,27 @@ class HomeViewModel(
     init {
         // Observe changes in activeButtons and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository.getActiveButtons().collect { activeButtons ->
-                updateUiState(uiState.value.copy(activeButtons = activeButtons))
-            }
+            userPreferencesRepository
+                .getActiveButtons()
+                .collect { activeButtons ->
+                    updateUiState(uiState.value.copy(activeButtons = activeButtons))
+                }
         }
 
         viewModelScope.launch {
-            userPreferencesRepository.getBaseUrlName().collect {
-                updateUiState(uiState.value.copy(baseUrlName = it))
-            }
+            userPreferencesRepository
+                .getBaseUrlName()
+                .collect {
+                    updateUiState(uiState.value.copy(baseUrlName = it))
+                }
         }
 
         viewModelScope.launch {
-            userPreferencesRepository.getBaseUrl2Name().collect {
-                updateUiState(uiState.value.copy(baseUrl2Name = it))
-            }
+            userPreferencesRepository
+                .getBaseUrl2Name()
+                .collect {
+                    updateUiState(uiState.value.copy(baseUrl2Name = it))
+                }
         }
 
         viewModelScope.launch {
@@ -83,10 +88,7 @@ class HomeViewModel(
                     updateUiState(uiState.value.copy(selectedUrl = it))
                 }
             userPreferencesRepository.changeBaseUrl(uiState.value.selectedUrl)
-            Log.d("HomeViewModel", "selectedUrl: ${uiState.value.selectedUrl}")
         }
-
-        Log.d("HomeViewModel", "baseUrlName: ${uiState.value.baseUrlName}")
         // Observe changes in selectedUrl and update UI state accordingly
         viewModelScope.launch {
             userPreferencesRepository
@@ -103,8 +105,6 @@ class HomeViewModel(
                         )
                     )
                 }
-
-            Log.d("HomeViewModel", "selectedUrl: ${uiState.value.selectedUrl}")
             userPreferencesRepository.changeBaseUrl(uiState.value.selectedUrl)
         }
 

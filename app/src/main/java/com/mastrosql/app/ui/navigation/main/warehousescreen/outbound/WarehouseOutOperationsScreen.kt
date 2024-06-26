@@ -80,6 +80,9 @@ fun WarehouseOutOperationsScreen(
     }
 }
 
+/**
+ * Composable function to show the Warehouse Outbound result screen.
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun WhOutboundResultScreen(
@@ -105,6 +108,9 @@ fun WhOutboundResultScreen(
         })
 }
 
+/**
+ * Composable function to show the Warehouse Outbound result screen.
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun WhOutboundsResult(
@@ -208,5 +214,3 @@ fun WhOutboundsResult(
         }
     }
 }
-
-

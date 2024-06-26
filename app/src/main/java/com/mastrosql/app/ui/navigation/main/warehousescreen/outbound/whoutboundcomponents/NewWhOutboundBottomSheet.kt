@@ -10,7 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mastrosql.app.ui.navigation.main.customersscreen.CustomersScreenForBottomSheet
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.warehousescreen.outbound.model.WarehouseOutbound
@@ -63,3 +65,15 @@ fun NewWhOutboundBottomSheet(
     }
 }
 
+/**
+ * Preview [NewWhOutboundBottomSheet].
+ */
+@ExperimentalMaterial3Api
+@Preview(showBackground = true)
+@Composable
+fun NewWhOutboundBottomSheetPreview() {
+    val navController = rememberNavController()
+    NewWhOutboundBottomSheet(
+        modifier = Modifier, navController = navController, showBottomSheet = mutableStateOf(true)
+    )
+}

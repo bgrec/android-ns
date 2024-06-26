@@ -296,5 +296,7 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
 }
 
 enum class MainNavOption {
-    LoginScreen, HomeScreen, OldHomeScreen, CustomersScreen, CustomersPagedScreen, ItemsScreen, SettingsScreen, CartScreen, ArticlesScreen, WarehouseOutOperationsScreen, WarehouseInOperationsScreen, OrdersScreen, AboutScreen, Logout
+    LoginScreen, HomeScreen, OldHomeScreen, CustomersScreen, CustomersPagedScreen, ItemsScreen,
+    SettingsScreen, CartScreen, ArticlesScreen, WarehouseOutOperationsScreen,
+    WarehouseInOperationsScreen, OrdersScreen, AboutScreen, Logout
 }

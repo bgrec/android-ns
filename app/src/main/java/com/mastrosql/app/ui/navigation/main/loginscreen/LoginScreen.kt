@@ -107,8 +107,7 @@ fun LoginScreen(
         }
     }
 
-    Login(
-        navController = navController,
+    Login(navController = navController,
         interactionSource = interactionSource,
         onLogin = { username, password ->
             viewModel.login(
@@ -126,8 +125,7 @@ fun LoginScreen(
         baseUrl2Name = loginUiState.baseUrl2Name,
         onUrlSelected = { selectedUrl ->
             viewModel.saveSelectedUrl(selectedUrl)
-        }
-    )
+        })
 }
 
 /**
@@ -164,9 +162,7 @@ fun Login(
                     // Configure the navigation action
                     popUpTo(MainNavOption.LoginScreen.name)
                 }
-            },
-            title = R.string.app_name,
-            subtitle = selectedUrlName
+            }, title = R.string.app_name, subtitle = selectedUrlName
         )
     }, modifier = Modifier
         //shows a shadow when clicked
@@ -208,24 +204,19 @@ fun Login(
                     }
                     Column {
                         radioOptions.forEachIndexed { index, text ->
-                            Row(Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = (text == selectedOption),
-                                    onClick = {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .selectable(selected = (text == selectedOption), onClick = {
                                         onOptionSelected(text)
                                         onUrlSelected(index)
-                                    }
-                                )
-                                .padding(horizontal = 16.dp))
-                            {
-                                RadioButton(
-                                    selected = (text == selectedOption),
-                                    onClick = {
-                                        onOptionSelected(text)
-                                        onUrlSelected(index)
-                                    }
-                                )
+                                    })
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                RadioButton(selected = (text == selectedOption), onClick = {
+                                    onOptionSelected(text)
+                                    onUrlSelected(index)
+                                })
                                 Text(
                                     text = text,
                                     style = MaterialTheme.typography.bodyLarge.merge(),
@@ -316,11 +307,9 @@ fun Login(
                 Spacer(modifier = Modifier.padding(32.dp))
             }
             val buttonModifier = if (isLandscape) {
-                Modifier
-                    .width(400.dp)
+                Modifier.width(400.dp)
             } else {
-                Modifier
-                    .fillMaxWidth()
+                Modifier.fillMaxWidth()
             }
             item {
                 //Button to login
@@ -358,8 +347,7 @@ fun LoginScreenPreview() {
         MutableInteractionSource()
     }
     MastroAndroidPreviewTheme {
-        Login(
-            navController = NavController(LocalContext.current),
+        Login(navController = NavController(LocalContext.current),
             interactionSource = mutableInteractionSource,
             onLogin = { _, _ -> },
             isSecondaryBaseUrlProvided = true,
@@ -368,7 +356,6 @@ fun LoginScreenPreview() {
             selectedUrlName = PRIMARY_URL_NAME,
             baseUrlName = PRIMARY_URL_NAME,
             baseUrl2Name = SECONDARY_URL_NAME,
-            onUrlSelected = { }
-        )
+            onUrlSelected = { })
     }
 }

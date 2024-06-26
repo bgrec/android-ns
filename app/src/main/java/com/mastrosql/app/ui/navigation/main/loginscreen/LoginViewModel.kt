@@ -153,19 +153,20 @@ class LoginViewModel(
 
         // Observe changes in selectedUrl and update UI state accordingly
         viewModelScope.launch {
-            userPreferencesRepository.getSelectedUrl().collect { selectedUrl ->
-                updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
-                updateUiState(
-                    uiState.value.copy(
-                        selectedUrlName =
-                        if (selectedUrl == PRIMARY_URL) {
-                            uiState.value.baseUrlName
-                        } else {
-                            uiState.value.baseUrl2Name
-                        }
+            userPreferencesRepository
+                .getSelectedUrl()
+                .collect { selectedUrl ->
+                    updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
+                    updateUiState(
+                        uiState.value.copy(
+                            selectedUrlName = if (selectedUrl == PRIMARY_URL) {
+                                uiState.value.baseUrlName
+                            } else {
+                                uiState.value.baseUrl2Name
+                            }
+                        )
                     )
-                )
-            }
+                }
         }
     }
 
@@ -448,7 +449,6 @@ class LoginViewModel(
         viewModelScope.launch {
 //            userPreferencesRepository.saveSelectedUrl(selectedUrl)
             updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
-            Log.d("LoginViewModel", "Selected URL: $selectedUrl")
             userPreferencesRepository.changeBaseUrl(selectedUrl)
         }
     }

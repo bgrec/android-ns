@@ -32,6 +32,9 @@ import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMaster
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationData
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 
+/**
+ * Customers screen for the bottom sheet.
+ */
 @Composable
 fun CustomersScreenForBottomSheet(
     navController: NavController,
@@ -124,9 +127,7 @@ fun CustomersScreenForBottomSheet(
                         // Call the onCustomerSelected callback with the selected customer
                         // without destination
                         onCustomerSelected?.invoke(
-                            customerMasterData,
-                            destinationData,
-                            selectionCompleted
+                            customerMasterData, destinationData, selectionCompleted
                         )
                     }
                 },

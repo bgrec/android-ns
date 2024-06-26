@@ -52,8 +52,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.PRIMARY_URL
+import com.mastrosql.app.PRIMARY_URL_NAME
 import com.mastrosql.app.R
 import com.mastrosql.app.SECONDARY_URL
+import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.NavRoutes
@@ -367,8 +369,7 @@ fun SettingsComposable(
                         modifier = Modifier.weight(1f)
                     )
 
-                    Switch(
-                        checked = isSwipeToDuplicateDisabledState,
+                    Switch(checked = isSwipeToDuplicateDisabledState,
                         onCheckedChange = { isChecked ->
                             onSetSwipeToDuplicateDisabled(isChecked)
                         })
@@ -390,8 +391,7 @@ fun SettingsComposable(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Button(
-                        modifier = Modifier.weight(0.45f),
+                    Button(modifier = Modifier.weight(0.45f),
                         onClick = { showDialog.value = true }) {
                         Text(stringResource(R.string.dialog_button_settings))
                     }
@@ -458,16 +458,15 @@ fun MenuButtonsActivationDialog(
                 MainNavOption.CustomersScreen to R.string.drawer_customers,
                 MainNavOption.CustomersPagedScreen to R.string.drawer_customers2,
                 MainNavOption.ArticlesScreen to R.string.drawer_articles,
-                MainNavOption.WarehouseOutOperationsScreen to R.string.warehouse_out_operations,
-                MainNavOption.WarehouseInOperationsScreen to R.string.warehouse_out_operations,
+                MainNavOption.WarehouseOutOperationsScreen to R.string.drawer_warehouse_out_operations,
+                MainNavOption.WarehouseInOperationsScreen to R.string.drawer_warehouse_in_operations,
                 MainNavOption.ItemsScreen to R.string.drawer_inventory,
                 MainNavOption.OrdersScreen to R.string.drawer_orders
             )
         )
     }
 
-    AlertDialog(
-        onDismissRequest = { showDialog.value = false },
+    AlertDialog(onDismissRequest = { showDialog.value = false },
         title = { Text(stringResource(R.string.dialog_button_settings)) },
         text = {
             LazyColumn(modifier = Modifier.wrapContentSize()) {
@@ -536,9 +535,9 @@ fun SettingsScreenPreview() {
         SettingsComposable(navController = NavController(LocalContext.current),
             activeButtonsState = EnumMap(MainNavOption::class.java),
             currentBaseUrlState = remember { mutableStateOf("https://example.com/api") },
-            currentBaseUrlNameState = remember { mutableStateOf("Primary URL") },
+            currentBaseUrlNameState = remember { mutableStateOf(PRIMARY_URL_NAME) },
             currentBaseUrl2State = remember { mutableStateOf("https://example.com/api2") },
-            currentBaseUrl2NameState = remember { mutableStateOf("Secondary URL") },
+            currentBaseUrl2NameState = remember { mutableStateOf(SECONDARY_URL_NAME) },
             isNotSecuredApiState = false,
             isSwipeToDeleteDisabledState = true,
             onSaveUrl = { _, _, _ -> },
