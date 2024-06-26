@@ -1,0 +1,104 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11ef28a2a19ccac78e5b408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "UpdateOrder",
+        "request_path": "/UpdateOrder",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0xa99b89f7d00d485df84dc6db9a6d22c7",
+                "db_object_id": "0x11ef28a2a19ccac78e5b408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlUpdateOrderParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 1,
+                        "id": "0x2672272affe844ad8c6806447d2c13ec",
+                        "object_id": "0xa99b89f7d00d485df84dc6db9a6d22c7",
+                        "name": "orderId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "orderId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0x310dc2b113be400ac9a56dfaeab30b44",
+                        "object_id": "0xa99b89f7d00d485df84dc6db9a6d22c7",
+                        "name": "description",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "description",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0x8c1c4a54f2334146c73cbbdb3857bece",
+                        "object_id": "0xa99b89f7d00d485df84dc6db9a6d22c7",
+                        "name": "deliveryDate",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "deliveryDate",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

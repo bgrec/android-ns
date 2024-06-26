@@ -1,0 +1,83 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11eedfa9d9e37b6798a4408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "OrderBarcodeReader",
+        "request_path": "/OrderBarcodeReader",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x927b2456599e4458b2e56d7c07165e79",
+                "db_object_id": "0x11eedfa9d9e37b6798a4408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlOrderBarcodeReaderParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 1,
+                        "id": "0x3934223dcfad4f2fd6578d0793f5086a",
+                        "object_id": "0x927b2456599e4458b2e56d7c07165e79",
+                        "name": "orderId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "orderId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0xc0dce09399cc4039ff30e76bf2aa93cc",
+                        "object_id": "0x927b2456599e4458b2e56d7c07165e79",
+                        "name": "scannedCode",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "scannedCode",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

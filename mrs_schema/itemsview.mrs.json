@@ -1,0 +1,393 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11eedaf47fb6275b9cd0408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "itemsview",
+        "request_path": "/itemsview",
+        "enabled": 1,
+        "object_type": "VIEW",
+        "crud_operations": [
+            "READ"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x27d66746e96642bea15701c1eb799cdc",
+                "db_object_id": "0x11eedaf47fb6275b9cd0408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlItemsview",
+                "kind": "RESULT",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 9,
+                        "id": "0x0bebc9412ed1421ef0624a003ee0cea8",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "tipoSotto",
+                        "db_column": {
+                            "name": "TIPO_SOTTO",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(10)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 16,
+                        "id": "0x16abc26182b2431586361fad7d491a60",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "EAN",
+                        "db_column": {
+                            "name": "EAN",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "text",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 6,
+                        "id": "0x1d67b410b87743519a4c8000c06f6f5c",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "COST",
+                        "db_column": {
+                            "name": "COST",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "decimal(16,4)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 5,
+                        "id": "0x20d64c59b7394e62b037aae928fd5d96",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "IVA",
+                        "db_column": {
+                            "name": "IVA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(5)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0x2194e11195c041bda5e6816189a97b9b",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "CORTO",
+                        "db_column": {
+                            "name": "CORTO",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0x7458aeff259346038a3926b8b31abfd5",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "CODI",
+                        "db_column": {
+                            "name": "CODI",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(20)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 8,
+                        "id": "0x8774cade512c41dc948528bbddceae94",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "TIPO",
+                        "db_column": {
+                            "name": "TIPO",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(10)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 13,
+                        "id": "0x88305845406d46dec7ad878c944bd269",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "MISU",
+                        "db_column": {
+                            "name": "MISU",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(5)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 11,
+                        "id": "0x90e5acbf33b34e54b0ed4f4e25f0294e",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "repaSotto",
+                        "db_column": {
+                            "name": "REPA_SOTTO",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(10)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0x941a7ca21c194589b8189c635bad6d88",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "CFOR",
+                        "db_column": {
+                            "name": "CFOR",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(22)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 10,
+                        "id": "0xa6583465d8594f9cbd00d0aab00b6ac9",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "REPA",
+                        "db_column": {
+                            "name": "REPA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(10)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 14,
+                        "id": "0xb50ac87c335b4762d0e9112a97f89661",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "ean_8",
+                        "db_column": {
+                            "name": "EAN_8",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(106)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 4,
+                        "id": "0xb9e26f1629894cc386d54cbd39c49207",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "DESCRI",
+                        "db_column": {
+                            "name": "DESCRI",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(65)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 12,
+                        "id": "0xeafc9a3b695846a1faae10e6739a2ba8",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "GRUPPO",
+                        "db_column": {
+                            "name": "GRUPPO",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(10)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 15,
+                        "id": "0xee1b84ebd5c342dff8913b280aac9893",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "ean_13",
+                        "db_column": {
+                            "name": "EAN_13",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(111)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 7,
+                        "id": "0xf007a8d59b6243ede0a508424f995ea7",
+                        "object_id": "0x27d66746e96642bea15701c1eb799cdc",
+                        "name": "VEND",
+                        "db_column": {
+                            "name": "VEND",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "decimal(16,4)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

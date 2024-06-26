@@ -1,0 +1,146 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11ef0224a246282eb2d1408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "InsertNewOrder",
+        "request_path": "/InsertNewOrder",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0xacc3c22e3a84481d9d703f8a7d9f6cb0",
+                "db_object_id": "0x11ef0224a246282eb2d1408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlInsertNewOrderParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 2,
+                        "id": "0x71808b8d912240f58b27ca0ddf490c22",
+                        "object_id": "0xacc3c22e3a84481d9d703f8a7d9f6cb0",
+                        "name": "destinationId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "destinationId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0x8d88127b52d0446481bf0c195b96d084",
+                        "object_id": "0xacc3c22e3a84481d9d703f8a7d9f6cb0",
+                        "name": "description",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "description",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 5,
+                        "id": "0xb2ca5a9d01774fe1a0b8c502526d309e",
+                        "object_id": "0xacc3c22e3a84481d9d703f8a7d9f6cb0",
+                        "name": "deliveryDate",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "deliveryDate",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 4,
+                        "id": "0xc9a581b40e9f45a784527f020a685001",
+                        "object_id": "0xacc3c22e3a84481d9d703f8a7d9f6cb0",
+                        "name": "insertDate",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "insertDate",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0xd737f69087254efecdbaa316cd5c612b",
+                        "object_id": "0xacc3c22e3a84481d9d703f8a7d9f6cb0",
+                        "name": "clientId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "clientId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

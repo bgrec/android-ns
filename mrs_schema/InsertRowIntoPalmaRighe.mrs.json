@@ -1,0 +1,146 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11ef339e77ae69e4bf72408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "InsertRowIntoPalmaRighe",
+        "request_path": "/InsertRowIntoPalmaRighe",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x7ab878bd909c4136d531e822c82b14ec",
+                "db_object_id": "0x11ef339e77ae69e4bf72408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlInsertRowIntoPalmaRigheParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 1,
+                        "id": "0x18bb1eca58bb43c5def0ef1cecb10232",
+                        "object_id": "0x7ab878bd909c4136d531e822c82b14ec",
+                        "name": "whOutId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "whOutId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0x2e74432e632f4912ed9dacf143bff299",
+                        "object_id": "0x7ab878bd909c4136d531e822c82b14ec",
+                        "name": "articleId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "articleId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 4,
+                        "id": "0x6a2c3a1db6b648cf8cafbb3d39bdd256",
+                        "object_id": "0x7ab878bd909c4136d531e822c82b14ec",
+                        "name": "batch",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "batch",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0xa102020e78d0453092aab2ad65d4e98d",
+                        "object_id": "0x7ab878bd909c4136d531e822c82b14ec",
+                        "name": "quantity",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "quantity",
+                            "datatype": "decimal(11,5)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 5,
+                        "id": "0xea088b10e99145e4b5232c12e6d1c4c1",
+                        "object_id": "0x7ab878bd909c4136d531e822c82b14ec",
+                        "name": "expiryDate",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "expiryDate",
+                            "datatype": "date",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

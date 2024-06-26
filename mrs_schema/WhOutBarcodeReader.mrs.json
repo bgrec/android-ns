@@ -1,0 +1,83 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11ef339df8fe3b88bf72408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "WhOutBarcodeReader",
+        "request_path": "/WhOutBarcodeReader",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x9eb80f84a67f4ff2f8d395202aac7a12",
+                "db_object_id": "0x11ef339df8fe3b88bf72408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlWhOutBarcodeReaderParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 2,
+                        "id": "0x1840323c498641c4e3d807795ca1ddc0",
+                        "object_id": "0x9eb80f84a67f4ff2f8d395202aac7a12",
+                        "name": "scannedCode",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "scannedCode",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0xf00277b9aa2d4163bcdda4dfc8322378",
+                        "object_id": "0x9eb80f84a67f4ff2f8d395202aac7a12",
+                        "name": "whOutId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "whOutId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

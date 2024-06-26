@@ -1,0 +1,195 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11eef36559a49a9c9d60408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "clientsdestinationsview",
+        "request_path": "/clientsdestinationsview",
+        "enabled": 1,
+        "object_type": "VIEW",
+        "crud_operations": [
+            "READ"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                "db_object_id": "0x11eef36559a49a9c9d60408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlClientsdestinationsview",
+                "kind": "RESULT",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 5,
+                        "id": "0x22a35dad5ea54cc9e4942bc894648f7a",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "CAP",
+                        "db_column": {
+                            "name": "CAP",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(10)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0x370d8b4bfda24c72d4e97692c83a0b4b",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "CODI",
+                        "db_column": {
+                            "name": "CODI",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "int",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 4,
+                        "id": "0x52429eb0cf2946efd0778dae96b3f558",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "VIA",
+                        "db_column": {
+                            "name": "VIA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(40)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 6,
+                        "id": "0x53c423af30c34e86c90e3433bc934f18",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "CITTA",
+                        "db_column": {
+                            "name": "CITTA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(30)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0xee3275f68b414f31b72279b9c2ebb0b7",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "progTutto",
+                        "db_column": {
+                            "name": "PROG_TUTTO",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0xf5e9954633e0469aec7700d7185f4c93",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "DESCRI",
+                        "db_column": {
+                            "name": "DESCRI",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(80)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 7,
+                        "id": "0xfde6e689ee984b4dff89f3d141927403",
+                        "object_id": "0x32ef038f9efb4908aed29f4ed4acb729",
+                        "name": "PROV",
+                        "db_column": {
+                            "name": "PROV",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(4)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

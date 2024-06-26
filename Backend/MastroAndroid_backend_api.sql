@@ -969,6 +969,7 @@ BEGIN
              LEFT JOIN iva ON iva.CODICE = arti.IVA
     WHERE arti.CORTO = articleId;
 
+    -- Insert a new row into the palma_righe table
     INSERT INTO palma_righe (NUME, N_TIPO, DOC_DATA, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
                              QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
                              LISTINO, MISU, DATA, STAM, COLL, SETTORE, REPA, QT_CONF, REPA_CAS, CONTRO, LOTTO, DATA_SCA,
@@ -980,6 +981,11 @@ BEGIN
             CURRENT_DATE(), 1, 1,
             articleSector, articleDepartment, articleQuantityPerPackage, articlePosVat, articleCounterParty,
             batch, expiryDate, 'NEW');
+
+    -- Delete dummy row inserted to have the ID because server is missing a list feature for the insert
+    DELETE FROM palma_righe WHERE NUME = whOutId AND CORTO = 0;
+
+
 END;
 
 

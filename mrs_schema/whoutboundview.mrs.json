@@ -1,0 +1,283 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11ef339e589e46e4bf72408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "whoutboundview",
+        "request_path": "/whoutboundview",
+        "enabled": 1,
+        "object_type": "VIEW",
+        "crud_operations": [
+            "READ"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x40e876dc36bc487583014199ec0904cc",
+                "db_object_id": "0x11ef339e589e46e4bf72408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlWhoutboundview",
+                "kind": "RESULT",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 5,
+                        "id": "0x0357d6517f984c3ae2ae52032e17b556",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "CAP",
+                        "db_column": {
+                            "name": "CAP",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(8)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0x0fc078f6a1bf4b71b7a22836ed3e3616",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "CODI",
+                        "db_column": {
+                            "name": "CODI",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 7,
+                        "id": "0x2dd432d13b6b4f11b4242c761be01f26",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "PROV",
+                        "db_column": {
+                            "name": "PROV",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(2)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 11,
+                        "id": "0x368c7ac70bc8498f8688b70fbdfb5e7e",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "CODFIS",
+                        "db_column": {
+                            "name": "CODFIS",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(20)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 8,
+                        "id": "0x6b319066efca4127b517ab73a8ebcc8e",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "NAZIONE",
+                        "db_column": {
+                            "name": "NAZIONE",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(6)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 6,
+                        "id": "0x7af13bb7429442eaa36ed257c76459df",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "CITTA",
+                        "db_column": {
+                            "name": "CITTA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(50)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0x9ef5a3b1787c4ba8a1ca5c597f499b04",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "DESCRI",
+                        "db_column": {
+                            "name": "DESCRI",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(60)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 4,
+                        "id": "0xb42989d6272f4c0e9f7789b7d86de12f",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "VIA",
+                        "db_column": {
+                            "name": "VIA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(50)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0xcacffac1b0df49a4e928bd34adaf8364",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "NUME",
+                        "db_column": {
+                            "name": "NUME",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "int",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 9,
+                        "id": "0xd691f1c11f7b44a6c35a9540659cc899",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "DESC2",
+                        "db_column": {
+                            "name": "DESC2",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(40)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 10,
+                        "id": "0xee1818584ca64d749ffed25ac78666b1",
+                        "object_id": "0x40e876dc36bc487583014199ec0904cc",
+                        "name": "PIVA",
+                        "db_column": {
+                            "name": "PIVA",
+                            "srid": null,
+                            "comment": "",
+                            "datatype": "varchar(16)",
+                            "not_null": false,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false,
+                            "id_generation": null
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

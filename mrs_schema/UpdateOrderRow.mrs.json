@@ -1,0 +1,125 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11eeeb90985b418a98a4408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "UpdateOrderRow",
+        "request_path": "/UpdateOrderRow",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0xcebca85af0024e239e1e6e54d7bf0322",
+                "db_object_id": "0x11eeeb90985b418a98a4408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlUpdateOrderRowParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 3,
+                        "id": "0x115e348ccdd54c30bb81a9683fc28cf4",
+                        "object_id": "0xcebca85af0024e239e1e6e54d7bf0322",
+                        "name": "batch",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "batch",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 2,
+                        "id": "0x11a53360997e4e3ae5d635608898e132",
+                        "object_id": "0xcebca85af0024e239e1e6e54d7bf0322",
+                        "name": "quantity",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "quantity",
+                            "datatype": "decimal(11,5)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 4,
+                        "id": "0x3fcbe0bb98c242bd99ebd8dde4ce2844",
+                        "object_id": "0xcebca85af0024e239e1e6e54d7bf0322",
+                        "name": "expirationDate",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "expirationDate",
+                            "datatype": "varchar(255)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0xd0a63bf131654ad4f7e8a6ad689245ee",
+                        "object_id": "0xcebca85af0024e239e1e6e54d7bf0322",
+                        "name": "orderDetailId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "orderDetailId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

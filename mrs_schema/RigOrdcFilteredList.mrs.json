@@ -1,0 +1,62 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11eeeb63b876eed598a4408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "RigOrdcFilteredList",
+        "request_path": "/RigOrdcFilteredList",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x9790166dfb7847bbd265956353639ea3",
+                "db_object_id": "0x11eeeb63b876eed598a4408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlRigOrdcFilteredListParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 1,
+                        "id": "0x497fd7c2828b4d67ba3c58ad01879203",
+                        "object_id": "0x9790166dfb7847bbd265956353639ea3",
+                        "name": "orderId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "orderId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}

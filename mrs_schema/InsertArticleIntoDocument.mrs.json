@@ -1,0 +1,104 @@
+{
+    "type": "mrsObject",
+    "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0
+    },
+    "object": {
+        "id": "0x11eee12e29d0ee1d98a4408d5c759f7c",
+        "db_schema_id": "0x11eeda44862f2bb0a032408d5c759f7c",
+        "name": "InsertArticleIntoDocument",
+        "request_path": "/InsertArticleIntoDocument",
+        "enabled": 1,
+        "object_type": "PROCEDURE",
+        "crud_operations": [
+            "UPDATE"
+        ],
+        "format": "FEED",
+        "items_per_page": null,
+        "media_type": null,
+        "auto_detect_media_type": 0,
+        "requires_auth": 1,
+        "auth_stored_procedure": "",
+        "row_user_ownership_enforced": 0,
+        "row_user_ownership_column": null,
+        "options": null,
+        "details": null,
+        "comments": "",
+        "objects": [
+            {
+                "id": "0x9a5079bb0bcc48bde8ea8c1668ab42c6",
+                "db_object_id": "0x11eee12e29d0ee1d98a4408d5c759f7c",
+                "name": "MastrosqlServiceMastrosqlInsertArticleIntoDocumentParams",
+                "kind": "PARAMETERS",
+                "position": 0,
+                "fields": [
+                    {
+                        "position": 2,
+                        "id": "0x00f4ce616c2345599dee9237ac179c02",
+                        "object_id": "0x9a5079bb0bcc48bde8ea8c1668ab42c6",
+                        "name": "documentType",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "documentType",
+                            "datatype": "varchar(20)",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 3,
+                        "id": "0x859dff8288fe45f4a91f8173a8680077",
+                        "object_id": "0x9a5079bb0bcc48bde8ea8c1668ab42c6",
+                        "name": "articleId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "articleId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    },
+                    {
+                        "position": 1,
+                        "id": "0x8f1ba48a5901475dddb3ddd9947daa7d",
+                        "object_id": "0x9a5079bb0bcc48bde8ea8c1668ab42c6",
+                        "name": "documentId",
+                        "db_column": {
+                            "in": true,
+                            "out": false,
+                            "name": "documentId",
+                            "datatype": "int",
+                            "not_null": true,
+                            "is_unique": false,
+                            "is_primary": false,
+                            "is_generated": false
+                        },
+                        "enabled": true,
+                        "allow_filtering": true,
+                        "allow_sorting": false,
+                        "no_check": false,
+                        "no_update": false
+                    }
+                ]
+            }
+        ]
+    }
+}
