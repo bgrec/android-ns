@@ -43,7 +43,7 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
 /**
- *
+ * Composable that displays a card with information about an article.
  */
 @Composable
 fun ArticleCard(

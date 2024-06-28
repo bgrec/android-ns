@@ -1,6 +1,7 @@
 package com.mastrosql.app.ui.navigation.main.homescreen
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,9 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -44,7 +43,6 @@ import com.mastrosql.app.ui.navigation.main.MainNavOption
 import com.mastrosql.app.ui.navigation.main.homescreen.ButtonItemsList.buttonItems
 import com.mastrosql.app.ui.navigation.main.loginscreen.LogoImage
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
-import com.mastrosql.app.ui.theme.MastroAndroidTheme
 import java.util.EnumMap
 
 /**
@@ -61,30 +59,23 @@ fun HomeScreen(
     val appNavigationViewModel = LocalAppNavigationViewModelProvider.current
 
     // Collect the state from the view model and update the UI
-    val userPreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    // Get the selected URL name from UserPreferencesViewModel
-    var selectedUrlName = userPreferencesUiState.selectedUrlName
-    if (selectedUrlName == PRIMARY_URL_NAME) {
-        selectedUrlName = ""
-    }
-
-    // Get active buttons from UserPreferencesViewModel
-    val activeButtonsUiState by rememberUpdatedState(userPreferencesUiState.activeButtons)
+    val homeUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Get the current orientation
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    //Update the base URL when the selected URL changes
-    LaunchedEffect(key1 = userPreferencesUiState.selectedUrl) {
-        viewModel.changeBaseUrl(selectedUrl = userPreferencesUiState.selectedUrl)
-    }
+//    //Update the base URL when the selected URL changes
+//    LaunchedEffect(key1 = homeUiState.selectedUrl) {
+//        viewModel.changeBaseUrl(selectedUrl = homeUiState.selectedUrl)
+//    }
+    Log.d("HomeScreen", "HomeScreen: homeUiState: ${homeUiState.selectedUrl}")
+    Log.d("HomeScreen", "HomeScreen: homeUiState: ${homeUiState.selectedUrlName}")
 
     Home(drawerState = drawerState,
         navController = navController,
         isLandscape = isLandscape,
-        selectedUrlName = selectedUrlName,
-        activeButtonsUiState = activeButtonsUiState,
+        selectedUrlName = homeUiState.selectedUrlName,
+        activeButtonsUiState = homeUiState.activeButtons,
         appNavigationViewModel = appNavigationViewModel,
         onLogout = { viewModel.logout(navController) })
 }
@@ -160,13 +151,11 @@ fun OneColumnButtons(
 
                 item { Spacer(Modifier.height(16.dp)) }
                 item {
-                    AppButton(modifier = buttonsModifier,
-                        text = item.labelResId,
-                        onClick = {
-                            if (appNavigationViewModel != null) {
-                                item.action(navController, appNavigationViewModel)
-                            }
-                        })
+                    AppButton(modifier = buttonsModifier, text = item.labelResId, onClick = {
+                        if (appNavigationViewModel != null) {
+                            item.action(navController, appNavigationViewModel)
+                        }
+                    })
                 }
             }
         }
@@ -247,15 +236,13 @@ fun LogoutButton(
 @Composable
 fun HomePreview() {
     MastroAndroidPreviewTheme {
-        Home(
-            drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+        Home(drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
             navController = NavController(LocalContext.current),
             isLandscape = false,
             selectedUrlName = PRIMARY_URL_NAME,
             activeButtonsUiState = EnumMap(MainNavOption::class.java),
             appNavigationViewModel = null,
-            onLogout = { /* No action needed */ }
-        )
+            onLogout = { /* No action needed */ })
     }
 }
 

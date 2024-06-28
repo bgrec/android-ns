@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.PRIMARY_URL_NAME
+import com.mastrosql.app.SECONDARY_URL
 import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
 import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
@@ -38,6 +39,8 @@ import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -56,9 +59,9 @@ data class LoginUiState(
     val isSecondaryBaseUrlProvided: Boolean = false,
     val isNotSecuredApi: Boolean = false,
     val selectedUrl: Int = PRIMARY_URL,
-    val selectedUrlName: String = PRIMARY_URL_NAME,
-    val baseUrlName: String = PRIMARY_URL_NAME,
-    val baseUrl2Name: String = SECONDARY_URL_NAME
+    val selectedUrlName: String = "",
+    val primaryUrlName: String = PRIMARY_URL_NAME,
+    val secondaryUrlName: String = SECONDARY_URL_NAME
 )
 
 /**
@@ -94,7 +97,7 @@ class LoginViewModel(
     /**
      * UI state for the Login screen.
      */
-    val uiState: StateFlow<LoginUiState> = _uiState
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     /**
      * Update the UI state.
@@ -128,18 +131,9 @@ class LoginViewModel(
 
         viewModelScope.launch {
             userPreferencesRepository
-                .getSelectedUrl()
-                .collect {
-                    updateUiState(uiState.value.copy(selectedUrl = it))
-                }
-            userPreferencesRepository.changeBaseUrl(uiState.value.selectedUrl)
-        }
-
-        viewModelScope.launch {
-            userPreferencesRepository
                 .getBaseUrlName()
                 .collect {
-                    updateUiState(uiState.value.copy(baseUrlName = it))
+                    updateUiState(uiState.value.copy(primaryUrlName = it))
                 }
         }
 
@@ -147,25 +141,30 @@ class LoginViewModel(
             userPreferencesRepository
                 .getBaseUrl2Name()
                 .collect {
-                    updateUiState(uiState.value.copy(baseUrl2Name = it))
+                    updateUiState(uiState.value.copy(secondaryUrlName = it))
                 }
         }
 
-        // Observe changes in selectedUrl and update UI state accordingly
+        // Collect selected URL, update UI state, and change base URL
         viewModelScope.launch {
             userPreferencesRepository
                 .getSelectedUrl()
                 .collect { selectedUrl ->
-                    updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
-                    updateUiState(
-                        uiState.value.copy(
-                            selectedUrlName = if (selectedUrl == PRIMARY_URL) {
-                                uiState.value.baseUrlName
-                            } else {
-                                uiState.value.baseUrl2Name
-                            }
+                    _uiState.update { currentState ->
+                        val selectedUrlName = when (selectedUrl) {
+                            PRIMARY_URL -> if (currentState.primaryUrlName == PRIMARY_URL_NAME) ""
+                            else currentState.primaryUrlName
+
+                            SECONDARY_URL -> if (currentState.secondaryUrlName == SECONDARY_URL_NAME) ""
+                            else currentState.secondaryUrlName
+
+                            else -> "" // Handle unexpected values if needed
+                        }
+                        currentState.copy(
+                            selectedUrl = selectedUrl, selectedUrlName = selectedUrlName
                         )
-                    )
+                    }
+                    userPreferencesRepository.changeBaseUrl(selectedUrl)
                 }
         }
     }
@@ -316,6 +315,9 @@ class LoginViewModel(
         }
     }
 
+    /**
+     *
+     */
     fun getCredentials(activityContext: Context)/*: PasswordCredential?*/ {
 
         // Retrieves the user's saved password from the credential provider.

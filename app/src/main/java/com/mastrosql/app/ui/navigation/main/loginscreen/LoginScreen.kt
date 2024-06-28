@@ -107,6 +107,7 @@ fun LoginScreen(
         }
     }
 
+    //Login composable
     Login(navController = navController,
         interactionSource = interactionSource,
         onLogin = { username, password ->
@@ -121,8 +122,8 @@ fun LoginScreen(
         isNotSecuredApi = loginUiState.isNotSecuredApi,
         selectedUrl = loginUiState.selectedUrl,
         selectedUrlName = loginUiState.selectedUrlName,
-        baseUrlName = loginUiState.baseUrlName,
-        baseUrl2Name = loginUiState.baseUrl2Name,
+        primaryUrlName = loginUiState.primaryUrlName,
+        secondaryUrlName = loginUiState.secondaryUrlName,
         onUrlSelected = { selectedUrl ->
             viewModel.saveSelectedUrl(selectedUrl)
         })
@@ -140,8 +141,8 @@ fun Login(
     isNotSecuredApi: Boolean,
     selectedUrl: Int,
     selectedUrlName: String,
-    baseUrlName: String,
-    baseUrl2Name: String,
+    primaryUrlName: String,
+    secondaryUrlName: String,
     onUrlSelected: (Int) -> Unit
 ) {
 
@@ -198,7 +199,7 @@ fun Login(
             }
             if (isSecondaryBaseUrlProvided) {
                 item {
-                    val radioOptions = listOf(baseUrlName, baseUrl2Name)
+                    val radioOptions = listOf(primaryUrlName, secondaryUrlName)
                     val (selectedOption, onOptionSelected) = rememberSaveable {
                         mutableStateOf(radioOptions[selectedUrl])
                     }
@@ -351,8 +352,8 @@ fun LoginScreenPreview() {
             isNotSecuredApi = false,
             selectedUrl = 0,
             selectedUrlName = PRIMARY_URL_NAME,
-            baseUrlName = PRIMARY_URL_NAME,
-            baseUrl2Name = SECONDARY_URL_NAME,
+            primaryUrlName = PRIMARY_URL_NAME,
+            secondaryUrlName = SECONDARY_URL_NAME,
             onUrlSelected = { })
     }
 }
