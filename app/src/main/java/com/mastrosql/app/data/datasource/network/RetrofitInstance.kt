@@ -173,7 +173,8 @@ object RetrofitInstance {
                  *
                  * This interceptor logs the HTTP requests and responses made by Retrofit for debugging purposes.
                  */
-                //builder.addInterceptor(loggingInterceptor)
+                // TODO remove this
+                builder.addInterceptor(loggingInterceptor)
             }
 
             /**

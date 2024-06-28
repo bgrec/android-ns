@@ -21,9 +21,11 @@ class ThemeViewModel(
 
     private fun observeSelectedUrl() {
         viewModelScope.launch {
-            userPreferencesRepository.getSelectedUrl().collect { newUrl ->
-                _selectedUrl.value = newUrl
-            }
+            userPreferencesRepository
+                .getSelectedUrl()
+                .collect { newUrl ->
+                    _selectedUrl.value = newUrl
+                }
         }
     }
 }

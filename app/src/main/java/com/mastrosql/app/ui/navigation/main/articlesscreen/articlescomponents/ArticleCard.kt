@@ -42,6 +42,9 @@ import com.mastrosql.app.ui.components.ShowToast
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
+/**
+ *
+ */
 @Composable
 fun ArticleCard(
     article: Article,
@@ -68,16 +71,14 @@ fun ArticleCard(
         Column(
             modifier = Modifier.animateContentSize(
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
+                    dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
                 )
             )
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(4.dp), verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     modifier = Modifier.widthIn(60.dp),
@@ -90,20 +91,17 @@ fun ArticleCard(
                 }
                 //Spacer(Modifier.weight(0.5f))
                 Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.Start
+                    modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
                 ) {
                     ArticleDescriptionAndId(
-                        id = article.id,
-                        sku = article.sku,
-                        description = article.description
+                        id = article.id, sku = article.sku, description = article.description
                     )
                     if (expanded) {
                         ArticleInfo(
-                            department = article.department,
-                            family = article.family,
-                            vendorSku = article.vendorSku,
-                            measureUnit = article.measureUnit,
+                            department = article.department ?: "",
+                            family = article.family ?: "",
+                            vendorSku = article.vendorSku ?: "",
+                            measureUnit = article.measureUnit ?: "",
                             price = article.price
                         )
                     }
@@ -115,11 +113,9 @@ fun ArticleCard(
 
                 ) {
                     if (documentId != null && documentType != null && documentId > 0) {
-                        ArticleInsertIntoDocumentButton(
-                            onClick = {
-                                onInsertArticleClick(article.id)
-                            }
-                        )
+                        ArticleInsertIntoDocumentButton(onClick = {
+                            onInsertArticleClick(article.id)
+                        })
                     } else {
                         ArticleEditButton(
                             onClick = {
@@ -160,8 +156,7 @@ private fun ArticleExpandButton(
 
 @Composable
 private fun ArticleEditButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -177,8 +172,7 @@ private fun ArticleEditButton(
 
 @Composable
 private fun ArticleInsertIntoDocumentButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick
@@ -206,8 +200,7 @@ fun ArticleDescriptionAndId(
 ) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = stringResource(R.string.article_id),
@@ -258,14 +251,12 @@ fun ArticleInfo(
 
 ) {
     Column(
-        modifier = modifier
-            .padding(top = 4.dp)
+        modifier = modifier.padding(top = 4.dp)
     ) {
 
         if (department != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.article_department),
@@ -281,8 +272,7 @@ fun ArticleInfo(
         }
         if (family != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.article_family),
@@ -298,8 +288,7 @@ fun ArticleInfo(
         }
         if (vendorSku != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.article_vendorSku),
@@ -315,8 +304,7 @@ fun ArticleInfo(
         }
         if (measureUnit != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.article_measureUnit),
@@ -333,8 +321,7 @@ fun ArticleInfo(
 
         if (price.toString() != "") {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.article_price),

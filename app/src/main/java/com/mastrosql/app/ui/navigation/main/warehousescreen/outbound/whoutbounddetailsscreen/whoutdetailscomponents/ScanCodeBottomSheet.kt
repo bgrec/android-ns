@@ -4,7 +4,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mastrosql.app.R
 import com.mastrosql.app.data.local.SwipeActionsPreferences
@@ -60,6 +64,11 @@ fun ScanCodeBottomSheet(
     // State to control the bottom sheet
     val sheetState = rememberModalBottomSheetState()
 
+    // Get the bottom padding for the bottom sheet
+    val bottomPadding = WindowInsets.navigationBars
+        .asPaddingValues()
+        .calculateBottomPadding()
+
     // Function to set focus on the text input when bottom sheet is opened
     LaunchedEffect(showBottomSheet) {
         if (showBottomSheet.value) {
@@ -83,7 +92,8 @@ fun ScanCodeBottomSheet(
             whOutDetailsUiState = whOutDetailsUiState,
             onSendScannedCode = onSendScannedCode,
             focusRequester = focusRequester,
-            keyboardController = keyboardController
+            keyboardController = keyboardController,
+            bottomPadding = bottomPadding
         )
     }
 }
@@ -97,11 +107,14 @@ fun KeyboardBarcodeReader(
     whOutDetailsUiState: WhOutDetailsUiState.Success,
     onSendScannedCode: (Int, String) -> Unit,
     focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
+    bottomPadding: Dp
 ) {
 
     Column(
-        modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .padding(bottom = bottomPadding)
+            .padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
@@ -227,6 +240,7 @@ fun KeyboardBarcodeReaderPreview() {
         ),
         onSendScannedCode = { _, _ -> },
         focusRequester = FocusRequester(),
-        keyboardController = null
+        keyboardController = null,
+        bottomPadding = 8.dp
     )
 }

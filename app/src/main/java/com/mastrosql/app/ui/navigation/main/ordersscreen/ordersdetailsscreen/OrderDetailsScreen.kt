@@ -1,8 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen
 
 import android.content.Context
-import android.content.IntentFilter
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -46,11 +44,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mastrosql.app.R
 import com.mastrosql.app.data.local.SwipeActionsPreferences
+import com.mastrosql.app.scanner.ScanReceiver
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
 import com.mastrosql.app.ui.navigation.main.loadingscreen.LoadingScreen
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.ACTION_DATA_CODE_RECEIVED
-import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.ScanReceiver
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.EditOrderDetailsItem
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailList
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.orderdetailscomponents.OrderDetailsDestination
@@ -225,12 +222,8 @@ fun OrderDetails(
     // Register the receiver when the composable is first composed
     // and unregister it when the composable is disposed
     DisposableEffect(Unit) {
-        val filter = IntentFilter(ACTION_DATA_CODE_RECEIVED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(scanReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            context.registerReceiver(scanReceiver, filter)
-        }
+        // Register the receiver to listen for the scan broadcast
+        scanReceiver.register(context)
 
         // Unregister the receiver when the composable is disposed
         onDispose {

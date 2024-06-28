@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.customersscreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,7 +33,9 @@ fun CustomersPagedScreen(
     navController: NavController,
     viewModel: CustomersPagedMasterDataViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val customers = viewModel.getPagedCustomerMasterData().collectAsLazyPagingItems()
+    val customers = viewModel
+        .getPagedCustomerMasterData()
+        .collectAsLazyPagingItems()
 
     Scaffold(topBar = {
         AppBar(
@@ -50,7 +51,7 @@ fun CustomersPagedScreen(
         ) {
             val textState = remember { mutableStateOf(TextFieldValue("")) }
             CustomersSearchView(state = textState)
-            Log.i("CustomersMasterDat", "CustomersMasterDataViewModel created!")
+            //Log.i("CustomersMasterDat", "CustomersMasterDataViewModel created!")
             CustomersPagedList(
                 customers = customers,
                 modifier = Modifier,

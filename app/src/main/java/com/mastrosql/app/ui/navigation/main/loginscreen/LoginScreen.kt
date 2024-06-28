@@ -298,9 +298,6 @@ fun Login(
                 item {
                     Spacer(modifier = Modifier.size(64.dp))
                 }
-                item {
-                    Spacer(modifier = Modifier.size(64.dp))
-                }
             }
 
             item {

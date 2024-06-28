@@ -9,6 +9,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.core.view.WindowCompat
 import com.mastrosql.app.ui.navigation.ProvideAppNavigationViewModel
 import com.mastrosql.app.ui.navigation.main.MainCompose
 import com.mastrosql.app.ui.theme.MastroAndroidTheme
@@ -26,7 +27,10 @@ class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
     //@RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Set the content to be displayed in the window
+        // Used for the scan conde bottomsheets
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -94,4 +98,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

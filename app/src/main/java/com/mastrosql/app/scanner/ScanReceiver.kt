@@ -1,15 +1,21 @@
-package com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model
+@file:Suppress("KDocMissingDocumentation")
+
+package com.mastrosql.app.scanner
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 
 /**
  * Broadcast action that is sent when a barcode is scanned.
  */
-const val ACTION_DATA_CODE_RECEIVED: String = "com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED"
-private const val DATA = "data"
-private const val SOURCE = "source_byte"
+@Suppress("KDocMissingDocumentation")
+const val ACTION_DATA_CODE_RECEIVED_SUNMI: String = "com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED"
+const val ACTION_DATA_CODE_RECEIVED_ZEBRA: String = "com.mastrosql.app.scanner.SCAN"
+private const val DATA_SUNMI = "data"
+private const val DATA_ZEBRA = "com.symbol.datawedge.data_string"
 
 /**
  * Class that listens for the scan broadcast and calls the provided lambda with the scanned code.
@@ -19,15 +25,46 @@ class ScanReceiver(private val onScanReceived: (String) -> Unit) : BroadcastRece
     /**
      * Called when a broadcast is received.
      */
-    override fun onReceive(context: Context, intent: Intent) {
-        // Retrieve the scanned code as a String
-        val scannedCode = intent.getStringExtra(DATA) ?: return
-        onScanReceived(scannedCode)
 
-//        // Retrieve the scanned code as a Byte array
-//        val scannedCodeByteArray = intent.getByteArrayExtra(SOURCE) ?: return
+    override fun onReceive(context: Context, intent: Intent) {
+
+        // Retrieve the action of the intent
+        val action = intent.action
+
+        // Retrieve the scanned code as a String
+        val scannedCode: String? = when (action) {
+            // Retrieve the scanned code from the intent for Sunmi devices
+            ACTION_DATA_CODE_RECEIVED_SUNMI -> intent.getStringExtra(DATA_SUNMI)
+
+            // Retrieve the scanned code from the intent for Zebra devices
+            ACTION_DATA_CODE_RECEIVED_ZEBRA -> intent.getStringExtra(DATA_ZEBRA)
+            else -> null
+        }
+        scannedCode?.let {
+            onScanReceived(it)
+        }
+    }
+
+    /**
+     * Register the ScanReceiver to listen for the scan broadcast.
+     */
+    fun register(context: Context) {
+
+        val intentFilter = IntentFilter().apply {
+            addAction(ACTION_DATA_CODE_RECEIVED_SUNMI)
+            addAction(ACTION_DATA_CODE_RECEIVED_ZEBRA)
+            addCategory(Intent.CATEGORY_DEFAULT)
+        }
+
+        // Register the receiver to listen for the scan broadcast
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(this, intentFilter, Context.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(this, intentFilter, Context.RECEIVER_EXPORTED)
+        }
     }
 }
+
 
 /**
  * Register the ScanReceiver to listen for the scan broadcast.
@@ -99,4 +136,27 @@ class ScanReceiver(private val onScanReceived: (String) -> Unit) : BroadcastRece
  *  */
 
 
-/* For zebra https://github.com/darryncampbell/DataWedgeKotlin*/
+/**
+ *  For zebra https://github.com/darryncampbell/DataWedgeKotlin
+ *
+ * Open the DataWedge app on the Zebra device.
+ * Create a new profile or select an existing one.
+ *      Create a Profile:
+ *          example: "MastroSql app"
+ *
+ * Assign your app to the profile under the "Associated apps" section.
+ *          example: "com.mastrosql.app.dev"
+ * Configure Intent Output:
+ *
+ * Under the created profile, go to "Intent Output".
+ * Enable "Intent Output".
+ *  (Disable "Keystroke output" if enabled if you want to not use keyboard input)
+ *
+ * Set "Intent action" to a custom action string, e.g., "com.mastrosql.app.SCAN".
+ * Do not specify a "Intent category".
+ * Set "Intent delivery" to BROADCAST.
+ * Configure Barcode Input:
+ *
+ * Under the profile, go to "Barcode Input".
+ * Enable "Barcode Input" and configure it as needed.
+ */

@@ -48,6 +48,11 @@
             </intent-filter>
         </activity>
 
+        <!--        <receiver-->
+        <!--            android:name=".scanner.ScanReceiver"-->
+        <!--            android:enabled="true"-->
+        <!--            android:exported="true" />-->
+
         <service
             android:name="com.mastrosql.app.syncadapter.AuthenticatorService"
             android:exported="false"
@@ -55,6 +60,13 @@
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
+            <!--            <intent-filter>-->
+            <!--                &lt;!&ndash; This is the action name for the intent-filter for Zebra DW Scan &ndash;&gt;-->
+            <!--                <action android:name="com.mastrosql.app.scanner.SCAN" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--            </intent-filter>-->
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />

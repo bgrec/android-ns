@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "cca2cbe2d3910b14226470dec4809012",
+    "identityHash": "6395bf58a01be9a99557b05385282721",
     "entities": [
       {
         "tableName": "items",
@@ -176,7 +176,7 @@
       },
       {
         "tableName": "articles",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sku` TEXT NOT NULL, `vendorSku` TEXT NOT NULL, `description` TEXT NOT NULL, `cost` REAL NOT NULL, `vat` TEXT NOT NULL, `measureUnit` TEXT NOT NULL, `department` TEXT NOT NULL, `subDepartment` TEXT NOT NULL, `family` TEXT NOT NULL, `subFamily` TEXT NOT NULL, `price` REAL NOT NULL, `group` TEXT NOT NULL, `ean8` TEXT NOT NULL, `ean13` TEXT, `eanAlt` TEXT, `metadata` TEXT NOT NULL, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sku` TEXT, `vendorSku` TEXT, `description` TEXT, `cost` REAL NOT NULL, `vat` TEXT, `measureUnit` TEXT, `department` TEXT, `subDepartment` TEXT, `family` TEXT, `subFamily` TEXT, `price` REAL NOT NULL, `group` TEXT, `ean8` TEXT, `ean13` TEXT, `eanAlt` TEXT, `metadata` TEXT NOT NULL, `links` TEXT NOT NULL, `page` INTEGER NOT NULL, `last_updated` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -188,19 +188,19 @@
             "fieldPath": "sku",
             "columnName": "sku",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "vendorSku",
             "columnName": "vendorSku",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "description",
             "columnName": "description",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "cost",
@@ -212,37 +212,37 @@
             "fieldPath": "vat",
             "columnName": "vat",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "measureUnit",
             "columnName": "measureUnit",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "department",
             "columnName": "department",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "subDepartment",
             "columnName": "subDepartment",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "family",
             "columnName": "family",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "subFamily",
             "columnName": "subFamily",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "price",
@@ -254,13 +254,13 @@
             "fieldPath": "group",
             "columnName": "group",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "ean8",
             "columnName": "ean8",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "ean13",
@@ -1550,7 +1550,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cca2cbe2d3910b14226470dec4809012')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6395bf58a01be9a99557b05385282721')"
     ]
   }
 }

@@ -15,35 +15,29 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "articles")
 @Serializable
 data class Article(
-    @PrimaryKey(autoGenerate = true)
-    @SerializedName("CORTO") val id: Int = 0,
-
-    /*
+    @PrimaryKey(autoGenerate = true) @SerializedName("CORTO") val id: Int = 0,/*
      @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
      */
-
-    @SerializedName("CODI") val sku: String,
-    @SerializedName("CFOR") val vendorSku: String,
-    @SerializedName("DESCRI") val description: String,
+    @SerializedName("CODI") val sku: String?,
+    @SerializedName("CFOR") val vendorSku: String?,
+    @SerializedName("DESCRI") val description: String?,
     @SerializedName("COST") val cost: Double,
-    @SerializedName("IVA") val vat: String,
-    @SerializedName("MISU") val measureUnit: String,
-    @SerializedName("REPA") val department: String,
-    @SerializedName("repaSotto") val subDepartment: String,
-    @SerializedName("TIPO") val family: String,
-    @SerializedName("tipoSotto") val subFamily: String,
+    @SerializedName("IVA") val vat: String?,
+    @SerializedName("MISU") val measureUnit: String?,
+    @SerializedName("REPA") val department: String?,
+    @SerializedName("repaSotto") val subDepartment: String?,
+    @SerializedName("TIPO") val family: String?,
+    @SerializedName("tipoSotto") val subFamily: String?,
     @SerializedName("VEND") val price: Double,
-    @SerializedName("GRUPPO") val group: String,
-    @SerializedName("ean_8") val ean8: String,
+    @SerializedName("GRUPPO") val group: String?,
+    @SerializedName("ean_8") val ean8: String?,
     @SerializedName("ean_13") val ean13: String?,
     @SerializedName("eanAlt") val eanAlt: String?,
 
-    @TypeConverters(ArticleMetadataTypeConverter::class)
-    @SerializedName("_metadata") val metadata: Metadata,
+    @TypeConverters(ArticleMetadataTypeConverter::class) @SerializedName("_metadata") val metadata: Metadata,
 
-    @TypeConverters(ArticleLinksTypeConverter::class)
-    @SerializedName("links") val links: List<Link>,
+    @TypeConverters(ArticleLinksTypeConverter::class) @SerializedName("links") val links: List<Link>,
 
     @ColumnInfo(name = "page") var page: Int,
     @ColumnInfo(name = "last_updated") val lastUpdated: Long = System.currentTimeMillis()
@@ -51,19 +45,19 @@ data class Article(
     fun trimAllStrings(): Article {
         return Article(
             id = id,
-            sku = sku.trim(),
-            vendorSku = vendorSku.trim(),
-            description = description.trim(),
+            sku = sku?.trim(),
+            vendorSku = vendorSku?.trim(),
+            description = description?.trim(),
             cost = cost,
-            vat = vat.trim(),
-            measureUnit = measureUnit.trim(),
-            department = department.trim(),
-            subDepartment = subDepartment.trim(),
-            family = family.trim(),
-            subFamily = subFamily.trim(),
+            vat = vat?.trim(),
+            measureUnit = measureUnit?.trim(),
+            department = department?.trim(),
+            subDepartment = subDepartment?.trim(),
+            family = family?.trim(),
+            subFamily = subFamily?.trim(),
             price = price,
-            group = group.trim(),
-            ean8 = ean8.trim(),
+            group = group?.trim(),
+            ean8 = ean8?.trim(),
             ean13 = ean13?.trim(),
             eanAlt = eanAlt?.trim(),
             links = links,
@@ -76,20 +70,17 @@ data class Article(
 
 @Serializable
 data class Metadata(
-    @SerializedName("etag")
-    val etag: String
+    @SerializedName("etag") val etag: String
 )
 
 @Serializable
 data class Link(
-    @SerializedName("rel") val rel: String,
-    @SerializedName("href") val href: String
+    @SerializedName("rel") val rel: String, @SerializedName("href") val href: String
 )
 
 @Serializable
 data class ArticlesResponseList(
-    @SerializedName("items")
-    val items: List<Article>
+    @SerializedName("items") val items: List<Article>
 )
 
 @Serializable
@@ -101,4 +92,3 @@ data class ArticlesResponse(
     val count: Int,
     val links: List<Link>
 )
-

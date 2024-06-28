@@ -33,46 +33,46 @@ fun WhOutDetailsTopAppBar(
     navigateUp: () -> Unit = {},
     onAddItemClick: () -> Unit = {}
 ) {
-    CenterAlignedTopAppBar(
-        title = {
-            if (title.length > 20) {
-                // If the title is longer than 20 characters, reduce the font size
-                Text(
-                    text = title,
-                    fontSize = typography.titleMedium.fontSize,
-                )
-            } else {
-                // Default font size
-                Text(
-                    text = title,
-                    fontSize = typography.titleLarge.fontSize, // Default font size
-                )
-            }
-        },
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button)
-                    )
-                }
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = { onAddItemClick() },
-            ) {
+    CenterAlignedTopAppBar(title = {
+        if (title.length < 20) {
+            // If the title is longer than 20 characters, reduce the font size
+            Text(
+                text = title,
+                fontSize = typography.titleLarge.fontSize,
+            )
+        } else if (title.length in 20..29) {
+            // If the title is longer than 20 characters, reduce the font size
+            Text(
+                text = title,
+                fontSize = typography.titleMedium.fontSize,
+            )
+        } else {
+            // Default font size
+            Text(
+                text = title,
+                fontSize = typography.bodySmall.fontSize, // Default font size
+            )
+        }
+    }, modifier = modifier, scrollBehavior = scrollBehavior, navigationIcon = {
+        if (canNavigateBack) {
+            IconButton(onClick = navigateUp) {
                 Icon(
-                    imageVector = Icons.Default.AddCircle,
-                    modifier = Modifier.fillMaxSize(),
-                    contentDescription = stringResource(R.string.row_details_add_button)
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button)
                 )
             }
         }
-    )
+    }, actions = {
+        IconButton(
+            onClick = { onAddItemClick() },
+        ) {
+            Icon(
+                imageVector = Icons.Default.AddCircle,
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = stringResource(R.string.row_details_add_button)
+            )
+        }
+    })
 }
 
 /**
@@ -83,10 +83,6 @@ fun WhOutDetailsTopAppBar(
 @Composable
 fun WhOutDetailsTopAppBarPreview() {
     MastroAndroidPreviewTheme {
-        WhOutDetailsTopAppBar(
-            title = "WhOut Details",
-            canNavigateBack = true,
-            onAddItemClick = {}
-        )
+        WhOutDetailsTopAppBar(title = "WhOut Details", canNavigateBack = true, onAddItemClick = {})
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mastrosql.app.R
+import com.mastrosql.app.scanner.ScanReceiver
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.components.appbar.AppBar
 import com.mastrosql.app.ui.navigation.main.articlesscreen.articlescomponents.ArticlesList
@@ -85,11 +87,38 @@ fun ArticlesResultScreen(
     navController: NavController,
     onInsertArticleClick: (Int) -> Unit
 ) {
+    // Get the context
+    val context = LocalContext.current
+
+    // Create a mutable state for the search text
+    val textState = remember { mutableStateOf(TextFieldValue("")) }
+
     //Change the backNavigationAction to null if you want to hide the back button
     var backNavigationAction: (() -> Unit)? = null
     if (documentId != null) {
         backNavigationAction = {
             navController.popBackStack()
+        }
+    }
+
+    // Create and register the ScanReceiver to listen for scanned codes from the scanner
+    // The ScanReceiver is a BroadcastReceiver that listens
+    // for the "com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED" broadcast
+    val scanReceiver = remember {
+        ScanReceiver { barcode ->
+            textState.value = TextFieldValue(barcode)
+        }
+    }
+
+    // Register the receiver when the composable is first composed
+    // and unregister it when the composable is disposed
+    DisposableEffect(Unit) {
+        // Register the ScanReceiver to listen for the scan broadcast
+        scanReceiver.register(context)
+
+        // Unregister the receiver when the composable is disposed
+        onDispose {
+            context.unregisterReceiver(scanReceiver)
         }
     }
 
@@ -108,7 +137,7 @@ fun ArticlesResultScreen(
             // verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val textState = remember { mutableStateOf(TextFieldValue("")) }
+
             SearchView(state = textState)
             ArticlesList(
                 articlesList = articlesList,
@@ -137,4 +166,3 @@ fun ArticlesScreenPreview() {
         navController = NavController(LocalContext.current)
     )
 }
-

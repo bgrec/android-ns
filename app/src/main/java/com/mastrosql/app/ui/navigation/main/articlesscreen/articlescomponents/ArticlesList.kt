@@ -20,6 +20,9 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Article
 import com.mastrosql.app.ui.navigation.main.articlesscreen.model.Metadata
 import com.mastrosql.app.ui.theme.MastroAndroidPreviewTheme
 
+/**
+ * Composable that displays a list of articles.
+ */
 @Composable
 fun ArticlesList(
     articlesList: List<Article>,
@@ -31,11 +34,9 @@ fun ArticlesList(
     onInsertArticleClick: (Int) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
         //.focusable()
-    )
-    {
+    ) {
         val filteredList: List<Article>
         val searchedText = state.value.text
 
@@ -44,10 +45,19 @@ fun ArticlesList(
         } else {
             //update this for fields to search
             articlesList.filter {
-                it.description.contains(searchedText, ignoreCase = true)
-                        ||
-                        it.sku.contains(searchedText, ignoreCase = true)
-                        || it.vendorSku.contains(searchedText, ignoreCase = true)
+                it.description?.contains(
+                    searchedText, ignoreCase = true
+                ) == true || it.sku?.contains(
+                    searchedText, ignoreCase = true
+                ) ?: false || it.vendorSku?.contains(
+                    searchedText, ignoreCase = true
+                ) ?: false || it.ean8?.contains(
+                    searchedText, ignoreCase = true
+                ) ?: false || it.ean13?.contains(
+                    searchedText, ignoreCase = true
+                ) ?: false || it.eanAlt?.contains(
+                    searchedText, ignoreCase = true
+                ) ?: false
             }
         }
 
@@ -67,63 +77,63 @@ fun ArticlesList(
     }
 }
 
+/**
+ *
+ */
 @Preview
 @Composable
 fun ItemsListPreview() {
     MastroAndroidPreviewTheme {
-        ArticlesList(
-            articlesList = listOf(
-                Article(
-                    id = 1,
-                    sku = "sku",
-                    vendorSku = "vendorSku",
-                    description = "description",
-                    cost = 1.0,
-                    vat = "vat",
-                    measureUnit = "measureUnit",
-                    department = "department",
-                    subDepartment = "subDepartment",
-                    family = "family",
-                    subFamily = "subFamily",
-                    price = 1.0,
-                    group = "group",
-                    ean8 = "ean8",
-                    ean13 = "ean13",
-                    eanAlt = "eanAlt",
-                    links = emptyList(),
-                    metadata = Metadata("etag"),
-                    page = 1,
-                    lastUpdated = 1L
-                ),
-                Article(
-                    id = 2,
-                    sku = "sku",
-                    vendorSku = "vendorSku",
-                    description = "description",
-                    cost = 1.0,
-                    vat = "vat",
-                    measureUnit = "measureUnit",
-                    department = "department",
-                    subDepartment = "subDepartment",
-                    family = "family",
-                    subFamily = "subFamily",
-                    price = 1.0,
-                    group = "group",
-                    ean8 = "ean8",
-                    ean13 = "ean13",
-                    eanAlt = "eanAlt",
-                    links = emptyList(),
-                    metadata = Metadata("etag"),
-                    page = 1,
-                    lastUpdated = 1L
-                )
-            ),
+        ArticlesList(articlesList = listOf(
+            Article(
+                id = 1,
+                sku = "sku",
+                vendorSku = "vendorSku",
+                description = "description",
+                cost = 1.0,
+                vat = "vat",
+                measureUnit = "measureUnit",
+                department = "department",
+                subDepartment = "subDepartment",
+                family = "family",
+                subFamily = "subFamily",
+                price = 1.0,
+                group = "group",
+                ean8 = "ean8",
+                ean13 = "ean13",
+                eanAlt = "eanAlt",
+                links = emptyList(),
+                metadata = Metadata("etag"),
+                page = 1,
+                lastUpdated = 1L
+            ), Article(
+                id = 2,
+                sku = "sku",
+                vendorSku = "vendorSku",
+                description = "description",
+                cost = 1.0,
+                vat = "vat",
+                measureUnit = "measureUnit",
+                department = "department",
+                subDepartment = "subDepartment",
+                family = "family",
+                subFamily = "subFamily",
+                price = 1.0,
+                group = "group",
+                ean8 = "ean8",
+                ean13 = "ean13",
+                eanAlt = "eanAlt",
+                links = emptyList(),
+                metadata = Metadata("etag"),
+                page = 1,
+                lastUpdated = 1L
+            )
+        ),
             documentId = null,
             documentType = null,
             state = remember { mutableStateOf(TextFieldValue("")) },
             modifier = Modifier.padding(8.dp),
             navController = NavController(LocalContext.current),
-            onInsertArticleClick = { }
-        )
+            onInsertArticleClick = { })
     }
 }
