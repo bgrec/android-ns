@@ -29,6 +29,58 @@ object RetrofitInstance {
     private var trustManager: X509TrustManager? = null
     private var sslSocketFactory: SSLSocketFactory
 
+    private val trustAllCertificates = arrayOf<TrustManager>(
+
+        /**
+         * Indicates that lint should suppress warnings related to the usage of a custom
+         * X509TrustManager implementation.
+         *
+         * This annotation is used to suppress lint warnings that would otherwise be generated
+         * for custom implementations of X509TrustManager, which may deviate from standard
+         * security practices or lint rules.
+         */
+        @SuppressLint("CustomX509TrustManager")
+
+        /**
+         * X509TrustManager implementation that trusts all certificates without any validation.
+         *
+         * This implementation bypasses all certificate validation checks for both client and server
+         * trust verification.
+         *
+         * Note: Using this implementation can expose the application to security vulnerabilities
+         *       and should only be used for testing or in controlled environments.
+         */
+        object : X509TrustManager {
+
+            /**
+             * Trusts all client certificates without validation.
+             *
+             * This method overrides the default behavior of X509TrustManager to trust all client certificates
+             * without performing any validation checks.
+             */
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            }
+
+            /**
+             * Trusts all server certificates without validation.
+             *
+             * This method overrides the default behavior of X509TrustManager to trust all server certificates
+             * without performing any validation checks.
+             */
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            }
+
+            /**
+             * Returns an empty array of accepted issuers.
+             *
+             * This method overrides the default behavior of X509TrustManager to return an empty array,
+             * indicating that no specific certificate issuers are trusted.
+             */
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        })
+
     /**
      * Initializes SSL socket factory using a TLS SSL context configured with trust all certificates.
      */
@@ -223,7 +275,7 @@ object RetrofitInstance {
          * If the request URL contains LOGIN_PATH, this function removes the second path segment,
          * constructs a new base URL without it, and creates a new request with the modified URL.
          */
-// Check if the LOGIN_PATH is present in the path segments
+        // Check if the LOGIN_PATH is present in the path segments
         if (pathSegments.contains(LOGIN_PATH)) {
             // Remove the second path segment
             val modifiedPathSegments = pathSegments
@@ -268,57 +320,6 @@ object RetrofitInstance {
         return request
     }
 
-    private val trustAllCertificates = arrayOf<TrustManager>(
-
-        /**
-         * Indicates that lint should suppress warnings related to the usage of a custom
-         * X509TrustManager implementation.
-         *
-         * This annotation is used to suppress lint warnings that would otherwise be generated
-         * for custom implementations of X509TrustManager, which may deviate from standard
-         * security practices or lint rules.
-         */
-        @SuppressLint("CustomX509TrustManager")
-
-        /**
-         * X509TrustManager implementation that trusts all certificates without any validation.
-         *
-         * This implementation bypasses all certificate validation checks for both client and server
-         * trust verification.
-         *
-         * Note: Using this implementation can expose the application to security vulnerabilities
-         *       and should only be used for testing or in controlled environments.
-         */
-        object : X509TrustManager {
-
-            /**
-             * Trusts all client certificates without validation.
-             *
-             * This method overrides the default behavior of X509TrustManager to trust all client certificates
-             * without performing any validation checks.
-             */
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-            }
-
-            /**
-             * Trusts all server certificates without validation.
-             *
-             * This method overrides the default behavior of X509TrustManager to trust all server certificates
-             * without performing any validation checks.
-             */
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-            }
-
-            /**
-             * Returns an empty array of accepted issuers.
-             *
-             * This method overrides the default behavior of X509TrustManager to return an empty array,
-             * indicating that no specific certificate issuers are trusted.
-             */
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        })
 
     private fun createRetrofitInstance(
         baseUrl: String?
