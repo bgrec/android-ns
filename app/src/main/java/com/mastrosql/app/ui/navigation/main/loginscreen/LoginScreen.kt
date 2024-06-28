@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.PRIMARY_URL_NAME
 import com.mastrosql.app.R
 import com.mastrosql.app.SECONDARY_URL_NAME
@@ -139,7 +140,7 @@ fun Login(
     onLogin: (String, String) -> Unit,
     isSecondaryBaseUrlProvided: Boolean,
     isNotSecuredApi: Boolean,
-    selectedUrl: Int,
+    selectedUrl: Int = PRIMARY_URL,
     selectedUrlName: String,
     primaryUrlName: String,
     secondaryUrlName: String,
@@ -350,7 +351,7 @@ fun LoginScreenPreview() {
             onLogin = { _, _ -> },
             isSecondaryBaseUrlProvided = true,
             isNotSecuredApi = false,
-            selectedUrl = 0,
+            selectedUrl = PRIMARY_URL,
             selectedUrlName = PRIMARY_URL_NAME,
             primaryUrlName = PRIMARY_URL_NAME,
             secondaryUrlName = SECONDARY_URL_NAME,

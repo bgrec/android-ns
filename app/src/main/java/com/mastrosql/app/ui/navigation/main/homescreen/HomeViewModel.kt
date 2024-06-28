@@ -107,7 +107,7 @@ class HomeViewModel(
                             selectedUrl = selectedUrl, selectedUrlName = selectedUrlName
                         )
                     }
-                    userPreferencesRepository.changeBaseUrl(selectedUrl)
+                    //userPreferencesRepository.changeBaseUrl(selectedUrl)
                 }
         }
     }
