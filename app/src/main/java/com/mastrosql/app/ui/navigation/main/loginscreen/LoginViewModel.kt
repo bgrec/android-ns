@@ -40,7 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -108,7 +108,33 @@ class LoginViewModel(
 
     /**
      * Initialize the ViewModel and collect the flow values from the data store.
-     */
+     *//*init {
+        viewModelScope.launch {
+            combine(
+                userPreferencesRepository.getIsNotSecuredApi(),
+                userPreferencesRepository.getBaseUrl2(),
+                userPreferencesRepository.getBaseUrlName(),
+                userPreferencesRepository.getBaseUrl2Name(),
+                userPreferencesRepository.getSelectedUrl()
+            ) { isNotSecuredApi, baseUrl2, primaryUrlName, secondaryUrlName, selectedUrl ->
+                Quintuple(isNotSecuredApi, baseUrl2, primaryUrlName, secondaryUrlName, selectedUrl)
+            }.collect { (isNotSecuredApi, baseUrl2, primaryUrlName, secondaryUrlName, selectedUrl) ->
+                val selectedUrlName =
+                    updateSelectedUrlName(selectedUrl, primaryUrlName, secondaryUrlName)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isNotSecuredApi = isNotSecuredApi,
+                        isSecondaryBaseUrlProvided = baseUrl2.isNotEmpty(),
+                        primaryUrlName = primaryUrlName,
+                        secondaryUrlName = secondaryUrlName,
+                        selectedUrl = selectedUrl,
+                        selectedUrlName = selectedUrlName
+                    )
+                }
+                //userPreferencesRepository.changeBaseUrl(selectedUrl)
+            }//.launchIn(viewModelScope)
+        }
+    }*/
     init {
         viewModelScope.launch {
             userPreferencesRepository
@@ -150,22 +176,42 @@ class LoginViewModel(
             userPreferencesRepository
                 .getSelectedUrl()
                 .collect { selectedUrl ->
-                    _uiState.update { currentState ->
-                        val selectedUrlName = when (selectedUrl) {
-                            PRIMARY_URL -> if (currentState.primaryUrlName == PRIMARY_URL_NAME) ""
-                            else currentState.primaryUrlName
+                    val selectedUrlName = when (selectedUrl) {
+                        PRIMARY_URL -> if (_uiState.value.primaryUrlName == PRIMARY_URL_NAME) ""
+                        else _uiState.value.primaryUrlName
 
-                            SECONDARY_URL -> if (currentState.secondaryUrlName == SECONDARY_URL_NAME) ""
-                            else currentState.secondaryUrlName
+                        SECONDARY_URL -> if (_uiState.value.secondaryUrlName == SECONDARY_URL_NAME) ""
+                        else _uiState.value.secondaryUrlName
 
-                            else -> "" // Handle unexpected values if needed
-                        }
-                        currentState.copy(
+                        else -> "" // Handle unexpected values if needed
+                    }
+                    updateUiState(
+                        _uiState.value.copy(
                             selectedUrl = selectedUrl, selectedUrlName = selectedUrlName
                         )
-                    }
+                    )
                     userPreferencesRepository.changeBaseUrl(selectedUrl)
                 }
+        }
+    }
+
+    fun updateSelectedUrlName() {
+        viewModelScope.launch {
+            val selectedUrl = userPreferencesRepository
+                .getSelectedUrl()
+                .first()
+            val updatedSelectedUrlName = when (selectedUrl) {
+                PRIMARY_URL -> userPreferencesRepository
+                    .getBaseUrlName()
+                    .first()
+
+                SECONDARY_URL -> userPreferencesRepository
+                    .getBaseUrl2Name()
+                    .first()
+
+                else -> ""
+            }
+            updateUiState(_uiState.value.copy(selectedUrlName = updatedSelectedUrlName))
         }
     }
 

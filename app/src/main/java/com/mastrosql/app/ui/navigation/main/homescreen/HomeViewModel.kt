@@ -1,6 +1,5 @@
 package com.mastrosql.app.ui.navigation.main.homescreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -15,6 +14,7 @@ import com.mastrosql.app.ui.navigation.main.NavRoutes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.EnumMap
@@ -25,7 +25,6 @@ import java.util.EnumMap
 @Suppress("KDocMissingDocumentation")
 data class HomeUiState(
     val activeButtons: EnumMap<MainNavOption, Boolean> = EnumMap(MainNavOption::class.java),
-    val isSecondaryBaseUrlProvided: Boolean = false,
     val selectedUrl: Int = PRIMARY_URL,
     val selectedUrlName: String = "",
     val primaryUrlName: String = PRIMARY_URL_NAME,
@@ -60,71 +59,40 @@ class HomeViewModel(
      * Initialize the ViewModel and collect the flow values from the data store.
      */
     init {
-        // Collect and update active buttons
         viewModelScope.launch {
-            userPreferencesRepository
-                .getActiveButtons()
-                .collect { activeButtons ->
-                    updateUiState(uiState.value.copy(activeButtons = activeButtons))
+            combine(
+                userPreferencesRepository.getSelectedUrl(),
+                userPreferencesRepository.getBaseUrlName(),
+                userPreferencesRepository.getBaseUrl2Name(),
+                userPreferencesRepository.getActiveButtons()
+            ) { selectedUrl, primaryUrlName, secondaryUrlName, activeButtons ->
+                Quadruple(selectedUrl, primaryUrlName, secondaryUrlName, activeButtons)
+            }.collect { (selectedUrl, primaryUrlName, secondaryUrlName, activeButtons) ->
+                val selectedUrlName =
+                    updateSelectedUrlName(selectedUrl, primaryUrlName, secondaryUrlName)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedUrl = selectedUrl,
+                        primaryUrlName = primaryUrlName,
+                        secondaryUrlName = secondaryUrlName,
+                        selectedUrlName = selectedUrlName,
+                        activeButtons = activeButtons
+                    )
                 }
-        }
-
-        // Collect and update the primary URL name
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrlName()
-                .collect {
-                    updateUiState(uiState.value.copy(primaryUrlName = it))
-                }
-        }
-
-        // Collect and update the secondary URL name
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl2Name()
-                .collect {
-                    updateUiState(uiState.value.copy(secondaryUrlName = it))
-                }
-        }
-
-        // Collect selected URL, update UI state, and change base URL
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getSelectedUrl()
-                .collect { selectedUrl ->
-                    Log.d("HomeViewModel", "Selected URL: $selectedUrl")
-                    _uiState.update { currentState ->
-                        val selectedUrlName = when (selectedUrl) {
-                            PRIMARY_URL -> if (currentState.primaryUrlName == PRIMARY_URL_NAME) ""
-                            else currentState.primaryUrlName
-
-                            SECONDARY_URL -> if (currentState.secondaryUrlName == SECONDARY_URL_NAME) ""
-                            else currentState.secondaryUrlName
-
-                            else -> "" // Handle unexpected values if needed
-                        }
-                        currentState.copy(
-                            selectedUrl = selectedUrl, selectedUrlName = selectedUrlName
-                        )
-                    }
-                    //userPreferencesRepository.changeBaseUrl(selectedUrl)
-                }
+                userPreferencesRepository.changeBaseUrl(selectedUrl)
+            }//.launchIn(viewModelScope)
         }
     }
 
-//    fun updateSelectedUrlName() {
-//        viewModelScope.launch {
-//            val selectedUrl = userPreferencesRepository.getSelectedUrl()
-//            val updatedSelectedUrlName = when (selectedUrl) {
-//                PRIMARY_URL -> userPreferencesRepository.getBaseUrlName().
-//                SECONDARY_URL -> userPreferencesRepository.getBaseUrl2Name()
-//                else -> ""
-//            }
-//            _uiState.update { currentState ->
-//                currentState.copy(selectedUrlName = updatedSelectedUrlName)
-//            }
-//        }
-//    }
+    private fun updateSelectedUrlName(
+        selectedUrl: Int, primaryUrlName: String, secondaryUrlName: String
+    ): String {
+        return when (selectedUrl) {
+            PRIMARY_URL -> if (primaryUrlName == PRIMARY_URL_NAME) "" else primaryUrlName
+            SECONDARY_URL -> if (secondaryUrlName == SECONDARY_URL_NAME) "" else secondaryUrlName
+            else -> "" // Handle unexpected values if needed
+        }
+    }
 
     /**
      * Logout the user.
@@ -149,3 +117,10 @@ class HomeViewModel(
         }
     }
 }
+
+/**
+ * A simple data class to hold four values.
+ */
+data class Quadruple<A, B, C, D>(
+    val first: A, val second: B, val third: C, val fourth: D
+)

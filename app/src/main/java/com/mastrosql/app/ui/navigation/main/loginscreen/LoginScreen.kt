@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -308,7 +309,10 @@ fun Login(
             val buttonModifier = if (isLandscape) {
                 Modifier.width(400.dp)
             } else {
-                Modifier.fillMaxWidth()
+                Modifier
+                    .width(300.dp)
+                    .height(50.dp)
+                //.fillMaxWidth()
             }
             item {
                 //Button to login
