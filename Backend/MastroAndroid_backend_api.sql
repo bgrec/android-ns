@@ -988,7 +988,53 @@ BEGIN
 
 END;
 
+####################################################################################################
+-- End of warehouse outbound related procedures
+####################################################################################################
 
+####################################################################################################
+-- Start of inventory
+####################################################################################################
+CREATE OR REPLACE VIEW articlesavailabilityview AS
+SELECT CORTO,
+       ANNO,
+       SUM(IF(MAGA = 1, ESIS, 0)) AS AvM1,
+       SUM(IF(MAGA = 2, ESIS, 0)) AS AvM2,
+       SUM(IF(MAGA = 3, ESIS, 0)) AS AvM3,
+       SUM(IF(MAGA = 4, ESIS, 0)) AS AvM4,
+       SUM(IF(MAGA = 5, ESIS, 0)) AS AvM5
+FROM art_giace
+WHERE ANNO = YEAR(NOW())
+GROUP BY CORTO,
+         ANNO
+HAVING AvM1 > 0
+    OR AvM2 > 0
+    OR AvM3 > 0
+    OR AvM4 > 0
+    OR AvM5 > 0;
+
+####################################################################################################
+
+CREATE OR REPLACE VIEW articlesavailabilitybatchview AS
+SELECT
+    art_movi.CORTO,
+    art_movi.MAGA,
+    art_movi.LOTTO,
+    IFNULL(SUM(CASE WHEN art_movi.TIPO = 1 THEN art_movi.QUAN END), 0) -
+    IFNULL(SUM(CASE WHEN art_movi.TIPO = 2 THEN art_movi.QUAN END), 0) AS Disponibile
+FROM
+    art_movi
+WHERE
+    !art_movi.LOTTO_CHI
+    AND art_movi.lotto <> ''
+GROUP BY
+    art_movi.CORTO,
+    art_movi.LOTTO,
+    art_movi.MAGA
+HAVING Disponibile > 0;
+
+####################################################################################################
+-- End of inventory
 ####################################################################################################
 
 -- Create a new user
