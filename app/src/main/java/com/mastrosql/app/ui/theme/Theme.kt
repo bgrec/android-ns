@@ -117,6 +117,7 @@ fun MastroAndroidTheme(
         else -> darkColorScheme
     }
 
+    //TODO - Add dynamic color scheme ---- Thomas
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -161,10 +162,7 @@ fun MastroAndroidTheme(
 //    }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        shapes = Shapes,
-        typography = Typography,
-        content = content
+        colorScheme = colorScheme, shapes = Shapes, typography = Typography, content = content
     )
 }
 
@@ -174,8 +172,7 @@ fun MastroAndroidTheme(
  */
 @Composable
 fun MastroAndroidPreviewTheme(
-    darkTheme: Boolean = false,
-    content: @Composable () -> Unit
+    darkTheme: Boolean = false, content: @Composable () -> Unit
 ) {
     MaterialTheme(
         colorScheme = if (darkTheme) PrimaryDarkColorScheme else PrimaryLightColorScheme,

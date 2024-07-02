@@ -227,6 +227,11 @@ fun NavGraphBuilder.mainGraph(drawerState: DrawerState, navController: NavContro
             composable(route = WhOutboundDestination.route) {
                 WarehouseOutOperationsScreen(
                     navigateToWhOutboundDetails = { whOutId, whOutDescription ->
+
+                        //Set the shouldRefresh flag to true to be read from WhOutOperationsScreen
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "shouldRefresh", true
+                        )
                         navController.navigate("${WhOutDetailsDestination.route}/${whOutId}?whOutDescription=${whOutDescription}") {
                             //TODO verify if launchSigleTop is  needed
                             launchSingleTop = true

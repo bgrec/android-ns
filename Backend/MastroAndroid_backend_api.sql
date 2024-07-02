@@ -405,6 +405,10 @@ BEGIN
              LEFT JOIN iva ON iva.CODICE = arti.IVA
     WHERE arti.CORTO = articleId;
 
+    IF articleCode IS NULL OR articleCode = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Articolo non trovato', MYSQL_ERRNO = 5400;
+    END IF;
+
     INSERT INTO rig_ordc (NUME, N_TIPO, DOC_DATA, DOC_NUME, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
                           QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
                           LISTINO, MISU, DATA, STAM, COLL, SETTORE, REPA, QT_CONF, REPA_CAS, CONTRO,
@@ -551,7 +555,7 @@ BEGIN
            ART_CODI,
            ART_CFOR,
            DESCRI,
-           QUAN,
+           0,
            PROV_1,
            PROV_2,
            AGENTE,
@@ -969,6 +973,10 @@ BEGIN
              LEFT JOIN iva ON iva.CODICE = arti.IVA
     WHERE arti.CORTO = articleId;
 
+    IF articleCode IS NULL OR articleCode = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Articolo non trovato', MYSQL_ERRNO = 5400;
+    END IF;
+
     -- Insert a new row into the palma_righe table
     INSERT INTO palma_righe (NUME, N_TIPO, DOC_DATA, CODI, RIGA, CORTO, ART_CODI, ART_CFOR, DESCRI,
                              QUAN, AGENTE, PROV_1, PROV_2, VEND, COSTO, IVA, IVA_PERC, SCON, SCON_1, SCON_2, SCON_3,
@@ -985,8 +993,40 @@ BEGIN
     -- Delete dummy row inserted to have the ID because server is missing a list feature for the insert
     DELETE FROM palma_righe WHERE NUME = whOutId AND CORTO = 0;
 
+END;
+
+####################################################################################################
+DROP PROCEDURE IF EXISTS UpdateWhOutRow;
+CREATE PROCEDURE UpdateWhOutRow(
+    IN whOutDetailId INT,
+    IN quantity DECIMAL(11, 5),
+    IN batch VARCHAR(255),
+    IN expirationDate VARCHAR(255)
+)
+BEGIN
+    DECLARE updatedDate DATE;
+    IF expirationDate IS NULL OR expirationDate = '' OR expirationDate = 'null' THEN
+        SET expirationDate = NULL;
+    ELSE
+        SET updatedDate = STR_TO_DATE(expirationDate, '%d/%m/%Y');
+    END IF;
+
+    IF updatedDate IS NOT NULL THEN
+        SET expirationDate = updatedDate;
+    ELSE
+        SET expirationDate = NULL;
+    END IF;
+
+    UPDATE palma_righe
+    SET QUAN     = quantity,
+        LOTTO    = batch,
+        DATA_SCA = expirationDate
+    WHERE NUME_PRO = whoutDetailId;
+
+    SELECT * FROM whoutboundview WHERE NUME = (SELECT NUME FROM palma_righe WHERE NUME_PRO = whoutDetailId);
 
 END;
+
 
 ####################################################################################################
 -- End of warehouse outbound related procedures
@@ -1016,21 +1056,17 @@ HAVING AvM1 > 0
 ####################################################################################################
 
 CREATE OR REPLACE VIEW articlesavailabilitybatchview AS
-SELECT
-    art_movi.CORTO,
-    art_movi.MAGA,
-    art_movi.LOTTO,
-    IFNULL(SUM(CASE WHEN art_movi.TIPO = 1 THEN art_movi.QUAN END), 0) -
-    IFNULL(SUM(CASE WHEN art_movi.TIPO = 2 THEN art_movi.QUAN END), 0) AS Disponibile
-FROM
-    art_movi
-WHERE
-    !art_movi.LOTTO_CHI
-    AND art_movi.lotto <> ''
-GROUP BY
-    art_movi.CORTO,
-    art_movi.LOTTO,
-    art_movi.MAGA
+SELECT art_movi.CORTO,
+       art_movi.MAGA,
+       art_movi.LOTTO,
+       IFNULL(SUM(CASE WHEN art_movi.TIPO = 1 THEN art_movi.QUAN END), 0) -
+       IFNULL(SUM(CASE WHEN art_movi.TIPO = 2 THEN art_movi.QUAN END), 0) AS Disponibile
+FROM art_movi
+WHERE !art_movi.LOTTO_CHI
+  AND art_movi.lotto <> ''
+GROUP BY art_movi.CORTO,
+         art_movi.LOTTO,
+         art_movi.MAGA
 HAVING Disponibile > 0;
 
 ####################################################################################################

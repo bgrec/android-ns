@@ -1,5 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.warehousescreen.outbound
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +17,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +34,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mastrosql.app.R
 import com.mastrosql.app.ui.AppViewModelProvider
 import com.mastrosql.app.ui.navigation.main.errorScreen.ErrorScreen
@@ -95,6 +100,34 @@ fun WhOutboundResultScreen(
 ) {
     // Context used to show the toast
     val context = LocalContext.current
+
+    // Create a coroutine scope
+    val coroutineScope = rememberCoroutineScope()
+
+    //State to control the value of the LiveData when we return from DetailsScreen
+    var returnedFromNewItem by rememberSaveable { mutableStateOf(false) }
+
+    //Read the value of the LiveData when we return from the NewItemScreen = ArticlesScreen
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    returnedFromNewItem =
+        backStackEntry?.savedStateHandle?.getLiveData<Boolean>("shouldRefresh")?.value ?: false
+
+    //Removes the value of the LiveData when we return from the NewItemScreen = ArticlesScreen
+    backStackEntry?.savedStateHandle?.remove<Boolean>("shouldRefresh")
+
+    Log.d("WhOutboundResultScreen", "returnedFromNewItem: $returnedFromNewItem")
+    // Trigger getWhOutDetails when the user returns from the ArticleScreen, to refresh the list
+    LaunchedEffect(returnedFromNewItem) {
+        if (returnedFromNewItem) {
+            coroutineScope.launch {
+                // Refresh the whOut details
+                viewModel.getWhOutbound()
+
+                // Reset the value to false after the refresh
+                returnedFromNewItem = false
+            }
+        }
+    }
 
     WhOutboundsResult(modifier = modifier,
         navigateToWhOutboundDetails = navigateToWhOutboundDetails,

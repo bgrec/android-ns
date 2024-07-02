@@ -35,8 +35,10 @@ class NetworkWhOutDetailsRepository(
     // set context as application context from parameter passed
     private val workManager = WorkManager.getInstance(context)
 
-    override val outputWorkInfo: Flow<WorkInfo> =
-        workManager.getWorkInfosByTagLiveData(TAG_OUTPUT).asFlow().mapNotNull {
+    override val outputWorkInfo: Flow<WorkInfo> = workManager
+        .getWorkInfosByTagLiveData(TAG_OUTPUT)
+        .asFlow()
+        .mapNotNull {
             if (it.isNotEmpty()) it.first() else null
         }
 
@@ -99,6 +101,6 @@ class NetworkWhOutDetailsRepository(
             addProperty("batch", batch)
             addProperty("expirationDate", expirationDateFormated)
         }
-        return mastroAndroidApiService.updateOrderDetailItem(body)
+        return mastroAndroidApiService.updateWhOutDetailItem(body)
     }
 }
