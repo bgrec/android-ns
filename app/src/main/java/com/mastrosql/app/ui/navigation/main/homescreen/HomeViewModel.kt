@@ -119,8 +119,9 @@ class HomeViewModel(
 }
 
 /**
- * A simple data class to hold four values.
+ * A simple data class to hold four values.(Quadruple)
  */
+@Suppress("KDocMissingDocumentation")
 data class Quadruple<A, B, C, D>(
     val first: A, val second: B, val third: C, val fourth: D
 )

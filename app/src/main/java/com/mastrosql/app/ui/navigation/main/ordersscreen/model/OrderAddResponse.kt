@@ -11,32 +11,24 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Column(
-    @SerializedName("name")
-    val name: String,
-    @SerializedName("type")
-    val type: String
+    @SerializedName("name") val name: String, @SerializedName("type") val type: String
 )
 
 @Serializable
 data class ResponseItem(
-    @SerializedName("type")
-    val type: String,
-    @SerializedName("items")
-    val items: List<Order>,
-    @SerializedName("_metadata")
-    val metadata: MetadataOfResponseItem
+    @SerializedName("type") val type: String,
+    @SerializedName("items") val items: List<Order>,
+    @SerializedName("_metadata") val metadata: MetadataOfResponseItem
 )
 
 @Serializable
 data class MetadataOfResponseItem(
-    @SerializedName("columns")
-    val columns: List<Column>
+    @SerializedName("columns") val columns: List<Column>
 )
 
 @Serializable
 data class OrderAddResponse(
-    @SerializedName("items")
-    val items: List<ResponseItem>
+    @SerializedName("items") val items: List<ResponseItem>
 ) {
     /**
      * Retrieves the first order from the response, or returns null if no orders are present.

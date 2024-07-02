@@ -18,6 +18,7 @@ import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.data.AppContainer
 import com.mastrosql.app.data.datasource.network.MastroAndroidApiService
 import com.mastrosql.app.ui.navigation.main.MainNavOption
+import com.mastrosql.app.ui.navigation.main.loginscreen.model.SupportedVersionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -682,4 +683,7 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun getSupportedVersion(): Response<SupportedVersionResponse> {
+        return mastroAndroidApiService.getSupportedVersion()
+    }
 }

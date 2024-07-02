@@ -104,7 +104,7 @@ fun AboutScreen(navController: NavController = rememberNavController(), context:
 //navController.navigate(com.mastrosql.app.ui.navigation.intro.IntroNavOption.MotivationScreen.name)
 
 // Function to get the app version
-private fun getAppVersion(context: Context): String {
+fun getAppVersion(context: Context): String {
     return try {
         val packageInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
         packageInfo.versionName

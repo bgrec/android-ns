@@ -127,7 +127,7 @@ fun LoginScreen(
         primaryUrlName = loginUiState.primaryUrlName,
         secondaryUrlName = loginUiState.secondaryUrlName,
         onUrlSelected = { selectedUrl ->
-            viewModel.saveSelectedUrl(selectedUrl)
+            viewModel.changeSelectedUrl(selectedUrl)
         })
 }
 

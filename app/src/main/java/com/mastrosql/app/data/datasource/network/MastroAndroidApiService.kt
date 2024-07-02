@@ -5,6 +5,7 @@ import com.mastrosql.app.ui.navigation.main.articlesscreen.model.ArticlesRespons
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomerMasterData
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.CustomersMasterDataResponse
 import com.mastrosql.app.ui.navigation.main.customersscreen.model.destinations.DestinationsDataResponse
+import com.mastrosql.app.ui.navigation.main.loginscreen.model.SupportedVersionResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrderAddResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.model.OrdersResponse
 import com.mastrosql.app.ui.navigation.main.ordersscreen.ordersdetailsscreen.model.OrderDetailsResponse
@@ -257,8 +258,19 @@ interface MastroAndroidApiService {
     suspend fun updateWhOutDetailItem(
         @Body body: JsonObject
     ): Response<JsonObject>
-    
+
     //End of Warehouse Outbound API calls
+
+    //Version Check
+    /**
+     * Retrieves the current version of the server.
+     */
+    @GET("SupportedVersion")
+    suspend fun getSupportedVersion(
+        //@Body body: JsonObject
+    ): Response<SupportedVersionResponse>
+
+    //End of Version Check
 
     /**
      * ****************************************************************************************

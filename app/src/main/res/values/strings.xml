@@ -262,6 +262,7 @@
     <string name="new_wh_operation_added">Nuovo movimento cliente %1$d</string>
     <string name="whout_details_dialog_edit_title">Modifica righe</string>
     <string name="whout_description">Movimenti</string>
+    <string name="version_mismatch">Versione server diversa da quella dell\'app, contattare l\'assistenza.</string>
 
 
 </resources>

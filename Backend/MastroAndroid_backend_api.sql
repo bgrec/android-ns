@@ -14,7 +14,7 @@ CREATE PROCEDURE SupportedVersion()
 BEGIN
     DECLARE supported_version VARCHAR(255);
 
-    SET supported_version = '1.0.1';
+    SET supported_version = '1.0.3';
     SELECT supported_version AS version;
 END;
 

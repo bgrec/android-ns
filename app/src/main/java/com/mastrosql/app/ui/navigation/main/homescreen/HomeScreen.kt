@@ -1,7 +1,6 @@
 package com.mastrosql.app.ui.navigation.main.homescreen
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -68,8 +67,6 @@ fun HomeScreen(
 //    LaunchedEffect(key1 = homeUiState.selectedUrl) {
 //        viewModel.changeBaseUrl(selectedUrl = homeUiState.selectedUrl)
 //    }
-    Log.d("HomeScreen", "HomeScreen: homeUiState: ${homeUiState.selectedUrl}")
-    Log.d("HomeScreen", "HomeScreen: homeUiState: ${homeUiState.selectedUrlName}")
 
     Home(drawerState = drawerState,
         navController = navController,

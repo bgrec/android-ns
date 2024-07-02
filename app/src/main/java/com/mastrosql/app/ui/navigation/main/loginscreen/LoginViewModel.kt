@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mastrosql.app.PRIMARY_URL
 import com.mastrosql.app.PRIMARY_URL_NAME
+import com.mastrosql.app.R
 import com.mastrosql.app.SECONDARY_URL
 import com.mastrosql.app.SECONDARY_URL_NAME
 import com.mastrosql.app.data.datasource.network.NetworkExceptionHandler
@@ -35,12 +36,15 @@ import com.mastrosql.app.data.datasource.network.NetworkSuccessHandler
 import com.mastrosql.app.data.datasource.network.SessionManager
 import com.mastrosql.app.data.local.UserPreferencesRepository
 import com.mastrosql.app.data.login.LoginRepository
+import com.mastrosql.app.ui.navigation.main.aboutscreen.getAppVersion
+import com.mastrosql.app.ui.navigation.main.homescreen.Quadruple
 import com.mastrosql.app.utils.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -108,34 +112,9 @@ class LoginViewModel(
 
     /**
      * Initialize the ViewModel and collect the flow values from the data store.
-     *//*init {
-        viewModelScope.launch {
-            combine(
-                userPreferencesRepository.getIsNotSecuredApi(),
-                userPreferencesRepository.getBaseUrl2(),
-                userPreferencesRepository.getBaseUrlName(),
-                userPreferencesRepository.getBaseUrl2Name(),
-                userPreferencesRepository.getSelectedUrl()
-            ) { isNotSecuredApi, baseUrl2, primaryUrlName, secondaryUrlName, selectedUrl ->
-                Quintuple(isNotSecuredApi, baseUrl2, primaryUrlName, secondaryUrlName, selectedUrl)
-            }.collect { (isNotSecuredApi, baseUrl2, primaryUrlName, secondaryUrlName, selectedUrl) ->
-                val selectedUrlName =
-                    updateSelectedUrlName(selectedUrl, primaryUrlName, secondaryUrlName)
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isNotSecuredApi = isNotSecuredApi,
-                        isSecondaryBaseUrlProvided = baseUrl2.isNotEmpty(),
-                        primaryUrlName = primaryUrlName,
-                        secondaryUrlName = secondaryUrlName,
-                        selectedUrl = selectedUrl,
-                        selectedUrlName = selectedUrlName
-                    )
-                }
-                //userPreferencesRepository.changeBaseUrl(selectedUrl)
-            }//.launchIn(viewModelScope)
-        }
-    }*/
+     */
     init {
+
         viewModelScope.launch {
             userPreferencesRepository
                 .getIsNotSecuredApi()
@@ -146,72 +125,40 @@ class LoginViewModel(
         }
 
         viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl2()
-                .collect {
-                    if (it.isNotEmpty()) {
-                        updateUiState(uiState.value.copy(isSecondaryBaseUrlProvided = true))
-                    }
-                }
-        }
-
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrlName()
-                .collect {
-                    updateUiState(uiState.value.copy(primaryUrlName = it))
-                }
-        }
-
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getBaseUrl2Name()
-                .collect {
-                    updateUiState(uiState.value.copy(secondaryUrlName = it))
-                }
-        }
-
-        // Collect selected URL, update UI state, and change base URL
-        viewModelScope.launch {
-            userPreferencesRepository
-                .getSelectedUrl()
-                .collect { selectedUrl ->
-                    val selectedUrlName = when (selectedUrl) {
-                        PRIMARY_URL -> if (_uiState.value.primaryUrlName == PRIMARY_URL_NAME) ""
-                        else _uiState.value.primaryUrlName
-
-                        SECONDARY_URL -> if (_uiState.value.secondaryUrlName == SECONDARY_URL_NAME) ""
-                        else _uiState.value.secondaryUrlName
-
-                        else -> "" // Handle unexpected values if needed
-                    }
-                    updateUiState(
-                        _uiState.value.copy(
-                            selectedUrl = selectedUrl, selectedUrlName = selectedUrlName
-                        )
+            combine(
+                userPreferencesRepository.getSelectedUrl(),
+                userPreferencesRepository.getBaseUrlName(),
+                userPreferencesRepository.getBaseUrl2Name(),
+                userPreferencesRepository.getBaseUrl2()
+            ) { selectedUrl, primaryUrlName, secondaryUrlName, baseUrl2 ->
+                Quadruple(selectedUrl, primaryUrlName, secondaryUrlName, baseUrl2)
+            }.collect { (selectedUrl, primaryUrlName, secondaryUrlName, baseUrl2) ->
+                val selectedUrlName =
+                    updateSelectedUrlName(selectedUrl, primaryUrlName, secondaryUrlName)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedUrl = selectedUrl,
+                        primaryUrlName = primaryUrlName,
+                        secondaryUrlName = secondaryUrlName,
+                        selectedUrlName = selectedUrlName,
+                        isSecondaryBaseUrlProvided = baseUrl2.isNotEmpty()
                     )
-                    userPreferencesRepository.changeBaseUrl(selectedUrl)
                 }
+                //userPreferencesRepository.changeBaseUrl(selectedUrl)
+            }//.launchIn(viewModelScope)
         }
     }
 
-    fun updateSelectedUrlName() {
-        viewModelScope.launch {
-            val selectedUrl = userPreferencesRepository
-                .getSelectedUrl()
-                .first()
-            val updatedSelectedUrlName = when (selectedUrl) {
-                PRIMARY_URL -> userPreferencesRepository
-                    .getBaseUrlName()
-                    .first()
-
-                SECONDARY_URL -> userPreferencesRepository
-                    .getBaseUrl2Name()
-                    .first()
-
-                else -> ""
-            }
-            updateUiState(_uiState.value.copy(selectedUrlName = updatedSelectedUrlName))
+    /**
+     * Update the selected URL name.
+     */
+    private fun updateSelectedUrlName(
+        selectedUrl: Int, primaryUrlName: String, secondaryUrlName: String
+    ): String {
+        return when (selectedUrl) {
+            PRIMARY_URL -> if (primaryUrlName == PRIMARY_URL_NAME) "" else primaryUrlName
+            SECONDARY_URL -> if (secondaryUrlName == SECONDARY_URL_NAME) "" else secondaryUrlName
+            else -> "" // Handle unexpected values if needed
         }
     }
 
@@ -225,6 +172,37 @@ class LoginViewModel(
             loginNotSecuredApi()
         } else {
             loginSecuredApi(context, username, password, isCredentialManagerLogin)
+        }
+
+        // Check the server version
+        versionCheck(context)
+    }
+
+    /**
+     * Perform the server version check.
+     */
+    private fun versionCheck(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Perform the login request and handle the response
+                val response = userPreferencesRepository.getSupportedVersion()
+                val versionItem = response
+                    .body()
+                    ?.getServerVersion()
+                val serverVersion = versionItem?.version
+
+                // Not getting the version suffix
+                val appVersion = getAppVersion(context).substring(0, 5)
+
+                if (serverVersion != appVersion) {
+                    // Handle version mismatch
+                    ToastUtils.showToast(
+                        context, Toast.LENGTH_SHORT, context.getString(R.string.version_mismatch)
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Error fetching the server version", e)
+            }
         }
     }
 
@@ -362,7 +340,7 @@ class LoginViewModel(
     }
 
     /**
-     *
+     * Function to get the credentials from the credential provider.
      */
     fun getCredentials(activityContext: Context)/*: PasswordCredential?*/ {
 
@@ -493,19 +471,18 @@ class LoginViewModel(
     /**
      * Function to save the selected URL.
      */
-    fun saveSelectedUrl(selectedUrl: Int) {
+    fun changeSelectedUrl(selectedUrl: Int) {
         viewModelScope.launch {
-//            userPreferencesRepository.saveSelectedUrl(selectedUrl)
-            updateUiState(uiState.value.copy(selectedUrl = selectedUrl))
             userPreferencesRepository.changeBaseUrl(selectedUrl)
         }
     }
-
 }
 
 /*
-    On Begin Sign In Failure: 16: Caller has been temporarily blocked due to too many canceled sign-in prompts.
-    If you encounter this 24-hour cooldown period during development, you can reset it by clearing Google Play services' app storage.
+    On Begin Sign In Failure: 16: Caller has been temporarily blocked due
+    to too many canceled sign-in prompts.
+    If you encounter this 24-hour cooldown period during development, you can reset it by clearing
+    Google Play services' app storage.
 
     Alternatively, to toggle this cooldown on a test device or emulator,
     go to the Dialer app and input the following code: *#*#66382723#*#*.
